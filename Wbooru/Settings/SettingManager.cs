@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,12 +13,14 @@ namespace Wbooru.Settings
     {
         const string CONFIG_FILE_PATH = "./setting.json";
 
-        private static HashSet<SettingBase> loaded_settings = new HashSet<SettingBase>();
+        private static bool load = false;
 
         private static SettingFileEntity entity=new SettingFileEntity();
 
         public static T LoadSetting<T>() where T:SettingBase,new()
         {
+            Debug.Assert(load, "Must call LoadSettingFile() before LoadSetting().");
+
             var name = typeof(T).Name;
 
             if (entity.Settings.TryGetValue(name,out var setting))
@@ -42,6 +45,7 @@ namespace Wbooru.Settings
                 foreach (var item in entity.Settings.Values)
                     item.OnAfterLoad();
 
+                load = true;
             }
             catch (Exception e)
             {
@@ -60,6 +64,7 @@ namespace Wbooru.Settings
 
                 var str = JsonConvert.SerializeObject(entity, Formatting.Indented);
                 writer.Write(str);
+
             }catch(Exception e)
             {
                 Log.Error($"save settings failed:{e}");

@@ -15,12 +15,11 @@
         <sys:UInt32 x:Key="GridItemWidth">150</sys:UInt32>
         <sys:UInt32 x:Key="GridItemMarginWidth">10</sys:UInt32>
     </Window.Resources>
-    <Grid DataContext="{Binding Source={StaticResource SampleItems}}">
+    <Grid>
         <ScrollViewer x:Name="MainPanel">
             <ListBox
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            ItemsSource="{Binding BooruItems}"
             x:Name="LB">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
@@ -65,7 +64,7 @@
                                 Width="{Binding Source={StaticResource GridItemWidth}}"
                                 Margin="{Binding Converter={StaticResource ItemMarginConverter},Source={StaticResource GridItemMarginWidth}}">
 
-                            <Image Width="{Binding Source={StaticResource GridItemWidth}}" Source="{Binding GrallyItem.ImageSource}">
+                            <Image Width="{Binding Source={StaticResource GridItemWidth}}">
                                 <Image.Height>
                                     <MultiBinding Converter="{StaticResource AutoFitHeightConverter}">
                                         <Binding RelativeSource="{RelativeSource Self}" Path="Source"/>

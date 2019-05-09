@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Wbooru.Settings
 {
-    public class SettingBase
+    public class GlobalSetting : SettingBase
     {
-        public virtual void OnAfterLoad() { }
-        public virtual void OnBeforeSave() { }
+        public string DownloadPath { get; set; } = "./Download";
     }
 }

@@ -62,15 +62,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Settings\GlobalSetting.cs" />
     <Compile Include="Settings\SettingBase.cs" />
     <Compile Include="Settings\SettingFileEntity.cs" />
     <Compile Include="Settings\SettingManager.cs" />
     <Compile Include="Models\Gallery\GalleryItem.cs" />
     <Compile Include="Models\Gallery\GalleryItemUIElementWrapper.cs" />
-    <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">
-      <DependentUpon>SampleDataSource.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Panels\GridPanel.cs" />
+    <Compile Include="Utils\IOHelper.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Resource\ResourceManager.cs" />
     <Compile Include="ValueConverters\AutoFitHeightConverter.cs" />
@@ -87,10 +86,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="SampleData\SampleDataSource\SampleDataSource.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -115,55 +110,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="SampleData\SampleDataSource\SampleDataSource.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\image01.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\image02.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\image03.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\image04.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\image05.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\101a8a7f-c83e-4ee0-ce57-110d56f5028f.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\150fedf8-12c7-47af-c71f-fb86d955fffc.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\4J9WB[S65P~DFD{3Z%24[5NJR%28RGB%29%28noise_scale%29%28Level3%29%28x1.250000%29.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\bg%28RGB%29%28noise_scale%29%28Level3%29%28x2.000000%29.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\bglll_waifu2x_art_noise3_scale_tta_1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\bgnorm%28RGB%29%28noise_scale%29%28Level3%29%28x2.000000%29 %282%29.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\D8FELDY32DBI4JYI1Y%25]3%246_waifu2x_art_noise3_scale_tta_1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\P8[{`MJ3`K%284ZQU2RK%25%28A83_waifu2x_art_noise3_tta_1 %282%29.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="SampleData\SampleDataSource\SampleDataSource_Files\QQ图片20170215183752.png" />
+    <Folder Include="Gallery\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

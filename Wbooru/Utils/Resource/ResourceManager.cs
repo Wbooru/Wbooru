@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Settings;
 
 namespace Wbooru.Utils.Resource
 {
@@ -12,7 +13,6 @@ namespace Wbooru.Utils.Resource
     {
         private static ObjectCache cache = MemoryCache.Default;
         private static readonly string TEMP_PART = Path.GetTempPath();
-
 
         public static object RequestResource(string resource_name,Func<object> manual_request)
         {

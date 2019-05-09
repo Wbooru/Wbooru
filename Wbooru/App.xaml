@@ -2,11 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Wbooru"
-             xmlns:SampleDataSource="clr-namespace:Expression.Blend.SampleData.SampleDataSource" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Wbooru.App"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Gallery="clr-namespace:Wbooru.Models.Gallery" mc:Ignorable="d" x:Class="Wbooru.App"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-
-        <SampleDataSource:SampleDataSource x:Key="SampleDataSource" d:IsDataSource="True"/>
-
+        <Gallery:GalleryItemUIElementWrapper x:Key="GalleryItemUIElementWrapperDataSource" d:IsDataSource="True"/>
     </Application.Resources>
 </Application>
