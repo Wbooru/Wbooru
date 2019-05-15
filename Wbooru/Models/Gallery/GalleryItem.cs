@@ -8,7 +8,7 @@ namespace Wbooru.Models.Gallery
 {
     public class GalleryItem
     {
-        public string ImagePath { get; set; }
+        public string PreviewImageDownloadLink { get; set; }
         public string Name { get; set; }
         public string ID { get; set; }
     }

@@ -41,6 +41,8 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
@@ -62,6 +64,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Galleries\Gallery.cs" />
+    <Compile Include="Galleries\IContainDetail.cs" />
+    <Compile Include="Kernel\Container.cs" />
+    <Compile Include="Kernel\SchedulerManager.cs" />
+    <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
+    <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
+    <Compile Include="Network\ImageDownloadSchedule.cs" />
+    <Compile Include="Network\RequestHelper.cs" />
+    <Compile Include="PluginExt\ISchedulable.cs" />
+    <Compile Include="PluginExt\IPlugin.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
     <Compile Include="Settings\SettingBase.cs" />
     <Compile Include="Settings\SettingFileEntity.cs" />
@@ -69,10 +81,12 @@
     <Compile Include="Models\Gallery\GalleryItem.cs" />
     <Compile Include="Models\Gallery\GalleryItemUIElementWrapper.cs" />
     <Compile Include="UI\Panels\GridPanel.cs" />
+    <Compile Include="Utils\ExceptionHelper.cs" />
     <Compile Include="Utils\IOHelper.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Resource\ResourceManager.cs" />
     <Compile Include="ValueConverters\AutoFitHeightConverter.cs" />
+    <Compile Include="ValueConverters\ImageAsyncLoadingConverter.cs" />
     <Compile Include="ValueConverters\ItemMarginConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -114,8 +128,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gallery\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

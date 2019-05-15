@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,21 +10,24 @@ using Newtonsoft.Json;
 
 namespace Wbooru.Settings
 {
-    public static class SettingManager
+    [Export(typeof(SettingManager))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
+    public class SettingManager
     {
         const string CONFIG_FILE_PATH = "./setting.json";
 
-        private static bool load = false;
+        private bool load = false;
 
-        private static SettingFileEntity entity=new SettingFileEntity();
+        private SettingFileEntity entity=new SettingFileEntity();
 
-        public static T LoadSetting<T>() where T:SettingBase,new()
+        public T LoadSetting<T>() where T:SettingBase,new()
         {
-            Debug.Assert(load, "Must call LoadSettingFile() before LoadSetting().");
+            if (!load)
+                LoadSettingFile();
 
             var name = typeof(T).Name;
 
-            if (entity.Settings.TryGetValue(name,out var setting))
+            if (!entity.Settings.TryGetValue(name,out var setting))
             {
                 setting = new T();
                 entity.Settings[name] = setting;
@@ -34,18 +38,18 @@ namespace Wbooru.Settings
             return (T)setting;
         }
 
-        internal static void LoadSettingFile()
+        public void LoadSettingFile()
         {
             try
             {
+                load = true;
+
                 using var reader = File.OpenText(CONFIG_FILE_PATH);
 
                 entity = JsonConvert.DeserializeObject<SettingFileEntity>(reader.ReadToEnd()) ?? entity;
 
                 foreach (var item in entity.Settings.Values)
                     item.OnAfterLoad();
-
-                load = true;
             }
             catch (Exception e)
             {
@@ -53,7 +57,7 @@ namespace Wbooru.Settings
             }
         }
 
-        internal static void SaveSettingFile()
+        public void SaveSettingFile()
         {
             try
             {

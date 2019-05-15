@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.Composition;
 using System.Windows;
+using Wbooru.Kernel;
+using System.Linq;
 using Wbooru.Settings;
+using System.Collections.Generic;
+using Wbooru.Galleries;
 
 namespace Wbooru
 {
@@ -14,9 +13,17 @@ namespace Wbooru
     /// </summary>
     public partial class App : Application
     {
+        [Import(typeof(SchedulerManager))]
+        public SchedulerManager SchedulerManager { get; set; }
+
+        [Import(typeof(SettingManager))]
+        public SettingManager SettingManager { get; set; }
+
         public App()
         {
-            SettingManager.LoadSettingFile();
+            Container.BuildDefault();
+
+            Container.Default.ComposeParts(this);
         }
 
         ~App ()

@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Blend for Visual Studio Version 16
+# Visual Studio Version 16
 VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wbooru", "Wbooru\Wbooru.csproj", "{C707353F-3E50-49B7-A2E1-1DF669305470}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YandeSourcePlugin", "YandeSourcePlugin\YandeSourcePlugin.csproj", "{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{11DB10E3-862F-4231-B265-BB8A17E20581}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{C707353F-3E50-49B7-A2E1-1DF669305470}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C707353F-3E50-49B7-A2E1-1DF669305470}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C707353F-3E50-49B7-A2E1-1DF669305470}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11DB10E3-862F-4231-B265-BB8A17E20581}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11DB10E3-862F-4231-B265-BB8A17E20581}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11DB10E3-862F-4231-B265-BB8A17E20581}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11DB10E3-862F-4231-B265-BB8A17E20581}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

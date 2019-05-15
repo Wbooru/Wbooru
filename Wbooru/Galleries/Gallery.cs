@@ -8,11 +8,9 @@ using Wbooru.PluginExt;
 
 namespace Wbooru.Galleries
 {
-    public abstract class Gallery : IPlugin
+    public abstract class Gallery
     {
         public abstract string GalleryName { get; }
-        public abstract string PluginName { get; }
-        public abstract string PluginAuthor { get; }
 
         public abstract IEnumerable<GalleryItem> GetMainPostedImages();
 
