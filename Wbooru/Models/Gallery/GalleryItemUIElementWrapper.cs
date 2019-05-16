@@ -8,6 +8,6 @@ namespace Wbooru.Models.Gallery
 {
     public class GalleryItemUIElementWrapper
     {
-         public GalleryItem Item { get; set; }
+        public List<GalleryItem> Pictures { get; set; }
     }
 }

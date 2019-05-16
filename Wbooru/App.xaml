@@ -3,8 +3,4 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Wbooru"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Gallery="clr-namespace:Wbooru.Models.Gallery" mc:Ignorable="d" x:Class="Wbooru.App"
-             StartupUri="MainWindow.xaml">
-    <Application.Resources>
-        <Gallery:GalleryItemUIElementWrapper x:Key="GalleryItemUIElementWrapperDataSource" d:IsDataSource="True"/>
-    </Application.Resources>
-</Application>
+             StartupUri="MainWindow.xaml"/>

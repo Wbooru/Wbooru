@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using Wbooru.PluginExt;
 using Wbooru.Settings;
@@ -12,6 +13,7 @@ using Wbooru.Settings;
 namespace Wbooru.Network
 {
     [Export(typeof(ISchedulable))]
+    [Export(typeof(ImageFetchDownloadSchedule))]
     public class ImageFetchDownloadSchedule : ISchedulable
     {
         [ImportingConstructor]
@@ -22,14 +24,16 @@ namespace Wbooru.Network
 
         public bool IsAsyncSchedule => false;
 
-        private Queue<Task<BitmapImage>> tasks_waiting_queue=new Queue<Task<BitmapImage>>();
-        private HashSet<Task<BitmapImage>> tasks_running_queue=new HashSet<Task<BitmapImage>>();
+        private Queue<Task<Image>> tasks_waiting_queue=new Queue<Task<Image>>();
+        private HashSet<Task<Image>> tasks_running_queue=new HashSet<Task<Image>>();
 
         private GlobalSetting setting;
 
-        public Task<BitmapImage> GetImageAsync(string download_path)
+        public Task<Image> GetImageAsync(string download_path)
         {
-            var task = new Task<BitmapImage>(OnDownloadTaskStart, download_path);
+            var task = new Task<Image>(OnDownloadTaskStart, download_path);
+
+            tasks_waiting_queue.Enqueue(task);
 
             return task;
         }
@@ -50,7 +54,7 @@ namespace Wbooru.Network
             }
         }
 
-        private BitmapImage OnDownloadTaskStart(object state)
+        private Image OnDownloadTaskStart(object state)
         {
             var download_path = (string)state;
 
@@ -58,12 +62,7 @@ namespace Wbooru.Network
 
             using var stream = response.GetResponseStream();
 
-            BitmapImage source = new BitmapImage();
-
-            source.BeginInit();
-            source.CacheOption = BitmapCacheOption.OnLoad;
-            source.StreamSource = stream;
-            source.EndInit();
+            Image source=Image.FromStream(stream);
 
             return source;
         }

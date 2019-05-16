@@ -27,6 +27,7 @@ namespace Wbooru.Kernel
         {
             schedule_thread = new Thread(Run);
             schedule_thread.Name = "SchedulerManager Thread";
+            schedule_thread.SetApartmentState(ApartmentState.STA);
             schedule_thread.IsBackground = true;
             schedule_thread.Start();
         }

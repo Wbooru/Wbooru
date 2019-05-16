@@ -1,28 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
+using Wbooru.PluginExt;
 using Wbooru.Settings;
 
 namespace Wbooru.Utils.Resource
 {
-    public static class ResourceManager
+    [Export(typeof(ImageResourceManager))]
+    public class ImageResourceManager
     {
-        private static ObjectCache cache = MemoryCache.Default;
-        private static readonly string TEMP_PART = Path.GetTempPath();
+        private ObjectCache cache = MemoryCache.Default;
+        private readonly string TEMP_PART = Path.GetTempPath();
 
-        public static object RequestResource(string resource_name,Func<object> manual_request)
+        GlobalSetting setting;
+        
+        [ImportingConstructor]
+        public ImageResourceManager([Import(typeof(SettingManager))]SettingManager manager)
         {
-            if (TryGetResourceFromMemoryCache(resource_name,out var res))
+            setting = manager.LoadSetting<GlobalSetting>();
+        }
+
+        public Image RequestImage(string resource_name,Func<Image> manual_request)
+        {
+            if (TryGetImageFromMemoryCache(resource_name,out var res))
                 return res;
 
-            if (TryGetResourceFromDownloadFolder(resource_name, out res))
+            if (TryGetImageFromDownloadFolder(resource_name, out res))
                 return res;
 
-            if (manual_request() is object obj)
+            if (manual_request() is Image obj)
             {
                 cache[resource_name] = obj;
                 return obj;
@@ -31,20 +44,44 @@ namespace Wbooru.Utils.Resource
             return null;
         }
 
-        private static bool TryGetResourceFromDownloadFolder(string name, out object res)
+        public async Task<Image> RequestImageAsync(string resource_name,Func<Task<Image>> manual_request)
+        {
+            if (TryGetImageFromMemoryCache(resource_name, out var res))
+                return res;
+
+            if (TryGetImageFromDownloadFolder(resource_name, out res))
+                return res;
+
+            if (await manual_request() is Image obj)
+            {
+                cache[resource_name] = obj;
+                return obj;
+            }
+
+            return null;
+        }
+
+        private bool TryGetImageFromDownloadFolder(string name, out Image res)
         {
             res = null;
+
+            var file_path = Path.Combine(setting.DownloadPath, name);
+
+            if (!File.Exists(file_path))
+                return false;
+
+            res = Image.FromFile(file_path);
 
             //todo
             return false;
         }
 
-        private static bool TryGetResourceFromMemoryCache(string name, out object res)
+        private bool TryGetImageFromMemoryCache(string name, out Image res)
         {
             res = null;
 
             if (cache.Contains(name))
-                return (res=cache[name])!=null;
+                return (res=cache[name] as Image) !=null;
 
             return false;
         }

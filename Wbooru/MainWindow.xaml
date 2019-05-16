@@ -8,19 +8,22 @@
         xmlns:Converter="clr-namespace:Wbooru.ValueConverters"
         xmlns:local1="clr-namespace:Wbooru.UI.Panels"
         mc:Ignorable="d"
-        Title="Wbooru" Height="450" Width="800">
+        Title="Wbooru" Height="450" Width="800"
+        d:DataContext="{d:DesignData /SampleData/GalleryItemUIElementWrapperSampleData2.xaml}"
+        >
     <Window.Resources>
         <Converter:AutoFitHeightConverter x:Key="AutoFitHeightConverter"/>
         <Converter:ItemMarginConverter x:Key="ItemMarginConverter"/>
         <sys:UInt32 x:Key="GridItemWidth">150</sys:UInt32>
         <sys:UInt32 x:Key="GridItemMarginWidth">10</sys:UInt32>
     </Window.Resources>
-    <Grid>
+
+    <Grid >
         <ScrollViewer x:Name="MainPanel">
             <ListBox
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            x:Name="LB">
+            x:Name="LB" ItemsSource="{Binding Pictures}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="RenderTransform">
@@ -64,7 +67,7 @@
                                 Width="{Binding Source={StaticResource GridItemWidth}}"
                                 Margin="{Binding Converter={StaticResource ItemMarginConverter},Source={StaticResource GridItemMarginWidth}}">
 
-                            <Image Width="{Binding Source={StaticResource GridItemWidth}}">
+                            <Image Width="{Binding Source={StaticResource GridItemWidth}}" Source="{Binding PreviewImageDownloadLink, IsAsync=True}">
                                 <Image.Height>
                                     <MultiBinding Converter="{StaticResource AutoFitHeightConverter}">
                                         <Binding RelativeSource="{RelativeSource Self}" Path="Source"/>
