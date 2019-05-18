@@ -1,29 +1,49 @@
-﻿<Window x:Class="Wbooru.MainWindow"
+﻿<Window x:Name="window" x:Class="Wbooru.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Wbooru"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:Converter="clr-namespace:Wbooru.ValueConverters"
         xmlns:local1="clr-namespace:Wbooru.UI.Panels"
         mc:Ignorable="d"
         Title="Wbooru" Height="450" Width="800"
-        d:DataContext="{d:DesignData /SampleData/GalleryItemUIElementWrapperSampleData2.xaml}"
         >
+
     <Window.Resources>
         <Converter:AutoFitHeightConverter x:Key="AutoFitHeightConverter"/>
         <Converter:ItemMarginConverter x:Key="ItemMarginConverter"/>
+        <Converter:ImageAsyncLoadingConverter x:Key="ImageAsyncLoadingConverter"/>
         <sys:UInt32 x:Key="GridItemWidth">150</sys:UInt32>
         <sys:UInt32 x:Key="GridItemMarginWidth">10</sys:UInt32>
     </Window.Resources>
 
     <Grid >
-        <ScrollViewer x:Name="MainPanel">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition ></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Border Grid.ColumnSpan="2" Background="#FF1D2031" ></Border>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <Button BorderBrush="Transparent" Foreground="White" FontSize="20" Background="Transparent" 
+                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" FontFamily="Segoe UI Symbol"></Button>
+            <Label Margin="5,0,0,0" FontSize="14" Foreground="White" VerticalContentAlignment="Center" Content="{Binding CurrentGallery.GalleryName}"></Label>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" FlowDirection="RightToLeft">
+            <Button BorderBrush="Transparent" Foreground="White" FontSize="15" Background="Transparent" 
+                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" FontFamily="Segoe UI Symbol"></Button>
+            <Button BorderBrush="Transparent" Foreground="White" FontSize="20" Background="Transparent" 
+                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" FontFamily="Segoe UI Symbol"></Button>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" x:Name="ListScrollViewer" VerticalScrollBarVisibility="Hidden" Background="#FF23283C">
             <ListBox
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            x:Name="LB" ItemsSource="{Binding Pictures}">
+            x:Name="GalleryList" ItemsSource="{Binding ItemCollectionWrapper.Pictures}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="RenderTransform">
@@ -50,7 +70,7 @@
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <local1:GridFlowPanel 
-                            Width="{Binding ActualWidth,ElementName=LB}"
+                            Width="{Binding ActualWidth,ElementName=GalleryList}"
                                 GridItemWidth="{Binding Source={StaticResource GridItemWidth}}"
                                 GridItemMarginWidth="{Binding Source={StaticResource GridItemMarginWidth}}" 
                                 />
@@ -63,23 +83,16 @@
                 </ListBox.Template>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel 
-                                Width="{Binding Source={StaticResource GridItemWidth}}"
-                                Margin="{Binding Converter={StaticResource ItemMarginConverter},Source={StaticResource GridItemMarginWidth}}">
-
-                            <Image Width="{Binding Source={StaticResource GridItemWidth}}" Source="{Binding PreviewImageDownloadLink, IsAsync=True}">
-                                <Image.Height>
-                                    <MultiBinding Converter="{StaticResource AutoFitHeightConverter}">
-                                        <Binding RelativeSource="{RelativeSource Self}" Path="Source"/>
-                                        <Binding Source="{StaticResource GridItemWidth}"/>
-                                    </MultiBinding>
-                                </Image.Height>
-                            </Image>
-
-                            <CheckBox IsChecked="{Binding GrallyItem.IsVoted}" FlowDirection="RightToLeft" Content="{Binding GrallyItem.VotedCount}">
-                                <!--Heart Style todo-->
-                            </CheckBox>
-                        </StackPanel>
+                        <Image 
+                            Width="{Binding Source={StaticResource GridItemWidth}}" 
+                            Source="{Binding PreviewImageDownloadLink,Converter={StaticResource ImageAsyncLoadingConverter},IsAsync=True}">
+                            <Image.Height>
+                                <MultiBinding Converter="{StaticResource AutoFitHeightConverter}">
+                                    <Binding Path="PreviewImageSize"/>
+                                    <Binding Source="{StaticResource GridItemWidth}"/>
+                                </MultiBinding>
+                            </Image.Height>
+                        </Image>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

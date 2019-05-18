@@ -10,5 +10,6 @@ namespace Wbooru.Settings
     {
         public string DownloadPath { get; set; } = "./Download";
         public int LoadingImageThread { get; set; } = 4;
+        public int GetPictureCountPerLoad { get; set; } = 20;
     }
 }

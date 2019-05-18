@@ -31,9 +31,9 @@ namespace YandeSourcePlugin
             setting = setting_manager.LoadSetting<GlobalSetting>();
         }
 
-        public override GalleryImageDetail GetImageDetial(string id)
+        public override GalleryImageDetail GetImageDetial(GalleryItem item)
         {
-            throw new Exception("GalleryItem already contained Details.");
+            return item is IContainDetail c ? c.GalleryDetail : throw new Exception();
         }
 
         public IEnumerable<GalleryItem> GetImagesInternal(IEnumerable<string> tags=null)
@@ -83,7 +83,7 @@ namespace YandeSourcePlugin
             PictureItem item = new PictureItem();
             item.ID = pic_info["id"].ToString();
             item.PreviewImageDownloadLink = pic_info["preview_url"].ToString();
-            item.Name = item.ID;
+            item.PreviewImageSize = new Size(pic_info["preview_width"].ToObject<int>(), pic_info["preview_height"].ToObject<int>());
 
             var detail = new GalleryImageDetail();
 
@@ -133,6 +133,8 @@ namespace YandeSourcePlugin
             detail.DownloadableImageLinks = downloads;
 
             item.GalleryDetail = detail;
+
+            item.DownloadFileName = $"{item.ID} {string.Join(" ", detail.Tags)}";
 
             return item;
         }

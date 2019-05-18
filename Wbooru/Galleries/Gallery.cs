@@ -14,7 +14,7 @@ namespace Wbooru.Galleries
 
         public abstract IEnumerable<GalleryItem> GetMainPostedImages();
 
-        public abstract GalleryImageDetail GetImageDetial(string id);
+        public abstract GalleryImageDetail GetImageDetial(GalleryItem item);
 
         public abstract IEnumerable<GalleryItem> SearchImages(IEnumerable<string> keywords);
     }
