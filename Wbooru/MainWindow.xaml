@@ -86,7 +86,7 @@
                     <DataTemplate>
                         <Border 
                                 Name="GalleryImageBorder"
-                                Background="White" 
+                                Background="#3FFFFFFF" 
                                 Width="{Binding Source={StaticResource GridItemWidth}}"
                                 >
                             <Border.Height>
@@ -99,7 +99,7 @@
                                 Width="{Binding Source={StaticResource GridItemWidth}}" 
                                 DataContext ="{Binding PreviewImageDownloadLink, Converter={StaticResource ImageAsyncLoadingConverter}}"
                                 Source="{Binding AsyncValue}"
-                                Height="{Binding Height,ElementName=GalleryImageBorder}"
+                                Height="{Binding Height,ElementName=GalleryImageBorder}" OpacityMask="Black"
                                 >
                                 <!--
                                 <Image.Height>
