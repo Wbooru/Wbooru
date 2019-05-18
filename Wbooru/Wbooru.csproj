@@ -86,6 +86,7 @@
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Resource\ResourceManager.cs" />
     <Compile Include="ValueConverters\AutoFitHeightConverter.cs" />
+    <Compile Include="ValueConverters\DefaultBorderHeightConverter.cs" />
     <Compile Include="ValueConverters\ImageAsyncLoadingConverter.cs" />
     <Compile Include="ValueConverters\ItemMarginConverter.cs" />
     <Page Include="MainWindow.xaml">

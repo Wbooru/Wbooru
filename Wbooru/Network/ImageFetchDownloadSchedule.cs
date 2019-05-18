@@ -58,6 +58,8 @@ namespace Wbooru.Network
         {
             var download_path = (string)state;
 
+            Log<ImageFetchDownloadSchedule>.Info($"Start download image:{download_path}");
+
             var response = RequestHelper.CreateDeafult(download_path);
 
             using var stream = response.GetResponseStream();

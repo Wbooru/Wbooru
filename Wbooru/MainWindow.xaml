@@ -13,6 +13,7 @@
     <Window.Resources>
         <Converter:AutoFitHeightConverter x:Key="AutoFitHeightConverter"/>
         <Converter:ItemMarginConverter x:Key="ItemMarginConverter"/>
+        <Converter:DefaultBorderHeightConverter x:Key="DefaultBorderHeightConverter"/>
         <Converter:ImageAsyncLoadingConverter x:Key="ImageAsyncLoadingConverter"/>
         <sys:UInt32 x:Key="GridItemWidth">150</sys:UInt32>
         <sys:UInt32 x:Key="GridItemMarginWidth">10</sys:UInt32>
@@ -83,16 +84,34 @@
                 </ListBox.Template>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Image 
-                            Width="{Binding Source={StaticResource GridItemWidth}}" 
-                            Source="{Binding PreviewImageDownloadLink,Converter={StaticResource ImageAsyncLoadingConverter},IsAsync=True}">
-                            <Image.Height>
-                                <MultiBinding Converter="{StaticResource AutoFitHeightConverter}">
+                        <Border 
+                                Name="GalleryImageBorder"
+                                Background="White" 
+                                Width="{Binding Source={StaticResource GridItemWidth}}"
+                                >
+                            <Border.Height>
+                                <MultiBinding Converter="{StaticResource AutoFitHeightConverter}" ConverterParameter="BOARD">
                                     <Binding Path="PreviewImageSize"/>
                                     <Binding Source="{StaticResource GridItemWidth}"/>
                                 </MultiBinding>
-                            </Image.Height>
-                        </Image>
+                            </Border.Height>
+                            <Image Name="GalleryImage"
+                                Width="{Binding Source={StaticResource GridItemWidth}}" 
+                                DataContext ="{Binding PreviewImageDownloadLink, Converter={StaticResource ImageAsyncLoadingConverter}}"
+                                Source="{Binding AsyncValue}"
+                                Height="{Binding Height,ElementName=GalleryImageBorder}"
+                                >
+                                <!--
+                                <Image.Height>
+                                    
+                                    <MultiBinding Converter="{StaticResource AutoFitHeightConverter}">
+                                        <Binding Path="PreviewImageSize"/>
+                                        <Binding Source="{StaticResource GridItemWidth}"/>
+                                    </MultiBinding>
+                                </Image.Height>
+                                -->
+                            </Image>
+                        </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

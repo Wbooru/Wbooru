@@ -28,7 +28,7 @@ namespace Wbooru
             if(!string.IsNullOrWhiteSpace(prefix))
                 sb.AppendFormat("{0}:", prefix);
 
-            sb.AppendFormat("{0}:", prefix);
+            sb.AppendFormat("{0}:", message);
 
             if (new_line)
                 sb.AppendLine();
