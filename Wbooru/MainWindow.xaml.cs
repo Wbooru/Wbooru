@@ -19,6 +19,7 @@ using Wbooru.Galleries;
 using Wbooru.Settings;
 using Wbooru.Utils.Resource;
 using Wbooru.Network;
+using System.Windows.Media.Animation;
 
 namespace Wbooru
 {
@@ -80,6 +81,12 @@ namespace Wbooru
                         ItemCollectionWrapper.Pictures.Add(item);
                 });
             });
+        }
+
+        private void MenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            var sb= Resources["ShowLeftPane"] as Storyboard;
+            sb.Begin(MainGrid);
         }
     }
 }

@@ -80,6 +80,9 @@
     <Compile Include="Settings\SettingManager.cs" />
     <Compile Include="Models\Gallery\GalleryItem.cs" />
     <Compile Include="Models\Gallery\GalleryItemUIElementWrapper.cs" />
+    <Compile Include="UI\Controls\MenuButton.xaml.cs">
+      <DependentUpon>MenuButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Panels\GridPanel.cs" />
     <Compile Include="Utils\ExceptionHelper.cs" />
     <Compile Include="Utils\IOHelper.cs" />
@@ -106,6 +109,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignData>
+    <Page Include="UI\Controls\MenuButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
