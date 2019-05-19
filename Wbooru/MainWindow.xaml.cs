@@ -85,8 +85,41 @@ namespace Wbooru
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            var sb= Resources["ShowLeftPane"] as Storyboard;
-            sb.Begin(MainGrid);
+            var show_sb = Resources["ShowLeftPane"] as Storyboard;
+            var hide_sb = Resources["HideLeftPane"] as Storyboard;
+
+            show_sb.Begin(MainGrid);
+            bool is_enter = false;
+
+            MouseEventHandler ent = null;
+            MouseEventHandler lev = null;
+
+            ent = (_, __) =>
+               {
+                   is_enter = true;
+                   LeftMenuPanel.MouseEnter -= ent;
+               };
+
+            lev = (_, __) =>
+            {
+
+                LeftMenuPanel.MouseLeave -= lev;
+                hide_sb.Begin(MainGrid);
+            };
+
+            LeftMenuPanel.MouseEnter += ent;
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(1500);
+                LeftMenuPanel.MouseLeave += lev;
+                await Task.Delay(1500);
+
+                if (is_enter)
+                    return;
+
+                await Dispatcher.BeginInvoke(new Action(() => hide_sb.Begin(MainGrid)));
+            });
         }
     }
 }

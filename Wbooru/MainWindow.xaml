@@ -31,6 +31,14 @@
                 Duration="0:0:0.750" />
         </Storyboard>
 
+        <Storyboard x:Key="HideLeftPane">
+            <ThicknessAnimation
+                DecelerationRatio="0.9"
+                Storyboard.TargetProperty="Margin"
+                To="-170,0,0,0"
+                Duration="0:0:0.750" />
+        </Storyboard>
+
         <Style TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
@@ -50,7 +58,6 @@
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
-
             <StackPanel>
                 <!--  For 强迫症  -->
                 <Border Height="40" />
@@ -60,8 +67,6 @@
                 <controls:MenuButton Icon="" Text="收藏" />
                 <controls:MenuButton Icon="" Text="下载" />
             </StackPanel>
-
-
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
                 <controls:MenuButton Icon="" Text="设置" />
                 <controls:MenuButton Icon=" " Text="退出" />
@@ -112,7 +117,7 @@
                     FontFamily="Segoe UI Symbol"
                     FontSize="15"
                     Foreground="White">
-                    
+                    
                 </Button>
                 <Button
                     Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
@@ -215,6 +220,13 @@
                 </ListBox>
             </ScrollViewer>
             <!--#endregion-->
+        </Grid>
+
+        <Grid
+            Name="RightTagsPanel"
+            Grid.Column="2"
+            Background="#FF1D2031">
+            <!--  todo tags  -->
         </Grid>
     </Grid>
 </Window>
