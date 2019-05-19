@@ -53,7 +53,7 @@
             <ColumnDefinition Width="{Binding Source={StaticResource GridPaneWidth}}" />
         </Grid.ColumnDefinitions>
 
-        <Grid Name="LeftMenuPanel" Background="#FF1D2031">
+        <Grid Name="LeftMenuPanel" Background="#FF1D2031" MouseEnter="LeftMenuPanel_MouseEnter" MouseLeave="LeftMenuPanel_MouseLeave">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />

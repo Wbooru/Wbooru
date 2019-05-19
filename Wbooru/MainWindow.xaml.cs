@@ -83,43 +83,46 @@ namespace Wbooru
             });
         }
 
+        #region Left Menu Show/Hide
+
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
             var show_sb = Resources["ShowLeftPane"] as Storyboard;
             var hide_sb = Resources["HideLeftPane"] as Storyboard;
 
             show_sb.Begin(MainGrid);
-            bool is_enter = false;
 
-            MouseEventHandler ent = null;
-            MouseEventHandler lev = null;
-
-            ent = (_, __) =>
-               {
-                   is_enter = true;
-                   LeftMenuPanel.MouseEnter -= ent;
-               };
-
-            lev = (_, __) =>
+            var task=Task.Run(async () =>
             {
+                while (true)
+                {
+                    await Task.Delay(1500);
+                    await Task.Delay(1500);
 
-                LeftMenuPanel.MouseLeave -= lev;
-                hide_sb.Begin(MainGrid);
-            };
+                    if (LeftMenuPanel_Enter)
+                        return;
 
-            LeftMenuPanel.MouseEnter += ent;
-
-            Task.Run(async () =>
-            {
-                await Task.Delay(1500);
-                LeftMenuPanel.MouseLeave += lev;
-                await Task.Delay(1500);
-
-                if (is_enter)
-                    return;
-
-                await Dispatcher.BeginInvoke(new Action(() => hide_sb.Begin(MainGrid)));
+                    await Dispatcher.BeginInvoke(new Action(() => hide_sb.Begin(MainGrid)));
+                    Log.Debug("Mouse have left menu over 3s,auto close left menu.");
+                    break;
+                }
             });
         }
+
+        bool LeftMenuPanel_Enter;
+
+        private void LeftMenuPanel_MouseEnter(object sender, MouseEventArgs e)
+        {
+            LeftMenuPanel_Enter = true;
+            Log.Debug("Mouse entered left menu");
+        }
+
+        private void LeftMenuPanel_MouseLeave(object sender, MouseEventArgs e)
+        {
+            LeftMenuPanel_Enter = false;
+            Log.Debug("Mouse leave left menu");
+        }
+
+        #endregion
     }
 }

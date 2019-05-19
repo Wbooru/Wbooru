@@ -51,29 +51,29 @@ namespace Wbooru
             Console.ResetColor();
         }
 
-        public static void Info(string message, [CallerMemberName]string caller= "<Unknown Method>")
+        public static void Info(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
-            var msg = BuildLogMessage(message, true, true, caller);
+            var msg = BuildLogMessage(message, true, true, prefix);
             Output(msg);
         }
 
-        public static void Debug(string message, [CallerMemberName]string caller = "<Unknown Method>")
+        public static void Debug(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
 #if DEBUG
-            var msg = BuildLogMessage(message, true, true, caller);
+            var msg = BuildLogMessage(message, true, true, prefix);
             Output(msg);
 #endif
         }
 
-        public static void Warn(string message, [CallerMemberName]string caller = "<Unknown Method>")
+        public static void Warn(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
-            var msg = BuildLogMessage(message, true, true, caller);
+            var msg = BuildLogMessage(message, true, true, prefix);
             ColorizeOutput(msg,ConsoleColor.Yellow,DefaultBackgroundColor);
         }
 
-        public static void Error(string message, [CallerMemberName]string caller = "<Unknown Method>")
+        public static void Error(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
-            var msg = BuildLogMessage(message, true, true, caller);
+            var msg = BuildLogMessage(message, true, true, prefix);
             ColorizeOutput(msg, ConsoleColor.Red, ConsoleColor.Yellow);
         }
     }
