@@ -159,6 +159,7 @@
                 x:Name="GridViewer"
                 Grid.Row="1"
                 Grid.ColumnSpan="2"
+                GalleryItemsSource="{Binding ItemCollectionWrapper, ElementName=window}"
                 GridItemMarginWidth="{Binding Source={StaticResource GridItemMarginWidth}}"
                 GridItemWidth="{Binding Source={StaticResource GridItemWidth}}" />
 

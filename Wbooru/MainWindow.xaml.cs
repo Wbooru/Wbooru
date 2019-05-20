@@ -59,10 +59,12 @@ namespace Wbooru
 
             DataContext = this;
 
+            /*
             GridViewer.SetBinding(GalleryGridView.GalleryItemsSourceProperty, new Binding() {
                 Source=this,
                 Path= new PropertyPath("ItemCollectionWrapper")
             });
+            */
 
             try
             {
