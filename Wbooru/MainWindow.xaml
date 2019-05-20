@@ -154,86 +154,14 @@
                     
                 </Button>
             </StackPanel>
-            <ScrollViewer
-                x:Name="ListScrollViewer"
+
+            <controls:GalleryGridView
+                x:Name="GridViewer"
                 Grid.Row="1"
-                Grid.RowSpan="2"
                 Grid.ColumnSpan="2"
-                Background="#FF23283C"
-                VerticalScrollBarVisibility="Hidden">
-                <ListBox
-                    x:Name="GalleryList"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    ItemsSource="{Binding ItemCollectionWrapper.Pictures}">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="{x:Type ListBoxItem}">
-                            <Setter Property="RenderTransform">
-                                <Setter.Value>
-                                    <TranslateTransform />
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation
-                                                Storyboard.TargetProperty="Opacity"
-                                                From="0"
-                                                To="1"
-                                                Duration="0:0:0.400" />
-                                            <DoubleAnimation
-                                                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
-                                                From="200"
-                                                To="0"
-                                                Duration="0:0:0.500">
-                                                <DoubleAnimation.EasingFunction>
-                                                    <CircleEase EasingMode="EaseOut" />
-                                                </DoubleAnimation.EasingFunction>
-                                            </DoubleAnimation>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <local1:GridFlowPanel
-                                Width="{Binding ActualWidth, ElementName=GalleryList}"
-                                GridItemMarginWidth="{Binding Source={StaticResource GridItemMarginWidth}}"
-                                GridItemWidth="{Binding Source={StaticResource GridItemWidth}}" />
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ListBox.Template>
-                        <ControlTemplate>
-                            <ItemsPresenter />
-                        </ControlTemplate>
-                    </ListBox.Template>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border
-                                Name="GalleryImageBorder"
-                                Width="{Binding Source={StaticResource GridItemWidth}}"
-                                Background="#3FFFFFFF">
-                                <Border.Height>
-                                    <MultiBinding Converter="{StaticResource AutoFitHeightConverter}" ConverterParameter="BOARD">
-                                        <Binding Path="PreviewImageSize" />
-                                        <Binding Source="{StaticResource GridItemWidth}" />
-                                    </MultiBinding>
-                                </Border.Height>
-                                <Image
-                                    Name="GalleryImage"
-                                    Width="{Binding Source={StaticResource GridItemWidth}}"
-                                    Height="{Binding Height, ElementName=GalleryImageBorder}"
-                                    DataContext="{Binding Converter={StaticResource ImageAsyncLoadingConverter}}"
-                                    OpacityMask="Black"
-                                    Source="{Binding AsyncValue}" />
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </ScrollViewer>
+                GridItemMarginWidth="{Binding Source={StaticResource GridItemMarginWidth}}"
+                GridItemWidth="{Binding Source={StaticResource GridItemWidth}}" />
+
             <!--#endregion-->
         </Grid>
 

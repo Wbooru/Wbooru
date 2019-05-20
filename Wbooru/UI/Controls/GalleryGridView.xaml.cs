@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Collections.ObjectModel;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -28,27 +29,25 @@ namespace Wbooru.UI.Controls
         }
 
         public static readonly DependencyProperty GridItemWidthProperty =
-            DependencyProperty.Register("GridItemWidth", typeof(uint), typeof(GalleryGridView), new PropertyMetadata(150));
+            DependencyProperty.Register("GridItemWidth", typeof(uint), typeof(GalleryGridView), new PropertyMetadata((uint)150));
 
-        public int GridItemMarginWidth
+        public uint GridItemMarginWidth
         {
-            get { return (int)GetValue(GridItemMarginWidthProperty); }
+            get { return (uint)GetValue(GridItemMarginWidthProperty); }
             set { SetValue(GridItemMarginWidthProperty, value); }
         }
 
         public static readonly DependencyProperty GridItemMarginWidthProperty =
-            DependencyProperty.Register("GridItemMarginWidth", typeof(int), typeof(GalleryGridView), new PropertyMetadata(10));
+            DependencyProperty.Register("GridItemMarginWidth", typeof(uint), typeof(GalleryGridView), new PropertyMetadata((uint)10));
 
-        public GalleryItemUIElementWrapper ItemCollectionWrapper
+        public GalleryItemUIElementWrapper GalleryItemsSource
         {
-            get { return (GalleryItemUIElementWrapper)GetValue(ItemCollectionWrapperProperty); }
-            set { SetValue(ItemCollectionWrapperProperty, value); }
+            get { return (GalleryItemUIElementWrapper)GetValue(GalleryItemsSourceProperty); }
+            set { SetValue(GalleryItemsSourceProperty, value); }
         }
 
-        public static readonly DependencyProperty ItemCollectionWrapperProperty =
-            DependencyProperty.Register("ItemCollectionWrapper", typeof(GalleryItemUIElementWrapper), typeof(GalleryGridView), new PropertyMetadata(new GalleryItemUIElementWrapper()));
-
-
+        public static readonly DependencyProperty GalleryItemsSourceProperty =
+            DependencyProperty.Register("GalleryItemsSource", typeof(GalleryItemUIElementWrapper), typeof(GalleryGridView), new PropertyMetadata(null));
 
         public GalleryGridView()
         {

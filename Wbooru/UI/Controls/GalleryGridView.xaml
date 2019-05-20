@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local1="clr-namespace:Wbooru.UI.Panels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Name="controlss"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -29,7 +30,7 @@
                 x:Name="GalleryList"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                ItemsSource="{Binding ItemCollectionWrapper.Pictures}">
+                ItemsSource="{Binding GalleryItemsSource.Pictures}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="RenderTransform">
@@ -78,12 +79,12 @@
                     <DataTemplate>
                         <Border
                             Name="GalleryImageBorder"
-                            Width="{Binding GridItemWidth}"
+                            Width="{Binding GridItemWidth, ElementName=controlss}"
                             Background="#3FFFFFFF">
                             <Border.Height>
                                 <MultiBinding Converter="{StaticResource AutoFitHeightConverter}" ConverterParameter="BOARD">
                                     <Binding Path="PreviewImageSize" />
-                                    <Binding Source="{Binding GridItemWidth}" />
+                                    <Binding ElementName="controlss" Path="GridItemWidth" />
                                 </MultiBinding>
                             </Border.Height>
                             <Image

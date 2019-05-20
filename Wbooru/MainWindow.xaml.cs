@@ -20,6 +20,7 @@ using Wbooru.Settings;
 using Wbooru.Utils.Resource;
 using Wbooru.Network;
 using System.Windows.Media.Animation;
+using Wbooru.UI.Controls;
 
 namespace Wbooru
 {
@@ -30,7 +31,14 @@ namespace Wbooru
     /// </summary>
     public partial class GalleryWindow : Window
     {
-        public GalleryItemUIElementWrapper ItemCollectionWrapper { get; private set; } = new GalleryItemUIElementWrapper();
+        public GalleryItemUIElementWrapper ItemCollectionWrapper
+        {
+            get { return (GalleryItemUIElementWrapper)GetValue(ItemCollectionWrapperProperty); }
+            set { SetValue(ItemCollectionWrapperProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemCollectionWrapperProperty =
+            DependencyProperty.Register("ItemCollectionWrapper", typeof(GalleryItemUIElementWrapper), typeof(GalleryWindow), new PropertyMetadata(new GalleryItemUIElementWrapper()));
 
         public Gallery CurrentGallery
         {
@@ -50,6 +58,11 @@ namespace Wbooru
             InitializeComponent();
 
             DataContext = this;
+
+            GridViewer.SetBinding(GalleryGridView.GalleryItemsSourceProperty, new Binding() {
+                Source=this,
+                Path= new PropertyPath("ItemCollectionWrapper")
+            });
 
             try
             {
