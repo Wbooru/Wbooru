@@ -21,6 +21,7 @@ using Wbooru.Utils.Resource;
 using Wbooru.Network;
 using System.Windows.Media.Animation;
 using Wbooru.UI.Controls;
+using Wbooru.Utils;
 
 namespace Wbooru
 {
@@ -53,18 +54,13 @@ namespace Wbooru
         public ImageResourceManager Resource { get; private set; }
         public ImageFetchDownloadSchedule ImageDownloader { get; private set; }
 
+        private IEnumerable<GalleryItem> CurrentItems { get; set; }
+
         public GalleryWindow()
         {
             InitializeComponent();
 
             DataContext = this;
-
-            /*
-            GridViewer.SetBinding(GalleryGridView.GalleryItemsSourceProperty, new Binding() {
-                Source=this,
-                Path= new PropertyPath("ItemCollectionWrapper")
-            });
-            */
 
             try
             {
@@ -86,16 +82,8 @@ namespace Wbooru
         {
             ItemCollectionWrapper.Pictures.Clear();
 
+            CurrentItems = gallery.GetMainPostedImages().MakeMultiThreadable();
             CurrentGallery = gallery;
-
-            var task=Task.Run(() => {
-                var list = gallery.GetMainPostedImages().Take(Setting.GetPictureCountPerLoad).ToArray();
-
-                Dispatcher.Invoke(() => {
-                    foreach (var item in list)
-                        ItemCollectionWrapper.Pictures.Add(item);
-                });
-            });
         }
 
         #region Left Menu Show/Hide
@@ -140,6 +128,25 @@ namespace Wbooru
         private void MenuButton_MouseDown(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private async void GridViewer_RequestMoreItems(GalleryGridView _)
+        {
+            using (LoadStatusDisplayer.BeginBusy("Load more gallery items"))
+            {
+                var count = 0;
+                
+                await Dispatcher.BeginInvoke(new Action(() => count=ItemCollectionWrapper.Pictures.Count));
+
+                var list=await Task.Run(() => CurrentItems.Skip(count).Take(Setting.GetPictureCountPerLoad).ToArray());
+
+                Log.Debug($"Skip({count}) Take({Setting.GetPictureCountPerLoad})", "GridViewer_RequestMoreItems");
+
+                Dispatcher.Invoke(new Action(() => {
+                    foreach (var item in list)
+                        ItemCollectionWrapper.Pictures.Add(item);
+                }));
+            }
         }
     }
 }

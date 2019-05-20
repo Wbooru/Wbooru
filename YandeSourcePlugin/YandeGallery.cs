@@ -38,7 +38,7 @@ namespace YandeSourcePlugin
 
         public IEnumerable<GalleryItem> GetImagesInternal(IEnumerable<string> tags=null)
         {
-            int page = 0;
+            int page = 1;
 
             var base_url = $"https://yande.re/post.json?";
 
@@ -60,7 +60,6 @@ namespace YandeSourcePlugin
 
                     if (json.Count == 0)
                         break;
-
                 }
                 catch (Exception e)
                 {
@@ -70,9 +69,10 @@ namespace YandeSourcePlugin
                 foreach (var pic_info in json)
                 {
                     var item = BuildItem(pic_info);
-
                     yield return item;
                 }
+
+                page++;
             }
 
             Log<YandeGallery>.Info("there is no pic that gallery could provide.");

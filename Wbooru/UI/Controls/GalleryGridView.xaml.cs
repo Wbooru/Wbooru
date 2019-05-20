@@ -22,6 +22,8 @@ namespace Wbooru.UI.Controls
     /// </summary>
     public partial class GalleryGridView : UserControl
     {
+        public event Action<GalleryGridView> RequestMoreItems;
+
         public uint GridItemWidth
         {
             get { return (uint)GetValue(GridItemWidthProperty); }
@@ -54,6 +56,57 @@ namespace Wbooru.UI.Controls
             InitializeComponent();
 
             DataContext = this;
+
+            ListScrollViewer.ScrollChanged += ListScrollViewer_ScrollChanged;
+            ListScrollViewer.PreviewMouseLeftButtonUp += ListScrollViewer_PreviewMouseLeftButtonUp;
+            ListScrollViewer.PreviewMouseLeftButtonDown += ListScrollViewer_PreviewMouseLeftButtonDown;
+            ListScrollViewer.PreviewMouseMove += ListScrollViewer_PreviewMouseMove;
+            ListScrollViewer.MouseLeave += ListScrollViewer_MouseLeave; ;
+        }
+
+        private void ListScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            var height = (sender as ScrollViewer).ScrollableHeight;
+            var at_end = e.VerticalOffset
+                                    >= height;
+
+            if (at_end /*&& height!=0*/)
+                RequestMoreItems?.Invoke(this);
+        }
+
+        private void ListScrollViewer_MouseLeave(object sender, MouseEventArgs e)
+        {
+            is_drag = false;
+        }
+
+        private void ListScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
+
+            if (is_drag)
+            {
+                var y = e.GetPosition(this).Y;
+                var offset = prev_y - y;
+                prev_y = y;
+
+                ListScrollViewer.ScrollToVerticalOffset(ListScrollViewer.VerticalOffset + offset);
+            }
+        }
+
+        bool is_drag = false;
+        double prev_y = 0;
+
+        private void ListScrollViewer_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            is_drag = false;
+            e.Handled = true;
+        }
+
+        private void ListScrollViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            prev_y = e.GetPosition(this).Y;
+            is_drag = true;
+            e.Handled = true;
         }
     }
 }

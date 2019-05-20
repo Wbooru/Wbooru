@@ -129,6 +129,9 @@
                     Foreground="White" />
 
                 <Border Margin="15" />
+                <controls:LoadingStatusDisplayer x:Name="LoadStatusDisplayer">
+
+                </controls:LoadingStatusDisplayer>
             </StackPanel>
             <StackPanel
                 Grid.Row="0"
@@ -161,7 +164,8 @@
                 Grid.ColumnSpan="2"
                 GalleryItemsSource="{Binding ItemCollectionWrapper, ElementName=window}"
                 GridItemMarginWidth="{Binding Source={StaticResource GridItemMarginWidth}}"
-                GridItemWidth="{Binding Source={StaticResource GridItemWidth}}" />
+                GridItemWidth="{Binding Source={StaticResource GridItemWidth}}"
+                RequestMoreItems="GridViewer_RequestMoreItems" />
 
             <!--#endregion-->
         </Grid>

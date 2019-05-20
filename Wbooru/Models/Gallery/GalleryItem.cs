@@ -14,5 +14,7 @@ namespace Wbooru.Models.Gallery
         public string DownloadFileName { get; set; }
         public Size PreviewImageSize { get; set; }
         public string ID { get; set; }
+
+        public override string ToString() => $"{ID} {DownloadFileName}";
     }
 }

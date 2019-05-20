@@ -11,11 +11,26 @@ using Wbooru.Network;
 using Wbooru.Utils.Resource;
 using System.Windows;
 using YandeSourcePlugin;
+using Wbooru.Models.Gallery;
+using Wbooru.Utils;
 
 namespace Test
 {
     class Program
     {
+        static IEnumerable<int> F()
+        {
+            int i = 0;
+
+            while (true)
+            {
+                for (int x = 0; x < 20; x++)
+                {
+                    yield return i++;
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
             Container.BuildDefault();
@@ -24,15 +39,16 @@ namespace Test
             var manager = Container.Default.GetExportedValue<SchedulerManager>();
             var resource = Container.Default.GetExportedValue<ImageResourceManager>();
 
-            var result = gallery.GetMainPostedImages().FirstOrDefault() as IContainDetail;
+            var c = gallery.GetMainPostedImages().MakeMultiThreadable();
 
-            var download_link = result.GalleryDetail.DownloadableImageLinks.First().DownloadLink;
-            var name = $"{result.GalleryDetail.ID} {string.Join(" ",result.GalleryDetail.Tags)}{Path.GetExtension(download_link)}";
+            List<GalleryItem> s = new List<GalleryItem>();
 
-            var image=resource.RequestImageAsync(name, () => {
-                var downloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
-                return downloader.GetImageAsync(download_link);
-            });
+            for (int i = 0; i < 5; i++)
+            {
+                s.AddRange(Task.Run(() => c.Skip(s.Count).Take(20).ToArray()).Result);
+                s.AddRange(Task.Run(() => c.Skip(s.Count).Take(20).ToArray()).Result);
+                s.AddRange(Task.Run(() => c.Skip(s.Count).Take(20).ToArray()).Result);
+            }
         }
     }
 }

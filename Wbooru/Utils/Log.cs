@@ -17,23 +17,30 @@ namespace Wbooru
 
         public static string BuildLogMessage(string message, bool new_line, bool time, string prefix)
         {
-            sb.Clear();
-
-            if (time)
+            lock (sb)
             {
-                var t = DateTime.Now;
-                sb.AppendFormat("[{0} {1}]",t.ToShortDateString(),t.ToShortTimeString());
+                sb.Clear();
+
+                if (time)
+                {
+                    var t = DateTime.Now;
+                    sb.AppendFormat("[{0} {1}]", t.ToShortDateString(), t.ToShortTimeString());
+                }
+
+                if (!string.IsNullOrWhiteSpace(prefix))
+                    sb.AppendFormat("{0}:", prefix);
+
+                sb.AppendFormat("{0}:", message);
+
+                if (new_line)
+                    sb.AppendLine();
+
+#if DEBUG
+                //Debugger.Log(0, $"Wbooru-{prefix}", sb.ToString());
+#endif
+
+                return sb.ToString();
             }
-
-            if(!string.IsNullOrWhiteSpace(prefix))
-                sb.AppendFormat("{0}:", prefix);
-
-            sb.AppendFormat("{0}:", message);
-
-            if (new_line)
-                sb.AppendLine();
-
-            return sb.ToString();
         }
 
         internal static void Output(string message)
