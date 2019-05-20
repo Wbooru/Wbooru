@@ -8,7 +8,6 @@ using System.Windows.Controls;
 
 namespace Wbooru.UI.Panels
 {
-
     class ItemLinearContainerCalcStack
     {
         public List<UIElement> Children { get; } = new List<UIElement>();

@@ -12,8 +12,10 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Wbooru.Models.Gallery;
 using Wbooru.Network;
 using Wbooru.PluginExt;
+using Wbooru.Utils.Resource;
 
 namespace Wbooru.ValueConverters
 {
@@ -23,8 +25,15 @@ namespace Wbooru.ValueConverters
         {
             return new AsyncImageWrapper(async () =>
             {
+                var item = value as GalleryItem;
+
                 var downloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
-                var image = await downloader.GetImageAsync(value.ToString());
+                var resource = Container.Default.GetExportedValue<ImageResourceManager>();
+
+                var image = await resource.RequestImageAsync(item.DownloadFileName, () =>
+                {
+                    return downloader.GetImageAsync(item.PreviewImageDownloadLink);
+                });
 
                 using var stream = new MemoryStream();
                 image.Save(stream, image.RawFormat);

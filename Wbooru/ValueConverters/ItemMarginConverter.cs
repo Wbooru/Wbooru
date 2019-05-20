@@ -12,7 +12,7 @@ namespace Wbooru.ValueConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return $"{value},10,{value},0";
+            return $"{value},5,{value},5";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

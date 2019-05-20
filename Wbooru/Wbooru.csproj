@@ -37,6 +37,9 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
+      <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -80,6 +83,12 @@
     <Compile Include="Settings\SettingManager.cs" />
     <Compile Include="Models\Gallery\GalleryItem.cs" />
     <Compile Include="Models\Gallery\GalleryItemUIElementWrapper.cs" />
+    <Compile Include="UI\Controls\GalleryGridView.xaml.cs">
+      <DependentUpon>GalleryGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\LoadingStatusDisplayer.xaml.cs">
+      <DependentUpon>LoadingStatusDisplayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\MenuButton.xaml.cs">
       <DependentUpon>MenuButton.xaml</DependentUpon>
     </Compile>
@@ -87,8 +96,8 @@
     <Compile Include="Utils\ExceptionHelper.cs" />
     <Compile Include="Utils\IOHelper.cs" />
     <Compile Include="Utils\Log.cs" />
-    <Compile Include="Utils\Resource\ResourceManager.cs" />
-    <Compile Include="Utils\STATaskScheduler.cs" />
+    <Compile Include="Utils\ObjectPool.cs" />
+    <Compile Include="Utils\Resource\ImageResourceManager.cs" />
     <Compile Include="ValueConverters\AutoFitHeightConverter.cs" />
     <Compile Include="ValueConverters\DefaultBorderHeightConverter.cs" />
     <Compile Include="ValueConverters\ImageAsyncLoadingConverter.cs" />
@@ -109,6 +118,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignData>
+    <Page Include="UI\Controls\GalleryGridView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\LoadingStatusDisplayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\MenuButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

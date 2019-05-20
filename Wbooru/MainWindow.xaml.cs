@@ -23,12 +23,12 @@ using System.Windows.Media.Animation;
 
 namespace Wbooru
 {
-    using Logger = Log<MainWindow>;
+    using Logger = Log<GalleryWindow>;
 
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class GalleryWindow : Window
     {
         public GalleryItemUIElementWrapper ItemCollectionWrapper { get; private set; } = new GalleryItemUIElementWrapper();
 
@@ -39,17 +39,17 @@ namespace Wbooru
         }
 
         public static readonly DependencyProperty CurrentGalleryProperty =
-            DependencyProperty.Register("gallery", typeof(Gallery), typeof(MainWindow), new PropertyMetadata(null));
+            DependencyProperty.Register("gallery", typeof(Gallery), typeof(GalleryWindow), new PropertyMetadata(null));
 
         public GlobalSetting Setting { get; private set; }
         public ImageResourceManager Resource { get; private set; }
         public ImageFetchDownloadSchedule ImageDownloader { get; private set; }
 
-        public MainWindow()
+        public GalleryWindow()
         {
             InitializeComponent();
 
-            this.DataContext = this;
+            DataContext = this;
 
             try
             {
@@ -88,25 +88,8 @@ namespace Wbooru
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
             var show_sb = Resources["ShowLeftPane"] as Storyboard;
-            var hide_sb = Resources["HideLeftPane"] as Storyboard;
 
             show_sb.Begin(MainGrid);
-
-            var task=Task.Run(async () =>
-            {
-                while (true)
-                {
-                    await Task.Delay(1500);
-                    await Task.Delay(1500);
-
-                    if (LeftMenuPanel_Enter)
-                        return;
-
-                    await Dispatcher.BeginInvoke(new Action(() => hide_sb.Begin(MainGrid)));
-                    Log.Debug("Mouse have left menu over 3s,auto close left menu.");
-                    break;
-                }
-            });
         }
 
         bool LeftMenuPanel_Enter;
@@ -115,6 +98,20 @@ namespace Wbooru
         {
             LeftMenuPanel_Enter = true;
             Log.Debug("Mouse entered left menu");
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(3000);
+
+                if (LeftMenuPanel_Enter)
+                    return;
+
+                await Dispatcher.BeginInvoke(new Action(() => {
+                    var hide_sb = Resources["HideLeftPane"] as Storyboard;
+                    hide_sb.Begin(MainGrid);
+                }));
+                Log.Debug("Mouse have left menu over 3s,auto close left menu.");
+            });
         }
 
         private void LeftMenuPanel_MouseLeave(object sender, MouseEventArgs e)
@@ -124,5 +121,10 @@ namespace Wbooru
         }
 
         #endregion
+
+        private void MenuButton_MouseDown(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }
