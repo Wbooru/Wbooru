@@ -25,6 +25,8 @@ namespace YandeSourcePlugin
 
         public GlobalSetting setting;
 
+        HashSet<string> c=new HashSet<string>();
+
         [ImportingConstructor]
         public YandeGallery([Import]SettingManager setting_manager)
         {
@@ -69,6 +71,14 @@ namespace YandeSourcePlugin
                 foreach (var pic_info in json)
                 {
                     var item = BuildItem(pic_info);
+
+                    if (c.Contains(item.ID))
+                    {
+
+                    }
+
+                    c.Add(item.ID);
+
                     yield return item;
                 }
 

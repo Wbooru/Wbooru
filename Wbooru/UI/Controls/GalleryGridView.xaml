@@ -77,24 +77,28 @@
                 </ListBox.Template>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border
-                            Name="GalleryImageBorder"
-                            Width="{Binding GridItemWidth, ElementName=controlss}"
-                            Background="#3FFFFFFF">
-                            <Border.Height>
-                                <MultiBinding Converter="{StaticResource AutoFitHeightConverter}" ConverterParameter="BOARD">
-                                    <Binding Path="PreviewImageSize" />
-                                    <Binding ElementName="controlss" Path="GridItemWidth" />
-                                </MultiBinding>
-                            </Border.Height>
-                            <Image
-                                Name="GalleryImage"
-                                Width="{Binding Width, ElementName=GalleryImageBorder}"
-                                Height="{Binding Height, ElementName=GalleryImageBorder}"
-                                DataContext="{Binding Converter={StaticResource ImageAsyncLoadingConverter}}"
-                                Source="{Binding AsyncValue}" />
-                        </Border>
-                    </DataTemplate>
+                        <StackPanel>
+                            <Border
+                                Name="GalleryImageBorder"
+                                Width="{Binding GridItemWidth, ElementName=controlss}"
+                                Background="#3FFFFFFF">
+                                <Border.Height>
+                                    <MultiBinding Converter="{StaticResource AutoFitHeightConverter}" ConverterParameter="BOARD">
+                                        <Binding Path="PreviewImageSize" />
+                                        <Binding ElementName="controlss" Path="GridItemWidth" />
+                                    </MultiBinding>
+                                </Border.Height>
+                                <Image
+                                    Name="GalleryImage"
+                                    Width="{Binding Width, ElementName=GalleryImageBorder}"
+                                    Height="{Binding Height, ElementName=GalleryImageBorder}"
+                                    DataContext="{Binding Converter={StaticResource ImageAsyncLoadingConverter}}"
+                                    Source="{Binding AsyncValue}" />
+                            </Border>
+                            <TextBlock Text="{Binding ID}">
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate> 
                 </ListBox.ItemTemplate>
             </ListBox>
         </ScrollViewer>

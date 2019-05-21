@@ -32,7 +32,7 @@ namespace Wbooru.ValueConverters
 
                 var image = await resource.RequestImageAsync(item.DownloadFileName, () =>
                 {
-                    return downloader.GetImageAsync(item.PreviewImageDownloadLink);
+                    return downloader.GetImageAsync(item.PreviewImageDownloadLink).Result;
                 });
 
                 using var stream = new MemoryStream();

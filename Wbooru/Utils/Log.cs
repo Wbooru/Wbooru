@@ -5,11 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Wbooru
 {
     public static class Log
     {
+#if DEBUG
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public static extern void OutputDebugString(string message);
+#endif
+
         private static StringBuilder sb = new StringBuilder(2048);
 
         private static ConsoleColor DefaultBackgroundColor = Console.BackgroundColor;
@@ -28,16 +34,12 @@ namespace Wbooru
                 }
 
                 if (!string.IsNullOrWhiteSpace(prefix))
-                    sb.AppendFormat("{0}:", prefix);
+                    sb.AppendFormat("{0}", prefix);
 
-                sb.AppendFormat("{0}:", message);
+                sb.AppendFormat(":{0}", message);
 
                 if (new_line)
                     sb.AppendLine();
-
-#if DEBUG
-                //Debugger.Log(0, $"Wbooru-{prefix}", sb.ToString());
-#endif
 
                 return sb.ToString();
             }
@@ -45,6 +47,9 @@ namespace Wbooru
 
         internal static void Output(string message)
         {
+#if DEBUG
+            OutputDebugString(message);
+#endif
             Console.Write(message);
         }
 

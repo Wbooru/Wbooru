@@ -44,21 +44,9 @@ namespace Wbooru.Utils.Resource
             return null;
         }
 
-        public async Task<Image> RequestImageAsync(string resource_name,Func<Task<Image>> manual_request)
+        public Task<Image> RequestImageAsync(string resource_name,Func<Image> manual_request)
         {
-            if (TryGetImageFromMemoryCache(resource_name, out var res))
-                return res;
-
-            if (TryGetImageFromDownloadFolder(resource_name, out res))
-                return res;
-
-            if (await manual_request() is Image obj)
-            {
-                cache[resource_name] = obj;
-                return obj;
-            }
-
-            return null;
+            return Task.Run(()=> RequestImage(resource_name,manual_request));
         }
 
         private bool TryGetImageFromDownloadFolder(string name, out Image res)

@@ -49,6 +49,8 @@ namespace Test
                 s.AddRange(Task.Run(() => c.Skip(s.Count).Take(20).ToArray()).Result);
                 s.AddRange(Task.Run(() => c.Skip(s.Count).Take(20).ToArray()).Result);
             }
+
+            Console.ReadLine();
         }
     }
 }

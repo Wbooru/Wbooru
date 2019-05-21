@@ -48,7 +48,7 @@ namespace Wbooru
         }
 
         public static readonly DependencyProperty CurrentGalleryProperty =
-            DependencyProperty.Register("gallery", typeof(Gallery), typeof(GalleryWindow), new PropertyMetadata(null));
+            DependencyProperty.Register("CurrentGallery", typeof(Gallery), typeof(GalleryWindow), new PropertyMetadata(null));
 
         public GlobalSetting Setting { get; private set; }
         public ImageResourceManager Resource { get; private set; }
@@ -130,10 +130,15 @@ namespace Wbooru
             Close();
         }
 
+        bool is_requesting = false;
+
         private async void GridViewer_RequestMoreItems(GalleryGridView _)
         {
+
             using (LoadStatusDisplayer.BeginBusy("Load more gallery items"))
             {
+                is_requesting = true;
+
                 var count = 0;
                 
                 await Dispatcher.BeginInvoke(new Action(() => count=ItemCollectionWrapper.Pictures.Count));
@@ -146,6 +151,8 @@ namespace Wbooru
                     foreach (var item in list)
                         ItemCollectionWrapper.Pictures.Add(item);
                 }));
+
+                is_requesting = false;
             }
         }
     }
