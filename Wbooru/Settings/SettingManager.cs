@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Wbooru.Settings
 {
@@ -18,7 +19,9 @@ namespace Wbooru.Settings
 
         private bool load = false;
 
-        private SettingFileEntity entity=new SettingFileEntity();
+        SettingFileEntity entity = new SettingFileEntity();
+
+        JObject load_object;
 
         public T LoadSetting<T>() where T:SettingBase,new()
         {
@@ -29,10 +32,21 @@ namespace Wbooru.Settings
 
             if (!entity.Settings.TryGetValue(name,out var setting))
             {
-                setting = new T();
-                entity.Settings[name] = setting;
+                //if load_object contain type we need.
+                try
+                {
+                    setting = load_object[name]?.ToObject<T>();
+                    Log.Info($"{name} created from cached config file content.");
+                }
+                catch { }
 
-                Log.Info($"{name} setting object not found , created default.");
+                if (setting == null)
+                {
+                    setting = new T();
+                    Log.Info($"{name} setting object not found , created default.");
+                }
+
+                entity.Settings[name] = setting;
             }
 
             return (T)setting;
@@ -46,7 +60,7 @@ namespace Wbooru.Settings
 
                 using var reader = File.OpenText(CONFIG_FILE_PATH);
 
-                entity = JsonConvert.DeserializeObject<SettingFileEntity>(reader.ReadToEnd()) ?? entity;
+                load_object = (JObject)(((JObject)JsonConvert.DeserializeObject(reader.ReadToEnd()))["Settings"]) ?? new JObject();
 
                 foreach (var item in entity.Settings.Values)
                     item.OnAfterLoad();
@@ -54,6 +68,7 @@ namespace Wbooru.Settings
             catch (Exception e)
             {
                 Log.Error($"load settings failed:{e}");
+                load_object = new JObject();
             }
         }
 

@@ -14,7 +14,7 @@ namespace Wbooru.Kernel
     public class SchedulerManager
     {
         [ImportMany(typeof(ISchedulable))]
-        public IEnumerable<ISchedulable> Schedulers { get; set; }
+        public IEnumerable<ISchedulable> Schedulers { get; set; } = new ISchedulable[0];
 
         Thread schedule_thread;
 

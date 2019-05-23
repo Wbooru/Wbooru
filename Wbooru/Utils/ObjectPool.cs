@@ -107,12 +107,14 @@ namespace Wbooru.Utils
             var o = cache_obj.First();
             cache_obj.Remove(o);
 
+            (o as ICacheCleanable)?.OnBeforeGetClean();
             return o;
         }
 
         public static void Return(T obj)
         {
             Instance.cache_obj.Add(obj);
+            (obj as ICacheCleanable)?.OnAfterPutClean();
         }
 
         #endregion

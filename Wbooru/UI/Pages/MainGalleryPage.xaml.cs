@@ -23,14 +23,14 @@ using System.Windows.Media.Animation;
 using Wbooru.UI.Controls;
 using Wbooru.Utils;
 
-namespace Wbooru
+namespace Wbooru.UI.Pages
 {
-    using Logger = Log<GalleryWindow>;
+    using Logger = Log<MainGalleryPage>;
 
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class GalleryWindow : Window
+    public partial class MainGalleryPage : Page
     {
         public GalleryItemUIElementWrapper ItemCollectionWrapper
         {
@@ -39,7 +39,7 @@ namespace Wbooru
         }
 
         public static readonly DependencyProperty ItemCollectionWrapperProperty =
-            DependencyProperty.Register("ItemCollectionWrapper", typeof(GalleryItemUIElementWrapper), typeof(GalleryWindow), new PropertyMetadata(new GalleryItemUIElementWrapper()));
+            DependencyProperty.Register("ItemCollectionWrapper", typeof(GalleryItemUIElementWrapper), typeof(MainGalleryPage), new PropertyMetadata(new GalleryItemUIElementWrapper()));
 
         public Gallery CurrentGallery
         {
@@ -48,7 +48,7 @@ namespace Wbooru
         }
 
         public static readonly DependencyProperty CurrentGalleryProperty =
-            DependencyProperty.Register("CurrentGallery", typeof(Gallery), typeof(GalleryWindow), new PropertyMetadata(null));
+            DependencyProperty.Register("CurrentGallery", typeof(Gallery), typeof(MainGalleryPage), new PropertyMetadata(null));
 
         public GlobalSetting Setting { get; private set; }
         public ImageResourceManager Resource { get; private set; }
@@ -56,7 +56,7 @@ namespace Wbooru
 
         private IEnumerable<GalleryItem> CurrentItems { get; set; }
 
-        public GalleryWindow()
+        public MainGalleryPage()
         {
             InitializeComponent();
 
@@ -127,13 +127,15 @@ namespace Wbooru
 
         private void MenuButton_MouseDown(object sender, RoutedEventArgs e)
         {
-            Close();
+
         }
 
         bool is_requesting = false;
 
         private async void GridViewer_RequestMoreItems(GalleryGridView _)
         {
+            if (is_requesting)
+                return;
 
             using (LoadStatusDisplayer.BeginBusy("Load more gallery items"))
             {

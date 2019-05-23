@@ -35,10 +35,41 @@
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="RenderTransform">
                             <Setter.Value>
-                                <TranslateTransform />
+                                <TransformGroup>
+                                    <TranslateTransform />
+                                    <ScaleTransform />
+                                </TransformGroup>
                             </Setter.Value>
                         </Setter>
                         <Style.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                            To="1.1"
+                                            Duration="0:0:0.5" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                            To="1.1"
+                                            Duration="0:0:0.5" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                            To="1"
+                                            Duration="0:0:0.5" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                            To="1"
+                                            Duration="0:0:0.5" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
                             <EventTrigger RoutedEvent="FrameworkElement.Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -77,7 +108,7 @@
                 </ListBox.Template>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel>
+                        <StackPanel MouseLeftButtonDown="StackPanel_MouseLeftButtonDown">
                             <Border
                                 Name="GalleryImageBorder"
                                 Width="{Binding GridItemWidth, ElementName=controlss}"
@@ -95,10 +126,8 @@
                                     DataContext="{Binding Converter={StaticResource ImageAsyncLoadingConverter}}"
                                     Source="{Binding AsyncValue}" />
                             </Border>
-                            <TextBlock Text="{Binding ID}">
-                            </TextBlock>
                         </StackPanel>
-                    </DataTemplate> 
+                    </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
         </ScrollViewer>

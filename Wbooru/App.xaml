@@ -1,6 +1,30 @@
 ﻿<Application
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Wbooru"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Gallery="clr-namespace:Wbooru.Models.Gallery" mc:Ignorable="d" x:Class="Wbooru.App"
-             StartupUri="MainWindow.xaml"/>
+    x:Class="Wbooru.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Gallery="clr-namespace:Wbooru.Models.Gallery"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Wbooru"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    StartupUri="UI/MainWindow.xaml"
+    mc:Ignorable="d">
+
+    <Application.Resources>
+        <SolidColorBrush x:Key="BoardColor" Color="#FF1D2031" />
+        <SolidColorBrush x:Key="ContentBackgroundColor" Color="#FF23283C" />
+        <system:UInt32 x:Key="BoardHeaderHeight">40</system:UInt32>
+
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <Style TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+    </Application.Resources>
+
+</Application>

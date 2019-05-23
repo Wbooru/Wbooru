@@ -16,14 +16,26 @@
                 <Setter Property="FontFamily" Value="Segoe UI Symbol" />
             </Style>
         </Button.Resources>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel
+            Margin="{Binding ContentMargin}"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
             <Label
-                Margin="40,2,10,2"
+                Margin="0,0,10,0"
+                VerticalContentAlignment="Center"
                 Content="{Binding Icon}"
                 FontFamily="Segoe UI Symbol"
                 FontSize="{Binding IconSize}">
             </Label>
-            <Label Content="{Binding Text}" FontFamily="黑体">
+            <!--
+                Margin="40,2,10,2"
+            -->
+            <Label
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                Content="{Binding Text}"
+                FontFamily="{Binding FontFamily, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                FontSize="{Binding TextSize}">
             </Label>
         </StackPanel>
     </Button>

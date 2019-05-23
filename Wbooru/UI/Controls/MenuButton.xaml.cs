@@ -35,6 +35,29 @@ namespace Wbooru.UI.Controls
             set { SetValue(IconProperty, value); }
         }
 
+        public int TextSize
+        {
+            get { return (int)GetValue(TextSizeProperty); }
+            set { SetValue(TextSizeProperty, value); }
+        }
+
+        public Thickness ContentMargin
+        {
+            get { return (Thickness)GetValue(ContentMarginProperty); }
+            set { SetValue(ContentMarginProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ContentMargin.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ContentMarginProperty =
+            DependencyProperty.Register("ContentMargin", typeof(Thickness), typeof(MenuButton), 
+                new PropertyMetadata(new Thickness(40,2,10,2)));
+
+
+
+        // Using a DependencyProperty as the backing store for TextSize.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TextSizeProperty =
+            DependencyProperty.Register("TextSize", typeof(int), typeof(MenuButton), new PropertyMetadata(12));
+
         public static readonly DependencyProperty IconProperty =
             DependencyProperty.Register("Icon", typeof(string), typeof(MenuButton), new PropertyMetadata(string.Empty));
 

@@ -61,7 +61,7 @@ namespace Wbooru.UI.Controls
             ListScrollViewer.PreviewMouseLeftButtonUp += ListScrollViewer_PreviewMouseLeftButtonUp;
             ListScrollViewer.PreviewMouseLeftButtonDown += ListScrollViewer_PreviewMouseLeftButtonDown;
             ListScrollViewer.PreviewMouseMove += ListScrollViewer_PreviewMouseMove;
-            ListScrollViewer.MouseLeave += ListScrollViewer_MouseLeave; ;
+            ListScrollViewer.MouseLeave += ListScrollViewer_MouseLeave;
         }
 
         private void ListScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -107,6 +107,11 @@ namespace Wbooru.UI.Controls
             prev_y = e.GetPosition(this).Y;
             is_drag = true;
             e.Handled = true;
+        }
+
+        private void StackPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

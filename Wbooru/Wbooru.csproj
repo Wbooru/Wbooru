@@ -92,7 +92,15 @@
     <Compile Include="UI\Controls\MenuButton.xaml.cs">
       <DependentUpon>MenuButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Pages\PictureDetailViewPage.xaml.cs">
+      <DependentUpon>PictureDetailViewPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Panels\GridPanel.cs" />
+    <Compile Include="Utils\AsyncImageWrapper.cs" />
+    <Compile Include="Utils\ICacheCleanable.cs" />
     <Compile Include="Utils\IEnumerableMultiThreadable.cs" />
     <Compile Include="Utils\ExceptionHelper.cs" />
     <Compile Include="Utils\IOHelper.cs" />
@@ -100,10 +108,17 @@
     <Compile Include="Utils\ObjectPool.cs" />
     <Compile Include="Utils\Resource\ImageResourceManager.cs" />
     <Compile Include="ValueConverters\AutoFitHeightConverter.cs" />
+    <Compile Include="ValueConverters\AutoPickImageConverter.cs" />
+    <Compile Include="ValueConverters\CustomBindableMarginConverter.cs" />
     <Compile Include="ValueConverters\DefaultBorderHeightConverter.cs" />
+    <Compile Include="ValueConverters\FormatDownloadDescriptionConverter.cs" />
     <Compile Include="ValueConverters\ImageAsyncLoadingConverter.cs" />
     <Compile Include="ValueConverters\ItemMarginConverter.cs" />
-    <Page Include="MainWindow.xaml">
+    <DesignData Include="SampleData\GalleryImageDetailSampleData.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </DesignData>
+    <Page Include="UI\Pages\MainGalleryPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -111,14 +126,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="UI\Pages\MainGalleryPage.xaml.cs">
+      <DependentUpon>MainGalleryPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <DesignData Include="SampleData\GalleryItemUIElementWrapperSampleData2.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </DesignData>
     <Page Include="UI\Controls\GalleryGridView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -128,6 +139,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\MenuButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Pages\PictureDetailViewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -159,6 +178,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SampleData\SampleDataSource\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
