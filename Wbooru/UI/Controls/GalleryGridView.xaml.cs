@@ -23,6 +23,7 @@ namespace Wbooru.UI.Controls
     public partial class GalleryGridView : UserControl
     {
         public event Action<GalleryGridView> RequestMoreItems;
+        public event Action<GalleryItem> ClickItemEvent;
 
         public uint GridItemWidth
         {
@@ -56,12 +57,6 @@ namespace Wbooru.UI.Controls
             InitializeComponent();
 
             DataContext = this;
-
-            ListScrollViewer.ScrollChanged += ListScrollViewer_ScrollChanged;
-            ListScrollViewer.PreviewMouseLeftButtonUp += ListScrollViewer_PreviewMouseLeftButtonUp;
-            ListScrollViewer.PreviewMouseLeftButtonDown += ListScrollViewer_PreviewMouseLeftButtonDown;
-            ListScrollViewer.PreviewMouseMove += ListScrollViewer_PreviewMouseMove;
-            ListScrollViewer.MouseLeave += ListScrollViewer_MouseLeave;
         }
 
         private void ListScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -76,14 +71,17 @@ namespace Wbooru.UI.Controls
 
         private void ListScrollViewer_MouseLeave(object sender, MouseEventArgs e)
         {
-            is_drag = false;
+            drag_action_state = DragActionState.Idle;
         }
 
         private void ListScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             e.Handled = true;
 
-            if (is_drag)
+            if (drag_action_state==DragActionState.ReadyDrag)
+                drag_action_state = DragActionState.Dragging;
+
+            if (DragActionState.Dragging==drag_action_state)
             {
                 var y = e.GetPosition(this).Y;
                 var offset = prev_y - y;
@@ -93,25 +91,36 @@ namespace Wbooru.UI.Controls
             }
         }
 
-        bool is_drag = false;
+        DragActionState drag_action_state = DragActionState.Idle;
+
+        enum DragActionState
+        {
+            Idle,
+            ReadyDrag,
+            Dragging
+        }
+
         double prev_y = 0;
 
-        private void ListScrollViewer_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void ListScrollViewer_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            is_drag = false;
-            e.Handled = true;
+            drag_action_state = DragActionState.Idle;
         }
 
         private void ListScrollViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             prev_y = e.GetPosition(this).Y;
-            is_drag = true;
-            e.Handled = true;
+            drag_action_state = DragActionState.ReadyDrag;
+            //e.Handled = true;
         }
 
-        private void StackPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void StackPanel_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (drag_action_state != DragActionState.ReadyDrag || !(((FrameworkElement)sender).DataContext is GalleryItem item))
+                return;
 
+            Log.Debug($"click item {item.ID}");
+            ClickItemEvent?.Invoke(item);
         }
     }
 }

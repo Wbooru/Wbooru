@@ -25,12 +25,18 @@
             Grid.RowSpan="2"
             Grid.ColumnSpan="2"
             Background="#FF23283C"
+            MouseLeave="ListScrollViewer_MouseLeave"
+            MouseUp="ListScrollViewer_MouseUp"
+            PreviewMouseLeftButtonDown="ListScrollViewer_PreviewMouseLeftButtonDown"
+            PreviewMouseMove="ListScrollViewer_PreviewMouseMove"
+            ScrollChanged="ListScrollViewer_ScrollChanged"
             VerticalScrollBarVisibility="Hidden">
             <ListBox
                 x:Name="GalleryList"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                ItemsSource="{Binding GalleryItemsSource.Pictures}">
+                ItemsSource="{Binding GalleryItemsSource.Pictures}"
+                SelectionMode="Single">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="RenderTransform">
@@ -77,7 +83,7 @@
                 </ListBox.Template>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel MouseLeftButtonDown="StackPanel_MouseLeftButtonDown">
+                        <StackPanel PreviewMouseUp="StackPanel_PreviewMouseUp">
                             <Border
                                 Name="GalleryImageBorder"
                                 Width="{Binding GridItemWidth, ElementName=controlss}"
