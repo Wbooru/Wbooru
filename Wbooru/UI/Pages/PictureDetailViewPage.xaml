@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Wbooru.UI.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:valueconverters="clr-namespace:Wbooru.ValueConverters"
     Name="ViewPage"
     Title="PictureDetailViewPage"
@@ -15,22 +16,24 @@
 
     <Page.Resources>
         <valueconverters:AutoPickImageConverter x:Key="AutoPickImageConverter" />
+        <valueconverters:CustomBindableMarginConverter x:Key="CustomBindableMarginConverter" />
         <valueconverters:FormatDownloadDescriptionConverter x:Key="FormatDownloadDescriptionConverter" />
     </Page.Resources>
 
-    <Grid Name="MainGrid">
+    <Grid Name="MainGrid" d:DataContext="{d:DesignData /SampleData/GalleryImageDetailSampleData.xaml}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding Width, ElementName=ViewPage}" />
-            <ColumnDefinition Width="{Binding Width, ElementName=ViewPage}" />
+            <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
+            <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
+            <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
         </Grid.ColumnDefinitions>
 
         <Grid
             Name="ImagePart"
-            Grid.Column="1"
+            Grid.Column="0"
             Background="{StaticResource ContentBackgroundColor}">
             <Image
                 Panel.ZIndex="1"
-                DataContext="{Binding PictureDetailInfo, Converter={StaticResource AutoPickImageConverter}}"
+                DataContext="{Binding PictureDetailInfo, Converter={StaticResource AutoPickImageConverter}, IsAsync=True}"
                 Source="{Binding AsyncValue}" />
             <Grid Panel.ZIndex="2">
                 <Grid.RowDefinitions>
@@ -38,7 +41,23 @@
                     <RowDefinition />
                     <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}" />
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Background="{StaticResource BoardColor}" />
+                <StackPanel
+                    Grid.Row="0"
+                    Background="{StaticResource BoardColor}"
+                    Orientation="Horizontal">
+                    <controls:MenuButton
+                        ButtonBase.Click="MenuButton_Click"
+                        ContentMargin="5,0,15,0"
+                        Icon=""
+                        Text="返回">
+                    </controls:MenuButton>
+                    <TextBlock
+                        Margin="15,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="18"
+                        Foreground="White"
+                        Text="{Binding PictureDetailInfo.ID, StringFormat=#{0}}" />
+                </StackPanel>
 
                 <Grid Grid.Row="2" Background="{StaticResource BoardColor}">
                     <Grid.ColumnDefinitions>
@@ -93,6 +112,25 @@
                         </Grid>
                     </Button>
                     <Button Grid.Column="4" Grid.ColumnSpan="1">
+                        <Button.Triggers>
+                            <EventTrigger RoutedEvent="Button.Click">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimation
+                                            DecelerationRatio="0.9"
+                                            Storyboard.Target="{Binding ElementName=MainGrid}"
+                                            Storyboard.TargetProperty="Margin"
+                                            Duration="0:0:0.4">
+                                            <ThicknessAnimation.To>
+                                                <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="-\{0\},0,0,0">
+                                                    <Binding ElementName="ViewPage" Path="ActualWidth" />
+                                                </MultiBinding>
+                                            </ThicknessAnimation.To>
+                                        </ThicknessAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Button.Triggers>
                         详细&amp;下载  &gt;
                     </Button>
                 </Grid>
@@ -100,7 +138,7 @@
         </Grid>
 
         <Grid
-            Grid.Column="0"
+            Grid.Column="1"
             d:DataContext="{d:DesignData /SampleData/GalleryImageDetailSampleData.xaml}"
             DataContext="{Binding PictureDetailInfo}">
             <Grid.RowDefinitions>
@@ -112,7 +150,27 @@
                 <controls:MenuButton
                     ContentMargin="5,0,15,0"
                     Icon=""
-                    Text="返回" />
+                    Text="返回">
+                    <controls:MenuButton.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation
+                                        DecelerationRatio="0.9"
+                                        Storyboard.Target="{Binding ElementName=MainGrid}"
+                                        Storyboard.TargetProperty="Margin"
+                                        Duration="0:0:0.4">
+                                        <ThicknessAnimation.To>
+                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="0,0,0,0">
+
+                                            </MultiBinding>
+                                        </ThicknessAnimation.To>
+                                    </ThicknessAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </controls:MenuButton.Triggers>
+                </controls:MenuButton>
             </StackPanel>
 
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -120,7 +178,27 @@
                     ContentMargin="5,0,15,0"
                     FlowDirection="RightToLeft"
                     Icon=""
-                    Text="标签" />
+                    Text="标签">
+                    <controls:MenuButton.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation
+                                        DecelerationRatio="0.9"
+                                        Storyboard.Target="{Binding ElementName=MainGrid}"
+                                        Storyboard.TargetProperty="Margin"
+                                        Duration="0:0:0.4">
+                                        <ThicknessAnimation.To>
+                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="$\{-2*\{0\}\},0,0,0">
+                                                <Binding ElementName="ViewPage" Path="ActualWidth" />
+                                            </MultiBinding>
+                                        </ThicknessAnimation.To>
+                                    </ThicknessAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </controls:MenuButton.Triggers>
+                </controls:MenuButton>
             </StackPanel>
 
             <ScrollViewer
@@ -194,6 +272,11 @@
                         X2="{Binding ActualWidth, ElementName=ViewPage}" />
 
                     <ListBox HorizontalContentAlignment="Stretch" ItemsSource="{Binding DownloadableImageLinks}">
+                        <ListBox.Template>
+                            <ControlTemplate>
+                                <ItemsPresenter />
+                            </ControlTemplate>
+                        </ListBox.Template>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -219,6 +302,7 @@
                                         </Button>
                                         <Button
                                             Name="BrowserOpenButton"
+                                            Click="BrowserOpenButton_Click"
                                             FontFamily="Segoe UI Symbol"
                                             FontSize="20">
                                             
@@ -237,6 +321,92 @@
 
                     <!--#endregion-->
                 </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid Grid.Column="2" Background="{StaticResource ContentBackgroundColor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Background="{StaticResource BoardColor}" Orientation="Horizontal">
+                <controls:MenuButton
+                    ContentMargin="5,0,15,0"
+                    Icon=""
+                    Text="返回">
+                    <controls:MenuButton.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation
+                                        DecelerationRatio="0.9"
+                                        Storyboard.Target="{Binding ElementName=MainGrid}"
+                                        Storyboard.TargetProperty="Margin"
+                                        Duration="0:0:0.4">
+                                        <ThicknessAnimation.To>
+                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="-\{0\},0,0,0">
+                                                <Binding ElementName="ViewPage" Path="ActualWidth" />
+                                            </MultiBinding>
+                                        </ThicknessAnimation.To>
+                                    </ThicknessAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </controls:MenuButton.Triggers>
+                </controls:MenuButton>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+                <ListBox
+                    HorizontalContentAlignment="Stretch"
+                    DataContext="{Binding PictureDetailInfo}"
+                    ItemsSource="{Binding Tags}">
+                    <ListBox.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter />
+                        </ControlTemplate>
+                    </ListBox.Template>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Margin="5,0,0,0"
+                                    FontSize="18"
+                                    Foreground="White"
+                                    Text="{Binding}" />
+
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Margin="0,0,5,0"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                                    <Button
+                                        Name="AddTagCollectionButton"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="16">
+                                        
+                                    </Button>
+                                    <Button
+                                        Name="AddTagFilterButton"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="16">
+                                        
+                                    </Button>
+                                    <Button
+                                        Name="SearchButton"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="16">
+                                        
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </ScrollViewer>
         </Grid>
     </Grid>

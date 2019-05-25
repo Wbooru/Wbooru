@@ -18,37 +18,12 @@ namespace Test
 {
     class Program
     {
-        static IEnumerable<int> F()
-        {
-            int i = 0;
-
-            while (true)
-            {
-                for (int x = 0; x < 20; x++)
-                {
-                    yield return i++;
-                }
-            }
-        }
-
         static void Main(string[] args)
         {
             Container.BuildDefault();
 
-            var gallery = Container.Default.GetExportedValue<Gallery>();
-            var manager = Container.Default.GetExportedValue<SchedulerManager>();
-            var resource = Container.Default.GetExportedValue<ImageResourceManager>();
-
-            var c = gallery.GetMainPostedImages().MakeMultiThreadable();
-
-            List<GalleryItem> s = new List<GalleryItem>();
-
-            for (int i = 0; i < 5; i++)
-            {
-                s.AddRange(Task.Run(() => c.Skip(s.Count).Take(20).ToArray()).Result);
-                s.AddRange(Task.Run(() => c.Skip(s.Count).Take(20).ToArray()).Result);
-                s.AddRange(Task.Run(() => c.Skip(s.Count).Take(20).ToArray()).Result);
-            }
+            var formatter = Container.Default.GetExportedValue<CalculatableFormatter>();
+            var x = formatter.FormatCalculatableString("0,40,50,0,0");
 
             Console.ReadLine();
         }

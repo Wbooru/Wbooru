@@ -57,10 +57,11 @@
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            
+
             <StackPanel>
-                <!--  For 强迫症
-                <Border Height="40" />
+                <Border Height="{Binding Source={StaticResource BoardHeaderHeight}}" />
+                <!--
+                    For 强迫症
                 -->
 
                 <controls:MenuButton
@@ -155,6 +156,7 @@
             </StackPanel>
 
             <controls:GalleryGridView
+                ClickItemEvent="GridViewer_ClickItemEvent"
                 x:Name="GridViewer"
                 Grid.Row="1"
                 Grid.ColumnSpan="2"

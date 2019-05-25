@@ -1,27 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using Wbooru.Utils;
 
 namespace Wbooru.ValueConverters
 {
     public class CustomBindableMarginConverter : IMultiValueConverter
     {
+        [Import(typeof(CalculatableFormatter))]
+        public CalculatableFormatter Formatter { get; set; }
+
+        public CustomBindableMarginConverter()
+        {
+            Container.Default.ComposeParts(this);
+        }
+
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var r = new double[4] {0,0,0,0};
+            var format = parameter.ToString().Replace("\\","");
+
+            var b = format;
 
             for (int i = 0; i < values.Length; i++)
             {
-                if (!double.TryParse(values[i]?.ToString() ?? "0", out var v))
-                    v = 0;
-
-                r[i] = v;
+                format = format.Replace($"{{{i}}}", values[i].ToString());
             }
+
+            var c = format;
+
+            format = Formatter.FormatCalculatableString(format);
+
+            var rz = format.Split(',').Select(x => string.IsNullOrWhiteSpace(x)?0:double.Parse(x)).ToArray();
+            var r = Enumerable.Range(0, 4).Select(x => x >= rz.Length ? 0 : rz[x]).ToArray();
+
+            Log<CustomBindableMarginConverter>.Debug($"{b}  -->  {c}  ->  {format}");
 
             return new Thickness(r[0], r[1], r[2], r[3]);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -14,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Galleries;
+using Wbooru.Kernel;
 using Wbooru.Models.Gallery;
 using Wbooru.Utils;
 
@@ -92,6 +94,22 @@ namespace Wbooru.UI.Pages
             Gallery = null;
             PictureInfo = null;
             PictureDetailInfo = null;
+        }
+
+        private void BrowserOpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(((FrameworkElement)sender).DataContext is DownloadableImageLink link))
+                return;
+
+            Process.Start(link.DownloadLink);
+        }
+
+        private void MenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
+            var page=navigation.NavigationPop() as PictureDetailViewPage;
+
+            ObjectPool<PictureDetailViewPage>.Return(page);
         }
     }
 }

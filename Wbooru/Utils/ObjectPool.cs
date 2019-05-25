@@ -65,7 +65,7 @@ namespace Wbooru.Utils
         #region AutoImpl
 
         private static ObjectPool<T> instance;
-        public static ObjectPool<T> Instance
+        private static ObjectPool<T> Instance
         {
             get
             {

@@ -17,7 +17,7 @@ namespace Wbooru.ValueConverters
             if ((!(value is GalleryImageDetail detail)) || (!detail.DownloadableImageLinks.Any()))
                 return null;
 
-            var pick_download = detail.DownloadableImageLinks.OrderByDescending(x => x.Size).FirstOrDefault();
+            var pick_download = detail.DownloadableImageLinks.OrderByDescending(x => x.FileLength).FirstOrDefault();
 
             return new AsyncImageWrapper(pick_download.DownloadLink, pick_download.DownloadLink);
         }

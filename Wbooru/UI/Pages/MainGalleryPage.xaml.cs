@@ -22,6 +22,7 @@ using Wbooru.Network;
 using System.Windows.Media.Animation;
 using Wbooru.UI.Controls;
 using Wbooru.Utils;
+using Wbooru.Kernel;
 
 namespace Wbooru.UI.Pages
 {
@@ -156,6 +157,17 @@ namespace Wbooru.UI.Pages
 
                 is_requesting = false;
             }
+        }
+
+        private void GridViewer_ClickItemEvent(GalleryItem item)
+        {
+            var page = ObjectPool<PictureDetailViewPage>.Get();
+            page.ApplyItem(CurrentGallery, item);
+
+
+            //NavigationService.Navigate(page);
+            var navigation=Container.Default.GetExportedValue<NavigationHelper>();
+            navigation.NavigationPush(page);
         }
     }
 }
