@@ -126,7 +126,7 @@
                     Foreground="White" />
 
                 <Border Margin="15" />
-                <controls:LoadingStatusDisplayer x:Name="LoadStatusDisplayer" />
+                <controls:LoadingStatusDisplayer x:Name="LoadStatusDisplayer" VerticalContentAlignment="Center" />
             </StackPanel>
             <StackPanel
                 Grid.Row="0"

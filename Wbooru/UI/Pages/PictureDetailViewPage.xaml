@@ -104,7 +104,7 @@
                                     <Style TargetType="Label">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsMark}" Value="True">
-                                                <Setter Property="Foreground" Value="LightYellow" />
+                                                <Setter Property="Foreground" Value="LightGreen" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsMark}" Value="False">
                                                 <Setter Property="Foreground" Value="White" />

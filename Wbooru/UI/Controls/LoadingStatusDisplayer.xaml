@@ -5,10 +5,165 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Wbooru.UI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
     mc:Ignorable="d">
-    <Grid>
 
-    </Grid>
+    <UserControl.Resources>
+        <system:Double x:Key="Radius">2</system:Double>
+
+        <Storyboard x:Key="Trans" RepeatBehavior="Forever">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(Ellipse.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="90">
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="0:0:1.6" Value="270">
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="0:0:1.8" Value="450">
+                </EasingDoubleKeyFrame>
+                <LinearDoubleKeyFrame KeyTime="0:0:3.2" Value="630" />
+                <EasingDoubleKeyFrame KeyTime="0:0:3.4" Value="720">
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Key="ShowAction">
+            <DoubleAnimation
+                DecelerationRatio="0.9"
+                Storyboard.Target="{Binding ElementName=MainPanel}"
+                Storyboard.TargetProperty="Opacity"
+                To="1"
+                Duration="0:0:0.4">
+
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Key="HideAction">
+            <DoubleAnimation
+                DecelerationRatio="0.9"
+                Storyboard.Target="{Binding ElementName=MainPanel}"
+                Storyboard.TargetProperty="Opacity"
+                To="0"
+                Duration="0:0:0.4">
+
+            </DoubleAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <StackPanel Name="MainPanel" Orientation="Horizontal">
+        <Canvas>
+            <TextBlock
+                Canvas.Left="-3"
+                Canvas.Top="-6"
+                FontSize="10"
+                Foreground="White"
+                Text="{Binding TaskCount}">
+            </TextBlock>
+
+            <Ellipse
+                x:Name="el"
+                Canvas.Left="3"
+                Canvas.Top="4"
+                Width="{DynamicResource Radius}"
+                Height="{DynamicResource Radius}"
+                Fill="White">
+                <Ellipse.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform CenterX="-3" CenterY="-4" />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse
+                x:Name="el2"
+                Canvas.Left="3"
+                Canvas.Top="4"
+                Width="{DynamicResource Radius}"
+                Height="{DynamicResource Radius}"
+                Fill="White">
+                <Ellipse.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform CenterX="-3" CenterY="-4" />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse
+                x:Name="el3"
+                Canvas.Left="3"
+                Canvas.Top="4"
+                Width="{DynamicResource Radius}"
+                Height="{DynamicResource Radius}"
+                Fill="White">
+                <Ellipse.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform CenterX="-3" CenterY="-4" />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse
+                x:Name="el4"
+                Canvas.Left="3"
+                Canvas.Top="4"
+                Width="{DynamicResource Radius}"
+                Height="{DynamicResource Radius}"
+                Fill="White">
+                <Ellipse.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform CenterX="-3" CenterY="-4" />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse
+                x:Name="el5"
+                Canvas.Left="3"
+                Canvas.Top="4"
+                Width="{DynamicResource Radius}"
+                Height="{DynamicResource Radius}"
+                Fill="White">
+                <Ellipse.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform CenterX="-3" CenterY="-4" />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse
+                x:Name="el6"
+                Canvas.Left="3"
+                Canvas.Top="4"
+                Width="{DynamicResource Radius}"
+                Height="{DynamicResource Radius}"
+                Fill="White">
+                <Ellipse.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform />
+                        <SkewTransform />
+                        <RotateTransform CenterX="-3" CenterY="-4" />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+        </Canvas>
+
+        <TextBlock
+            Margin="15,0,0,0"
+            VerticalAlignment="Center"
+            Foreground="White"
+            Text="{Binding Description}">
+
+        </TextBlock>
+    </StackPanel>
+
 </UserControl>
