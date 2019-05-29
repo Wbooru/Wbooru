@@ -9,7 +9,7 @@ namespace Wbooru.Settings
     public class GlobalSetting : SettingBase
     {
         public string DownloadPath { get; set; } = "./Download";
-        public int LoadingImageThread { get; set; } = 3;
+        public int LoadingImageThread { get; set; } = 2;
         public int GetPictureCountPerLoad { get; set; } = 20;
     }
 }

@@ -101,6 +101,7 @@ namespace Wbooru.UI.Pages
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
 
             source = new CancellationTokenSource();
+            MarkButton.IsEnabled = false;
 
             var current=Task.Run(() => {
                 var visit = new VisitRecord()
@@ -123,6 +124,7 @@ namespace Wbooru.UI.Pages
 
                 Dispatcher.Invoke(() => {
                     IsVoted = x;
+                    MarkButton.IsEnabled = true;
                     PictureDetailInfo = detail; });
             }, source.Token);
         }

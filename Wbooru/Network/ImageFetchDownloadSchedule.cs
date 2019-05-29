@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Wbooru.Network
 
         public bool IsAsyncSchedule => false;
 
-        private Queue<Task<Image>> tasks_waiting_queue=new Queue<Task<Image>>();
+        private List<Task<Image>> tasks_waiting_queue=new List<Task<Image>>();
         private HashSet<Task<Image>> tasks_running_queue=new HashSet<Task<Image>>();
 
         private GlobalSetting setting;
@@ -33,7 +34,10 @@ namespace Wbooru.Network
         {
             var task = new Task<Image>(OnDownloadTaskStart, download_path);
 
-            tasks_waiting_queue.Enqueue(task);
+            lock (tasks_waiting_queue)
+            {
+                tasks_waiting_queue.Insert(0, task);
+            }
 
             return task;
         }
@@ -46,7 +50,13 @@ namespace Wbooru.Network
 
             for (int i = 0; (i < add_count) && tasks_waiting_queue.Count > 0 ; i++)
             {
-                var task = tasks_waiting_queue.Dequeue();
+                Task<Image> task;
+
+                lock (tasks_waiting_queue)
+                {
+                    task = tasks_waiting_queue.First();
+                    tasks_waiting_queue.Remove(task);
+                }
 
                 task.Start();
 

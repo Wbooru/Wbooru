@@ -26,7 +26,6 @@ using Wbooru.Kernel;
 
 namespace Wbooru.UI.Pages
 {
-    using static Wbooru.UI.Controls.Toast;
     using Logger = Log<MainGalleryPage>;
 
     /// <summary>
@@ -172,7 +171,7 @@ namespace Wbooru.UI.Pages
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Container.Default.GetExportedValue<Toast>().ShowMessage("00000001",MessageType.Notify,2000);
+
         }
     }
 }
