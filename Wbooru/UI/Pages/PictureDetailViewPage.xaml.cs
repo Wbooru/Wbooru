@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,7 @@ using System.Windows.Shapes;
 using Wbooru.Galleries;
 using Wbooru.Kernel;
 using Wbooru.Models.Gallery;
+using Wbooru.Persistence;
 using Wbooru.Utils;
 
 namespace Wbooru.UI.Pages
@@ -50,13 +52,35 @@ namespace Wbooru.UI.Pages
             set { SetValue(PictureDetailInfoProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for PictureDetailInfo.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PictureDetailInfoProperty =
             DependencyProperty.Register("PictureDetailInfo", typeof(GalleryImageDetail), typeof(PictureDetailViewPage), new PropertyMetadata(null));
+
+        public bool IsMark
+        {
+            get { return (bool)GetValue(IsMarkProperty); }
+            set { SetValue(IsMarkProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsMarkProperty =
+            DependencyProperty.Register("IsMark", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
+
+        public bool IsVoted
+        {
+            get { return (bool)GetValue(IsVotedProperty); }
+            set { SetValue(IsVotedProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsVotedProperty =
+            DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
+
+        [Import(typeof(LocalDBContext))]
+        public LocalDBContext DB { get; set; }
 
         public PictureDetailViewPage()
         {
             InitializeComponent();
+
+            Container.Default.ComposeParts(this);
 
             MainGrid.DataContext = this;
         }
@@ -79,8 +103,27 @@ namespace Wbooru.UI.Pages
             source = new CancellationTokenSource();
 
             var current=Task.Run(() => {
+                var visit = new VisitRecord()
+                {
+                    GalleryID = item.ID,
+                    GalleryName = gallery.GalleryName,
+                    LastVisitTime = DateTime.Now
+                };
+
+                var visit_entity=DB.VisitRecords.FirstOrDefault(x=>x.GalleryID == item.ID && x.GalleryName==gallery.GalleryName);
+                if (visit_entity == null)
+                    DB.VisitRecords.Add(visit);
+                else
+                    DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
+
+                DB.SaveChanges();
+
+                var x=DB.ItemMarks.Where(x => x.GalleryName == gallery.GalleryName && x.MarkGalleryID == item.ID).Any();
                 var detail=gallery.GetImageDetial(item);
-                Dispatcher.Invoke(() => PictureDetailInfo = detail);
+
+                Dispatcher.Invoke(() => {
+                    IsVoted = x;
+                    PictureDetailInfo = detail; });
             }, source.Token);
         }
 
@@ -110,6 +153,39 @@ namespace Wbooru.UI.Pages
             var page=navigation.NavigationPop() as PictureDetailViewPage;
 
             ObjectPool<PictureDetailViewPage>.Return(page);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MarkButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsMark)
+            {
+                DB.ItemMarks.Add(new GalleryItemMark()
+                {
+                    MarkGalleryID = PictureInfo.ID,
+                    GalleryName = Gallery.GalleryName,
+                    Time = DateTime.Now
+                });
+
+                DB.SaveChanges();
+                IsMark = true;
+            }
+            else
+            {
+                var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryName == Gallery.GalleryName && x.MarkGalleryID == PictureInfo.ID);
+                DB.ItemMarks.Remove(x);
+                IsMark = false;
+            }
+        }
+
+        private void VoteButton_Click(object sender, RoutedEventArgs e)
+        {
+            //todo
+            IsVoted = true;
         }
     }
 }

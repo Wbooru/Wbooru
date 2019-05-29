@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Kernel;
 using Wbooru.UI.Pages;
+using static Wbooru.UI.Controls.Toast;
 
 namespace Wbooru.UI
 {
@@ -28,6 +29,7 @@ namespace Wbooru.UI
             InitializeComponent();
 
             Container.Default.ComposeExportedValue(WindowFrame);
+            Container.Default.ComposeExportedValue(MainToast);
 
             var navigation = Container.Default.GetExportedValue<NavigationHelper>();
             navigation.NavigationPush(new MainGalleryPage());

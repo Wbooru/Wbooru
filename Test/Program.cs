@@ -22,8 +22,9 @@ namespace Test
         {
             Container.BuildDefault();
 
-            var formatter = Container.Default.GetExportedValue<CalculatableFormatter>();
-            var x = formatter.FormatCalculatableString("0,40,50,0,0");
+            DB db = new DB();
+
+            var data = db.Datas.FirstOrDefault();
 
             Console.ReadLine();
         }

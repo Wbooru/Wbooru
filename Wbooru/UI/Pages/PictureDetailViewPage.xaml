@@ -17,6 +17,7 @@
     <Page.Resources>
         <valueconverters:AutoPickImageConverter x:Key="AutoPickImageConverter" />
         <valueconverters:CustomBindableMarginConverter x:Key="CustomBindableMarginConverter" />
+        <valueconverters:GalleryFeatureContainConverter x:Key="GalleryFeatureContainConverter" />
         <valueconverters:FormatDownloadDescriptionConverter x:Key="FormatDownloadDescriptionConverter" />
     </Page.Resources>
 
@@ -49,8 +50,7 @@
                         ButtonBase.Click="MenuButton_Click"
                         ContentMargin="5,0,15,0"
                         Icon=""
-                        Text="返回">
-                    </controls:MenuButton>
+                        Text="返回" />
                     <TextBlock
                         Margin="15,0,0,0"
                         VerticalAlignment="Center"
@@ -90,16 +90,28 @@
                         </Grid>
                     </Button>
 
-                    <Button Grid.Column="1">
+                    <Button
+                        Name="MarkButton"
+                        Grid.Column="1"
+                        Click="MarkButton_Click">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Label
-                                VerticalContentAlignment="Center"
-                                FontFamily="Segoe UI Symbol"
-                                Foreground="White">
+                            <Label VerticalContentAlignment="Center" FontFamily="Segoe UI Symbol">
+                                <Label.Style>
+                                    <Style TargetType="Label">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMark}" Value="True">
+                                                <Setter Property="Foreground" Value="LightYellow" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMark}" Value="False">
+                                                <Setter Property="Foreground" Value="White" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Label.Style>
                                 
                             </Label>
                             <Label
@@ -108,6 +120,40 @@
                                 FontFamily="黑体"
                                 Foreground="White">
                                 收藏
+                            </Label>
+                        </Grid>
+                    </Button>
+                    <Button
+                        Name="VoteButton"
+                        Grid.Column="2"
+                        Click="VoteButton_Click"
+                        IsEnabled="{Binding Gallery, Converter={StaticResource GalleryFeatureContainConverter}, ConverterParameter=Vote}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Label VerticalContentAlignment="Center" FontFamily="Segoe UI Symbol">
+                                <Label.Style>
+                                    <Style TargetType="Label">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsVoted}" Value="True">
+                                                <Setter Property="Foreground" Value="Pink" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsVoted}" Value="False">
+                                                <Setter Property="Foreground" Value="White" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Label.Style>
+                                
+                            </Label>
+                            <Label
+                                Grid.Column="1"
+                                VerticalContentAlignment="Center"
+                                FontFamily="黑体"
+                                Foreground="White">
+                                点赞
                             </Label>
                         </Grid>
                     </Button>
@@ -161,9 +207,7 @@
                                         Storyboard.TargetProperty="Margin"
                                         Duration="0:0:0.4">
                                         <ThicknessAnimation.To>
-                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="0,0,0,0">
-
-                                            </MultiBinding>
+                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="0,0,0,0" />
                                         </ThicknessAnimation.To>
                                     </ThicknessAnimation>
                                 </Storyboard>

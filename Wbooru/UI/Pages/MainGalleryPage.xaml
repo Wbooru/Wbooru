@@ -126,9 +126,7 @@
                     Foreground="White" />
 
                 <Border Margin="15" />
-                <controls:LoadingStatusDisplayer x:Name="LoadStatusDisplayer">
-
-                </controls:LoadingStatusDisplayer>
+                <controls:LoadingStatusDisplayer x:Name="LoadStatusDisplayer" />
             </StackPanel>
             <StackPanel
                 Grid.Row="0"
@@ -148,6 +146,7 @@
                     Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                     Background="Transparent"
                     BorderBrush="Transparent"
+                    Button.Click="Button_Click"
                     FontFamily="Segoe UI Symbol"
                     FontSize="20"
                     Foreground="White">
@@ -156,10 +155,10 @@
             </StackPanel>
 
             <controls:GalleryGridView
-                ClickItemEvent="GridViewer_ClickItemEvent"
                 x:Name="GridViewer"
                 Grid.Row="1"
                 Grid.ColumnSpan="2"
+                ClickItemEvent="GridViewer_ClickItemEvent"
                 GalleryItemsSource="{Binding ItemCollectionWrapper, ElementName=window}"
                 GridItemMarginWidth="{Binding Source={StaticResource GridItemMarginWidth}}"
                 GridItemWidth="{Binding Source={StaticResource GridItemWidth}}"

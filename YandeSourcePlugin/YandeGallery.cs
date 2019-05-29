@@ -23,6 +23,8 @@ namespace YandeSourcePlugin
     {
         public override string GalleryName => "Yande";
 
+        public override GalleryFeature SupportFeatures => GalleryFeature.Vote;
+
         public GlobalSetting setting;
 
         HashSet<string> c=new HashSet<string>();

@@ -14,6 +14,8 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,11 +39,14 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CalcBinding, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CalcBinding.2.5.1\lib\net45\CalcBinding.dll</HintPath>
-    </Reference>
     <Reference Include="DynamicExpresso.Core, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicExpresso.Core.2.3.1\lib\net461\DynamicExpresso.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.3.0-preview5-19254-05\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.3.0-preview5-19254-05\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="ExtrameFunctionCalculator, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ExtrameFunctionCalculator.1.0.1\lib\net452\ExtrameFunctionCalculator.dll</HintPath>
@@ -56,12 +61,19 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.110.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.110.0\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.110.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.110.0\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.110.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.110.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.ValueTuple, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -82,14 +94,33 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Galleries\Gallery.cs" />
+    <Compile Include="Galleries\GalleryFeature.cs" />
     <Compile Include="Galleries\IContainDetail.cs" />
     <Compile Include="Kernel\Container.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
     <Compile Include="Kernel\SchedulerManager.cs" />
+    <Compile Include="Migrations\201905270608490_InitialCreate.cs" />
+    <Compile Include="Migrations\201905270608490_InitialCreate.Designer.cs">
+      <DependentUpon>201905270608490_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905270737457_InitMigration.cs" />
+    <Compile Include="Migrations\201905270737457_InitMigration.Designer.cs">
+      <DependentUpon>201905270737457_InitMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905271056351_ModifyVisitTable.cs" />
+    <Compile Include="Migrations\201905271056351_ModifyVisitTable.Designer.cs">
+      <DependentUpon>201905271056351_ModifyVisitTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
     <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
     <Compile Include="Network\ImageFetchDownloadSchedule.cs" />
     <Compile Include="Network\RequestHelper.cs" />
+    <Compile Include="Persistence\DBContext.cs" />
+    <Compile Include="Persistence\DownloadRecord.cs" />
+    <Compile Include="Persistence\GalleryItemMark.cs" />
+    <Compile Include="Persistence\Tag.cs" />
+    <Compile Include="Persistence\VisitRecord.cs" />
     <Compile Include="PluginExt\ISchedulable.cs" />
     <Compile Include="PluginExt\IPlugin.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
@@ -106,6 +137,9 @@
     </Compile>
     <Compile Include="UI\Controls\MenuButton.xaml.cs">
       <DependentUpon>MenuButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Toast.xaml.cs">
+      <DependentUpon>Toast.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -128,12 +162,17 @@
     <Compile Include="ValueConverters\CustomBindableMarginConverter.cs" />
     <Compile Include="ValueConverters\DefaultBorderHeightConverter.cs" />
     <Compile Include="ValueConverters\FormatDownloadDescriptionConverter.cs" />
+    <Compile Include="ValueConverters\GalleryFeatureContainConverter.cs" />
     <Compile Include="ValueConverters\ImageAsyncLoadingConverter.cs" />
     <Compile Include="ValueConverters\ItemMarginConverter.cs" />
     <DesignData Include="SampleData\GalleryImageDetailSampleData.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignData>
+    <Page Include="UI\Controls\Toast.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Pages\MainGalleryPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -181,6 +220,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Migrations\201905270608490_InitialCreate.resx">
+      <DependentUpon>201905270608490_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905270737457_InitMigration.resx">
+      <DependentUpon>201905270737457_InitMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905271056351_ModifyVisitTable.resx">
+      <DependentUpon>201905271056351_ModifyVisitTable.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -198,4 +246,11 @@
     <Folder Include="SampleData\SampleDataSource\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets'))" />
+  </Target>
 </Project>
