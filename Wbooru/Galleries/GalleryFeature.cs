@@ -12,6 +12,7 @@ namespace Wbooru.Galleries
         Vote = 2,
         Mark = 4,
         Login = 8,
-        Logout = 16
+        Logout = 16,
+        TagSearch = 32
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.PluginExt;
 
@@ -19,5 +20,7 @@ namespace Wbooru.Galleries
         public abstract GalleryImageDetail GetImageDetial(GalleryItem item);
 
         public abstract IEnumerable<GalleryItem> SearchImages(IEnumerable<string> keywords);
+
+        public abstract IEnumerable<Tag> SearchTag(string keywords);
     }
 }

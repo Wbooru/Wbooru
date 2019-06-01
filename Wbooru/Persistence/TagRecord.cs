@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Models;
 
 namespace Wbooru.Persistence
 {
-    public class Tag
+    public class TagRecord
     {
+        [Key]
         public int TagID { get; set; }
 
-        public string TagName { get; set; }
+        public Tag Tag { get; set; }
         public DateTime AddTime { get; set; }
         public string FromGallery { get; set; }
     }

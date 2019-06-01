@@ -131,8 +131,10 @@
             <StackPanel
                 Grid.Row="0"
                 Grid.Column="1"
-                FlowDirection="RightToLeft"
+                HorizontalAlignment="Right"
                 Orientation="Horizontal">
+                <controls:SearchInput SearchRequest="SearchInput_SearchRequest" SearchTagGallery="{Binding CurrentGallery}">
+                </controls:SearchInput>
                 <Button
                     Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                     Background="Transparent"
@@ -141,16 +143,6 @@
                     FontSize="15"
                     Foreground="White">
                     
-                </Button>
-                <Button
-                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    Button.Click="Button_Click"
-                    FontFamily="Segoe UI Symbol"
-                    FontSize="20"
-                    Foreground="White">
-                    
                 </Button>
             </StackPanel>
 

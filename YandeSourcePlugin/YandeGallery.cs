@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wbooru;
 using Wbooru.Galleries;
+using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.Network;
 using Wbooru.PluginExt;
@@ -23,7 +24,7 @@ namespace YandeSourcePlugin
     {
         public override string GalleryName => "Yande";
 
-        public override GalleryFeature SupportFeatures => GalleryFeature.Vote;
+        public override GalleryFeature SupportFeatures => GalleryFeature.Vote|GalleryFeature.TagSearch;
 
         public GlobalSetting setting;
 
@@ -155,5 +156,22 @@ namespace YandeSourcePlugin
             => GetImagesInternal(keywords);
 
         public override IEnumerable<GalleryItem> GetMainPostedImages() => GetImagesInternal();
+
+        public override IEnumerable<Tag> SearchTag(string keywords)
+        {
+            var response = RequestHelper.CreateDeafult($"https://yande.re/tag.json?order=name&limit=0&name={keywords}");
+            using var reader = new StreamReader(response.GetResponseStream());
+
+            var arr = JsonConvert.DeserializeObject(reader.ReadLine()) as JArray;
+
+            foreach (var item in arr)
+            {
+                yield return new Tag()
+                {
+                    Name = item["name"].ToString(),
+                    Type = item["type"].ToString()
+                };
+            }
+        }
     }
 }

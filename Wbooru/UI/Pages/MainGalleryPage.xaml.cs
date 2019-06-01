@@ -173,5 +173,10 @@ namespace Wbooru.UI.Pages
         {
 
         }
+
+        private void SearchInput_SearchRequest(string obj)
+        {
+
+        }
     }
 }

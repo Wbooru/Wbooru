@@ -13,7 +13,7 @@ namespace Wbooru.Persistence
     public class LocalDBContext:DbContext
     {
         public DbSet<DownloadRecord> DownloadRecords { get; set; }
-        public DbSet<Tag> Tags { get; set; }
+        public DbSet<TagRecord> Tags { get; set; }
         public DbSet<VisitRecord> VisitRecords { get; set; }
         public DbSet<GalleryItemMark> ItemMarks { get; set; }
     }
