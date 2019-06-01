@@ -52,8 +52,8 @@
     <StackPanel Name="MainPanel" Orientation="Horizontal">
         <Canvas>
             <TextBlock
-                Canvas.Left="-3"
-                Canvas.Top="-6"
+                Canvas.Left="0"
+                Canvas.Top="1.5"
                 FontSize="10"
                 Foreground="White"
                 Text="{Binding TaskCount}">
@@ -61,8 +61,8 @@
 
             <Ellipse
                 x:Name="el"
-                Canvas.Left="3"
-                Canvas.Top="4"
+                Canvas.Left="6"
+                Canvas.Top="12"
                 Width="{DynamicResource Radius}"
                 Height="{DynamicResource Radius}"
                 Fill="White">
@@ -77,8 +77,8 @@
             </Ellipse>
             <Ellipse
                 x:Name="el2"
-                Canvas.Left="3"
-                Canvas.Top="4"
+                Canvas.Left="6"
+                Canvas.Top="12"
                 Width="{DynamicResource Radius}"
                 Height="{DynamicResource Radius}"
                 Fill="White">
@@ -93,8 +93,8 @@
             </Ellipse>
             <Ellipse
                 x:Name="el3"
-                Canvas.Left="3"
-                Canvas.Top="4"
+                Canvas.Left="6"
+                Canvas.Top="12"
                 Width="{DynamicResource Radius}"
                 Height="{DynamicResource Radius}"
                 Fill="White">
@@ -109,8 +109,8 @@
             </Ellipse>
             <Ellipse
                 x:Name="el4"
-                Canvas.Left="3"
-                Canvas.Top="4"
+                Canvas.Left="6"
+                Canvas.Top="12"
                 Width="{DynamicResource Radius}"
                 Height="{DynamicResource Radius}"
                 Fill="White">
@@ -125,8 +125,8 @@
             </Ellipse>
             <Ellipse
                 x:Name="el5"
-                Canvas.Left="3"
-                Canvas.Top="4"
+                Canvas.Left="6"
+                Canvas.Top="12"
                 Width="{DynamicResource Radius}"
                 Height="{DynamicResource Radius}"
                 Fill="White">
@@ -141,8 +141,8 @@
             </Ellipse>
             <Ellipse
                 x:Name="el6"
-                Canvas.Left="3"
-                Canvas.Top="4"
+                Canvas.Left="6"
+                Canvas.Top="12"
                 Width="{DynamicResource Radius}"
                 Height="{DynamicResource Radius}"
                 Fill="White">
