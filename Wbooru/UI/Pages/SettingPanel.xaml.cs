@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wbooru.Settings;
+using Wbooru.Settings.UIAttributes;
 
 namespace Wbooru.UI.Pages
 {
@@ -20,9 +22,21 @@ namespace Wbooru.UI.Pages
     /// </summary>
     public partial class SettingPanel : Page
     {
+        public IEnumerable<SettingBase> SupportSettings
+        {
+            get { return (IEnumerable<SettingBase>)GetValue(SupportSettingsProperty); }
+            set { SetValue(SupportSettingsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SupportSettingsProperty =
+            DependencyProperty.Register("SupportSettings", typeof(IEnumerable<SettingBase>), typeof(SettingPanel), new PropertyMetadata(Enumerable.Empty<IUIVisualizable>()));
+
         public SettingPanel()
         {
             InitializeComponent();
+
+            SupportSettings = Container.Default.GetExports<IUIVisualizable>().Select(x=>x.Value).OfType<SettingBase>();
         }
     }
 }

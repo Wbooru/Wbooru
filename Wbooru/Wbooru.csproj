@@ -142,6 +142,7 @@
     <Compile Include="Settings\UIAttributes\DirectoryPathAttribute.cs" />
     <Compile Include="Settings\UIAttributes\DescriptionAttribute.cs" />
     <Compile Include="Settings\UIAttributes\GroupAttribute.cs" />
+    <Compile Include="Settings\UIAttributes\IUIVisualizable.cs" />
     <Compile Include="Settings\UIAttributes\ListAttribute.cs" />
     <Compile Include="Settings\UIAttributes\NameAliasAttribute.cs" />
     <Compile Include="Settings\UIAttributes\RangeAttribute.cs" />
