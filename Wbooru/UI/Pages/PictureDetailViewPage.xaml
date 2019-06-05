@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:Wbooru.UI.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
-    xmlns:valueconverters="clr-namespace:Wbooru.ValueConverters"
+    xmlns:valueconverters="clr-namespace:Wbooru.UI.ValueConverters"
     Name="ViewPage"
     Title="PictureDetailViewPage"
     d:DesignHeight="450"

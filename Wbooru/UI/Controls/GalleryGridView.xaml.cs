@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Models.Gallery;
+using Wbooru.Settings;
 
 namespace Wbooru.UI.Controls
 {
@@ -57,6 +58,24 @@ namespace Wbooru.UI.Controls
             InitializeComponent();
 
             DataContext = this;
+
+            UpdateSettingForScroller();
+        }
+
+        public void UpdateSettingForScroller()
+        {
+            var scrollbar_visiable = Container.Default.GetExportedValue<SettingManager>().LoadSetting<GlobalSetting>().GalleryListScrollBarVisiable;
+
+            if (scrollbar_visiable)
+            {
+                ListScrollViewer.MouseMove -= ListScrollViewer_PreviewMouseMove;
+                ListScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+            }
+            else
+            {
+                ListScrollViewer.MouseMove += ListScrollViewer_PreviewMouseMove;
+                ListScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            }
         }
 
         private void ListScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -65,21 +84,25 @@ namespace Wbooru.UI.Controls
             var at_end = e.VerticalOffset
                                     >= height;
 
-            if (at_end /*&& height!=0*/)
+            if (at_end)
                 RequestMoreItems?.Invoke(this);
         }
 
         private void ListScrollViewer_MouseLeave(object sender, MouseEventArgs e)
         {
             drag_action_state = DragActionState.Idle;
+            Log.Debug($"{drag_action_state}", "ListScrollViewer_MouseLeave");
         }
 
         private void ListScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             e.Handled = true;
 
-            if (drag_action_state==DragActionState.ReadyDrag)
+            if (drag_action_state == DragActionState.ReadyDrag)
+            {
                 drag_action_state = DragActionState.Dragging;
+                Log.Debug($"{drag_action_state}", "ListScrollViewer_PreviewMouseMove");
+            }
 
             if (DragActionState.Dragging==drag_action_state)
             {
@@ -88,6 +111,7 @@ namespace Wbooru.UI.Controls
                 prev_y = y;
 
                 ListScrollViewer.ScrollToVerticalOffset(ListScrollViewer.VerticalOffset + offset);
+                Log.Debug($"Moving ... {drag_action_state}", "ListScrollViewer_PreviewMouseMove");
             }
         }
 
@@ -105,13 +129,15 @@ namespace Wbooru.UI.Controls
         private void ListScrollViewer_MouseUp(object sender, MouseButtonEventArgs e)
         {
             drag_action_state = DragActionState.Idle;
+            Log.Debug($"{drag_action_state}", "ListScrollViewer_MouseUp");
         }
 
         private void ListScrollViewer_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             prev_y = e.GetPosition(this).Y;
             drag_action_state = DragActionState.ReadyDrag;
-            //e.Handled = true;
+
+            Log.Debug($"{drag_action_state}", "ListScrollViewer_PreviewMouseLeftButtonDown");
         }
 
         private void StackPanel_PreviewMouseUp(object sender, MouseButtonEventArgs e)

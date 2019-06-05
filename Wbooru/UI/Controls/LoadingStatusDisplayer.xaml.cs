@@ -55,6 +55,15 @@ namespace Wbooru.UI.Controls
         public static readonly DependencyProperty DescriptionProperty =
             DependencyProperty.Register("Description", typeof(string), typeof(LoadingStatusDisplayer), new PropertyMetadata(""));
 
+        public Brush ContentForeground
+        {
+            get { return (Brush)GetValue(ContentForegroundProperty); }
+            set { SetValue(ContentForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty ContentForegroundProperty =
+            DependencyProperty.Register("ContentForeground", typeof(Brush), typeof(LoadingStatusDisplayer), new PropertyMetadata(new SolidColorBrush(Colors.White)));
+
         public LoadingTaskNotify BeginBusy(string description = null)
         {
             var t = ObjectPool<LoadingTaskNotify>.Get();
@@ -64,10 +73,14 @@ namespace Wbooru.UI.Controls
 
             reg_notifies.Add(t);
 
-            Description = reg_notifies.Last().Description;
+            Dispatcher.InvokeAsync(() =>
+            {
+                Description = reg_notifies.Last().Description;
 
-            show_action.Begin();
-            UpdateCountString();
+                show_action.Begin();
+                UpdateCountString();
+            });
+
             return t;
         }
 
@@ -81,13 +94,16 @@ namespace Wbooru.UI.Controls
             reg_notifies.Remove(t);
             ObjectPool<LoadingTaskNotify>.Return(t);
 
-            if (reg_notifies.Count==0)
+            Dispatcher.InvokeAsync(() =>
             {
-                hide_action.Begin();
-            }
+                if (reg_notifies.Count == 0)
+                {
+                    hide_action.Begin();
+                }
 
-            Description = reg_notifies.LastOrDefault()?.Description ?? Description;
-            UpdateCountString();
+                Description = reg_notifies.LastOrDefault()?.Description ?? Description;
+                UpdateCountString();
+            });
         }
 
         private async void Active()

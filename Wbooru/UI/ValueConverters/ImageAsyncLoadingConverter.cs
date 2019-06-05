@@ -18,7 +18,7 @@ using Wbooru.PluginExt;
 using Wbooru.Utils;
 using Wbooru.Utils.Resource;
 
-namespace Wbooru.ValueConverters
+namespace Wbooru.UI.ValueConverters
 {
     public class ImageAsyncLoadingConverter : IValueConverter
     {

@@ -169,7 +169,17 @@ namespace YandeSourcePlugin
                 yield return new Tag()
                 {
                     Name = item["name"].ToString(),
-                    Type = item["type"].ToString()
+                    Type = item["type"].ToString() switch
+                    {
+                        "0" => TagType.General,
+                        "1" => TagType.Artist,
+                        //"2" => TagType.Character,
+                        "3" => TagType.Copyright,
+                        "4" => TagType.Character,
+                        "5" => TagType.Circle,
+                        "6" => TagType.Faults,
+                        _ => TagType.Unknown
+                    }
                 };
             }
         }

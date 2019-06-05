@@ -8,7 +8,7 @@ using System.Windows.Data;
 using Wbooru.Models.Gallery;
 using Wbooru.Utils;
 
-namespace Wbooru.ValueConverters
+namespace Wbooru.UI.ValueConverters
 {
     public class AutoPickImageConverter : IValueConverter
     {

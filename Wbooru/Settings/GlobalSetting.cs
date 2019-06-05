@@ -11,5 +11,7 @@ namespace Wbooru.Settings
         public string DownloadPath { get; set; } = "./Download";
         public int LoadingImageThread { get; set; } = 2;
         public int GetPictureCountPerLoad { get; set; } = 20;
+
+        public bool GalleryListScrollBarVisiable { get; set; } = true;
     }
 }

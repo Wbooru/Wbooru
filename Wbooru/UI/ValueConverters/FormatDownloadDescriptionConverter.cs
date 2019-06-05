@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using Wbooru.Models.Gallery;
 
-namespace Wbooru.ValueConverters
+namespace Wbooru.UI.ValueConverters
 {
     public class FormatDownloadDescriptionConverter : IValueConverter
     {

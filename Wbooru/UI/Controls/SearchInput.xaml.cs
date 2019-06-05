@@ -177,11 +177,10 @@ namespace Wbooru.UI.Controls
         private void ComfirmTag(string tag_name)
         {
             var picking_string = picking_imcomplete_string_frag;
-            picking_imcomplete_string_frag = null;
-            query_string = null;
-            SuggestBox.IsOpen = false;
 
-            Logger.Debug($"Comfirm : {picking_string} -> {tag_name}");
+            CancelSuggest();
+
+            Logger.Debug($"Tag comfirmed : {picking_string} -> {tag_name}");
 
             Input.Text = string.Join(" ", Input.Text.Split(' ').Select(x => picking_string == x ? tag_name : x));
 
@@ -231,6 +230,8 @@ namespace Wbooru.UI.Controls
             SuggestBox.IsOpen = false;
             cached_suggests = null;
 
+            picking_imcomplete_string_frag = null;
+
             query_string = null;
         }
 
@@ -252,9 +253,10 @@ namespace Wbooru.UI.Controls
 
             update_input_time = DateTime.Now;
 
-            if (query_string != null && !input_imcomplete_words.StartsWith(query_string))
+            if (string.IsNullOrWhiteSpace(input_imcomplete_words) || (query_string != null && !input_imcomplete_words.StartsWith(query_string)))
             {
                 CancelSuggest();
+                return;
             }
 
             var cur_gallery = SearchTagGallery;
@@ -269,39 +271,44 @@ namespace Wbooru.UI.Controls
                         {
                             var time_past = DateTime.Now - update_input_time;
 
-                            if (time_past.TotalMilliseconds > 1500)
+                            if (time_past.TotalMilliseconds >= 1000)
                                 break;
                             Thread.Sleep(500);
                         }
 
                         input_imcomplete_words = picking_imcomplete_string_frag;
 
-                        Logger.Debug($"After 3s. input_imcomplete_words={input_imcomplete_words}");
+                        Logger.Debug($"Start search tag. input_imcomplete_words={input_imcomplete_words}");
 
                         if (!string.IsNullOrWhiteSpace(input_imcomplete_words))
                         {
-                            var lock_string = query_string = input_imcomplete_words;
-                            cached_suggests = cur_gallery.SearchTag(input_imcomplete_words).OrderBy(tag =>
+                            Dispatcher.Invoke(() =>
                             {
-                                return tag.Name.IndexOf(input_imcomplete_words);
-                            }).ToArray();
+                                SuggestBox.IsOpen = true;
+                                Suggests.Clear();
+                            });
 
-                            Logger.Debug($"Got {cached_suggests.Length} tags.");
+                            var lock_string = query_string = input_imcomplete_words;
+
+                            using (LoadingStatus.BeginBusy("Tag searching..."))
+                            {
+                                cached_suggests = cur_gallery.SearchTag(input_imcomplete_words).OrderBy(tag =>
+                                {
+                                    return tag.Name.IndexOf(input_imcomplete_words);
+                                }).ToArray();
+
+                                Logger.Debug($"Got {cached_suggests.Length} tags.");
+                            }
 
                             if (lock_string == query_string)
                             {
                                 Dispatcher.Invoke(() =>
                                 {
-                                    Suggests.Clear();
-
                                     foreach (var item in cached_suggests)
                                         Suggests.Add(item);
-
-                                    SuggestBox.IsOpen = true;
                                 });
                             }
                         }
-
                         suggest_query_task = null;
                     });
                 }

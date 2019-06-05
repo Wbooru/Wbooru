@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Wbooru.ValueConverters
+namespace Wbooru.UI.ValueConverters
 {
     public class ItemMarginConverter : IValueConverter
     {

@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Data;
 using Wbooru.Utils;
 
-namespace Wbooru.ValueConverters
+namespace Wbooru.UI.ValueConverters
 {
     public class CustomBindableMarginConverter : IMultiValueConverter
     {

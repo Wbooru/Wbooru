@@ -115,6 +115,10 @@
     <Compile Include="Migrations\201905301415372_ModifyTagsTable.Designer.cs">
       <DependentUpon>201905301415372_ModifyTagsTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906040045405_ModifyTable.cs" />
+    <Compile Include="Migrations\201906040045405_ModifyTable.Designer.cs">
+      <DependentUpon>201906040045405_ModifyTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
     <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
@@ -134,6 +138,16 @@
     <Compile Include="Settings\SettingManager.cs" />
     <Compile Include="Models\Gallery\GalleryItem.cs" />
     <Compile Include="Models\Gallery\GalleryItemUIElementWrapper.cs" />
+    <Compile Include="Settings\UIAttributes\ColorAttribute.cs" />
+    <Compile Include="Settings\UIAttributes\DirectoryPathAttribute.cs" />
+    <Compile Include="Settings\UIAttributes\DescriptionAttribute.cs" />
+    <Compile Include="Settings\UIAttributes\GroupAttribute.cs" />
+    <Compile Include="Settings\UIAttributes\ListAttribute.cs" />
+    <Compile Include="Settings\UIAttributes\NameAliasAttribute.cs" />
+    <Compile Include="Settings\UIAttributes\RangeAttribute.cs" />
+    <Compile Include="Settings\UIAttributes\SettingUIAttributeBase.cs" />
+    <Compile Include="Settings\UIAttributes\UIAttributeExtension.cs" />
+    <Compile Include="Settings\UIAttributes\ValueChangedNotifyAttribute.cs" />
     <Compile Include="UI\Controls\GalleryGridView.xaml.cs">
       <DependentUpon>GalleryGridView.xaml</DependentUpon>
     </Compile>
@@ -155,6 +169,9 @@
     <Compile Include="UI\Pages\PictureDetailViewPage.xaml.cs">
       <DependentUpon>PictureDetailViewPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Pages\SettingPanel.xaml.cs">
+      <DependentUpon>SettingPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Panels\GridPanel.cs" />
     <Compile Include="Utils\AsyncImageWrapper.cs" />
     <Compile Include="Utils\CalculatableFormatter.cs" />
@@ -165,14 +182,15 @@
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\ObjectPool.cs" />
     <Compile Include="Utils\Resource\ImageResourceManager.cs" />
-    <Compile Include="ValueConverters\AutoFitHeightConverter.cs" />
-    <Compile Include="ValueConverters\AutoPickImageConverter.cs" />
-    <Compile Include="ValueConverters\CustomBindableMarginConverter.cs" />
-    <Compile Include="ValueConverters\DefaultBorderHeightConverter.cs" />
-    <Compile Include="ValueConverters\FormatDownloadDescriptionConverter.cs" />
-    <Compile Include="ValueConverters\GalleryFeatureContainConverter.cs" />
-    <Compile Include="ValueConverters\ImageAsyncLoadingConverter.cs" />
-    <Compile Include="ValueConverters\ItemMarginConverter.cs" />
+    <Compile Include="UI\ValueConverters\AutoFitHeightConverter.cs" />
+    <Compile Include="UI\ValueConverters\AutoPickImageConverter.cs" />
+    <Compile Include="UI\ValueConverters\CustomBindableMarginConverter.cs" />
+    <Compile Include="UI\ValueConverters\DefaultBorderHeightConverter.cs" />
+    <Compile Include="UI\ValueConverters\FormatDownloadDescriptionConverter.cs" />
+    <Compile Include="UI\ValueConverters\GalleryFeatureContainConverter.cs" />
+    <Compile Include="UI\ValueConverters\ImageAsyncLoadingConverter.cs" />
+    <Compile Include="UI\ValueConverters\ItemMarginConverter.cs" />
+    <Compile Include="UI\ValueConverters\TagColorConverter.cs" />
     <DesignData Include="SampleData\GalleryImageDetailSampleData.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -217,6 +235,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Pages\SettingPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -243,6 +265,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905301415372_ModifyTagsTable.resx">
       <DependentUpon>201905301415372_ModifyTagsTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906040045405_ModifyTable.resx">
+      <DependentUpon>201906040045405_ModifyTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

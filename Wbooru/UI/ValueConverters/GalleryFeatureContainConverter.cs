@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using Wbooru.Galleries;
 
-namespace Wbooru.ValueConverters
+namespace Wbooru.UI.ValueConverters
 {
     public class GalleryFeatureContainConverter : IValueConverter
     {

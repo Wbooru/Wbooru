@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace Wbooru.Models
 {
+    public enum TagType
+    {
+        General,Artist, Character, Copyright,/* Ambiguous,*/Unknown,Circle,Faults
+    }
+
     public class Tag
     {
         public string Name { get; set; }
-        public string Type { get; set; }
+        public TagType Type { get; set; }
     }
 }

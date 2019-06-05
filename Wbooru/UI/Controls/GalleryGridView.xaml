@@ -2,7 +2,7 @@
     x:Class="Wbooru.UI.Controls.GalleryGridView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Converter="clr-namespace:Wbooru.ValueConverters"
+    xmlns:Converter="clr-namespace:Wbooru.UI.ValueConverters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local1="clr-namespace:Wbooru.UI.Panels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -28,9 +28,7 @@
             MouseLeave="ListScrollViewer_MouseLeave"
             MouseUp="ListScrollViewer_MouseUp"
             PreviewMouseLeftButtonDown="ListScrollViewer_PreviewMouseLeftButtonDown"
-            PreviewMouseMove="ListScrollViewer_PreviewMouseMove"
-            ScrollChanged="ListScrollViewer_ScrollChanged"
-            VerticalScrollBarVisibility="Hidden">
+            ScrollChanged="ListScrollViewer_ScrollChanged">
             <ListBox
                 x:Name="GalleryList"
                 HorizontalAlignment="Stretch"
