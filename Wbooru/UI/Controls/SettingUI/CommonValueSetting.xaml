@@ -1,0 +1,23 @@
+﻿<UserControl
+    x:Class="Wbooru.UI.Controls.SettingUI.CommonValueSetting"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Wbooru.UI.Controls.SettingUI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <StackPanel Name="MainPanel" Orientation="Horizontal">
+        <TextBlock
+            Name="NameBlock"
+            Margin="15,0,15,0"
+            Foreground="White">
+            asdasda
+        </TextBlock>
+        <TextBox
+            Name="Input"
+            Width="150"
+            Background="Transparent"
+            BorderBrush="White">
+        </TextBox>
+    </StackPanel>
+</UserControl>

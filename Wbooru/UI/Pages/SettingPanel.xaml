@@ -52,7 +52,10 @@
                     X2="{Binding ActualWidth, ElementName=MainSettingPage}" />
             </StackPanel>
 
-            <TreeView Grid.Column="1">
+            <TreeView
+                Grid.Column="1"
+                Background="Transparent"
+                BorderBrush="Transparent">
                 <TreeViewItem Header="SB">
                     <TreeViewItem Header="sbsb">
                     </TreeViewItem>

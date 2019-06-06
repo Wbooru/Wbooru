@@ -122,6 +122,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
     <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
+    <Compile Include="Models\SettingUI\PropertyInfoWrapper.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Network\ImageFetchDownloadSchedule.cs" />
     <Compile Include="Network\RequestHelper.cs" />
@@ -147,7 +148,6 @@
     <Compile Include="Settings\UIAttributes\NameAliasAttribute.cs" />
     <Compile Include="Settings\UIAttributes\RangeAttribute.cs" />
     <Compile Include="Settings\UIAttributes\SettingUIAttributeBase.cs" />
-    <Compile Include="Settings\UIAttributes\UIAttributeExtension.cs" />
     <Compile Include="Settings\UIAttributes\ValueChangedNotifyAttribute.cs" />
     <Compile Include="UI\Controls\GalleryGridView.xaml.cs">
       <DependentUpon>GalleryGridView.xaml</DependentUpon>
@@ -160,6 +160,12 @@
     </Compile>
     <Compile Include="UI\Controls\SearchInput.xaml.cs">
       <DependentUpon>SearchInput.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\SettingUI\CommonValueSetting.xaml.cs">
+      <DependentUpon>CommonValueSetting.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\SettingUI\RangeValueSetting.xaml.cs">
+      <DependentUpon>RangeValueSetting.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\Toast.xaml.cs">
       <DependentUpon>Toast.xaml</DependentUpon>
@@ -174,6 +180,7 @@
       <DependentUpon>SettingPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Panels\GridPanel.cs" />
+    <Compile Include="UI\ValueConverters\SettingUI\RangeValueConverter.cs" />
     <Compile Include="Utils\AsyncImageWrapper.cs" />
     <Compile Include="Utils\CalculatableFormatter.cs" />
     <Compile Include="Utils\ICacheCleanable.cs" />
@@ -181,6 +188,7 @@
     <Compile Include="Utils\ExceptionHelper.cs" />
     <Compile Include="Utils\IOHelper.cs" />
     <Compile Include="Utils\Log.cs" />
+    <Compile Include="Utils\MathEx.cs" />
     <Compile Include="Utils\ObjectPool.cs" />
     <Compile Include="Utils\Resource\ImageResourceManager.cs" />
     <Compile Include="UI\ValueConverters\AutoFitHeightConverter.cs" />
@@ -192,11 +200,20 @@
     <Compile Include="UI\ValueConverters\ImageAsyncLoadingConverter.cs" />
     <Compile Include="UI\ValueConverters\ItemMarginConverter.cs" />
     <Compile Include="UI\ValueConverters\TagColorConverter.cs" />
+    <Compile Include="Utils\SettingExtension.cs" />
     <DesignData Include="SampleData\GalleryImageDetailSampleData.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignData>
     <Page Include="UI\Controls\SearchInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\SettingUI\CommonValueSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\SettingUI\RangeValueSetting.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

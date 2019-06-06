@@ -13,6 +13,7 @@ using System.Windows;
 using YandeSourcePlugin;
 using Wbooru.Models.Gallery;
 using Wbooru.Utils;
+using Wbooru.UI.ValueConverters.SettingUI;
 
 namespace Test
 {
@@ -22,11 +23,6 @@ namespace Test
         {
             Container.BuildDefault();
 
-            DB db = new DB();
-
-            var data = db.Datas.FirstOrDefault();
-
-            Console.ReadLine();
         }
     }
 }
