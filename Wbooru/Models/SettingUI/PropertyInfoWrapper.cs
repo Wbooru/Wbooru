@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Settings.UIAttributes;
 
 namespace Wbooru.Models.SettingUI
 {
@@ -17,5 +18,7 @@ namespace Wbooru.Models.SettingUI
             get => PropertyInfo.GetValue(OwnerObject);
             set => PropertyInfo.SetValue(OwnerObject, value);
         }
+
+        public string DisplayPropertyName => PropertyInfo.GetCustomAttribute<NameAliasAttribute>()?.AliasName ?? PropertyInfo.Name;
     }
 }

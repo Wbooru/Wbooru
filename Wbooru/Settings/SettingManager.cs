@@ -23,33 +23,40 @@ namespace Wbooru.Settings
 
         JObject load_object;
 
-        public T LoadSetting<T>() where T:SettingBase,new()
+        public object LoadSetting(Type setting_type)
         {
+            Debug.Assert(setting_type.IsSubclassOf(typeof(SettingBase)), "param setting_type must be subclass of SettingBase");
+
             if (!load)
                 LoadSettingFile();
 
-            var name = typeof(T).Name;
+            var name = setting_type.Name;
 
-            if (!entity.Settings.TryGetValue(name,out var setting))
+            if (!entity.Settings.TryGetValue(name, out var setting))
             {
                 //if load_object contain type we need.
                 try
                 {
-                    setting = load_object[name]?.ToObject<T>();
+                    setting = load_object[name]?.ToObject(setting_type) as SettingBase;
                     Log.Info($"{name} created from cached config file content.");
                 }
                 catch { }
 
                 if (setting == null)
                 {
-                    setting = new T();
+                    setting = setting_type.Assembly.CreateInstance(setting_type.FullName) as SettingBase;
                     Log.Info($"{name} setting object not found , created default.");
                 }
 
                 entity.Settings[name] = setting;
             }
 
-            return (T)setting;
+            return setting;
+        }
+
+        public T LoadSetting<T>() where T:SettingBase
+        {
+            return LoadSetting(typeof(T)) as T;
         }
 
         public void LoadSettingFile()

@@ -84,7 +84,7 @@
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
                 <controls:MenuButton
                     Icon=""
-                    IsEnabled="False"
+                    Button.Click="MenuButton_Click_1"
                     Text="设置" />
                 <controls:MenuButton
                     Button.Click="MenuButton_MouseDown"

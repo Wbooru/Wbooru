@@ -86,6 +86,60 @@
 
         </Style>
 
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CaretBrush" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                        <Border BorderBrush="White" BorderThickness="0,0,0,1">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center" Foreground="White">:</TextBlock>
+                                <ScrollViewer
+                                    x:Name="PART_ContentHost"
+                                    Width="{TemplateBinding Width}"
+                                    VerticalAlignment="Center"
+                                    HorizontalScrollBarVisibility="Hidden"
+                                    VerticalScrollBarVisibility="Hidden" />
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="GroupBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <StackPanel>
+                            <TextBlock FontSize="18" Foreground="White">
+                                <ContentPresenter ContentSource="Header" />
+                            </TextBlock>
+
+                            <Line
+                                Margin="0,5,0,10"
+                                Stroke="White"
+                                StrokeThickness="2"
+                                X1="0"
+                                X2="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource Self}}" />
+
+                            <ContentPresenter />
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="TreeViewItem">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
     </Application.Resources>
 
 </Application>

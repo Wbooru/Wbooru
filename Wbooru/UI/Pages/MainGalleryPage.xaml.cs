@@ -128,7 +128,7 @@ namespace Wbooru.UI.Pages
 
         private void MenuButton_MouseDown(object sender, RoutedEventArgs e)
         {
-
+            Window.GetWindow(this).Close();
         }
 
         bool is_requesting = false;
@@ -164,7 +164,6 @@ namespace Wbooru.UI.Pages
             var page = ObjectPool<PictureDetailViewPage>.Get();
             page.ApplyItem(CurrentGallery, item);
 
-            //NavigationService.Navigate(page);
             var navigation=Container.Default.GetExportedValue<NavigationHelper>();
             navigation.NavigationPush(page);
         }
@@ -177,6 +176,14 @@ namespace Wbooru.UI.Pages
         private void SearchInput_SearchRequest(string obj)
         {
 
+        }
+
+        private void MenuButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            var page = new SettingPage();
+
+            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
+            navigation.NavigationPush(page);
         }
     }
 }

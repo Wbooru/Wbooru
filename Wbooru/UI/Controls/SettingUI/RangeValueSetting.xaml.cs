@@ -25,56 +25,59 @@ namespace Wbooru.UI.Controls.SettingUI
     /// <summary>
     /// RangeValueSetting.xaml 的交互逻辑
     /// </summary>
-    public partial class RangeValueSetting : UserControl , INotifyPropertyChanged
+    public partial class RangeValueSetting : UserControl
     {
-        public PropertyInfoWrapper Wrapper
-        {
-            get { return (PropertyInfoWrapper)GetValue(WrapperProperty); }
-            set { SetValue(WrapperProperty, value); }
-        }
+        public PropertyInfoWrapper Wrapper { get; }
 
-        public static readonly DependencyProperty WrapperProperty =
-            DependencyProperty.Register("Wrapper", typeof(PropertyInfoWrapper), typeof(RangeValueSetting), new PropertyMetadata(null));
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public object RefValue { get => Wrapper.ProxyValue; set { Wrapper.ProxyValue = value; OnPropertyChanged(); } }
+        // Using a DependencyProperty as the backing store for ProxyValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ProxyValueProperty =
+            DependencyProperty.Register("ProxyValue", typeof(object), typeof(RangeValueSetting), new PropertyMetadata(0,(d,e)=> {
+                (d as RangeValueSetting).Wrapper.ProxyValue = e.NewValue;
+            }));
 
         public RangeValueSetting(PropertyInfoWrapper wrapper)
         {
+            if (!(wrapper.PropertyInfo.GetCustomAttribute<RangeAttribute>() is RangeAttribute range))
+                throw new Exception("RangeValueSetting钦定设置属性必须有[Range]特性标识");
+
             InitializeComponent();
 
-            Binding binding = new Binding();
-            binding.Source = RefValue;
-            binding.Mode = BindingMode.TwoWay;
+            ValueRangeSlider.Minimum = double.Parse(range.Min);
+            ValueRangeSlider.MaxHeight = double.Parse(range.Max);
 
-            if (wrapper.PropertyInfo.GetCustomAttribute<RangeAttribute>() is RangeAttribute range)
+            //确保slider的value和设置钦定的值一样
+            if (!(wrapper.PropertyInfo.PropertyType.Name == "Single" || wrapper.PropertyInfo.PropertyType.Name == "Double"))
             {
-                binding.ConverterParameter = Wrapper;
-                binding.Converter = GetValueConverter(wrapper.PropertyInfo.PropertyType, range);
-
-                ValueRangeSlider.Minimum = double.Parse(range.Min);
-                ValueRangeSlider.MaxHeight = double.Parse(range.Max);
-
-                //确保slider的value和设置钦定的值一样
-                if (!(wrapper.PropertyInfo.PropertyType.Name == "Single" || wrapper.PropertyInfo.PropertyType.Name == "Double"))
-                {
-                    ValueRangeSlider.IsSnapToTickEnabled = true;
-                    ValueRangeSlider.TickFrequency = 1;
-                }
+                ValueRangeSlider.IsSnapToTickEnabled = true;
+                ValueRangeSlider.TickFrequency = 1;
             }
-            else
-            {
-                throw new Exception("RangeValueSetting钦定设置属性必须有[Range]特性标识");
-            }
-
-            Input.SetBinding(TextBox.TextProperty, binding);
-            ValueRangeSlider.SetBinding(Slider.ValueProperty, binding);
 
             if (wrapper.PropertyInfo.GetCustomAttribute<Settings.UIAttributes.DescriptionAttribute>() is Settings.UIAttributes.DescriptionAttribute description)
                 NameBlock.ToolTip = description.Description;
 
-            NameBlock.Name = wrapper.PropertyInfo.GetSettingPropDisplayName();
+            NameBlock.Name = wrapper.DisplayPropertyName;
+            Wrapper = wrapper;
+
+            #region Binding Chain
+
+            Binding T2SBinding = new Binding();
+            T2SBinding.Mode = BindingMode.TwoWay;
+            T2SBinding.Source = ValueRangeSlider;
+            T2SBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            T2SBinding.Path = new PropertyPath("Value");
+
+            Input.SetBinding(TextBox.TextProperty, T2SBinding);
+
+            Binding T2PBinding = new Binding();
+            T2PBinding.Mode = BindingMode.TwoWay;
+            T2PBinding.Source = ValueRangeSlider;
+            T2PBinding.Path = new PropertyPath("Value");
+
+            SetBinding(ProxyValueProperty, T2PBinding);
+
+            #endregion
+
+            SetValue(ProxyValueProperty, wrapper.ProxyValue);
         }
 
         private static IValueConverter GetValueConverter(Type prop_type, RangeAttribute range)
@@ -96,11 +99,6 @@ namespace Wbooru.UI.Controls.SettingUI
                 default:
                     throw new NotSupportedException();
             }
-        }
-
-        public void OnPropertyChanged([CallerMemberName] String prop_name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop_name));
         }
     }
 }

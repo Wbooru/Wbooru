@@ -1,0 +1,108 @@
+﻿<Page
+    x:Class="Wbooru.UI.Pages.SettingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Wbooru.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Wbooru.UI.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:settingui="clr-namespace:Wbooru.UI.Controls.SettingUI"
+    Name="MainSettingPage"
+    Title="SettingPanel"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <Grid Name="MainPanel" Background="{StaticResource ContentBackgroundColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <controls:MenuButton
+                ContentMargin="5,0,15,0"
+                Icon=""
+                Text="返回" />
+        </StackPanel>
+
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+            <controls:MenuButton
+                ContentMargin="5,0,15,0"
+                Icon=""
+                Text="保存" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="150" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Name="SettingListPanel" Margin="15">
+                <GroupBox Margin="0,0,0,15" Header="Download">
+                    <StackPanel Margin="15,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="0,0,15,0" VerticalAlignment="Center">
+                                Download Path
+                            </TextBlock>
+
+                            <TextBox
+                                Width="200"
+                                Margin="0,0,15,0"
+                                Text="asdasd" />
+
+                            <Button
+                                Width="75"
+                                BorderBrush="AliceBlue"
+                                Click="Button_Click">
+                                浏览
+                            </Button>
+
+                        </StackPanel>
+                        <CheckBox Foreground="White">
+                            asdasdasdasd
+                        </CheckBox>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Download">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="15,0,15,0" VerticalAlignment="Center">
+                            Download Path
+                        </TextBlock>
+
+                        <TextBox
+                            Width="200"
+                            Margin="0,0,15,0"
+                            Text="{Binding ProxyValue}" />
+
+                        <Button
+                            Width="75"
+                            BorderBrush="AliceBlue"
+                            Click="Button_Click">
+                            浏览
+                        </Button>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+
+            <TreeView
+                Grid.Column="1"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ItemsSource="{Binding SupportSettingWrappers}">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding SupportSettings}">
+                        <TextBlock Text="{Binding ReferenceAssembly.FullName}" />
+                        <HierarchicalDataTemplate.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock MouseDown="TextBlock_MouseDown" Text="{Binding}" />
+                            </DataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </Grid>
+    </Grid>
+</Page>

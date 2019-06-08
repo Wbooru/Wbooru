@@ -10,7 +10,8 @@
     <StackPanel Name="MainPanel" Orientation="Horizontal">
         <TextBlock
             Name="NameBlock"
-            Margin="15,0,15,0"
+            Margin="0,0,15,0"
+            VerticalAlignment="Center"
             Foreground="White">
             asdasda
         </TextBlock>
@@ -24,6 +25,7 @@
         <TextBox
             Name="Input"
             Width="150"
+            VerticalContentAlignment="Center"
             Background="Transparent"
             BorderBrush="White">
             asdasd

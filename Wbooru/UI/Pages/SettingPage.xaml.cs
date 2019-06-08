@@ -23,25 +23,39 @@ namespace Wbooru.UI.Pages
     /// <summary>
     /// SettingPanel.xaml 的交互逻辑
     /// </summary>
-    public partial class SettingPanel : Page
+    public partial class SettingPage : Page
     {
-        public IEnumerable<SettingBase> SupportSettings
+        public class GroupedSupportSettingWrapper
         {
-            get { return (IEnumerable<SettingBase>)GetValue(SupportSettingsProperty); }
-            set { SetValue(SupportSettingsProperty, value); }
+            public Assembly ReferenceAssembly { get; set; }
+            public IEnumerable<SettingBase> SupportSettings { get; set; }
         }
 
-        // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SupportSettingsProperty =
-            DependencyProperty.Register("SupportSettings", typeof(IEnumerable<SettingBase>), typeof(SettingPanel), new PropertyMetadata(Enumerable.Empty<IUIVisualizable>()));
+        public IEnumerable<GroupedSupportSettingWrapper> SupportSettingWrappers
+        {
+            get { return (IEnumerable<GroupedSupportSettingWrapper>)GetValue(SupportSettingWrappersProperty); }
+            set { SetValue(SupportSettingWrappersProperty, value); }
+        }
 
+        public static readonly DependencyProperty SupportSettingWrappersProperty =
+            DependencyProperty.Register("SupportSettingWrappers", typeof(IEnumerable<GroupedSupportSettingWrapper>), typeof(SettingPage), new PropertyMetadata(default));
 
-
-        public SettingPanel()
+        public SettingPage()
         {
             InitializeComponent();
 
-            SupportSettings = Container.Default.GetExports<IUIVisualizable>().Select(x=>x.Value).OfType<SettingBase>();
+            var setting_manager = Container.Default.GetExportedValue<SettingManager>();
+
+            SupportSettingWrappers = Container.Default.GetExports<IUIVisualizable>()
+                .Select(x=> setting_manager.LoadSetting(x.Value.GetType()))
+                .OfType<SettingBase>()
+                .GroupBy(x=>x.GetType().Assembly)
+                .Select(x=>new GroupedSupportSettingWrapper() {
+                    ReferenceAssembly=x.Key,
+                    SupportSettings=x.AsEnumerable()
+                });
+
+            MainPanel.DataContext = this;
         }
 
         private void ApplySetting(SettingBase setting)
@@ -56,14 +70,28 @@ namespace Wbooru.UI.Pages
                 .GroupBy(x=>x.Item1);
 
             var grouped_controls = group_props.Select(x => GenerateGroupedSettingControls(x));
+
+            SettingListPanel.Children.Clear();
+
+            foreach (var control in grouped_controls)
+                SettingListPanel.Children.Add(control);
         }
 
         private FrameworkElement GenerateGroupedSettingControls(IGrouping<string, (string, PropertyInfoWrapper)> group_props)
         {
             var generated_setting_controls = group_props.Select(x => GenerateMiniVisualizableSetting(x.Item2));
 
-            //todo
-            return null;
+            var group_box = new GroupBox();
+            var stack_panel= new StackPanel();
+
+            foreach (var child in generated_setting_controls)
+                stack_panel.Children.Add(child);
+
+            group_box.Content = stack_panel;
+            group_box.Header = group_props.Key;
+            stack_panel.Margin = new Thickness(15, 0, 0, 0);
+
+            return group_box;
         }
 
         private FrameworkElement GenerateMiniVisualizableSetting(PropertyInfoWrapper wrapper)
@@ -81,6 +109,7 @@ namespace Wbooru.UI.Pages
 
                 case "Double":
                 case "Byte":
+                case "String":
                 case "Int64":
                 case "Int16":
                 case "Int32":
@@ -115,8 +144,12 @@ namespace Wbooru.UI.Pages
 
             checkBox.Checked += (_,__) => prop_info.SetValue(wrapper.OwnerObject, true);
             checkBox.Unchecked += (_, __) => prop_info.SetValue(wrapper.OwnerObject, false);
+            checkBox.Foreground = Brushes.White;
 
-            checkBox.Content = prop_info.GetSettingPropDisplayName();
+            checkBox.Content = wrapper.DisplayPropertyName;
+
+            if (wrapper.PropertyInfo.GetCustomAttribute<DescriptionAttribute>() is DescriptionAttribute description)
+                checkBox.ToolTip = description.Description;
 
             return checkBox;
         }
@@ -130,12 +163,26 @@ namespace Wbooru.UI.Pages
             {
                 control = new RangeValueSetting(wrapper);
             }
+            else if(wrapper.PropertyInfo.GetCustomAttribute<PathAttribute>() != null)
+            {
+                control = new PathSetting(wrapper);
+            }
             else
             {
                 control = new CommonValueSetting(wrapper);
             }
 
             return control;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ApplySetting((sender as FrameworkElement).DataContext as SettingBase);
         }
     }
 }

@@ -42,15 +42,19 @@ namespace Wbooru.UI.Controls.SettingUI
             Wrapper = wrapper;
 
             Binding binding = new Binding();
-            binding.Source = Wrapper.ProxyValue;
+            binding.Source = Wrapper;
+            binding.Path = new PropertyPath("ProxyValue");
             binding.Mode = BindingMode.OneWayToSource;
+            binding.Converter = new AutoValueConverter();
+            binding.ConverterParameter = Wrapper;
 
+            Input.Text = Wrapper.ProxyValue.ToString();
             Input.SetBinding(TextBox.TextProperty, binding);
 
             if (wrapper.PropertyInfo.GetCustomAttribute<DescriptionAttribute>() is DescriptionAttribute description)
                 NameBlock.ToolTip = description.Description;
 
-            NameBlock.Text = wrapper.PropertyInfo.GetSettingPropDisplayName();
+            NameBlock.Text = wrapper.DisplayPropertyName;
         }
     }
 }
