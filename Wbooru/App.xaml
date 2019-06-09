@@ -153,6 +153,11 @@
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
 
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="#FF23283C" />
+            <Setter Property="BorderBrush" Value="White" />
+        </Style>
+
     </Application.Resources>
 
 </Application>

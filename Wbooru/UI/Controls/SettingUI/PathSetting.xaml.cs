@@ -34,7 +34,7 @@ namespace Wbooru.UI.Controls.SettingUI
         }
 
         public static readonly DependencyProperty ProxyValueProperty =
-            DependencyProperty.Register("ProxyValue", typeof(string), typeof(PathSetting), new PropertyMetadata(0, (d, e) => {
+            DependencyProperty.Register("ProxyValue", typeof(string), typeof(PathSetting), new PropertyMetadata(default, (d, e) => {
                 (d as PathSetting).Wrapper.ProxyValue = e.NewValue;
             }));
 

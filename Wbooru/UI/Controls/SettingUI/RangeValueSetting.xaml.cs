@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -25,15 +26,21 @@ namespace Wbooru.UI.Controls.SettingUI
     /// <summary>
     /// RangeValueSetting.xaml 的交互逻辑
     /// </summary>
-    public partial class RangeValueSetting : UserControl
+    public partial class RangeValueSetting : UserControl , IValueConverter
     {
         public PropertyInfoWrapper Wrapper { get; }
 
         // Using a DependencyProperty as the backing store for ProxyValue.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ProxyValueProperty =
-            DependencyProperty.Register("ProxyValue", typeof(object), typeof(RangeValueSetting), new PropertyMetadata(0,(d,e)=> {
-                (d as RangeValueSetting).Wrapper.ProxyValue = e.NewValue;
+            DependencyProperty.Register("ProxyValue", typeof(double), typeof(RangeValueSetting), new PropertyMetadata(0.0d,(d,e)=> {
+                var v = TypeDescriptor.GetConverter((d as RangeValueSetting).Wrapper.PropertyInfo.PropertyType).ConvertFrom(e.NewValue.ToString());
+                (d as RangeValueSetting).Wrapper.ProxyValue = v;
             }));
+
+        public RangeValueSetting()
+        {
+            InitializeComponent();
+        }
 
         public RangeValueSetting(PropertyInfoWrapper wrapper)
         {
@@ -42,8 +49,9 @@ namespace Wbooru.UI.Controls.SettingUI
 
             InitializeComponent();
 
+            ValueRangeSlider.Value = double.Parse(wrapper.ProxyValue.ToString());
             ValueRangeSlider.Minimum = double.Parse(range.Min);
-            ValueRangeSlider.MaxHeight = double.Parse(range.Max);
+            ValueRangeSlider.Maximum = double.Parse(range.Max);
 
             //确保slider的value和设置钦定的值一样
             if (!(wrapper.PropertyInfo.PropertyType.Name == "Single" || wrapper.PropertyInfo.PropertyType.Name == "Double"))
@@ -55,7 +63,7 @@ namespace Wbooru.UI.Controls.SettingUI
             if (wrapper.PropertyInfo.GetCustomAttribute<Settings.UIAttributes.DescriptionAttribute>() is Settings.UIAttributes.DescriptionAttribute description)
                 NameBlock.ToolTip = description.Description;
 
-            NameBlock.Name = wrapper.DisplayPropertyName;
+            NameBlock.Text = wrapper.DisplayPropertyName;
             Wrapper = wrapper;
 
             #region Binding Chain
@@ -70,15 +78,15 @@ namespace Wbooru.UI.Controls.SettingUI
 
             Binding T2PBinding = new Binding();
             T2PBinding.Mode = BindingMode.TwoWay;
-            T2PBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             T2PBinding.Source = ValueRangeSlider;
+            //T2PBinding.Converter = this;
             T2PBinding.Path = new PropertyPath("Value");
 
             SetBinding(ProxyValueProperty, T2PBinding);
 
             #endregion
 
-            SetValue(ProxyValueProperty, wrapper.ProxyValue);
+            //SetValue(ProxyValueProperty, wrapper.ProxyValue);
         }
 
         private static IValueConverter GetValueConverter(Type prop_type, RangeAttribute range)
@@ -100,6 +108,18 @@ namespace Wbooru.UI.Controls.SettingUI
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
         }
     }
 }

@@ -13,7 +13,6 @@
             Margin="0,0,15,0"
             VerticalAlignment="Center"
             Foreground="White">
-            asdasda
         </TextBlock>
         <Slider
             Name="ValueRangeSlider"

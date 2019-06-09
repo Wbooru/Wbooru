@@ -8,10 +8,9 @@ namespace Wbooru.Settings.UIAttributes
 {
     public class PathAttribute:SettingUIAttributeBase
     {
-        public PathAttribute(bool is_file_path,string path,bool must_exist,string ext_filter=null,string default_ext = null)
+        public PathAttribute(bool is_file_path,bool must_exist,string ext_filter=null,string default_ext = null)
         {
             IsFilePath = is_file_path;
-            Path = path;
             MustExist = must_exist;
 
             ExtFilter = ext_filter;
@@ -19,7 +18,6 @@ namespace Wbooru.Settings.UIAttributes
         }
 
         public bool IsFilePath { get; }
-        public string Path { get; }
         public bool MustExist { get; }
         public string ExtFilter { get; }
         public string DefaultExt { get; }
