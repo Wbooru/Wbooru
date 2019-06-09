@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -23,7 +24,7 @@ namespace Wbooru.UI.Controls.SettingUI
     /// <summary>
     /// PathSetting.xaml 的交互逻辑
     /// </summary>
-    public partial class PathSetting : UserControl
+    public partial class PathSetting : UserControl, System.Windows.Forms.IWin32Window
     {
         public PropertyInfoWrapper Wrapper { get; }
 
@@ -33,13 +34,15 @@ namespace Wbooru.UI.Controls.SettingUI
             set { SetValue(ProxyValueProperty, value); }
         }
 
+        public IntPtr Handle => new WindowInteropHelper(Window.GetWindow(this)).Handle;
+
         public static readonly DependencyProperty ProxyValueProperty =
             DependencyProperty.Register("ProxyValue", typeof(string), typeof(PathSetting), new PropertyMetadata(default, (d, e) => {
                 (d as PathSetting).Wrapper.ProxyValue = e.NewValue;
             }));
 
         PathAttribute path_attr;
-        private OpenFileDialog dialog;
+        private System.Windows.Forms.CommonDialog dialog;
 
         public PathSetting(PropertyInfoWrapper wrapper)
         {
@@ -55,11 +58,11 @@ namespace Wbooru.UI.Controls.SettingUI
 
             SetValue(ProxyValueProperty, wrapper.ProxyValue);
 
-            dialog = new OpenFileDialog();
-
-            dialog.CheckFileExists = path_attr.IsFilePath;
-            dialog.Filter = path_attr.ExtFilter;
-            dialog.DefaultExt = path_attr.DefaultExt;
+            dialog = path_attr.IsFilePath ? (System.Windows.Forms.CommonDialog)new System.Windows.Forms.OpenFileDialog() {
+                Multiselect=false,
+                DefaultExt=path.DefaultExt,
+                Filter=path.ExtFilter
+            } : new System.Windows.Forms.FolderBrowserDialog();
 
             NameBlock.Text = wrapper.DisplayPropertyName;
 
@@ -69,9 +72,13 @@ namespace Wbooru.UI.Controls.SettingUI
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (dialog.ShowDialog(Window.GetWindow(this))??false)
+            if (dialog.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
-                var select_path = dialog.FileName;
+                var select_path = dialog switch {
+                    System.Windows.Forms.OpenFileDialog d => d.FileName,
+                    System.Windows.Forms.FolderBrowserDialog f => f.SelectedPath,
+                    _ => throw new NotSupportedException()
+                };
 
                 if (path_attr.MustExist && !(path_attr.IsFilePath?File.Exists(select_path):Directory.Exists(select_path)))
                 {
