@@ -70,6 +70,7 @@ namespace Wbooru.UI.Controls.SettingUI
 
             Binding T2PBinding = new Binding();
             T2PBinding.Mode = BindingMode.TwoWay;
+            T2PBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             T2PBinding.Source = ValueRangeSlider;
             T2PBinding.Path = new PropertyPath("Value");
 

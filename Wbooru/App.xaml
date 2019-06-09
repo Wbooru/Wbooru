@@ -140,6 +140,19 @@
             <Setter Property="Foreground" Value="White" />
         </Style>
 
+        <Style TargetType="CheckBox">
+            <Style.Resources>
+                <Style TargetType="Path">
+                    <Setter Property="FlowDirection" Value="LeftToRight" />
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FlowDirection" Value="LeftToRight" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="FlowDirection" Value="RightToLeft" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+
     </Application.Resources>
 
 </Application>

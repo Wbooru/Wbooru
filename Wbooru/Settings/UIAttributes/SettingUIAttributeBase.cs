@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wbooru.Settings.UIAttributes
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
     public abstract class SettingUIAttributeBase : Attribute
     {
 

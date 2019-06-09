@@ -44,7 +44,8 @@ namespace Wbooru.UI.Controls.SettingUI
             Binding binding = new Binding();
             binding.Source = Wrapper;
             binding.Path = new PropertyPath("ProxyValue");
-            binding.Mode = BindingMode.OneWayToSource;
+            binding.Mode = BindingMode.TwoWay;
+            binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             binding.Converter = new AutoValueConverter();
             binding.ConverterParameter = Wrapper;
 

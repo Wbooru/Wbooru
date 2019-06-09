@@ -12,9 +12,12 @@ namespace Wbooru.Settings
     public class GlobalSetting : SettingBase , IUIVisualizable
     {
         public string DownloadPath { get; set; } = "./Download";
-        public int LoadingImageThread { get; set; } = 2;
-        public int GetPictureCountPerLoad { get; set; } = 20;
 
+        [Group("View Options")]
+        public int LoadingImageThread { get; set; } = 2;
+        [Group("View Options")]
+        public int GetPictureCountPerLoad { get; set; } = 20;
+        [Group("View Options")]
         public bool GalleryListScrollBarVisiable { get; set; } = true;
     }
 }

@@ -7,11 +7,16 @@
     xmlns:local="clr-namespace:Wbooru.UI.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:settingui="clr-namespace:Wbooru.UI.Controls.SettingUI"
+    xmlns:settingui1="clr-namespace:Wbooru.UI.ValueConverters.SettingUI"
     Name="MainSettingPage"
     Title="SettingPanel"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <settingui1:AssemblyTypeDisplayConverter x:Key="AssemblyTypeDisplayConverter" />
+    </Page.Resources>
 
     <Grid Name="MainPanel" Background="{StaticResource ContentBackgroundColor}">
         <Grid.RowDefinitions>
@@ -39,65 +44,23 @@
                 <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Name="SettingListPanel" Margin="15">
-                <GroupBox Margin="0,0,0,15" Header="Download">
-                    <StackPanel Margin="15,0,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="0,0,15,0" VerticalAlignment="Center">
-                                Download Path
-                            </TextBlock>
-
-                            <TextBox
-                                Width="200"
-                                Margin="0,0,15,0"
-                                Text="asdasd" />
-
-                            <Button
-                                Width="75"
-                                BorderBrush="AliceBlue"
-                                Click="Button_Click">
-                                浏览
-                            </Button>
-
-                        </StackPanel>
-                        <CheckBox Foreground="White">
-                            asdasdasdasd
-                        </CheckBox>
-                    </StackPanel>
-                </GroupBox>
-
-                <GroupBox Header="Download">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="15,0,15,0" VerticalAlignment="Center">
-                            Download Path
-                        </TextBlock>
-
-                        <TextBox
-                            Width="200"
-                            Margin="0,0,15,0"
-                            Text="{Binding ProxyValue}" />
-
-                        <Button
-                            Width="75"
-                            BorderBrush="AliceBlue"
-                            Click="Button_Click">
-                            浏览
-                        </Button>
-                    </StackPanel>
-                </GroupBox>
-            </StackPanel>
+            <StackPanel Name="SettingListPanel" Margin="15" />
 
             <TreeView
+                Name="SettingView"
                 Grid.Column="1"
                 Background="Transparent"
                 BorderBrush="Transparent"
                 ItemsSource="{Binding SupportSettingWrappers}">
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding SupportSettings}">
-                        <TextBlock Text="{Binding ReferenceAssembly.FullName}" />
+                        <TextBlock Text="{Binding ReferenceAssembly, Converter={StaticResource AssemblyTypeDisplayConverter}}" />
                         <HierarchicalDataTemplate.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock MouseDown="TextBlock_MouseDown" Text="{Binding}" />
+                                <TextBlock
+                                    DataContext="{Binding}"
+                                    MouseDown="TextBlock_MouseDown"
+                                    Text="{Binding Converter={StaticResource AssemblyTypeDisplayConverter}}" />
                             </DataTemplate>
                         </HierarchicalDataTemplate.ItemTemplate>
                     </HierarchicalDataTemplate>

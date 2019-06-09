@@ -17,6 +17,7 @@ using Wbooru.Models.SettingUI;
 using Wbooru.Settings;
 using Wbooru.Settings.UIAttributes;
 using Wbooru.UI.Controls.SettingUI;
+using Wbooru.UI.ValueConverters.SettingUI;
 
 namespace Wbooru.UI.Pages
 {
@@ -56,10 +57,17 @@ namespace Wbooru.UI.Pages
                 });
 
             MainPanel.DataContext = this;
+
+            ApplySetting(SupportSettingWrappers.First().SupportSettings.FirstOrDefault());
+
+            var ref_control = SettingView.Items.Cast<TreeViewItem>();
         }
 
         private void ApplySetting(SettingBase setting)
         {
+            if (setting == null)
+                return;
+
             var props = setting.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             var group_props = props.
@@ -85,7 +93,10 @@ namespace Wbooru.UI.Pages
             var stack_panel= new StackPanel();
 
             foreach (var child in generated_setting_controls)
+            {
+                child.Margin = new Thickness(0, 0, 0, 15);
                 stack_panel.Children.Add(child);
+            }
 
             group_box.Content = stack_panel;
             group_box.Header = group_props.Key;
@@ -140,12 +151,15 @@ namespace Wbooru.UI.Pages
 
             CheckBox checkBox = new CheckBox();
 
-            checkBox.IsChecked = (bool)prop_info.GetValue(wrapper.OwnerObject);
+            checkBox.IsChecked = (bool)wrapper.ProxyValue;
 
-            checkBox.Checked += (_,__) => prop_info.SetValue(wrapper.OwnerObject, true);
-            checkBox.Unchecked += (_, __) => prop_info.SetValue(wrapper.OwnerObject, false);
-            checkBox.Foreground = Brushes.White;
+            Binding binding = new Binding("ProxyValue");
+            binding.Source = wrapper;
+            binding.Mode = BindingMode.TwoWay;
+            binding.Converter = new AutoValueConverter();
+            binding.ConverterParameter = wrapper;
 
+            checkBox.SetBinding(CheckBox.IsCheckedProperty, binding);
             checkBox.Content = wrapper.DisplayPropertyName;
 
             if (wrapper.PropertyInfo.GetCustomAttribute<DescriptionAttribute>() is DescriptionAttribute description)
