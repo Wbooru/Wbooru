@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wbooru.Kernel;
 using Wbooru.Models.SettingUI;
 using Wbooru.Settings;
 using Wbooru.Settings.UIAttributes;
@@ -58,9 +59,7 @@ namespace Wbooru.UI.Pages
 
             MainPanel.DataContext = this;
 
-            //ApplySetting(SupportSettingWrappers.First().SupportSettings.FirstOrDefault());
-
-            var ref_control = SettingView.Items.Cast<TreeViewItem>();
+            ApplySetting(SupportSettingWrappers.First().SupportSettings.FirstOrDefault());
         }
 
         private void ApplySetting(SettingBase setting)
@@ -204,6 +203,12 @@ namespace Wbooru.UI.Pages
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
             ApplySetting((sender as FrameworkElement).DataContext as SettingBase);
+        }
+
+        private void MenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
+            navigation.NavigationPop();
         }
     }
 }

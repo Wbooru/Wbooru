@@ -26,17 +26,13 @@
 
         <StackPanel Orientation="Horizontal">
             <controls:MenuButton
+                Button.Click="MenuButton_Click"
                 ContentMargin="5,0,15,0"
                 Icon=""
                 Text="返回" />
         </StackPanel>
 
-        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-            <controls:MenuButton
-                ContentMargin="5,0,15,0"
-                Icon=""
-                Text="保存" />
-        </StackPanel>
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" />
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -44,9 +40,7 @@
                 <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Name="SettingListPanel" Margin="15">
-                
-            </StackPanel>
+            <StackPanel Name="SettingListPanel" Margin="15" />
 
             <TreeView
                 Name="SettingView"
