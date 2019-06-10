@@ -86,7 +86,7 @@ namespace Wbooru.Settings
                 foreach (var item in entity.Settings.Values)
                     item.OnBeforeSave();
 
-                using var writer = new StreamWriter(File.OpenWrite(CONFIG_FILE_PATH));
+                using var writer = new StreamWriter(File.Open(CONFIG_FILE_PATH,FileMode.Create));
 
                 var str = JsonConvert.SerializeObject(entity, Formatting.Indented);
                 writer.Write(str);
