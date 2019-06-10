@@ -77,7 +77,7 @@ namespace Wbooru.UI.Pages
                 }))
                 .GroupBy(x=>x.Item1);
 
-            var grouped_controls = group_props.Select(x => GenerateGroupedSettingControls(x));
+            var grouped_controls = group_props.Select(x => GenerateGroupedSettingControls(x)).OfType<FrameworkElement>();
 
             SettingListPanel.Children.Clear();
 
@@ -87,7 +87,10 @@ namespace Wbooru.UI.Pages
 
         private FrameworkElement GenerateGroupedSettingControls(IGrouping<string, (string, PropertyInfoWrapper)> group_props)
         {
-            var generated_setting_controls = group_props.Select(x => GenerateMiniVisualizableSetting(x.Item2));
+            var generated_setting_controls = group_props.Select(x => GenerateMiniVisualizableSetting(x.Item2)).OfType<FrameworkElement>();
+
+            if (generated_setting_controls.Count() == 0)
+                return null;
 
             var group_box = new GroupBox();
             var stack_panel= new StackPanel();
@@ -129,7 +132,7 @@ namespace Wbooru.UI.Pages
                     break;
 
                 default:
-                    throw new NotSupportedException();
+                    return null;
             }
 
             #endregion
