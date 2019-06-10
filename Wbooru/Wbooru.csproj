@@ -163,6 +163,9 @@
     <Compile Include="UI\Controls\SettingUI\CommonValueSetting.xaml.cs">
       <DependentUpon>CommonValueSetting.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\SettingUI\ListSetting.xaml.cs">
+      <DependentUpon>ListSetting.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\SettingUI\PathSetting.xaml.cs">
       <DependentUpon>PathSetting.xaml</DependentUpon>
     </Compile>
@@ -213,6 +216,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\SettingUI\CommonValueSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\SettingUI\ListSetting.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

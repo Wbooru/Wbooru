@@ -45,7 +45,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Name="SettingListPanel" Margin="15">
-
+                
             </StackPanel>
 
             <TreeView

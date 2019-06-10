@@ -58,7 +58,7 @@ namespace Wbooru.UI.Pages
 
             MainPanel.DataContext = this;
 
-            ApplySetting(SupportSettingWrappers.First().SupportSettings.FirstOrDefault());
+            //ApplySetting(SupportSettingWrappers.First().SupportSettings.FirstOrDefault());
 
             var ref_control = SettingView.Items.Cast<TreeViewItem>();
         }
@@ -180,6 +180,10 @@ namespace Wbooru.UI.Pages
             else if(wrapper.PropertyInfo.GetCustomAttribute<PathAttribute>() != null)
             {
                 control = new PathSetting(wrapper);
+            }
+            else if (wrapper.PropertyInfo.GetCustomAttribute<ListAttribute>() != null)
+            {
+                control = new ListSetting(wrapper);
             }
             else
             {

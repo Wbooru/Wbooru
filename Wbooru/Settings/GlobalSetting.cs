@@ -26,5 +26,10 @@ namespace Wbooru.Settings
         [Group("View Options")]
         [NameAlias("ShowGalleryScrollBar")]
         public bool GalleryListScrollBarVisiable { get; set; } = true;
+
+        [Group("Test")]
+        [NameAlias("Test alias name")]
+        [List(true,true,false,",","maria","joe","tank","sb")]
+        public string ListTestProp { get; set; } = "maria,sb";
     }
 }
