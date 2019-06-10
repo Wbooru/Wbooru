@@ -70,8 +70,6 @@ namespace Wbooru.UI.Controls.SettingUI
 
             GenerateComboBoxItems();
 
-            //create binding for text
-
             Binding binding = new Binding();
             binding.Source = Wrapper;
             binding.Path = new PropertyPath("ProxyValue");
@@ -82,6 +80,9 @@ namespace Wbooru.UI.Controls.SettingUI
             SetBinding(ListSetting.TextProperty, binding);
 
             Text = wrapper.ProxyValue.ToString();
+
+            if (wrapper.PropertyInfo.GetCustomAttribute<DescriptionAttribute>() is DescriptionAttribute desc)
+                MainComboBox.ToolTip = desc.Description;
         }
 
         private void GenerateComboBoxItems()
