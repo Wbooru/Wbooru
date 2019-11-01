@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,27 +19,20 @@ namespace Wbooru.Utils
             var downloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
             var resource = Container.Default.GetExportedValue<ImageResourceManager>();
 
-            var image = await resource.RequestImageAsync(name, () =>
+            Image image;
+
+            do
             {
-                return downloader.GetImageAsync(dl).Result;
-            });
+                image = await resource.RequestImageAsync(name, () =>
+                {
+                    return downloader.GetImageAsync(dl).Result;
+                });
+            } while (image==null);
 
-            using var stream = new MemoryStream();
-            image.Save(stream, image.RawFormat);
-            stream.Seek(0, SeekOrigin.Begin);
-
-            BitmapImage source = null;
-            source = new BitmapImage();
-            source.BeginInit();
-            source.StreamSource = stream;
-            source.CacheOption = BitmapCacheOption.OnLoad;
-            source.EndInit();
-            source.Freeze();
-
-            return source;
+            return image.ConvertToBitmapImage();
         })
         {
-
+            //momo moe~
         }
 
         public AsyncImageWrapper(Func<Task<BitmapImage>> valueFunc)

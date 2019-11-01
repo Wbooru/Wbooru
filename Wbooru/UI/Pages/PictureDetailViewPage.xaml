@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:valueconverters="clr-namespace:Wbooru.UI.ValueConverters"
-    Name="ViewPage"
+    x:Name="ViewPage"
     Title="PictureDetailViewPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -21,7 +21,7 @@
         <valueconverters:FormatDownloadDescriptionConverter x:Key="FormatDownloadDescriptionConverter" />
     </Page.Resources>
 
-    <Grid Name="MainGrid" d:DataContext="{d:DesignData /SampleData/GalleryImageDetailSampleData.xaml}">
+    <Grid Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
             <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
@@ -32,10 +32,10 @@
             Name="ImagePart"
             Grid.Column="0"
             Background="{StaticResource ContentBackgroundColor}">
-            <Image
+            <controls:OperableImageBox
+                x:Name="DetailImageBox"
                 Panel.ZIndex="1"
-                DataContext="{Binding PictureDetailInfo, Converter={StaticResource AutoPickImageConverter}, IsAsync=True}"
-                Source="{Binding AsyncValue}" />
+                Background="Transparent" />
             <Grid Panel.ZIndex="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}" />
@@ -58,6 +58,13 @@
                         Foreground="White"
                         Text="{Binding PictureDetailInfo.ID, StringFormat=#{0}}" />
                 </StackPanel>
+
+                <controls:LoadingStatusDisplayer
+                    x:Name="LoadingStatus"
+                    Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                </controls:LoadingStatusDisplayer>
 
                 <Grid Grid.Row="2" Background="{StaticResource BoardColor}">
                     <Grid.ColumnDefinitions>
@@ -94,33 +101,23 @@
                         Name="MarkButton"
                         Grid.Column="1"
                         Click="MarkButton_Click">
+
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Label VerticalContentAlignment="Center" FontFamily="Segoe UI Symbol">
-                                <Label.Style>
-                                    <Style TargetType="Label">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsMark}" Value="True">
-                                                <Setter Property="Foreground" Value="LightGreen" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsMark}" Value="False">
-                                                <Setter Property="Foreground" Value="White" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Label.Style>
-                                
-                            </Label>
-                            <Label
-                                Grid.Column="1"
-                                VerticalContentAlignment="Center"
-                                FontFamily="黑体"
-                                Foreground="White">
-                                收藏
-                            </Label>
+                            <TextBlock>
+                                <TextBlock x:Name="IsMarkIcon" FontFamily="Segoe UI Symbol">
+                                    
+                                </TextBlock>
+                                <TextBlock
+                                    Grid.Column="1"
+                                    FontFamily="黑体"
+                                    Foreground="White">
+                                    收藏
+                                </TextBlock>
+                            </TextBlock>
                         </Grid>
                     </Button>
                     <Button
@@ -133,28 +130,17 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Label VerticalContentAlignment="Center" FontFamily="Segoe UI Symbol">
-                                <Label.Style>
-                                    <Style TargetType="Label">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsVoted}" Value="True">
-                                                <Setter Property="Foreground" Value="Pink" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsVoted}" Value="False">
-                                                <Setter Property="Foreground" Value="White" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Label.Style>
-                                
-                            </Label>
-                            <Label
-                                Grid.Column="1"
-                                VerticalContentAlignment="Center"
-                                FontFamily="黑体"
-                                Foreground="White">
-                                点赞
-                            </Label>
+                            <TextBlock>
+                                <TextBlock  FontFamily="Segoe UI Symbol">
+                                    
+                                </TextBlock>
+                                <TextBlock
+                                    Grid.Column="1" 
+                                    FontFamily="黑体"
+                                    Foreground="White">
+                                    点赞
+                                </TextBlock>
+                            </TextBlock>
                         </Grid>
                     </Button>
                     <Button Grid.Column="4" Grid.ColumnSpan="1">

@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using Wbooru.PluginExt;
 using Wbooru.Settings;
+using Wbooru.UI.Controls;
 
 namespace Wbooru.Network
 {
@@ -44,7 +45,18 @@ namespace Wbooru.Network
 
         public void OnScheduleCall()
         {
-            tasks_running_queue.RemoveWhere(t => t.Status != TaskStatus.Running);
+            var finished_tasks = tasks_running_queue.Where(t => t.Status != TaskStatus.Running).ToArray();
+
+            foreach (var finished_task in finished_tasks)
+                tasks_running_queue.Remove(finished_task);
+
+            foreach (var except_task in finished_tasks.Where(x=>x.IsFaulted))
+            {
+                lock (tasks_waiting_queue)
+                {
+                    tasks_waiting_queue.Insert(tasks_waiting_queue.Count, except_task);
+                }
+            }
 
             var add_count = setting.LoadingImageThread - tasks_running_queue.Count;
 
@@ -66,17 +78,26 @@ namespace Wbooru.Network
 
         private Image OnDownloadTaskStart(object state)
         {
-            var download_path = (string)state;
+            try
+            {
+                var download_path = (string)state;
 
-            Log<ImageFetchDownloadSchedule>.Info($"Start download image:{download_path}");
+                Log<ImageFetchDownloadSchedule>.Info($"Start download image:{download_path}");
 
-            var response = RequestHelper.CreateDeafult(download_path);
+                var response = RequestHelper.CreateDeafult(download_path);
 
-            using var stream = response.GetResponseStream();
+                using var stream = response.GetResponseStream();
 
-            Image source=Image.FromStream(stream);
+                Image source = Image.FromStream(stream);
 
-            return source;
+                return source;
+            }
+            catch (Exception e)
+            {
+                Log<ImageFetchDownloadSchedule>.Error($"Can't download image ({e.Message}):{state}");
+                Container.Default.GetExportedValue<Toast>().ShowMessage($"无法下载图片({e.Message})");
+                return null;
+            }
         }
     }
 }

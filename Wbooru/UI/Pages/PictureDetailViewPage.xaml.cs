@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -18,8 +19,11 @@ using System.Windows.Shapes;
 using Wbooru.Galleries;
 using Wbooru.Kernel;
 using Wbooru.Models.Gallery;
+using Wbooru.Network;
 using Wbooru.Persistence;
 using Wbooru.Utils;
+using Wbooru.Utils.Resource;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace Wbooru.UI.Pages
 {
@@ -53,7 +57,7 @@ namespace Wbooru.UI.Pages
         }
 
         public static readonly DependencyProperty PictureDetailInfoProperty =
-            DependencyProperty.Register("PictureDetailInfo", typeof(GalleryImageDetail), typeof(PictureDetailViewPage), new PropertyMetadata(null));
+            DependencyProperty.Register("PictureDetailInfo", typeof(GalleryImageDetail), typeof(PictureDetailViewPage), new PropertyMetadata(null, (e, d) => (e as PictureDetailViewPage)?.ChangeDetailPicture(d.NewValue as GalleryImageDetail)));
 
         public bool IsMark
         {
@@ -62,7 +66,9 @@ namespace Wbooru.UI.Pages
         }
 
         public static readonly DependencyProperty IsMarkProperty =
-            DependencyProperty.Register("IsMark", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
+            DependencyProperty.Register("IsMark", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false,(e,d)=>
+            (e as PictureDetailViewPage).IsMarkIcon.Foreground = (bool)d.NewValue? Brushes.Pink: Brushes.White
+            ));
 
         public bool IsVoted
         {
@@ -71,7 +77,7 @@ namespace Wbooru.UI.Pages
         }
 
         public static readonly DependencyProperty IsVotedProperty =
-            DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
+            DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false, (e, d) => (e as PictureDetailViewPage).IsMarkIcon.Foreground = (bool)d.NewValue ? Brushes.YellowGreen : Brushes.White));
 
         [Import(typeof(LocalDBContext))]
         public LocalDBContext DB { get; set; }
@@ -85,15 +91,48 @@ namespace Wbooru.UI.Pages
             MainGrid.DataContext = this;
         }
 
+        private async void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
+        {
+            using (var _ = LoadingStatus.BeginBusy("加载图片中......"))
+            {
+                var pick_download = galleryImageDetail.DownloadableImageLinks.OrderByDescending(x => x.FileLength).FirstOrDefault();
+
+                if (pick_download == null)
+                {
+                    //notice error;
+                    return;
+                }
+
+                var downloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
+                var resource = Container.Default.GetExportedValue<ImageResourceManager>();
+
+                System.Drawing.Image image;
+
+                do
+                {
+                    image = await resource.RequestImageAsync(pick_download.Description, () =>
+                    {
+                        return downloader.GetImageAsync(pick_download.DownloadLink).Result;
+                    });
+                } while (image == null);
+
+                var source = image.ConvertToBitmapImage();
+
+                DetailImageBox.ImageSource = source;
+            }
+        }
+
         CancellationTokenSource source ;
 
-        public void ApplyItem(Gallery gallery,GalleryItem item)
+        public void ApplyItem(Gallery gallery, GalleryItem item)
         {
+            var notify = LoadingStatus.BeginBusy("正在读取图片详细信息....");
+
             try
             {
                 source.Cancel();
             }
-            catch{}
+            catch { }
 
             Gallery = gallery;
             PictureInfo = item;
@@ -103,7 +142,8 @@ namespace Wbooru.UI.Pages
             source = new CancellationTokenSource();
             MarkButton.IsEnabled = false;
 
-            var current=Task.Run(() => {
+            var current = Task.Run(() =>
+            {
                 var visit = new VisitRecord()
                 {
                     GalleryID = item.ID,
@@ -111,7 +151,7 @@ namespace Wbooru.UI.Pages
                     LastVisitTime = DateTime.Now
                 };
 
-                var visit_entity=DB.VisitRecords.FirstOrDefault(x=>x.GalleryID == item.ID && x.GalleryName==gallery.GalleryName);
+                var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryID == item.ID && x.GalleryName == gallery.GalleryName);
                 if (visit_entity == null)
                     DB.VisitRecords.Add(visit);
                 else
@@ -119,13 +159,16 @@ namespace Wbooru.UI.Pages
 
                 DB.SaveChanges();
 
-                var x=DB.ItemMarks.Where(x => x.GalleryName == gallery.GalleryName && x.MarkGalleryID == item.ID).Any();
-                var detail=gallery.GetImageDetial(item);
+                var x = DB.ItemMarks.Where(x => x.GalleryName == gallery.GalleryName && x.MarkGalleryID == item.ID).Any();
+                var detail = gallery.GetImageDetial(item);
 
-                Dispatcher.Invoke(() => {
+                Dispatcher.Invoke(() =>
+                {
                     IsVoted = x;
                     MarkButton.IsEnabled = true;
-                    PictureDetailInfo = detail; });
+                    PictureDetailInfo = detail;
+                    notify.Dispose();
+                });
             }, source.Token);
         }
 
@@ -182,12 +225,16 @@ namespace Wbooru.UI.Pages
                 DB.ItemMarks.Remove(x);
                 IsMark = false;
             }
+
+            Log<PictureDetailViewPage>.Debug($"Now IsMark={IsMark}");
         }
 
         private void VoteButton_Click(object sender, RoutedEventArgs e)
         {
             //todo
             IsVoted = true;
+
+            Log<PictureDetailViewPage>.Debug($"Now IsMark={IsVoted}");
         }
     }
 }

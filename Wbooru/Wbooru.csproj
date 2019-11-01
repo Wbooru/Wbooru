@@ -121,6 +121,7 @@
       <DependentUpon>201906040045405_ModifyTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Download.cs" />
     <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
     <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
     <Compile Include="Models\SettingUI\PropertyInfoWrapper.cs" />
@@ -134,6 +135,10 @@
     <Compile Include="Persistence\VisitRecord.cs" />
     <Compile Include="PluginExt\ISchedulable.cs" />
     <Compile Include="PluginExt\IPlugin.cs" />
+    <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">
+      <DependentUpon>SampleDataSource.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SampleData\Wrapper\DownloadListWrapper.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
     <Compile Include="Settings\SettingBase.cs" />
     <Compile Include="Settings\SettingFileEntity.cs" />
@@ -157,6 +162,9 @@
     <Compile Include="UI\Controls\MenuButton.xaml.cs">
       <DependentUpon>MenuButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\OperableImageBox.xaml.cs">
+      <DependentUpon>OperableImageBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\SearchInput.xaml.cs">
       <DependentUpon>SearchInput.xaml</DependentUpon>
     </Compile>
@@ -178,6 +186,9 @@
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Pages\DownloadListPage.xaml.cs">
+      <DependentUpon>DownloadListPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Pages\PictureDetailViewPage.xaml.cs">
       <DependentUpon>PictureDetailViewPage.xaml</DependentUpon>
     </Compile>
@@ -193,6 +204,7 @@
     <Compile Include="Utils\ICacheCleanable.cs" />
     <Compile Include="Utils\IEnumerableMultiThreadable.cs" />
     <Compile Include="Utils\ExceptionHelper.cs" />
+    <Compile Include="Utils\ImageExtension.cs" />
     <Compile Include="Utils\IOHelper.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\MathEx.cs" />
@@ -211,6 +223,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignData>
+    <DesignData Include="SampleData\DownloadListWrapperSampleData.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </DesignData>
+    <Page Include="SampleData\SampleDataSource\SampleDataSource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Controls\OperableImageBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\SearchInput.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -232,6 +256,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\Toast.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Pages\DownloadListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -310,13 +338,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="SampleData\SampleDataSource\SampleDataSource.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SampleData\SampleDataSource\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

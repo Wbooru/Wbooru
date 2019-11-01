@@ -75,7 +75,7 @@ namespace Wbooru.UI.Controls
 
             Dispatcher.InvokeAsync(() =>
             {
-                Description = reg_notifies.Last().Description;
+                Description = reg_notifies.LastOrDefault()?.Description??string.Empty;
 
                 show_action.Begin();
                 UpdateCountString();

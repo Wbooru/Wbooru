@@ -1,0 +1,77 @@
+﻿<UserControl
+    x:Class="Wbooru.UI.Controls.OperableImageBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Storyboard x:Key="NoScaleAction">
+            <DoubleAnimation
+                AccelerationRatio="0.9"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                To="1"
+                Duration="0:0:0.250" />
+            <DoubleAnimation
+                AccelerationRatio="0.9"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                To="1"
+                Duration="0:0:0.250" />
+        </Storyboard>
+        <Storyboard x:Key="Scale2xAction">
+            <DoubleAnimation
+                AccelerationRatio="0.9"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                To="2"
+                Duration="0:0:0.250" />
+            <DoubleAnimation
+                AccelerationRatio="0.9"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                To="2"
+                Duration="0:0:0.250" />
+        </Storyboard>
+        <Storyboard x:Key="Scale4xAction">
+            <DoubleAnimation
+                AccelerationRatio="0.9"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                To="4"
+                Duration="0:0:0.250" />
+            <DoubleAnimation
+                AccelerationRatio="0.9"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                To="4"
+                Duration="0:0:0.250" />
+        </Storyboard>
+        <Storyboard x:Key="ScaleRawPixelAction">
+            <DoubleAnimation
+                AccelerationRatio="0.9"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                To="4"
+                Duration="0:0:0.250" />
+            <DoubleAnimation
+                AccelerationRatio="0.9"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                To="4"
+                Duration="0:0:0.250" />
+        </Storyboard>
+    </UserControl.Resources>
+    <Grid
+        Name="WrapPanel"
+        Background="Transparent"
+        MouseDown="Grid_MouseDown"
+        MouseLeave="Grid_MouseLeave"
+        MouseLeftButtonDown="Grid_MouseLeftButtonDown"
+        MouseLeftButtonUp="Grid_MouseLeftButtonUp"
+        MouseMove="Grid_MouseMove">
+        <Image Name="ImageCoreBox">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform />
+                    <TranslateTransform />
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+
+    </Grid>
+</UserControl>

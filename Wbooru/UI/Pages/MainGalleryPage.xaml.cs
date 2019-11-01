@@ -135,7 +135,7 @@ namespace Wbooru.UI.Pages
 
         private async void GridViewer_RequestMoreItems(GalleryGridView _)
         {
-            if (is_requesting)
+            if (is_requesting || CurrentItems==null)
                 return;
 
             using (LoadStatusDisplayer.BeginBusy("Load more gallery items"))

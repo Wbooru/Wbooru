@@ -1,0 +1,45 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Wbooru.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Wbooru.UI.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Wrapper="clr-namespace:Wbooru.SampleData.Wrapper"
+    x:Class="Wbooru.UI.Pages.DownloadListPage"
+    Title="DownloadListPage"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <Grid x:Name="MainPanel" Background="{StaticResource ContentBackgroundColor}" d:DataContext="{d:DesignData /SampleData/DownloadListWrapperSampleData.xaml}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <controls:MenuButton
+                ContentMargin="5,0,15,0"
+                Icon="&#xE2B6;"
+                Text="返回" />
+        </StackPanel>
+
+        <ListView Grid.Row="1" Background="Transparent" ItemsSource="{Binding Mode=OneWay}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Height="150">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="8*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>
