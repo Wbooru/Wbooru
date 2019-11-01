@@ -66,13 +66,16 @@ namespace Wbooru.UI.Controls
             animation = sb.Children.FirstOrDefault(x => x.Name == "HideAnimation") as DoubleAnimation;
         }
 
-        public void ShowMessage(string message, MessageType message_type=MessageType.Notify, uint show_time=2000)
+        public void ShowMessage(string message, MessageType message_type = MessageType.Notify, uint show_time = 2000)
         {
-            Message = message;
-            animation.BeginTime = TimeSpan.FromMilliseconds(show_time);
-            TextColor = Backgrounds[message_type];
-            Log<Toast>.Debug($"{message_type} {Message} ({animation.BeginTime})");
-            sb.Begin();
+            Dispatcher.Invoke(() =>
+            {
+                Message = message;
+                animation.BeginTime = TimeSpan.FromMilliseconds(show_time);
+                TextColor = Backgrounds[message_type];
+                Log<Toast>.Debug($"{message_type} {Message} ({animation.BeginTime})");
+                sb.Begin();
+            });
         }
     }
 }

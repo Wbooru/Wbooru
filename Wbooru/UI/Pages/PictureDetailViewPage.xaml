@@ -109,6 +109,20 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock>
                                 <TextBlock x:Name="IsMarkIcon" FontFamily="Segoe UI Symbol">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMark}" Value="True">
+                                                    <Setter Property="Foreground" Value="LightGreen">
+                                                    </Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsMark}" Value="False">
+                                                    <Setter Property="Foreground" Value="White">
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
                                     
                                 </TextBlock>
                                 <TextBlock
@@ -131,11 +145,25 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock>
-                                <TextBlock  FontFamily="Segoe UI Symbol">
+                                <TextBlock FontFamily="Segoe UI Symbol">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsVoted}" Value="True">
+                                                    <Setter Property="Foreground" Value="LightPink">
+                                                    </Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsVoted}" Value="False">
+                                                    <Setter Property="Foreground" Value="White">
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
                                     
                                 </TextBlock>
                                 <TextBlock
-                                    Grid.Column="1" 
+                                    Grid.Column="1"
                                     FontFamily="黑体"
                                     Foreground="White">
                                     点赞

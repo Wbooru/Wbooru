@@ -66,9 +66,7 @@ namespace Wbooru.UI.Pages
         }
 
         public static readonly DependencyProperty IsMarkProperty =
-            DependencyProperty.Register("IsMark", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false,(e,d)=>
-            (e as PictureDetailViewPage).IsMarkIcon.Foreground = (bool)d.NewValue? Brushes.Pink: Brushes.White
-            ));
+            DependencyProperty.Register("IsMark", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
 
         public bool IsVoted
         {
@@ -77,7 +75,7 @@ namespace Wbooru.UI.Pages
         }
 
         public static readonly DependencyProperty IsVotedProperty =
-            DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false, (e, d) => (e as PictureDetailViewPage).IsMarkIcon.Foreground = (bool)d.NewValue ? Brushes.YellowGreen : Brushes.White));
+            DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
 
         [Import(typeof(LocalDBContext))]
         public LocalDBContext DB { get; set; }
@@ -93,56 +91,58 @@ namespace Wbooru.UI.Pages
 
         private async void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
         {
-            using (var _ = LoadingStatus.BeginBusy("加载图片中......"))
+            if (galleryImageDetail==null)
             {
-                var pick_download = galleryImageDetail.DownloadableImageLinks.OrderByDescending(x => x.FileLength).FirstOrDefault();
-
-                if (pick_download == null)
-                {
-                    //notice error;
-                    return;
-                }
-
-                var downloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
-                var resource = Container.Default.GetExportedValue<ImageResourceManager>();
-
-                System.Drawing.Image image;
-
-                do
-                {
-                    image = await resource.RequestImageAsync(pick_download.Description, () =>
-                    {
-                        return downloader.GetImageAsync(pick_download.DownloadLink).Result;
-                    });
-                } while (image == null);
-
-                var source = image.ConvertToBitmapImage();
-
-                DetailImageBox.ImageSource = source;
+                //clean.
+                DetailImageBox.ImageSource = null;
+                return;
             }
+
+            await Task.Run(() =>
+            {
+                using (var _ = LoadingStatus.BeginBusy("加载图片中......"))
+                {
+                    var pick_download = galleryImageDetail.DownloadableImageLinks.OrderByDescending(x => x.FileLength).FirstOrDefault();
+
+                    if (pick_download == null)
+                    {
+                        //notice error;
+                        return;
+                    }
+
+                    var downloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
+                    var resource = Container.Default.GetExportedValue<ImageResourceManager>();
+
+                    System.Drawing.Image image;
+
+                    do
+                    {
+                        image = resource.RequestImageAsync(pick_download.Description, () =>
+                        {
+                            return downloader.GetImageAsync(pick_download.DownloadLink).Result;
+                        }).Result;
+                    } while (image == null);
+
+                    var source = image.ConvertToBitmapImage();
+
+                    Dispatcher.Invoke(() => DetailImageBox.ImageSource = source);
+                }
+            }, cancel_source.Token);
         }
 
-        CancellationTokenSource source ;
+        CancellationTokenSource cancel_source = new CancellationTokenSource();
 
         public void ApplyItem(Gallery gallery, GalleryItem item)
         {
             var notify = LoadingStatus.BeginBusy("正在读取图片详细信息....");
 
-            try
-            {
-                source.Cancel();
-            }
-            catch { }
-
             Gallery = gallery;
             PictureInfo = item;
 
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
-
-            source = new CancellationTokenSource();
             MarkButton.IsEnabled = false;
 
-            var current = Task.Run(() =>
+            Task.Run(() =>
             {
                 var visit = new VisitRecord()
                 {
@@ -169,12 +169,12 @@ namespace Wbooru.UI.Pages
                     PictureDetailInfo = detail;
                     notify.Dispose();
                 });
-            }, source.Token);
+            }, cancel_source.Token);
         }
 
         public void OnBeforeGetClean()
         {
-            //needn't impl
+
         }
 
         public void OnAfterPutClean()
@@ -182,6 +182,15 @@ namespace Wbooru.UI.Pages
             Gallery = null;
             PictureInfo = null;
             PictureDetailInfo = null;
+
+            try
+            {
+                cancel_source.Cancel();
+                cancel_source = new CancellationTokenSource();
+            }
+            catch { }
+
+            LoadingStatus.ForceFinishAllStatus();
         }
 
         private void BrowserOpenButton_Click(object sender, RoutedEventArgs e)

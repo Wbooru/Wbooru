@@ -106,6 +106,9 @@ namespace Wbooru.UI.Controls
             ResetTransform();
             ImageCoreBox.Source = source;
 
+            if (source==null)
+                return;
+
             var pic_width = (source as BitmapSource).PixelHeight;
             var box_width = ImageCoreBox.ActualWidth;
 
@@ -151,10 +154,11 @@ namespace Wbooru.UI.Controls
 
         public void ApplyTranslate(Vector offset)
         {
-            /*
+            
             ((ImageCoreBox.RenderTransform as TransformGroup).Children[1] as TranslateTransform).X = offset.X;
             ((ImageCoreBox.RenderTransform as TransformGroup).Children[1] as TranslateTransform).Y = offset.Y;
 
+            /*
             CurrentTranslateOffset = new Vector(((ImageCoreBox.RenderTransform as TransformGroup).Children[1] as TranslateTransform).X, ((ImageCoreBox.RenderTransform as TransformGroup).Children[1] as TranslateTransform).Y);
             Console.WriteLine(CurrentTranslateOffset);
             */
@@ -187,7 +191,7 @@ namespace Wbooru.UI.Controls
                 Console.WriteLine($"<{WrapPanel.ActualHeight}");
             }
 
-            ApplyTranslate(offset);
+            //ApplyTranslate(offset);
         }
 
         Point prev_point;

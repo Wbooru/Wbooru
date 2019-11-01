@@ -91,7 +91,15 @@ namespace Wbooru.UI.Controls
 
         internal void TaskFinishNotify(LoadingTaskNotify t)
         {
-            reg_notifies.Remove(t);
+            //avoid clean.
+            if (!reg_notifies.Remove(t))
+            {
+                Log<LoadingStatusDisplayer>.Debug($"skip cleaning this notify object[{t.NotifyID}].because it has already been cleaned.");
+                return;
+            }
+
+            Log<LoadingStatusDisplayer>.Debug($"removed and will clean notify object[{t.NotifyID}]");
+
             ObjectPool<LoadingTaskNotify>.Return(t);
 
             Dispatcher.InvokeAsync(() =>
@@ -122,12 +130,29 @@ namespace Wbooru.UI.Controls
         }
 
         public bool IsBusy => reg_notifies.Count!=0;
+
+        public void ForceFinishAllStatus()
+        {
+            foreach (var task in reg_notifies.ToArray())
+            {
+                task.Dispose();
+            }
+        }
     }
 
     public class LoadingTaskNotify : IDisposable/*实现这个是为了方便using形式使用此控件*/
     {
+        private static uint ID;
+        private readonly uint notify_id;
+
+        public LoadingTaskNotify()
+        {
+            notify_id = (++ID) % uint.MaxValue;
+        }
+
         public LoadingStatusDisplayer HostDisplayer { get; set; }
         public string Description { get; set; }
+        public uint NotifyID => notify_id;
 
         public void Dispose()
         {
