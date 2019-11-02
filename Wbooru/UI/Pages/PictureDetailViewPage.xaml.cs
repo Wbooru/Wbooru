@@ -89,16 +89,16 @@ namespace Wbooru.UI.Pages
             MainGrid.DataContext = this;
         }
 
-        private async void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
+        private void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
         {
-            if (galleryImageDetail==null)
+            if (galleryImageDetail == null)
             {
                 //clean.
                 DetailImageBox.ImageSource = null;
                 return;
             }
 
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 using (var _ = LoadingStatus.BeginBusy("加载图片中......"))
                 {
@@ -117,7 +117,7 @@ namespace Wbooru.UI.Pages
 
                     do
                     {
-                        image = resource.RequestImageAsync(pick_download.Description, () =>
+                        image = resource.RequestImageAsync(pick_download.DownloadLink, () =>
                         {
                             return downloader.GetImageAsync(pick_download.DownloadLink).Result;
                         }).Result;
@@ -125,7 +125,17 @@ namespace Wbooru.UI.Pages
 
                     var source = image.ConvertToBitmapImage();
 
-                    Dispatcher.Invoke(() => DetailImageBox.ImageSource = source);
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (PictureDetailInfo == galleryImageDetail)
+                        {
+                            DetailImageBox.ImageSource = source;
+                        }
+                        else
+                        {
+                            Log<PictureDetailViewPage>.Debug($"Picture info mismatch.");
+                        }
+                    });
                 }
             }, cancel_source.Token);
         }
@@ -144,27 +154,31 @@ namespace Wbooru.UI.Pages
 
             Task.Run(() =>
             {
-                var visit = new VisitRecord()
+                using (var transaction = DB.Database.BeginTransaction())
                 {
-                    GalleryID = item.ID,
-                    GalleryName = gallery.GalleryName,
-                    LastVisitTime = DateTime.Now
-                };
+                    var visit = new VisitRecord()
+                    {
+                        GalleryID = item.ID,
+                        GalleryName = gallery.GalleryName,
+                        LastVisitTime = DateTime.Now
+                    };
 
-                var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryID == item.ID && x.GalleryName == gallery.GalleryName);
-                if (visit_entity == null)
-                    DB.VisitRecords.Add(visit);
-                else
-                    DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
+                    var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryID == item.ID && x.GalleryName == gallery.GalleryName);
+                    if (visit_entity == null)
+                        DB.VisitRecords.Add(visit);
+                    else
+                        DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
 
-                DB.SaveChanges();
+                    DB.SaveChanges();
+                    transaction.Commit();
+                }
 
-                var x = DB.ItemMarks.Where(x => x.GalleryName == gallery.GalleryName && x.MarkGalleryID == item.ID).Any();
+                var is_mark = DB.ItemMarks.Where(x => x.GalleryName == gallery.GalleryName && x.MarkGalleryID == item.ID).Any();
                 var detail = gallery.GetImageDetial(item);
 
                 Dispatcher.Invoke(() =>
                 {
-                    IsVoted = x;
+                    IsMark = is_mark;
                     MarkButton.IsEnabled = true;
                     PictureDetailInfo = detail;
                     notify.Dispose();
@@ -241,9 +255,9 @@ namespace Wbooru.UI.Pages
         private void VoteButton_Click(object sender, RoutedEventArgs e)
         {
             //todo
-            IsVoted = true;
+            IsVoted = !IsVoted;
 
-            Log<PictureDetailViewPage>.Debug($"Now IsMark={IsVoted}");
+            Log<PictureDetailViewPage>.Debug($"Now IsVoted={IsVoted}");
         }
     }
 }

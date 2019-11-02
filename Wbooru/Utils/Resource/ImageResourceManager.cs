@@ -53,6 +53,9 @@ namespace Wbooru.Utils.Resource
         {
             res = null;
 
+            foreach (var c in Path.GetInvalidFileNameChars())
+                name = name.Replace(c, '_');
+
             var file_path = Path.Combine(setting.DownloadPath, name);
 
             if (!File.Exists(file_path))

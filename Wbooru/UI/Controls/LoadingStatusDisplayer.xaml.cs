@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -140,19 +141,31 @@ namespace Wbooru.UI.Controls
         }
     }
 
-    public class LoadingTaskNotify : IDisposable/*实现这个是为了方便using形式使用此控件*/
+    public sealed class LoadingTaskNotify : IDisposable/*实现这个是为了方便using形式使用此控件*/,INotifyPropertyChanged
     {
-        private static uint ID;
-        private readonly uint notify_id;
+        private static uint ID=0;
 
         public LoadingTaskNotify()
         {
-            notify_id = (++ID) % uint.MaxValue;
+            ID = (++ID) % uint.MaxValue;
+            NotifyID = ID;
         }
 
         public LoadingStatusDisplayer HostDisplayer { get; set; }
-        public string Description { get; set; }
-        public uint NotifyID => notify_id;
+
+        private string _description;
+        public string Description
+        {
+            get => _description; set
+            {
+                _description = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Description)));
+            }
+        }
+
+        public uint NotifyID { get; private set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void Dispose()
         {

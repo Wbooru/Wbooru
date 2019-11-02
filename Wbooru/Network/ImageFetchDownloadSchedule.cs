@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using Wbooru.PluginExt;
 using Wbooru.Settings;
 using Wbooru.UI.Controls;
+using System.Threading;
 
 namespace Wbooru.Network
 {
@@ -31,9 +32,15 @@ namespace Wbooru.Network
 
         private GlobalSetting setting;
 
-        public Task<Image> GetImageAsync(string download_path)
+        public Task<Image> GetImageAsync(string download_path, CancellationToken? cancel_token = null)
         {
-            var task = new Task<Image>(OnDownloadTaskStart, download_path);
+            Task<Image> task;
+
+            if (!cancel_token.HasValue)
+                task = new Task<Image>(OnDownloadTaskStart, download_path);
+            else
+                task = new Task<Image>(OnDownloadTaskStart, download_path, cancel_token.Value);
+
 
             lock (tasks_waiting_queue)
             {
