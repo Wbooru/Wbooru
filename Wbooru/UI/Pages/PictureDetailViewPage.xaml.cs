@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Galleries;
 using Wbooru.Kernel;
+using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.Network;
 using Wbooru.Persistence;

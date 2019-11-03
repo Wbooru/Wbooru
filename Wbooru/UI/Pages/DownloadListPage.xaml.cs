@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wbooru.Models;
 
 namespace Wbooru.UI.Pages
 {
@@ -20,9 +22,15 @@ namespace Wbooru.UI.Pages
     /// </summary>
     public partial class DownloadListPage : Page
     {
+        public ObservableCollection<Download> DownloadList = new ObservableCollection<Download>();
+
         public DownloadListPage()
         {
             InitializeComponent();
+
+            MainPanel.DataContext = this;
+
+            
         }
     }
 }

@@ -10,9 +10,11 @@ namespace Wbooru.Network
 {
     public static class RequestHelper
     {
-        public static WebResponse CreateDeafult(string url)
+        public static WebResponse CreateDeafult(string url,Action<HttpWebRequest> custom = null)
         {
-            var req = WebRequest.Create(url);
+            var req = HttpWebRequest.Create(url);
+
+            custom?.Invoke(req as HttpWebRequest);
 
             Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}]create http(s) request :{url}", "RequestHelper");
 

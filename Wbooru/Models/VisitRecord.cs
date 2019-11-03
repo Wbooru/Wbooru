@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wbooru.Persistence
+namespace Wbooru.Models
 {
     public class VisitRecord
     {

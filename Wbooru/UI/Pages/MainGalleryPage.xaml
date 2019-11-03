@@ -77,14 +77,15 @@
                     IsEnabled="False"
                     Text="收藏" />
                 <controls:MenuButton
+                    x:Name="DownloadPageButton"
+                    Button.Click="DownloadPageButton_Click"
                     Icon=""
-                    IsEnabled="False"
                     Text="下载" />
             </StackPanel>
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
                 <controls:MenuButton
-                    Icon=""
                     Button.Click="MenuButton_Click_1"
+                    Icon=""
                     Text="设置" />
                 <controls:MenuButton
                     Button.Click="MenuButton_MouseDown"

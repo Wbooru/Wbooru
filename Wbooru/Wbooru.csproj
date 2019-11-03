@@ -98,6 +98,7 @@
     <Compile Include="Galleries\GalleryFeature.cs" />
     <Compile Include="Galleries\IContainDetail.cs" />
     <Compile Include="Kernel\Container.cs" />
+    <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
     <Compile Include="Kernel\SchedulerManager.cs" />
     <Compile Include="Migrations\201905270608490_InitialCreate.cs" />
@@ -120,8 +121,17 @@
     <Compile Include="Migrations\201906040045405_ModifyTable.Designer.cs">
       <DependentUpon>201906040045405_ModifyTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911030558572_ModifyDownload.cs" />
+    <Compile Include="Migrations\201911030558572_ModifyDownload.Designer.cs">
+      <DependentUpon>201911030558572_ModifyDownload.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911030607513_AddDownloadProp.cs" />
+    <Compile Include="Migrations\201911030607513_AddDownloadProp.Designer.cs">
+      <DependentUpon>201911030607513_AddDownloadProp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Download.cs" />
+    <Compile Include="Models\DownloadWrapper.cs" />
     <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
     <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
     <Compile Include="Models\SettingUI\PropertyInfoWrapper.cs" />
@@ -129,16 +139,15 @@
     <Compile Include="Network\ImageFetchDownloadSchedule.cs" />
     <Compile Include="Network\RequestHelper.cs" />
     <Compile Include="Persistence\LocalDBContext.cs" />
-    <Compile Include="Persistence\DownloadRecord.cs" />
-    <Compile Include="Persistence\GalleryItemMark.cs" />
-    <Compile Include="Persistence\TagRecord.cs" />
-    <Compile Include="Persistence\VisitRecord.cs" />
+    <Compile Include="Models\GalleryItemMark.cs" />
+    <Compile Include="Models\TagRecord.cs" />
+    <Compile Include="Models\VisitRecord.cs" />
     <Compile Include="PluginExt\ISchedulable.cs" />
     <Compile Include="PluginExt\IPlugin.cs" />
     <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">
       <DependentUpon>SampleDataSource.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SampleData\Wrapper\DownloadListWrapper.cs" />
+    <Compile Include="SampleData\Wrapper\DownloadList.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
     <Compile Include="Settings\SettingBase.cs" />
     <Compile Include="Settings\SettingFileEntity.cs" />
@@ -328,6 +337,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906040045405_ModifyTable.resx">
       <DependentUpon>201906040045405_ModifyTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911030558572_ModifyDownload.resx">
+      <DependentUpon>201911030558572_ModifyDownload.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911030607513_AddDownloadProp.resx">
+      <DependentUpon>201911030607513_AddDownloadProp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -185,5 +185,18 @@ namespace Wbooru.UI.Pages
             var navigation = Container.Default.GetExportedValue<NavigationHelper>();
             navigation.NavigationPush(page);
         }
+
+        private void MenuButton_Click_2(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DownloadPageButton_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new DownloadListPage();
+
+            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
+            navigation.NavigationPush(page);
+        }
     }
 }

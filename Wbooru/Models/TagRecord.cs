@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wbooru.Models;
 
-namespace Wbooru.Persistence
+namespace Wbooru.Models
 {
     public class TagRecord
     {

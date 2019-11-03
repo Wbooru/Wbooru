@@ -64,6 +64,8 @@ namespace Wbooru.UI.Controls
 
             sb = Resources["ShowAction"] as Storyboard;
             animation = sb.Children.FirstOrDefault(x => x.Name == "HideAnimation") as DoubleAnimation;
+
+
         }
 
         public void ShowMessage(string message, MessageType message_type = MessageType.Notify, uint show_time = 2000)

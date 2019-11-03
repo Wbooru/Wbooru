@@ -1,1 +1,1 @@
-﻿<Wrapper:DownloadListWrapper xmlns:Wrapper="clr-namespace:Wbooru.SampleData.Wrapper"/>
+﻿<Wrapper:DownloadList xmlns:Wrapper="clr-namespace:Wbooru.SampleData.Wrapper"/>

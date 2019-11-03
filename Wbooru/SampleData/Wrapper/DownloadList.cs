@@ -7,7 +7,7 @@ using Wbooru.Models;
 
 namespace Wbooru.SampleData.Wrapper
 {
-    public class DownloadListWrapper
+    public class DownloadList
     {
         IEnumerable<Download> Downloads { get; set; }
     }
