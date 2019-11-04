@@ -144,19 +144,6 @@
             <Setter Property="Foreground" Value="White" />
         </Style>
 
-        <Style TargetType="{x:Type CheckBox}">
-            <Style.Resources>
-                <Style TargetType="{x:Type Path}">
-                    <Setter Property="FlowDirection" Value="LeftToRight" />
-                </Style>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="FlowDirection" Value="LeftToRight" />
-                </Style>
-            </Style.Resources>
-            <Setter Property="FlowDirection" Value="RightToLeft" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
-
         <Style TargetType="{x:Type ToolTip}">
             <Setter Property="Background" Value="#FF23283C" />
             <Setter Property="BorderBrush" Value="White" />

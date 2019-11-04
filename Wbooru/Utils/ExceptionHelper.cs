@@ -14,7 +14,7 @@ namespace Wbooru.Utils
         public static void DebugThrow(Exception e)
         {
 #if DEBUG
-            throw e;
+            throw new Exception("DebugThrow", e);
 #endif
         }
 

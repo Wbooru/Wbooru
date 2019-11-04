@@ -16,6 +16,18 @@
 
     <Page.Resources>
         <settingui1:AssemblyTypeDisplayConverter x:Key="AssemblyTypeDisplayConverter" />
+        <Style TargetType="{x:Type CheckBox}">
+            <Style.Resources>
+                <Style TargetType="{x:Type Path}">
+                    <Setter Property="FlowDirection" Value="LeftToRight" />
+                </Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="FlowDirection" Value="LeftToRight" />
+                </Style>
+            </Style.Resources>
+            <Setter Property="FlowDirection" Value="RightToLeft" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
     </Page.Resources>
 
     <Grid Name="MainPanel" Background="{StaticResource ContentBackgroundColor}">

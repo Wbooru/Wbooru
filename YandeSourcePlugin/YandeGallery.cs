@@ -116,7 +116,8 @@ namespace YandeSourcePlugin
                 Description = "Jpeg",
                 Size = new Size(pic_info["jpeg_width"].ToObject<int>(), pic_info["jpeg_height"].ToObject<int>()),
                 FileLength = pic_info["jpeg_file_size"].ToObject<int>(),
-                DownloadLink = pic_info["jpeg_url"].ToString()
+                DownloadLink = pic_info["jpeg_url"].ToString(),
+                FullFileName = Path.GetFileName(pic_info["jpeg_url"].ToString())
             });
 
             downloads.Add(new DownloadableImageLink()
@@ -124,7 +125,8 @@ namespace YandeSourcePlugin
                 Description = "Preview",
                 Size = new Size(pic_info["preview_width"].ToObject<int>(), pic_info["preview_height"].ToObject<int>()),
                 FileLength = 0,
-                DownloadLink = pic_info["preview_url"].ToString()
+                DownloadLink = pic_info["preview_url"].ToString(),
+                FullFileName = Path.GetFileName(pic_info["preview_url"].ToString())
             });
 
             downloads.Add(new DownloadableImageLink()
@@ -132,7 +134,8 @@ namespace YandeSourcePlugin
                 Description = "Sample",
                 Size = new Size(pic_info["sample_width"].ToObject<int>(), pic_info["sample_height"].ToObject<int>()),
                 FileLength = pic_info["sample_file_size"].ToObject<int>(),
-                DownloadLink = pic_info["sample_url"].ToString()
+                DownloadLink = pic_info["sample_url"].ToString(),
+                FullFileName = Path.GetFileName(pic_info["sample_url"].ToString())
             });
 
             downloads.Add(new DownloadableImageLink()
@@ -140,7 +143,8 @@ namespace YandeSourcePlugin
                 Description = "File",
                 Size = new Size(pic_info["width"].ToObject<int>(), pic_info["height"].ToObject<int>()),
                 FileLength = pic_info["file_size"].ToObject<int>(),
-                DownloadLink = pic_info["file_url"].ToString()
+                DownloadLink = pic_info["file_url"].ToString(),
+                FullFileName = Path.GetFileName(pic_info["file_url"].ToString())
             });
 
             detail.DownloadableImageLinks = downloads;

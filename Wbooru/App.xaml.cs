@@ -24,11 +24,13 @@ namespace Wbooru
             Container.BuildDefault();
 
             Container.Default.ComposeParts(this);
+
+            DownloadManager.Init();
         }
 
         ~App ()
         {
-            SettingManager.SaveSettingFile();
+
         }
     }
 }

@@ -22,6 +22,8 @@ using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.Network;
 using Wbooru.Persistence;
+using Wbooru.Settings;
+using Wbooru.UI.Controls;
 using Wbooru.Utils;
 using Wbooru.Utils.Resource;
 using Brushes = System.Windows.Media.Brushes;
@@ -259,6 +261,43 @@ namespace Wbooru.UI.Pages
             IsVoted = !IsVoted;
 
             Log<PictureDetailViewPage>.Debug($"Now IsVoted={IsVoted}");
+        }
+
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            var download_link = (sender as FrameworkElement).DataContext as DownloadableImageLink;
+
+            var file_name = string.IsNullOrWhiteSpace(download_link.FullFileName)? 
+                string.Join("", $"{PictureDetailInfo.ID} {string.Join("_", PictureDetailInfo.Tags)}{System.IO.Path.GetExtension(download_link.DownloadLink)}")
+                : download_link.FullFileName;
+
+            foreach (var ic in System.IO.Path.GetInvalidFileNameChars())
+                file_name = file_name.Replace(ic, '_');
+
+            var config = Container.Default.GetExportedValue<SettingManager>().LoadSetting<GlobalSetting>();
+
+            var full_file_path = System.IO.Path.Combine(config.DownloadPath, config.SeparateGallerySubDirectories ? Gallery.GalleryName : "", file_name);
+
+            foreach (var ic in System.IO.Path.GetInvalidPathChars())
+                full_file_path = full_file_path.Replace(ic, '_');
+
+            var download_task = new DownloadWrapper()
+            {
+                DownloadInfo = new Download()
+                {
+                    DownloadUrl = download_link.DownloadLink,
+                    TotalBytes = download_link.FileLength,
+                    GalleryName = Gallery.GalleryName,
+                    GalleryPictureID = PictureDetailInfo.ID,
+                    FileName = file_name,
+                    DownloadFullPath = full_file_path,
+                    DisplayDownloadedLength = 0,
+                    DownloadStartTime = DateTime.Now
+                }
+            };
+
+            DownloadManager.DownloadStart(download_task);
+            Container.Default.GetExportedValue<Toast>().ShowMessage("开始下载图片..");
         }
     }
 }

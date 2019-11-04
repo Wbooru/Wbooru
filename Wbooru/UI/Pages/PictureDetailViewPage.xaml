@@ -355,6 +355,7 @@
                                         <Button
                                             Name="DownloadButton"
                                             FontFamily="Segoe UI Symbol"
+                                            Click="DownloadButton_Click"
                                             FontSize="20">
                                             
                                         </Button>

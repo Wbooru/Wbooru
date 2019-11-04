@@ -22,15 +22,15 @@ namespace Wbooru.Models
             }
         }
 
-        private bool is_downloading;
+        private DownloadTaskStatus status;
 
-        public bool IsDownloading
+        public DownloadTaskStatus Status
         {
-            get => is_downloading;
+            get => status;
             set
             {
-                is_downloading = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDownloading)));
+                status = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
             }
         }
 
@@ -60,6 +60,23 @@ namespace Wbooru.Models
             }
         }
 
+        private long download_speed;
+
+        /// <summary>
+        /// 勿碰.jpg
+        /// </summary>
+        public long DownloadSpeed
+        {
+            get => download_speed;
+            set
+            {
+                download_speed = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DownloadSpeed)));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool IsSaveInDB => DownloadInfo.DownloadId > 0;
     }
 }

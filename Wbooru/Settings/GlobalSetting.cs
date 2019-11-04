@@ -15,6 +15,10 @@ namespace Wbooru.Settings
         [Path(false,false)]
         public string DownloadPath { get; set; } = "./Download";
 
+        [Group("Download Options")]
+        [Description("分别按照来源子文件夹来下载图片")]
+        public bool SeparateGallerySubDirectories { get; set; } = true;
+
         [Group("View Options")]
         [Range("1","5")]
         public int LoadingImageThread { get; set; } = 2;

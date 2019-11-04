@@ -129,8 +129,13 @@
     <Compile Include="Migrations\201911030607513_AddDownloadProp.Designer.cs">
       <DependentUpon>201911030607513_AddDownloadProp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911030706152_ModifyDownloadProp.cs" />
+    <Compile Include="Migrations\201911030706152_ModifyDownloadProp.Designer.cs">
+      <DependentUpon>201911030706152_ModifyDownloadProp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Download.cs" />
+    <Compile Include="Models\DownloadTaskStatus.cs" />
     <Compile Include="Models\DownloadWrapper.cs" />
     <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
     <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
@@ -205,6 +210,9 @@
       <DependentUpon>SettingPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Panels\GridPanel.cs" />
+    <Compile Include="UI\ValueConverters\BytesLength2VisibilityConverter.cs" />
+    <Compile Include="UI\ValueConverters\DisplaySpeedConverter.cs" />
+    <Compile Include="UI\ValueConverters\FormatBytesLengthConverter.cs" />
     <Compile Include="UI\ValueConverters\SettingUI\AssemblyTypeDisplayConverter.cs" />
     <Compile Include="UI\ValueConverters\SettingUI\AutoValueConverter.cs" />
     <Compile Include="UI\ValueConverters\SettingUI\RangeValueConverter.cs" />
@@ -343,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911030607513_AddDownloadProp.resx">
       <DependentUpon>201911030607513_AddDownloadProp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911030706152_ModifyDownloadProp.resx">
+      <DependentUpon>201911030706152_ModifyDownloadProp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

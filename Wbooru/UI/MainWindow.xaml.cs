@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Kernel;
+using Wbooru.Settings;
 using Wbooru.UI.Pages;
 using static Wbooru.UI.Controls.Toast;
 
@@ -33,6 +34,14 @@ namespace Wbooru.UI
 
             var navigation = Container.Default.GetExportedValue<NavigationHelper>();
             navigation.NavigationPush(new MainGalleryPage());
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            DownloadManager.Close();
+            Container.Default.GetExportedValue<SettingManager>().SaveSettingFile();
         }
     }
 }
