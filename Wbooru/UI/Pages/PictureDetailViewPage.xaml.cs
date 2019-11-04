@@ -296,8 +296,21 @@ namespace Wbooru.UI.Pages
                 }
             };
 
+            if (DownloadManager.CheckIfContained(download_task))
+            {
+                //jump to download page if download task is exist.
+
+                Container.Default.GetExportedValue<Toast>().ShowMessage("已存在相同的下载任务");
+
+                var page = new DownloadListPage();
+                var navigation = Container.Default.GetExportedValue<NavigationHelper>();
+                navigation.NavigationPush(page);
+
+                return;
+            }
+
             DownloadManager.DownloadStart(download_task);
-            Container.Default.GetExportedValue<Toast>().ShowMessage("开始下载图片..");
+            Container.Default.GetExportedValue<Toast>().ShowMessage("开始下载图片...");
         }
     }
 }

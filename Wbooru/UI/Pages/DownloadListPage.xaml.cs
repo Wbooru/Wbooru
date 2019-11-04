@@ -101,7 +101,8 @@ namespace Wbooru.UI.Pages
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            (sender as Popup).IsOpen = false;
+            var panel = (sender as FrameworkElement).DataContext as Popup;
+            panel.IsOpen = false;
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
