@@ -17,7 +17,7 @@ namespace Wbooru.UI.ValueConverters
 
         private static string FormatFileSize(long bytes)
         {
-            if (bytes <= 0) return "<unknown file size>";
+            if (bytes <= 0) return "0B";
             var units = new[] { "B", "kB", "MB", "GB", "TB" };
             int digitGroups = (int)(Math.Log10(bytes) / Math.Log10(1024));
             return $"{bytes / Math.Pow(1024, digitGroups):F2}  {units[digitGroups]}";

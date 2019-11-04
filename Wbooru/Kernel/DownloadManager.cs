@@ -54,15 +54,20 @@ namespace Wbooru.Kernel
                     Log.Debug($"Add download record :{item.DownloadInfo.DownloadFullPath}");
                     db.Downloads.Add(item.DownloadInfo);
                 }
-
             }
 
             db.SaveChanges();
+
+            Log.Debug($"Download record save all done.");
         }
 
-        internal static void DownloadRestart(DownloadWrapper download_task)
+        internal static void DownloadRestart(DownloadWrapper download)
         {
-            throw new NotImplementedException();
+            var temp_dl_path = download.DownloadInfo.DownloadFullPath + ".dl";
+            File.Delete(temp_dl_path);
+
+            download.Status = DownloadTaskStatus.Paused;
+            DownloadStart(download);
         }
 
         internal static void Init()
@@ -77,7 +82,8 @@ namespace Wbooru.Kernel
             foreach (var item in db.Downloads.Select(x => new DownloadWrapper()
             {
                 DownloadInfo = x,
-                CurrentDownloadedLength = x.DisplayDownloadedLength
+                CurrentDownloadedLength = x.DisplayDownloadedLength,
+                Status = x.DisplayDownloadedLength != 0 && x.DisplayDownloadedLength == x.TotalBytes ? DownloadTaskStatus.Finished : DownloadTaskStatus.Paused
             }))
             {
                 Log.Debug($"Load download record :{item.DownloadInfo.DownloadFullPath}");

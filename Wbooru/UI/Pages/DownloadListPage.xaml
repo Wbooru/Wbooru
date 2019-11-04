@@ -136,6 +136,7 @@
                             Grid.Column="1"
                             Orientation="Horizontal">
                             <Button
+                                Name="ControlButton"
                                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                                 Background="Transparent"
                                 BorderBrush="Transparent"
@@ -160,6 +161,49 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
+                            <Popup
+                                Name="RedownloadPanel"
+                                AllowsTransparency="True"
+                                Placement="Bottom"
+                                PlacementTarget="{Binding ElementName=ControlButton}"
+                                StaysOpen="False">
+                                <StackPanel Background="#BF1D2031">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="Button">
+                                            <Setter Property="BorderBrush" Value="White">
+                                            </Setter>
+                                            <Setter Property="Margin" Value="10">
+                                            </Setter>
+                                            <Setter Property="HorizontalAlignment" Value="Stretch">
+                                            </Setter>
+                                            <Setter Property="Background" Value="Transparent">
+                                            </Setter>
+                                            <Setter Property="Padding" Value="30,10,30,10">
+                                            </Setter>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Margin="10" FontSize="15">
+                                        是否重新下载此任务?
+                                    </TextBlock>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition>
+                                            </ColumnDefinition>
+                                            <ColumnDefinition>
+                                            </ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button Click="Button_Click_5" DataContext="{Binding ElementName=RedownloadPanel}">确认</Button>
+                                        <Button
+                                            Grid.Column="1"
+                                            Click="Button_Click_4"
+                                            DataContext="{Binding ElementName=RedownloadPanel}">
+                                            取消
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Popup>
                             <Button
                                 x:Name="DeleteButton"
                                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"

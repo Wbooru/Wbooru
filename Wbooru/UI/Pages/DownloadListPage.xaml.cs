@@ -54,9 +54,8 @@ namespace Wbooru.UI.Pages
                         DownloadManager.DownloadPause(download_task);
                         break;
                     case DownloadTaskStatus.Finished:
-                        if (RedownloadCheck(download_task))
-                            DownloadManager.DownloadRestart(download_task);
-                        
+                        ShowRedownloadConfimPanel(sender as Button,download_task);
+
                         break;
                     default:
                         break;
@@ -64,9 +63,10 @@ namespace Wbooru.UI.Pages
             }
         }
 
-        private bool RedownloadCheck(DownloadWrapper download_task)
+        private void ShowRedownloadConfimPanel(Button sender, DownloadWrapper download_task)
         {
-            throw new NotImplementedException();
+            var panel = (sender.Parent as FrameworkElement).FindName("RedownloadPanel") as Popup;
+            panel.IsOpen = true;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -97,6 +97,20 @@ namespace Wbooru.UI.Pages
         {
             var panel = (sender as FrameworkElement).DataContext as Popup;
             panel.IsOpen = false;
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            (sender as Popup).IsOpen = false;
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            var panel = (sender as FrameworkElement).DataContext as Popup;
+            panel.IsOpen = false;
+            var download_task = panel.DataContext as DownloadWrapper;
+
+            DownloadManager.DownloadRestart(download_task);
         }
     }
 }
