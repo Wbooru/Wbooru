@@ -21,7 +21,7 @@ namespace Wbooru.Utils
         public static void ToastNotice(Exception e)
         {
             DebugThrow(e);
-            Container.Default.GetExportedValue<Toast>().ShowMessage(e.Message);
+            Toast.ShowMessage(e.Message);
         }
     }
 }

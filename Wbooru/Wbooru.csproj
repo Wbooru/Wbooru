@@ -157,7 +157,7 @@
     <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
     <Compile Include="Models\SettingUI\PropertyInfoWrapper.cs" />
     <Compile Include="Models\Tag.cs" />
-    <Compile Include="Network\ImageFetchDownloadSchedule.cs" />
+    <Compile Include="Network\ImageFetchDownloadScheduler.cs" />
     <Compile Include="Network\RequestHelper.cs" />
     <Compile Include="Persistence\LocalDBContext.cs" />
     <Compile Include="Models\GalleryItemMark.cs" />

@@ -2,8 +2,12 @@
 {
     public interface ISchedulable
     {
-        bool IsAsyncSchedule { get; } 
+        string SchedulerName { get; }
+
+        bool IsAsyncSchedule { get; }
 
         void OnScheduleCall();
+
+        void OnSchedulerTerm();
     }
 }

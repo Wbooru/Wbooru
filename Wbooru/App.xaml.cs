@@ -5,6 +5,7 @@ using System.Linq;
 using Wbooru.Settings;
 using System.Collections.Generic;
 using Wbooru.Galleries;
+using System;
 
 namespace Wbooru
 {
@@ -13,24 +14,26 @@ namespace Wbooru
     /// </summary>
     public partial class App : Application
     {
-        [Import(typeof(SchedulerManager))]
-        public SchedulerManager SchedulerManager { get; set; }
-
-        [Import(typeof(SettingManager))]
-        public SettingManager SettingManager { get; set; }
-
         public App()
+        {
+            Init();
+        }
+
+
+        internal static void Init()
         {
             Container.BuildDefault();
 
-            Container.Default.ComposeParts(this);
-
             DownloadManager.Init();
+
+            SchedulerManager.Init();
         }
 
-        ~App ()
+        internal static void Term()
         {
-
+            DownloadManager.Close();
+            SettingManager.SaveSettingFile();
+            SchedulerManager.Term();
         }
     }
 }

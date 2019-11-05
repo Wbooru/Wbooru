@@ -63,8 +63,7 @@ namespace Wbooru.UI.Pages
             DependencyProperty.Register("CurrentGallery", typeof(Gallery), typeof(MainGalleryPage), new PropertyMetadata(null));
 
         public GlobalSetting Setting { get; private set; }
-        public ImageResourceManager Resource { get; private set; }
-        public ImageFetchDownloadSchedule ImageDownloader { get; private set; }
+        public ImageFetchDownloadScheduler ImageDownloader { get; private set; }
 
         private IEnumerable<GalleryItem> CurrentItems { get; set; }
 
@@ -87,9 +86,8 @@ namespace Wbooru.UI.Pages
             try
             {
                 var gallery = Container.Default.GetExportedValue<Gallery>();
-                Setting = Container.Default.GetExportedValue<SettingManager>().LoadSetting<GlobalSetting>();
-                Resource = Container.Default.GetExportedValue<ImageResourceManager>();
-                ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
+                Setting = SettingManager.LoadSetting<GlobalSetting>();
+                ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
                 if (gallery != null)
                     ApplyGallery(gallery, keywords);
@@ -197,8 +195,7 @@ namespace Wbooru.UI.Pages
             var page = ObjectPool<PictureDetailViewPage>.Get();
             page.ApplyItem(CurrentGallery, item);
 
-            var navigation=Container.Default.GetExportedValue<NavigationHelper>();
-            navigation.NavigationPush(page);
+            NavigationHelper.NavigationPush(page);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -209,17 +206,15 @@ namespace Wbooru.UI.Pages
         private void SearchInput_SearchRequest(string obj)
         {
             var keywords = obj.Split(' ');
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
 
-            navigation.NavigationPush(new MainGalleryPage(keywords));
+            NavigationHelper.NavigationPush(new MainGalleryPage(keywords));
         }
 
         private void MenuButton_Click_1(object sender, RoutedEventArgs e)
         {
             var page = new SettingPage();
 
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-            navigation.NavigationPush(page);
+            NavigationHelper.NavigationPush(page);
         }
 
         private void MenuButton_Click_2(object sender, RoutedEventArgs e)
@@ -231,14 +226,12 @@ namespace Wbooru.UI.Pages
         {
             var page = new DownloadListPage();
 
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-            navigation.NavigationPush(page);
+            NavigationHelper.NavigationPush(page);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-            navigation.NavigationPop();
+            NavigationHelper.NavigationPop();
         }
     }
 }

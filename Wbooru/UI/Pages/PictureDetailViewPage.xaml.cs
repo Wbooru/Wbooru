@@ -80,14 +80,13 @@ namespace Wbooru.UI.Pages
         public static readonly DependencyProperty IsVotedProperty =
             DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
 
-        [Import(typeof(LocalDBContext))]
-        public LocalDBContext DB { get; set; }
+        public LocalDBContext DB { get; }
 
         public PictureDetailViewPage()
         {
             InitializeComponent();
 
-            Container.Default.ComposeParts(this);
+            DB = LocalDBContext.Instance;
 
             MainGrid.DataContext = this;
         }
@@ -113,14 +112,13 @@ namespace Wbooru.UI.Pages
                         return;
                     }
 
-                    var downloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
-                    var resource = Container.Default.GetExportedValue<ImageResourceManager>();
+                    var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
                     System.Drawing.Image image;
 
                     do
                     {
-                        image = resource.RequestImageAsync(pick_download.DownloadLink, () =>
+                        image = ImageResourceManager.RequestImageAsync(pick_download.DownloadLink, () =>
                         {
                             return downloader.GetImageAsync(pick_download.DownloadLink).Result;
                         }).Result;
@@ -220,8 +218,7 @@ namespace Wbooru.UI.Pages
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-            var page=navigation.NavigationPop() as PictureDetailViewPage;
+            var page= NavigationHelper.NavigationPop() as PictureDetailViewPage;
 
             ObjectPool<PictureDetailViewPage>.Return(page);
         }
@@ -274,7 +271,7 @@ namespace Wbooru.UI.Pages
             foreach (var ic in System.IO.Path.GetInvalidFileNameChars())
                 file_name = file_name.Replace(ic, '_');
 
-            var config = Container.Default.GetExportedValue<SettingManager>().LoadSetting<GlobalSetting>();
+            var config = SettingManager.LoadSetting<GlobalSetting>();
 
             var full_file_path = System.IO.Path.Combine(config.DownloadPath, config.SeparateGallerySubDirectories ? Gallery.GalleryName : "", file_name);
 
@@ -300,17 +297,15 @@ namespace Wbooru.UI.Pages
             {
                 //jump to download page if download task is exist.
 
-                Container.Default.GetExportedValue<Toast>().ShowMessage("已存在相同的下载任务");
+                Toast.ShowMessage("已存在相同的下载任务");
 
-                var page = new DownloadListPage();
-                var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-                navigation.NavigationPush(page);
+                NavigationHelper.NavigationPush(new DownloadListPage());
 
                 return;
             }
 
             DownloadManager.DownloadStart(download_task);
-            Container.Default.GetExportedValue<Toast>().ShowMessage("开始下载图片...");
+            Toast.ShowMessage("开始下载图片...");
         }
 
         private void AddTagCollectionButton_Click(object sender, RoutedEventArgs e)
@@ -332,14 +327,14 @@ namespace Wbooru.UI.Pages
 
             if(DB.Tags.Any(x=>x.FromGallery == tag.FromGallery && x.Tag.Name == tag_name && !x.IsFilter))
             {
-                Container.Default.GetExportedValue<Toast>().ShowMessage($"已添加过此标签了");
+                Toast.ShowMessage($"已添加过此标签了");
                 return;
             }
 
             DB.Tags.Add(tag);
             DB.SaveChanges();
             
-            Container.Default.GetExportedValue<Toast>().ShowMessage($"添加成功");
+            Toast.ShowMessage($"添加成功");
         }
 
         private void AddTagFilterButton_Click(object sender, RoutedEventArgs e)
@@ -361,14 +356,14 @@ namespace Wbooru.UI.Pages
 
             if (DB.Tags.Any(x => x.FromGallery == tag.FromGallery && x.Tag.Name == tag_name && x.IsFilter))
             {
-                Container.Default.GetExportedValue<Toast>().ShowMessage($"已过滤此标签了");
+                Toast.ShowMessage($"已过滤此标签了");
                 return;
             }
 
             DB.Tags.Add(tag);
             DB.SaveChanges();
 
-            Container.Default.GetExportedValue<Toast>().ShowMessage($"过滤标签添加成功");
+            Toast.ShowMessage($"过滤标签添加成功");
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -376,8 +371,7 @@ namespace Wbooru.UI.Pages
             if (!((sender as FrameworkElement).DataContext is string tag_name))
                 return;
 
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-            navigation.NavigationPush(new MainGalleryPage(new[] { tag_name }));
+            NavigationHelper.NavigationPush(new MainGalleryPage(new[] { tag_name }));
         }
     }
 }

@@ -30,10 +30,9 @@ namespace YandeSourcePlugin
 
         HashSet<string> c=new HashSet<string>();
 
-        [ImportingConstructor]
-        public YandeGallery([Import]SettingManager setting_manager)
+        public YandeGallery()
         {
-            setting = setting_manager.LoadSetting<GlobalSetting>();
+            setting = SettingManager.LoadSetting<GlobalSetting>();
         }
 
         public override GalleryImageDetail GetImageDetial(GalleryItem item)

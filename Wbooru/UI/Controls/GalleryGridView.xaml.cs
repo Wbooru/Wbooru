@@ -64,7 +64,7 @@ namespace Wbooru.UI.Controls
 
         public void UpdateSettingForScroller()
         {
-            var scrollbar_visiable = Container.Default.GetExportedValue<SettingManager>().LoadSetting<GlobalSetting>().GalleryListScrollBarVisiable;
+            var scrollbar_visiable = SettingManager.LoadSetting<GlobalSetting>().GalleryListScrollBarVisiable;
 
             if (scrollbar_visiable)
             {

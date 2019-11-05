@@ -34,7 +34,7 @@ namespace Wbooru.Kernel
             }
             catch{}
 
-            var db = Container.Default.GetExportedValue<LocalDBContext>();
+            var db = LocalDBContext.Instance;
 
             foreach (var item in DownloadList)
             {
@@ -77,7 +77,7 @@ namespace Wbooru.Kernel
             timer_thread.IsBackground = true;
             timer_thread.Start();
 
-            var db = Container.Default.GetExportedValue<LocalDBContext>();
+            var db = LocalDBContext.Instance;
 
             foreach (var item in db.Downloads.Select(x => new DownloadWrapper()
             {
@@ -99,7 +99,7 @@ namespace Wbooru.Kernel
             File.Delete(temp_dl_path);
             DownloadList.Remove(download);
 
-            var db = Container.Default.GetExportedValue<LocalDBContext>();
+            var db = LocalDBContext.Instance;
 
             if (download.IsSaveInDB && db.Downloads.Remove(download.DownloadInfo) is Download)
             {

@@ -58,7 +58,7 @@ namespace Wbooru.UI.Controls
             HideInputAction = Resources["HideInputAction"] as Storyboard;
             animation = ShowInputAction.Children.OfType<DoubleAnimation>().First();
 
-            localDB = Container.Default.GetExportedValue<LocalDBContext>();
+            localDB = LocalDBContext.Instance;
         }
 
         public bool _mouse_enter = false;

@@ -16,21 +16,15 @@ using System.Threading;
 namespace Wbooru.Network
 {
     [Export(typeof(ISchedulable))]
-    [Export(typeof(ImageFetchDownloadSchedule))]
-    public class ImageFetchDownloadSchedule : ISchedulable
+    [Export(typeof(ImageFetchDownloadScheduler))]
+    public class ImageFetchDownloadScheduler : ISchedulable
     {
-        [ImportingConstructor]
-        public ImageFetchDownloadSchedule([Import]SettingManager setting_manager)
-        {
-            setting = setting_manager.LoadSetting<GlobalSetting>();
-        }
-
         public bool IsAsyncSchedule => false;
+
+        public string SchedulerName => "Images Fetching Scheduler";
 
         private List<Task<Image>> tasks_waiting_queue=new List<Task<Image>>();
         private HashSet<Task<Image>> tasks_running_queue=new HashSet<Task<Image>>();
-
-        private GlobalSetting setting;
 
         public Task<Image> GetImageAsync(string download_path, CancellationToken? cancel_token = null)
         {
@@ -65,7 +59,7 @@ namespace Wbooru.Network
                 }
             }
 
-            var add_count = setting.LoadingImageThread - tasks_running_queue.Count;
+            var add_count = SettingManager.LoadSetting<GlobalSetting>().LoadingImageThread - tasks_running_queue.Count;
 
             for (int i = 0; (i < add_count) && tasks_waiting_queue.Count > 0 ; i++)
             {
@@ -89,7 +83,7 @@ namespace Wbooru.Network
             {
                 var download_path = (string)state;
 
-                Log<ImageFetchDownloadSchedule>.Info($"Start download image:{download_path}");
+                Log<ImageFetchDownloadScheduler>.Info($"Start download image:{download_path}");
 
                 var response = RequestHelper.CreateDeafult(download_path);
 
@@ -101,10 +95,15 @@ namespace Wbooru.Network
             }
             catch (Exception e)
             {
-                Log<ImageFetchDownloadSchedule>.Error($"Can't download image ({e.Message}):{state}");
-                Container.Default.GetExportedValue<Toast>().ShowMessage($"无法下载图片({e.Message})");
+                Log<ImageFetchDownloadScheduler>.Error($"Can't download image ({e.Message}):{state}");
+                Toast.ShowMessage($"无法下载图片({e.Message})");
                 return null;
             }
+        }
+
+        public void OnSchedulerTerm()
+        {
+
         }
     }
 }

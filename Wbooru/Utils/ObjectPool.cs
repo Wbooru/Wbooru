@@ -39,11 +39,12 @@ namespace Wbooru.Utils
     }
 
     [Export(typeof(ISchedulable))]
-    [Export(typeof(ObjectPoolManager))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class ObjectPoolManager : ISchedulable
+    internal class ObjectPoolManager : ISchedulable
     {
         public bool IsAsyncSchedule => false;
+
+        public string SchedulerName => "Object Pool Maintenance Scheduler";
 
         HashSet<ObjectPoolBase> object_pools = new HashSet<ObjectPoolBase>();
 
@@ -57,6 +58,11 @@ namespace Wbooru.Utils
         {
             foreach (var pool in object_pools)
                 pool.OnPreReduceSchedule();
+        }
+
+        public void OnSchedulerTerm()
+        {
+
         }
     }
 

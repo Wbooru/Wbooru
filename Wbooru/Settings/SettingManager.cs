@@ -11,19 +11,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Wbooru.Settings
 {
-    [Export(typeof(SettingManager))]
-    [PartCreationPolicy(CreationPolicy.Shared)]
-    public class SettingManager
+    public static class SettingManager
     {
         const string CONFIG_FILE_PATH = "./setting.json";
 
-        private bool load = false;
+        private static bool load = false;
 
-        SettingFileEntity entity = new SettingFileEntity();
+        private static SettingFileEntity entity = new SettingFileEntity();
 
-        JObject load_object;
+        private static JObject load_object;
 
-        public object LoadSetting(Type setting_type)
+        public static object LoadSetting(Type setting_type)
         {
             Debug.Assert(setting_type.IsSubclassOf(typeof(SettingBase)), "param setting_type must be subclass of SettingBase");
 
@@ -54,12 +52,12 @@ namespace Wbooru.Settings
             return setting;
         }
 
-        public T LoadSetting<T>() where T:SettingBase
+        public static T LoadSetting<T>() where T:SettingBase
         {
             return LoadSetting(typeof(T)) as T;
         }
 
-        public void LoadSettingFile()
+        public static void LoadSettingFile()
         {
             try
             {
@@ -79,7 +77,7 @@ namespace Wbooru.Settings
             }
         }
 
-        public void SaveSettingFile()
+        public static void SaveSettingFile()
         {
             try
             {

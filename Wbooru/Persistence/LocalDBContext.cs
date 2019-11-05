@@ -10,9 +10,12 @@ using Wbooru.Models;
 
 namespace Wbooru.Persistence
 {
-    [Export(typeof(LocalDBContext))]
     public class LocalDBContext:DbContext
     {
+        private static LocalDBContext _instance;
+
+        public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
+
         public DbSet<Download> Downloads { get; set; }
         public DbSet<TagRecord> Tags { get; set; }
         public DbSet<VisitRecord> VisitRecords { get; set; }

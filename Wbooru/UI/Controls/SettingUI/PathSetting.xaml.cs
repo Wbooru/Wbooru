@@ -82,7 +82,7 @@ namespace Wbooru.UI.Controls.SettingUI
 
                 if (path_attr.MustExist && !(path_attr.IsFilePath?File.Exists(select_path):Directory.Exists(select_path)))
                 {
-                    Container.Default.GetExportedValue<Toast>().ShowMessage($"选择的{(path_attr.IsFilePath?"文件":"文件夹")}必须是存在的.");
+                    Toast.ShowMessage($"选择的{(path_attr.IsFilePath?"文件":"文件夹")}必须是存在的.");
                     return;
                 }
 

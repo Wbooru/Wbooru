@@ -29,19 +29,15 @@ namespace Wbooru.UI
         {
             InitializeComponent();
 
-            Container.Default.ComposeExportedValue(WindowFrame);
-            Container.Default.ComposeExportedValue(MainToast);
-
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-            navigation.NavigationPush(new MainGalleryPage());
+            NavigationHelper.InitNavigationHelper(WindowFrame);
+            NavigationHelper.NavigationPush(new MainGalleryPage());
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
 
-            DownloadManager.Close();
-            Container.Default.GetExportedValue<SettingManager>().SaveSettingFile();
+            App.Term();
         }
     }
 }

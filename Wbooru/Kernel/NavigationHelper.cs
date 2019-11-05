@@ -9,32 +9,30 @@ using System.Windows.Navigation;
 
 namespace Wbooru.Kernel
 {
-    [Export(typeof(NavigationHelper))]
-    public class NavigationHelper
+    public static class NavigationHelper
     {
-        Stack<Page> page_stack=new Stack<Page>();
-        private readonly NavigationService service;
+        static Stack<Page> page_stack=new Stack<Page>();
+        private static NavigationService service;
 
-        [ImportingConstructor]
-        public NavigationHelper([Import(typeof(Frame))]Frame main_frame)
+        public static void InitNavigationHelper(Frame main_frame)
         {
             service = main_frame.NavigationService;
         }
 
-        public void NavigationPush(Page page)
+        public static void NavigationPush(Page page)
         {
-            Log<NavigationHelper>.Debug($"Push page : {page.ToString()}");
+            Log.Debug($"Push page : {page.ToString()}");
             page_stack.Push(page);
             service.Navigate(page_stack.Peek());
         }
 
-        public Page NavigationPop()
+        public static Page NavigationPop()
         {
             var page = page_stack.Pop();
-            Log<NavigationHelper>.Debug($"Pop page : {page.ToString()}");
+            Log.Debug($"Pop page : {page.ToString()}");
 
             service.Navigate(page_stack.Peek());
-            Log<NavigationHelper>.Debug($"Current page : {page_stack.Peek().ToString()}");
+            Log.Debug($"Current page : {page_stack.Peek().ToString()}");
 
             return page;
         }

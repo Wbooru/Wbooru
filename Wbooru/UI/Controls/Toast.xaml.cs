@@ -21,6 +21,10 @@ namespace Wbooru.UI.Controls
     /// </summary>
     public partial class Toast : UserControl
     {
+        private static Toast instance;
+
+        public static void ShowMessage(string message, MessageType message_type = MessageType.Notify, uint show_time = 2000) => instance?.InternalShowMessage(message, message_type, show_time);
+
         public enum MessageType
         {
             Error,
@@ -58,6 +62,9 @@ namespace Wbooru.UI.Controls
 
         public Toast()
         {
+            if (instance != null)
+                throw new Exception("not allow to create more Toast control.");
+
             InitializeComponent();
 
             ContentPanel.DataContext = this;
@@ -65,10 +72,10 @@ namespace Wbooru.UI.Controls
             sb = Resources["ShowAction"] as Storyboard;
             animation = sb.Children.FirstOrDefault(x => x.Name == "HideAnimation") as DoubleAnimation;
 
-
+            instance = this;
         }
 
-        public void ShowMessage(string message, MessageType message_type = MessageType.Notify, uint show_time = 2000)
+        private void InternalShowMessage(string message, MessageType message_type = MessageType.Notify, uint show_time = 2000)
         {
             Dispatcher.Invoke(() =>
             {

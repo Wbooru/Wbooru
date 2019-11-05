@@ -46,10 +46,8 @@ namespace Wbooru.UI.Pages
         {
             InitializeComponent();
 
-            var setting_manager = Container.Default.GetExportedValue<SettingManager>();
-
             SupportSettingWrappers = Container.Default.GetExports<IUIVisualizable>()
-                .Select(x=> setting_manager.LoadSetting(x.Value.GetType()))
+                .Select(x=> SettingManager.LoadSetting(x.Value.GetType()))
                 .OfType<SettingBase>()
                 .GroupBy(x=>x.GetType().Assembly)
                 .Select(x=>new GroupedSupportSettingWrapper() {
@@ -207,8 +205,7 @@ namespace Wbooru.UI.Pages
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-            navigation.NavigationPop();
+            NavigationHelper.NavigationPop();
         }
     }
 }

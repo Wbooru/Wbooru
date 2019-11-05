@@ -16,14 +16,13 @@ namespace Wbooru.Utils
     {
         public AsyncImageWrapper(string name,string dl) :this(async () =>
         { 
-            var downloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
-            var resource = Container.Default.GetExportedValue<ImageResourceManager>();
+            var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
             Image image;
 
             do
             {
-                image = await resource.RequestImageAsync(name, () =>
+                image = await ImageResourceManager.RequestImageAsync(name, () =>
                 {
                     return downloader.GetImageAsync(dl).Result;
                 });

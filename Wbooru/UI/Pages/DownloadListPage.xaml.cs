@@ -37,8 +37,7 @@ namespace Wbooru.UI.Pages
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
         {
-            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
-            var page = navigation.NavigationPop() as DownloadListPage;
+            var page = NavigationHelper.NavigationPop() as DownloadListPage;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -90,7 +89,7 @@ namespace Wbooru.UI.Pages
             if (need_delete)
                 File.Delete(download_task.DownloadInfo.DownloadFullPath);
 
-            Container.Default.GetExportedValue<Toast>().ShowMessage("已删除");
+            Toast.ShowMessage("已删除");
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)

@@ -9,30 +9,38 @@ using Wbooru.PluginExt;
 
 namespace Wbooru.Kernel
 {
-    [PartCreationPolicy(CreationPolicy.Shared)]
-    [Export(typeof(SchedulerManager))]
-    public class SchedulerManager
+    public static class SchedulerManager
     {
-        [ImportMany(typeof(ISchedulable))]
-        public IEnumerable<ISchedulable> Schedulers { get; set; } = new ISchedulable[0];
+        private static List<ISchedulable> schedulers { get; } = new List<ISchedulable>();
 
-        Thread schedule_thread;
+        public static IEnumerable<ISchedulable> Schedulers => schedulers;
 
-        public SchedulerManager()
-        {
-            Init();
-        }
-
-        private void Init()
+        private static Thread schedule_thread;
+        
+        public static void Init()
         {
             schedule_thread = new Thread(Run);
             schedule_thread.Name = "SchedulerManager Thread";
             schedule_thread.SetApartmentState(ApartmentState.STA);
             schedule_thread.IsBackground = true;
             schedule_thread.Start();
+
+            foreach (var s in Container.Default.GetExportedValues<ISchedulable>())
+            {
+                AddScheduler(s);
+            }
         }
 
-        private void Run()
+        public static void AddScheduler(ISchedulable s)
+        {
+            if (s is null || schedulers.Contains(s))
+                return;
+
+            schedulers.Add(s);
+            Log.Info("Added new scheduler: "+s.SchedulerName);
+        }
+
+        private static void Run()
         {
             while (true)
             {
@@ -48,9 +56,19 @@ namespace Wbooru.Kernel
             }
         }
 
-        ~SchedulerManager()
+        public static void Term()
         {
-            schedule_thread.Abort();
+            try
+            {
+                schedule_thread.Abort();
+            }
+            catch { }
+
+            foreach (var scheduler in Schedulers)
+            {
+                Log.Info("Call OnSchedulerTerm() :" + scheduler.SchedulerName);
+                scheduler.OnSchedulerTerm();
+            }
         }
     }
 }
