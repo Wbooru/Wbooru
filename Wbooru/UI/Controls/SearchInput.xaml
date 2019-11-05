@@ -40,16 +40,16 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Button
+        <TextBlock
             Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             Background="Transparent"
-            BorderBrush="Transparent"
-            Click="Button_Click"
             FontFamily="Segoe UI Symbol"
             FontSize="20"
             Foreground="White">
             
-        </Button>
+        </TextBlock>
 
         <TextBox
             Name="Input"
