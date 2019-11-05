@@ -54,6 +54,9 @@
     <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
       <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
     </Reference>
+    <Reference Include="LambdaConverters.Wpf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6258cb5075259882, processorArchitecture=MSIL">
+      <HintPath>..\packages\LambdaConverters.3.0.0\lib\net46\LambdaConverters.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -71,7 +74,10 @@
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.110.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -226,6 +232,7 @@
     <Compile Include="UI\ValueConverters\SettingUI\AssemblyTypeDisplayConverter.cs" />
     <Compile Include="UI\ValueConverters\SettingUI\AutoValueConverter.cs" />
     <Compile Include="UI\ValueConverters\SettingUI\RangeValueConverter.cs" />
+    <Compile Include="UI\ValueConverters\SimpleExpressionConverters.cs" />
     <Compile Include="Utils\AsyncImageWrapper.cs" />
     <Compile Include="Utils\CalculatableFormatter.cs" />
     <Compile Include="Utils\ICacheCleanable.cs" />

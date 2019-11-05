@@ -17,6 +17,8 @@
 
     <Page.Resources>
         <Converter:AutoFitHeightConverter x:Key="AutoFitHeightConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter">
+        </BooleanToVisibilityConverter>
         <Converter:ItemMarginConverter x:Key="ItemMarginConverter" />
         <Converter:DefaultBorderHeightConverter x:Key="DefaultBorderHeightConverter" />
         <Converter:ImageAsyncLoadingConverter x:Key="ImageAsyncLoadingConverter" />
@@ -110,15 +112,28 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Orientation="Horizontal">
-                <Button
-                    Name="MenuButton"
-                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                    BorderBrush="Transparent"
-                    Click="MenuButton_Click"
-                    FontFamily="Segoe UI Symbol"
-                    FontSize="20">
-                    
-                </Button>
+                <Grid>
+                    <Button
+                        Name="CloseButton"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                        BorderBrush="Transparent"
+                        Click="CloseButton_Click"
+                        FontFamily="Segoe UI Symbol"
+                        FontSize="20"
+                        Visibility="{Binding ShowReturnButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        
+                    </Button>
+                    <Button
+                        Name="MenuButton"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                        BorderBrush="Transparent"
+                        Click="MenuButton_Click"
+                        FontFamily="Segoe UI Symbol"
+                        FontSize="20"
+                        Visibility="{Binding ShowReturnButton, Converter={x:Static Converter:SimpleExpressionConverters.ReverseBooleanToVisibilityConverter}}">
+                        
+                    </Button>
+                </Grid>
                 <Label
                     Margin="5,0,0,0"
                     VerticalContentAlignment="Center"

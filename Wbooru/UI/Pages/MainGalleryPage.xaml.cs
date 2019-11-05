@@ -67,7 +67,16 @@ namespace Wbooru.UI.Pages
         public ImageFetchDownloadSchedule ImageDownloader { get; private set; }
 
         private IEnumerable<GalleryItem> CurrentItems { get; set; }
-        public IEnumerable<string> Keywords { get; }
+
+        public bool ShowReturnButton
+        {
+            get { return (bool)GetValue(ShowReturnButtonProperty); }
+            set { SetValue(ShowReturnButtonProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShowReturnButton.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShowReturnButtonProperty =
+            DependencyProperty.Register("ShowReturnButton", typeof(bool), typeof(MainGalleryPage), new PropertyMetadata(false));
 
         public MainGalleryPage(IEnumerable<string> keywords=null)
         {
@@ -89,8 +98,6 @@ namespace Wbooru.UI.Pages
             {
                 Logger.Warn("Failed to get a gallery.:" + e.Message);
             }
-
-            Keywords = keywords;
         }
 
         public void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
@@ -101,11 +108,13 @@ namespace Wbooru.UI.Pages
             {
                 CurrentItems = gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable();
                 GalleryTitle = $"{gallery.GalleryName} ({string.Join(" ", keywords)})";
+                ShowReturnButton = true;
             }
             else
             {
                 CurrentItems = gallery.GetMainPostedImages().MakeMultiThreadable();
                 GalleryTitle = gallery.GalleryName;
+                ShowReturnButton = false;
             }
 
             CurrentGallery = gallery;
@@ -224,6 +233,12 @@ namespace Wbooru.UI.Pages
 
             var navigation = Container.Default.GetExportedValue<NavigationHelper>();
             navigation.NavigationPush(page);
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
+            navigation.NavigationPop();
         }
     }
 }
