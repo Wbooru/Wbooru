@@ -199,7 +199,10 @@ namespace Wbooru.UI.Pages
 
         private void SearchInput_SearchRequest(string obj)
         {
+            var keywords = obj.Split(' ');
+            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
 
+            navigation.NavigationPush(new MainGalleryPage(keywords));
         }
 
         private void MenuButton_Click_1(object sender, RoutedEventArgs e)
