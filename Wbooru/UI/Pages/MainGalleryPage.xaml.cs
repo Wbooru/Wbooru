@@ -23,6 +23,7 @@ using System.Windows.Media.Animation;
 using Wbooru.UI.Controls;
 using Wbooru.Utils;
 using Wbooru.Kernel;
+using Wbooru.Galleries.SupportFeatures;
 
 namespace Wbooru.UI.Pages
 {
@@ -48,6 +49,16 @@ namespace Wbooru.UI.Pages
             set { SetValue(CurrentGalleryProperty, value); }
         }
 
+        public string GalleryTitle
+        {
+            get { return (string)GetValue(GalleryTitleProperty); }
+            set { SetValue(GalleryTitleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GalleryTitleProperty =
+            DependencyProperty.Register("GalleryTitle", typeof(string), typeof(MainGalleryPage), new PropertyMetadata(""));
+
         public static readonly DependencyProperty CurrentGalleryProperty =
             DependencyProperty.Register("CurrentGallery", typeof(Gallery), typeof(MainGalleryPage), new PropertyMetadata(null));
 
@@ -56,8 +67,9 @@ namespace Wbooru.UI.Pages
         public ImageFetchDownloadSchedule ImageDownloader { get; private set; }
 
         private IEnumerable<GalleryItem> CurrentItems { get; set; }
+        public IEnumerable<string> Keywords { get; }
 
-        public MainGalleryPage()
+        public MainGalleryPage(IEnumerable<string> keywords=null)
         {
             InitializeComponent();
 
@@ -71,19 +83,31 @@ namespace Wbooru.UI.Pages
                 ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadSchedule>();
 
                 if (gallery != null)
-                    ApplyGallery(gallery);
+                    ApplyGallery(gallery, keywords);
             }
             catch (Exception e)
             {
                 Logger.Warn("Failed to get a gallery.:" + e.Message);
             }
+
+            Keywords = keywords;
         }
 
-        public void ApplyGallery(Gallery gallery)
+        public void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
         {
             ItemCollectionWrapper.Pictures.Clear();
 
-            CurrentItems = gallery.GetMainPostedImages().MakeMultiThreadable();
+            if (keywords?.Any() ?? false)
+            {
+                CurrentItems = gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable();
+                GalleryTitle = $"{gallery.GalleryName} ({string.Join(" ", keywords)})";
+            }
+            else
+            {
+                CurrentItems = gallery.GetMainPostedImages().MakeMultiThreadable();
+                GalleryTitle = gallery.GalleryName;
+            }
+
             CurrentGallery = gallery;
         }
 

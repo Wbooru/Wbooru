@@ -16,5 +16,7 @@ namespace Wbooru.Models
         public Tag Tag { get; set; }
         public DateTime AddTime { get; set; }
         public string FromGallery { get; set; }
+
+        public bool IsFilter { get; set; }
     }
 }

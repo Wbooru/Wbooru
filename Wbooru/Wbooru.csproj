@@ -95,8 +95,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Galleries\Gallery.cs" />
-    <Compile Include="Galleries\GalleryFeature.cs" />
+    <Compile Include="Galleries\SupportFeatures\GallerySupportFeature.cs" />
     <Compile Include="Galleries\IContainDetail.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGalleryAccount.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGalleryMark.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGallerySearchImage.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGalleryTagDataPredownloadAndCache.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGalleryTagSearch.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGalleryVote.cs" />
     <Compile Include="Kernel\Container.cs" />
     <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
@@ -132,6 +138,10 @@
     <Compile Include="Migrations\201911030706152_ModifyDownloadProp.cs" />
     <Compile Include="Migrations\201911030706152_ModifyDownloadProp.Designer.cs">
       <DependentUpon>201911030706152_ModifyDownloadProp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201911050403448_AddFiterProp.cs" />
+    <Compile Include="Migrations\201911050403448_AddFiterProp.Designer.cs">
+      <DependentUpon>201911050403448_AddFiterProp.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Download.cs" />
@@ -354,6 +364,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911030706152_ModifyDownloadProp.resx">
       <DependentUpon>201911030706152_ModifyDownloadProp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911050403448_AddFiterProp.resx">
+      <DependentUpon>201911050403448_AddFiterProp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

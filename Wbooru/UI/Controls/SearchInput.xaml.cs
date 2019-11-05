@@ -22,6 +22,7 @@ using Wbooru.Persistence;
 using Wbooru.Galleries;
 using System.Threading;
 using System.Windows.Threading;
+using Wbooru.Galleries.SupportFeatures;
 
 namespace Wbooru.UI.Controls
 {
@@ -117,7 +118,7 @@ namespace Wbooru.UI.Controls
 
         private void Input_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!SearchTagGallery.SupportFeatures.HasFlag(GalleryFeature.TagSearch))
+            if (!SearchTagGallery.SupportFeatures.HasFlag(GallerySupportFeature.TagSearch))
                 return;
 
             if (picking_imcomplete_string_frag == null)
@@ -292,7 +293,7 @@ namespace Wbooru.UI.Controls
 
                             using (LoadingStatus.BeginBusy("Tag searching..."))
                             {
-                                cached_suggests = cur_gallery.SearchTag(input_imcomplete_words).OrderBy(tag =>
+                                cached_suggests = cur_gallery.Feature<IGalleryTagSearch>().SearchTag(input_imcomplete_words).OrderBy(tag =>
                                 {
                                     return tag.Name.IndexOf(input_imcomplete_words);
                                 }).ToArray();

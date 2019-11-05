@@ -312,5 +312,72 @@ namespace Wbooru.UI.Pages
             DownloadManager.DownloadStart(download_task);
             Container.Default.GetExportedValue<Toast>().ShowMessage("开始下载图片...");
         }
+
+        private void AddTagCollectionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement).DataContext is string tag_name))
+             return;
+
+            TagRecord tag = new TagRecord()
+            {
+                Tag = new Models.Tag()
+                {
+                    Name = tag_name
+                },
+                TagID = MathEx.Random(max: -1),
+                AddTime = DateTime.Now,
+                FromGallery = Gallery.GalleryName,
+                IsFilter = false
+            };
+
+            if(DB.Tags.Any(x=>x.FromGallery == tag.FromGallery && x.Tag.Name == tag_name && !x.IsFilter))
+            {
+                Container.Default.GetExportedValue<Toast>().ShowMessage($"已添加过此标签了");
+                return;
+            }
+
+            DB.Tags.Add(tag);
+            DB.SaveChanges();
+            
+            Container.Default.GetExportedValue<Toast>().ShowMessage($"添加成功");
+        }
+
+        private void AddTagFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement).DataContext is string tag_name))
+                return;
+
+            TagRecord tag = new TagRecord()
+            {
+                Tag = new Models.Tag()
+                {
+                    Name = tag_name
+                },
+                TagID = MathEx.Random(max: -1),
+                AddTime = DateTime.Now,
+                FromGallery = Gallery.GalleryName,
+                IsFilter = true
+            };
+
+            if (DB.Tags.Any(x => x.FromGallery == tag.FromGallery && x.Tag.Name == tag_name && x.IsFilter))
+            {
+                Container.Default.GetExportedValue<Toast>().ShowMessage($"已过滤此标签了");
+                return;
+            }
+
+            DB.Tags.Add(tag);
+            DB.SaveChanges();
+
+            Container.Default.GetExportedValue<Toast>().ShowMessage($"过滤标签添加成功");
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement).DataContext is string tag_name))
+                return;
+
+            var navigation = Container.Default.GetExportedValue<NavigationHelper>();
+            navigation.NavigationPush(new MainGalleryPage(new[] { tag_name }));
+        }
     }
 }

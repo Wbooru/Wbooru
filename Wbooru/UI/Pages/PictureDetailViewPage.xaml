@@ -354,8 +354,8 @@
                                         Orientation="Horizontal">
                                         <Button
                                             Name="DownloadButton"
-                                            FontFamily="Segoe UI Symbol"
                                             Click="DownloadButton_Click"
+                                            FontFamily="Segoe UI Symbol"
                                             FontSize="20">
                                             
                                         </Button>
@@ -446,19 +446,25 @@
                                     <Button
                                         Name="AddTagCollectionButton"
                                         FontFamily="Segoe UI Symbol"
-                                        FontSize="16">
+                                        Click="AddTagCollectionButton_Click"
+                                        FontSize="16"
+                                        ToolTip="收藏此标签">
                                         
                                     </Button>
                                     <Button
                                         Name="AddTagFilterButton"
                                         FontFamily="Segoe UI Symbol"
-                                        FontSize="16">
+                                        Click="AddTagFilterButton_Click"
+                                        FontSize="16"
+                                        ToolTip="过滤此标签">
                                         
                                     </Button>
                                     <Button
                                         Name="SearchButton"
                                         FontFamily="Segoe UI Symbol"
-                                        FontSize="16">
+                                        Click="SearchButton_Click"
+                                        FontSize="16"
+                                        ToolTip="查看此标签的图片池">
                                         
                                     </Button>
                                 </StackPanel>

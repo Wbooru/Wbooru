@@ -11,6 +11,10 @@ namespace Wbooru.Settings
     [Export(typeof(IUIVisualizable))]
     public class GlobalSetting : SettingBase , IUIVisualizable
     {
+        [Group("Tags Options")]
+        [Description("是否预先下载且缓存标签数据集,此操作将会占用大量空间和网络带宽")]
+        public bool PredownloadAndCacheTagData { get; set; } = false;
+
         [Group("Download Options")]
         [Path(false,false)]
         public string DownloadPath { get; set; } = "./Download";
@@ -28,7 +32,7 @@ namespace Wbooru.Settings
         public int GetPictureCountPerLoad { get; set; } = 20;
 
         [Group("View Options")]
-        [NameAlias("ShowGalleryScrollBar")]
+        [NameAlias("是否使用滚轮或者拖曳滚动图片列表")]
         public bool GalleryListScrollBarVisiable { get; set; } = true;
 
         [Group("Test")]

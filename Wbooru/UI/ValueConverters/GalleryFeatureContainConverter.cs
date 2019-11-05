@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using Wbooru.Galleries;
+using Wbooru.Galleries.SupportFeatures;
 
 namespace Wbooru.UI.ValueConverters
 {
@@ -16,7 +17,7 @@ namespace Wbooru.UI.ValueConverters
             if (!(value is Gallery gallery))
                 return false;
 
-            if (!Enum.TryParse<GalleryFeature>(parameter?.ToString(), out var e))
+            if (!Enum.TryParse<GallerySupportFeature>(parameter?.ToString(), out var e))
                 return false;
 
             return gallery.SupportFeatures.HasFlag(e);
