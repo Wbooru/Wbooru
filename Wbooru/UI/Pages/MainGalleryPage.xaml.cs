@@ -24,6 +24,8 @@ using Wbooru.UI.Controls;
 using Wbooru.Utils;
 using Wbooru.Kernel;
 using Wbooru.Galleries.SupportFeatures;
+using System.Collections.ObjectModel;
+using Wbooru.Models;
 
 namespace Wbooru.UI.Pages
 {
@@ -198,9 +200,9 @@ namespace Wbooru.UI.Pages
             NavigationHelper.NavigationPush(page);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-
+            NavigationHelper.NavigationPop();
         }
 
         private void SearchInput_SearchRequest(string obj)
@@ -227,11 +229,6 @@ namespace Wbooru.UI.Pages
             var page = new DownloadListPage();
 
             NavigationHelper.NavigationPush(page);
-        }
-
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationHelper.NavigationPop();
         }
     }
 }

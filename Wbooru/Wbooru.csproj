@@ -113,6 +113,7 @@
     <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
     <Compile Include="Kernel\SchedulerManager.cs" />
+    <Compile Include="Kernel\TagManager.cs" />
     <Compile Include="Migrations\201905270608490_InitialCreate.cs" />
     <Compile Include="Migrations\201905270608490_InitialCreate.Designer.cs">
       <DependentUpon>201905270608490_InitialCreate.cs</DependentUpon>
@@ -210,6 +211,9 @@
     <Compile Include="UI\Controls\SettingUI\RangeValueSetting.xaml.cs">
       <DependentUpon>RangeValueSetting.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\TagListViewer.xaml.cs">
+      <DependentUpon>TagListViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\Toast.xaml.cs">
       <DependentUpon>Toast.xaml</DependentUpon>
     </Compile>
@@ -253,6 +257,7 @@
     <Compile Include="UI\ValueConverters\ImageAsyncLoadingConverter.cs" />
     <Compile Include="UI\ValueConverters\ItemMarginConverter.cs" />
     <Compile Include="UI\ValueConverters\TagColorConverter.cs" />
+    <Compile Include="Utils\ViusalTreeHelperEx.cs" />
     <DesignData Include="SampleData\GalleryImageDetailSampleData.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -286,6 +291,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\SettingUI\RangeValueSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\TagListViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -19,7 +19,6 @@ namespace Wbooru
             Init();
         }
 
-
         internal static void Init()
         {
             Container.BuildDefault();
@@ -27,6 +26,8 @@ namespace Wbooru
             DownloadManager.Init();
 
             SchedulerManager.Init();
+
+            TagManager.InitTagManager();
         }
 
         internal static void Term()

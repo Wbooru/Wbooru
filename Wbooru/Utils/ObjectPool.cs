@@ -39,8 +39,9 @@ namespace Wbooru.Utils
     }
 
     [Export(typeof(ISchedulable))]
+    [Export(typeof(ObjectPoolManager))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    internal class ObjectPoolManager : ISchedulable
+    public class ObjectPoolManager : ISchedulable
     {
         public bool IsAsyncSchedule => false;
 

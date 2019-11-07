@@ -313,27 +313,14 @@ namespace Wbooru.UI.Pages
             if (!((sender as FrameworkElement).DataContext is string tag_name))
              return;
 
-            TagRecord tag = new TagRecord()
+            if (TagManager.Contain(tag_name, false))
             {
-                Tag = new Models.Tag()
-                {
-                    Name = tag_name
-                },
-                TagID = MathEx.Random(max: -1),
-                AddTime = DateTime.Now,
-                FromGallery = Gallery.GalleryName,
-                IsFilter = false
-            };
-
-            if(DB.Tags.Any(x=>x.FromGallery == tag.FromGallery && x.Tag.Name == tag_name && !x.IsFilter))
-            {
-                Toast.ShowMessage($"已添加过此标签了");
+                Toast.ShowMessage($"已收藏此标签了");
                 return;
             }
 
-            DB.Tags.Add(tag);
-            DB.SaveChanges();
-            
+            TagManager.AddTag(tag_name, Gallery.GalleryName, TagType.Unknown, false);
+
             Toast.ShowMessage($"添加成功");
         }
 
@@ -342,26 +329,13 @@ namespace Wbooru.UI.Pages
             if (!((sender as FrameworkElement).DataContext is string tag_name))
                 return;
 
-            TagRecord tag = new TagRecord()
-            {
-                Tag = new Models.Tag()
-                {
-                    Name = tag_name
-                },
-                TagID = MathEx.Random(max: -1),
-                AddTime = DateTime.Now,
-                FromGallery = Gallery.GalleryName,
-                IsFilter = true
-            };
-
-            if (DB.Tags.Any(x => x.FromGallery == tag.FromGallery && x.Tag.Name == tag_name && x.IsFilter))
+            if (TagManager.Contain(tag_name,true))
             {
                 Toast.ShowMessage($"已过滤此标签了");
                 return;
             }
 
-            DB.Tags.Add(tag);
-            DB.SaveChanges();
+            TagManager.AddTag(tag_name, Gallery.GalleryName, TagType.Unknown, true);
 
             Toast.ShowMessage($"过滤标签添加成功");
         }
