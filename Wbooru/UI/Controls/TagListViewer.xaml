@@ -9,10 +9,7 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <Grid
-        Name="RightTagsPanel"
-        Grid.Column="2"
-        Background="#FF1D2031">
+    <Grid Name="RightTagsPanel" Grid.Column="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}">
             </RowDefinition>
@@ -20,16 +17,37 @@
             </RowDefinition>
         </Grid.RowDefinitions>
 
-        <Button
-            Name="CloseTagPanelButton"
-            Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-            HorizontalAlignment="Left"
-            BorderBrush="Transparent"
-            Click="CloseTagPanelButton_Click"
-            FontFamily="Segoe UI Symbol"
-            FontSize="15">
-            
-        </Button>
+        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+            <Button
+                Name="CloseTagPanelButton"
+                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                HorizontalAlignment="Left"
+                BorderBrush="Transparent"
+                Click="CloseTagPanelButton_Click"
+                FontFamily="Segoe UI Symbol"
+                FontSize="15">
+                
+            </Button>
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="16"
+                Foreground="White">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TagsListType}" Value="True">
+                                <Setter Property="Text" Value="过滤">
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TagsListType}" Value="False">
+                                <Setter Property="Text" Value="收藏">
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </StackPanel>
 
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <Button
@@ -44,15 +62,29 @@
             <Button
                 Name="SwitchTagListButton"
                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                Background="Transparent"
                 BorderBrush="Transparent"
                 Click="SwitchTagListButton_Click"
                 FontFamily="Segoe UI Symbol"
-                FontSize="17">
+                FontSize="17"
+                Foreground="White">
+                <Button.Resources>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TagsListType}" Value="True">
+                                <Setter Property="ToolTip" Value="切换至收藏标签列表">
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TagsListType}" Value="False">
+                                <Setter Property="ToolTip" Value="切换至过滤标签列表">
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Resources>
                 
             </Button>
         </StackPanel>
-
-        <!--  todo tags  -->
 
         <ListView
             Name="TagViewList"
@@ -62,17 +94,43 @@
             ItemsSource="{Binding TagsList}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <CheckBox
-                        Name="SelectCheckBox"
-                        Margin="2"
-                        VerticalContentAlignment="Center">
-                        <TextBlock
-                            FontSize="16"
-                            Text="{Binding Name}"
-                            TextTrimming="CharacterEllipsis"
-                            ToolTip="{Binding Name}">
-                        </TextBlock>
-                    </CheckBox>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*">
+                            </ColumnDefinition>
+                            <ColumnDefinition>
+                            </ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox
+                            Name="SelectCheckBox"
+                            Margin="2"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Center"
+                            Background="Transparent">
+                            <CheckBox.Resources>
+                                <Style TargetType="Path">
+                                    <Setter Property="Stroke" Value="White">
+                                    </Setter>
+                                </Style>
+                            </CheckBox.Resources>
+                            <TextBlock
+                                FontSize="16"
+                                Text="{Binding Name}"
+                                TextTrimming="CharacterEllipsis"
+                                ToolTip="{Binding Name}">
+                            </TextBlock>
+                        </CheckBox>
+                        <Button
+                            Name="DeleteTagButton"
+                            Grid.Column="1"
+                            Width="{Binding ActualHeight}"
+                            HorizontalAlignment="Right"
+                            Click="DeleteTagButton_Click"
+                            FontFamily="Segoe UI Symbol"
+                            ToolTip="删除此标签">
+                            
+                        </Button>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

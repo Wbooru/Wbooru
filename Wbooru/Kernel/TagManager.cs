@@ -52,20 +52,17 @@ namespace Wbooru.Kernel
 
         public static void RemoveTag(string tag_name, bool is_filter)
         {
-            var rt = is_filter ? FiltedTags : MarkedTags;
+            var list = is_filter ? FiltedTags : MarkedTags;
             var need_delete = LocalDBContext.Instance.Tags.Where(x => x.IsFilter == is_filter && x.Tag.Name.Equals(tag_name, StringComparison.InvariantCultureIgnoreCase)).ToArray();
             LocalDBContext.Instance.Tags.RemoveRange(need_delete);
             LocalDBContext.Instance.SaveChanges();
 
-            foreach (var tag in need_delete)
-                rt.Remove(tag.Tag);
+            foreach (var tag in need_delete.Select(x => x.Tag))
+            {
+                list.Remove(list.Single(x=>x.Name==tag.Name&&x.Type==tag.Type));
+            }
         }
 
         public static void RemoveTag(Tag tag, bool is_filter) => RemoveTag(tag.Name, is_filter);
-
-        public static void Term()
-        {
-
-        }
     }
 }

@@ -41,6 +41,22 @@
                 To="-170,0,0,0"
                 Duration="0:0:0.400" />
         </Storyboard>
+
+        <Storyboard x:Key="ShowRightPane">
+            <DoubleAnimation
+                DecelerationRatio="0.9"
+                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                To="-170"
+                Duration="0:0:0.400" />
+        </Storyboard>
+
+        <Storyboard x:Key="HideRightPane">
+            <DoubleAnimation
+                DecelerationRatio="0.9"
+                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                To="0"
+                Duration="0:0:0.400" />
+        </Storyboard>
     </Page.Resources>
 
     <Grid Name="MainGrid" Margin="-170,0,0,0">
@@ -78,6 +94,10 @@
                     Icon=""
                     IsEnabled="False"
                     Text="收藏" />
+                <controls:MenuButton
+                    Icon=""
+                    IsEnabled="False"
+                    Text="标签" />
                 <controls:MenuButton
                     x:Name="DownloadPageButton"
                     Button.Click="DownloadPageButton_Click"
@@ -147,9 +167,21 @@
                 <controls:SearchInput SearchRequest="SearchInput_SearchRequest" SearchTagGallery="{Binding CurrentGallery}">
                 </controls:SearchInput>
                 <Button
+                    Name="RefreshButton"
                     Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                     Background="Transparent"
                     BorderBrush="Transparent"
+                    FontFamily="Segoe UI Symbol"
+                    FontSize="15"
+                    Foreground="White">
+                    
+                </Button>
+                <Button
+                    Name="TagPanelButton"
+                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Click="TagPanelButton_Click"
                     FontFamily="Segoe UI Symbol"
                     FontSize="15"
                     Foreground="White">
@@ -170,9 +202,14 @@
             <!--#endregion-->
         </Grid>
 
-        <controls:TagListViewer Grid.Column="2" Width="170">
+        <controls:TagListViewer
+            x:Name="TagListViewerPanel"
+            Grid.Column="2"
+            Width="170"
+            Background="#EE1D2031"
+            CloseTagPanelEvent="TagListViewer_CloseTagPanelEvent">
             <controls:TagListViewer.RenderTransform>
-                <TranslateTransform X="-170">
+                <TranslateTransform>
                 </TranslateTransform>
             </controls:TagListViewer.RenderTransform>
         </controls:TagListViewer>

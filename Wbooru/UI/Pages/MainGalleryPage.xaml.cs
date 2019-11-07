@@ -230,5 +230,19 @@ namespace Wbooru.UI.Pages
 
             NavigationHelper.NavigationPush(page);
         }
+
+        private void TagPanelButton_Click(object sender, RoutedEventArgs e)
+        {
+            var show_sb = Resources["ShowRightPane"] as Storyboard;
+
+            show_sb.Begin(TagListViewerPanel);
+        }
+
+        private void TagListViewer_CloseTagPanelEvent(TagListViewer obj)
+        {
+            var show_sb = Resources["HideRightPane"] as Storyboard;
+
+            show_sb.Begin(TagListViewerPanel);
+        }
     }
 }

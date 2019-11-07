@@ -80,5 +80,14 @@ namespace Wbooru.UI.Controls
         {
             TagsListType = !TagsListType;
         }
+
+        private void DeleteTagButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tag = (sender as FrameworkElement).DataContext as Tag;
+
+            TagManager.RemoveTag(tag, TagsListType);
+
+            Toast.ShowMessage("删除标签成功");
+        }
     }
 }
