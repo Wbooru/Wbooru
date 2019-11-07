@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Wbooru.UI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="HostControl"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -94,16 +95,16 @@
             ItemsSource="{Binding TagsList}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <!--  硬编码，秋后算账  -->
+                    <Grid Width="160">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*">
                             </ColumnDefinition>
-                            <ColumnDefinition>
+                            <ColumnDefinition Width="{Binding ElementName=DeleteTagButton, Path=ActualHeight}">
                             </ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <CheckBox
                             Name="SelectCheckBox"
-                            Margin="2"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Center"
                             Background="Transparent">
@@ -124,7 +125,6 @@
                             Name="DeleteTagButton"
                             Grid.Column="1"
                             Width="{Binding ActualHeight}"
-                            HorizontalAlignment="Right"
                             Click="DeleteTagButton_Click"
                             FontFamily="Segoe UI Symbol"
                             ToolTip="删除此标签">
