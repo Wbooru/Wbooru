@@ -41,15 +41,6 @@ namespace Wbooru.UI.Pages
             Marked, Voted, Main, SearchResult
         }
 
-        public GalleryItemUIElementWrapper ItemCollectionWrapper
-        {
-            get { return (GalleryItemUIElementWrapper)GetValue(ItemCollectionWrapperProperty); }
-            set { SetValue(ItemCollectionWrapperProperty, value); }
-        }
-
-        public static readonly DependencyProperty ItemCollectionWrapperProperty =
-            DependencyProperty.Register("ItemCollectionWrapper", typeof(GalleryItemUIElementWrapper), typeof(MainGalleryPage), new PropertyMetadata(new GalleryItemUIElementWrapper()));
-
         public Gallery CurrentGallery
         {
             get { return (Gallery)GetValue(CurrentGalleryProperty); }
@@ -72,8 +63,6 @@ namespace Wbooru.UI.Pages
         public GlobalSetting Setting { get; private set; }
         public ImageFetchDownloadScheduler ImageDownloader { get; private set; }
 
-        private IEnumerable<GalleryItem> CurrentItems { get; set; }
-
         public bool ShowReturnButton
         {
             get { return (bool)GetValue(ShowReturnButtonProperty); }
@@ -89,7 +78,6 @@ namespace Wbooru.UI.Pages
             InitializeComponent();
 
             DataContext = this;
-            ViewType = keywords == null ? GalleryViewType.Main : GalleryViewType.SearchResult;
 
             try
             {
@@ -108,23 +96,28 @@ namespace Wbooru.UI.Pages
 
         public void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
         {
-            ItemCollectionWrapper = new GalleryItemUIElementWrapper();
-            ItemCollectionWrapper.HostGallery = gallery;
+            IEnumerable<GalleryItem> items_source;
 
             if (keywords?.Any() ?? false)
             {
-                CurrentItems = gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable();
+                GridViewer.ViewType = GalleryViewType.SearchResult;
+                items_source = gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable();
                 GalleryTitle = $"{gallery.GalleryName} ({string.Join(" ", keywords)})";
                 ShowReturnButton = true;
             }
             else
             {
-                CurrentItems = gallery.GetMainPostedImages().MakeMultiThreadable();
+                GridViewer.ViewType = GalleryViewType.Main;
+                items_source = gallery.GetMainPostedImages().MakeMultiThreadable();
                 GalleryTitle = gallery.GalleryName;
                 ShowReturnButton = false;
             }
 
             CurrentGallery = gallery;
+
+            GridViewer.ClearGallery();
+            GridViewer.Gallery = gallery;
+            GridViewer.LoadableSource = items_source;
         }
 
         #region Left Menu Show/Hide
@@ -169,93 +162,6 @@ namespace Wbooru.UI.Pages
         private void MenuButton_MouseDown(object sender, RoutedEventArgs e)
         {
             Window.GetWindow(this).Close();
-        }
-
-        bool is_requesting = false;
-        private GalleryViewType ViewType;
-
-        private async void GridViewer_RequestMoreItems(GalleryGridView _)
-        {
-            if (is_requesting || CurrentItems==null)
-                return;
-
-            using (LoadStatusDisplayer.BeginBusy("Load more gallery items"))
-            {
-                is_requesting = true;
-
-                var count = 0;
-                Gallery gallery = null;
-
-                await Dispatcher.BeginInvoke(new Action(() => { 
-                    count = ItemCollectionWrapper.Pictures.Count;
-                    gallery = CurrentGallery;
-                }));
-
-                var list=await Task.Run(() => FilterTag(CurrentItems.Skip(count), gallery).Take(Setting.GetPictureCountPerLoad).ToArray());
-
-                Log.Debug($"Skip({count}) Take({Setting.GetPictureCountPerLoad}) ActualTake({list.Count()})", "GridViewer_RequestMoreItems");
-
-                Dispatcher.Invoke(new Action(() => {
-                    foreach (var item in list)
-                        ItemCollectionWrapper.Pictures.Add(item);
-
-                    if (list.Count() < Setting.GetPictureCountPerLoad)
-                        Toast.ShowMessage("已到达图片队列末尾");
-                }));
-
-                is_requesting = false;
-            }
-        }
-
-        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, Gallery gallery)
-        {
-            var option = SettingManager.LoadSetting<GlobalSetting>();
-
-            return items.Where(x =>
-            {
-                if (gallery?.GetImageDetial(x) is GalleryImageDetail detail)
-                {
-                    if (!option.EnableTagFilter)
-                        return true;
-
-                    switch (ViewType)
-                    {
-                        case GalleryViewType.Marked:
-                            if (!option.FilterTarget.HasFlag(TagFilterTarget.MarkedWindow))
-                                return true;
-                            break;
-                        case GalleryViewType.Voted:
-                            if (!option.FilterTarget.HasFlag(TagFilterTarget.VotedWindow))
-                                return true;
-                            break;
-                        case GalleryViewType.Main:
-                            if (!option.FilterTarget.HasFlag(TagFilterTarget.MainWindow))
-                                return true;
-                            break;
-                        case GalleryViewType.SearchResult:
-                            if (!option.FilterTarget.HasFlag(TagFilterTarget.SearchResultWindow))
-                                return true;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    var filter_list = option.UseAllGalleryFilterList ? TagManager.FiltedTags : TagManager.FiltedTags.Where(x => x.FromGallery==gallery.GalleryName);
-
-                    foreach (var filter_tag in filter_list)
-                    {
-                        //return !detail.GalleryDetail.Tags.Any(x => x == filter_tag.Name);
-
-                        if (detail.Tags.FirstOrDefault(x => x == filter_tag.Tag.Name) is string captured_filter_tag)
-                        {
-                            Log.Debug($"Skip this item because of filter:{captured_filter_tag} -> {string.Join(" ", detail.Tags)}");
-                            return false;
-                        }
-                    }
-                }
-
-                return true;
-            });
         }
 
         private void GridViewer_ClickItemEvent(GalleryItem item)
@@ -315,6 +221,20 @@ namespace Wbooru.UI.Pages
         {
             var hide_sb = Resources["HideLeftPane"] as Storyboard;
             hide_sb.Begin(MainGrid);
+        }
+
+        LoadingTaskNotify item_loading_notify;
+
+        private void GridViewer_OnRequestMoreItemStarted(GalleryGridView obj)
+        {
+            item_loading_notify?.Dispose();
+            item_loading_notify = LoadStatusDisplayer.BeginBusy("正在加载图片列表...");
+        }
+
+        private void GridViewer_OnRequestMoreItemFinished(GalleryGridView obj)
+        {
+            item_loading_notify?.Dispose();
+            item_loading_notify = null;
         }
     }
 }

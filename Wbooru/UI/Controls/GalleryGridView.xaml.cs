@@ -16,6 +16,8 @@ using System.Windows.Shapes;
 using Wbooru.Models.Gallery;
 using Wbooru.Settings;
 using Wbooru.Kernel;
+using Wbooru.Galleries;
+using static Wbooru.UI.Pages.MainGalleryPage;
 
 namespace Wbooru.UI.Controls
 {
@@ -24,8 +26,9 @@ namespace Wbooru.UI.Controls
     /// </summary>
     public partial class GalleryGridView : UserControl
     {
-        public event Action<GalleryGridView> RequestMoreItems;
         public event Action<GalleryItem> ClickItemEvent;
+        public event Action<GalleryGridView> OnRequestMoreItemStarted;
+        public event Action<GalleryGridView> OnRequestMoreItemFinished;
 
         public uint GridItemWidth
         {
@@ -45,14 +48,28 @@ namespace Wbooru.UI.Controls
         public static readonly DependencyProperty GridItemMarginWidthProperty =
             DependencyProperty.Register("GridItemMarginWidth", typeof(uint), typeof(GalleryGridView), new PropertyMetadata((uint)10));
 
-        public GalleryItemUIElementWrapper GalleryItemsSource
+        public Gallery Gallery
         {
-            get { return (GalleryItemUIElementWrapper)GetValue(GalleryItemsSourceProperty); }
-            set { SetValue(GalleryItemsSourceProperty, value); }
+            get { return (Gallery)GetValue(GalleryProperty); }
+            set { SetValue(GalleryProperty, value); }
         }
 
-        public static readonly DependencyProperty GalleryItemsSourceProperty =
-            DependencyProperty.Register("GalleryItemsSource", typeof(GalleryItemUIElementWrapper), typeof(GalleryGridView), new PropertyMetadata(null));
+        // Using a DependencyProperty as the backing store for Gallery.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GalleryProperty =
+            DependencyProperty.Register("Gallery", typeof(Gallery), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).CheckIfSetupComplete()));
+
+        public IEnumerable<GalleryItem> LoadableSource
+        {
+            get { return (IEnumerable<GalleryItem>)GetValue(LoadableSourceProperty); }
+            set { SetValue(LoadableSourceProperty, value); }
+        }
+
+        public static readonly DependencyProperty LoadableSourceProperty =
+            DependencyProperty.Register("LoadableSource", typeof(IEnumerable<GalleryItem>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).CheckIfSetupComplete()));
+
+        public GalleryViewType ViewType { get; set; }
+
+        private ObservableCollection<GalleryItem> Items = new ObservableCollection<GalleryItem>();
 
         public GalleryGridView()
         {
@@ -60,9 +77,17 @@ namespace Wbooru.UI.Controls
 
             DataContext = this;
 
-            option = SettingManager.LoadSetting<GlobalSetting>();
+            GalleryList.ItemsSource = Items;
 
             UpdateSettingForScroller();
+        }
+
+        private void CheckIfSetupComplete()
+        {
+            if (LoadableSource == null || Gallery == null)
+                return;
+
+            TryRequestMoreItemFromLoadableSource();
         }
 
         public void UpdateSettingForScroller()
@@ -88,7 +113,104 @@ namespace Wbooru.UI.Controls
                                     >= height;
 
             if (at_end)
-                RequestMoreItems?.Invoke(this);
+                TryRequestMoreItemFromLoadableSource();
+        }
+
+        public void ClearGallery()
+        {
+            Items.Clear();
+            Gallery = null;
+            LoadableSource = null;
+        }
+
+        private async void TryRequestMoreItemFromLoadableSource()
+        {
+            if (is_requesting || LoadableSource == null || Gallery == null)
+                return;
+
+            OnRequestMoreItemStarted?.Invoke(this);
+
+            var option = SettingManager.LoadSetting<GlobalSetting>();
+
+            is_requesting = true;
+
+            var count = Items.Count;
+            Gallery gallery = Gallery;
+            IEnumerable<GalleryItem> source = LoadableSource; 
+
+            /*
+            await Dispatcher.BeginInvoke(new Action(() =>
+            {
+                source = LoadableSource;
+                count = Items.Count;
+                gallery = Gallery;
+            }));
+            */
+
+            var list = await Task.Run(() => FilterTag(source.Skip(count), gallery).Take(option.GetPictureCountPerLoad).ToArray());
+
+            Log.Debug($"Skip({count}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Count()})", "GridViewer_RequestMoreItems");
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                foreach (var item in list)
+                    Items.Add(item);
+
+                if (list.Count() < option.GetPictureCountPerLoad)
+                    Toast.ShowMessage("已到达图片队列末尾");
+            }));
+
+            OnRequestMoreItemFinished?.Invoke(this);
+            is_requesting = false;
+        }
+
+        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, Gallery gallery)
+        {
+            var option = SettingManager.LoadSetting<GlobalSetting>();
+
+            return items.Where(x =>
+            {
+                if (gallery?.GetImageDetial(x) is GalleryImageDetail detail)
+                {
+                    if (!option.EnableTagFilter)
+                        return true;
+
+                    switch (ViewType)
+                    {
+                        case GalleryViewType.Marked:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.MarkedWindow))
+                                return true;
+                            break;
+                        case GalleryViewType.Voted:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.VotedWindow))
+                                return true;
+                            break;
+                        case GalleryViewType.Main:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.MainWindow))
+                                return true;
+                            break;
+                        case GalleryViewType.SearchResult:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.SearchResultWindow))
+                                return true;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    var filter_list = option.UseAllGalleryFilterList ? TagManager.FiltedTags : TagManager.FiltedTags.Where(x => x.FromGallery == gallery.GalleryName);
+
+                    foreach (var filter_tag in filter_list)
+                    {
+                        if (detail.Tags.FirstOrDefault(x => x == filter_tag.Tag.Name) is string captured_filter_tag)
+                        {
+                            Log.Debug($"Skip this item because of filter:{captured_filter_tag} -> {string.Join(" ", detail.Tags)}");
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            });
         }
 
         private void ListScrollViewer_MouseLeave(object sender, MouseEventArgs e)
@@ -107,7 +229,7 @@ namespace Wbooru.UI.Controls
                 Log.Debug($"{drag_action_state}", "ListScrollViewer_PreviewMouseMove");
             }
 
-            if (DragActionState.Dragging==drag_action_state)
+            if (DragActionState.Dragging == drag_action_state)
             {
                 var y = e.GetPosition(this).Y;
                 var offset = prev_y - y;
@@ -120,7 +242,7 @@ namespace Wbooru.UI.Controls
 
         DragActionState drag_action_state = DragActionState.Idle;
 
-        enum DragActionState
+        private enum DragActionState
         {
             Idle,
             ReadyDrag,
@@ -128,7 +250,7 @@ namespace Wbooru.UI.Controls
         }
 
         double prev_y = 0;
-        private GlobalSetting option;
+        private bool is_requesting;
 
         private void ListScrollViewer_MouseUp(object sender, MouseButtonEventArgs e)
         {

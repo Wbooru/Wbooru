@@ -33,7 +33,6 @@
                 x:Name="GalleryList"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                ItemsSource="{Binding GalleryItemsSource.Pictures}"
                 SelectionMode="Single">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
