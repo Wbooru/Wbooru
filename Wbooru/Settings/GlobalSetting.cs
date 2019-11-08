@@ -23,6 +23,11 @@ namespace Wbooru.Settings
         [Description("需要标签过滤的目标")]
         public TagFilterTarget FilterTarget { get; set; } = TagFilterTarget.MainWindow | TagFilterTarget.SearchResultWindow;
 
+        [Group("Tag Filter Options")]
+        [EnableBy(nameof(EnableTagFilter), true)]
+        [Description("过滤列表是否共用")]
+        public bool UseAllGalleryFilterList { get; set; } = false;
+
         #endregion
 
         #region Tags Options

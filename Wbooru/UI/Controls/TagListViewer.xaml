@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Wbooru.UI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vc="clr-namespace:Wbooru.UI.ValueConverters"
     x:Name="HostControl"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -107,7 +108,9 @@
                             Name="SelectCheckBox"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Center"
-                            Background="Transparent">
+                            Background="Transparent"
+                            IsChecked="{Binding TagsListType, Mode=OneWay}"
+                            IsEnabled="{Binding TagsListType, Converter={x:Static vc:SimpleExpressionConverters.ReverseBooleanConverter}}">
                             <CheckBox.Resources>
                                 <Style TargetType="Path">
                                     <Setter Property="Stroke" Value="White">
@@ -116,9 +119,9 @@
                             </CheckBox.Resources>
                             <TextBlock
                                 FontSize="16"
-                                Text="{Binding Name}"
+                                Text="{Binding Tag.Name}"
                                 TextTrimming="CharacterEllipsis"
-                                ToolTip="{Binding Name}">
+                                ToolTip="{Binding Tag.Name}">
                             </TextBlock>
                         </CheckBox>
                         <Button

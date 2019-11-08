@@ -36,6 +36,11 @@ namespace Wbooru.UI.Pages
     /// </summary>
     public partial class MainGalleryPage : Page
     {
+        public enum GalleryViewType
+        {
+            Marked, Voted, Main, SearchResult
+        }
+
         public GalleryItemUIElementWrapper ItemCollectionWrapper
         {
             get { return (GalleryItemUIElementWrapper)GetValue(ItemCollectionWrapperProperty); }
@@ -84,6 +89,7 @@ namespace Wbooru.UI.Pages
             InitializeComponent();
 
             DataContext = this;
+            ViewType = keywords == null ? GalleryViewType.Main : GalleryViewType.SearchResult;
 
             try
             {
@@ -102,6 +108,7 @@ namespace Wbooru.UI.Pages
 
         public void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
         {
+            ItemCollectionWrapper.HostGallery = gallery;
             ItemCollectionWrapper.Pictures.Clear();
 
             if (keywords?.Any() ?? false)
@@ -165,6 +172,7 @@ namespace Wbooru.UI.Pages
         }
 
         bool is_requesting = false;
+        private GalleryViewType ViewType;
 
         private async void GridViewer_RequestMoreItems(GalleryGridView _)
         {
@@ -176,20 +184,78 @@ namespace Wbooru.UI.Pages
                 is_requesting = true;
 
                 var count = 0;
-                
-                await Dispatcher.BeginInvoke(new Action(() => count=ItemCollectionWrapper.Pictures.Count));
+                Gallery gallery = null;
 
-                var list=await Task.Run(() => CurrentItems.Skip(count).Take(Setting.GetPictureCountPerLoad).ToArray());
+                await Dispatcher.BeginInvoke(new Action(() => { 
+                    count = ItemCollectionWrapper.Pictures.Count;
+                    gallery = CurrentGallery;
+                }));
+
+                var list=await Task.Run(() => FilterTag(CurrentItems.Skip(count), gallery).Take(Setting.GetPictureCountPerLoad).ToArray());
 
                 Log.Debug($"Skip({count}) Take({Setting.GetPictureCountPerLoad})", "GridViewer_RequestMoreItems");
 
                 Dispatcher.Invoke(new Action(() => {
                     foreach (var item in list)
                         ItemCollectionWrapper.Pictures.Add(item);
+
+                    if (list.Length < Setting.GetPictureCountPerLoad)
+                        Toast.ShowMessage("已到达图片队列末尾");
                 }));
 
                 is_requesting = false;
             }
+        }
+
+        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, Gallery gallery)
+        {
+            var option = SettingManager.LoadSetting<GlobalSetting>();
+
+            return items.Where(x =>
+            {
+                if (gallery?.GetImageDetial(x) is GalleryImageDetail detail)
+                {
+                    if (!option.EnableTagFilter)
+                        return true;
+
+                    switch (ViewType)
+                    {
+                        case GalleryViewType.Marked:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.MarkedWindow))
+                                return true;
+                            break;
+                        case GalleryViewType.Voted:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.VotedWindow))
+                                return true;
+                            break;
+                        case GalleryViewType.Main:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.MainWindow))
+                                return true;
+                            break;
+                        case GalleryViewType.SearchResult:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.SearchResultWindow))
+                                return true;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    var filter_list = option.UseAllGalleryFilterList ? TagManager.FiltedTags : TagManager.FiltedTags.Where(x => x.FromGallery==gallery.GalleryName);
+
+                    foreach (var filter_tag in filter_list)
+                    {
+                        //return !detail.GalleryDetail.Tags.Any(x => x == filter_tag.Name);
+
+                        if (detail.Tags.FirstOrDefault(x => x == filter_tag.Tag.Name) is string captured_filter_tag)
+                        {
+                            Log.Debug($"Skip this item because of filter:{captured_filter_tag} -> {string.Join(" ", detail.Tags)}");
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            });
         }
 
         private void GridViewer_ClickItemEvent(GalleryItem item)

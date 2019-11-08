@@ -37,7 +37,7 @@ namespace YandeSourcePlugin
 
         public override GalleryImageDetail GetImageDetial(GalleryItem item)
         {
-            return item is IContainDetail c ? c.GalleryDetail : throw new Exception();
+            return item is PictureItem c ? c.GalleryDetail : throw new Exception("Can't not get item detail from other gallery item.");
         }
 
         public IEnumerable<GalleryItem> GetImagesInternal(IEnumerable<string> tags=null)

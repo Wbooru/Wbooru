@@ -9,7 +9,7 @@ using Wbooru.Models.Gallery;
 
 namespace YandeSourcePlugin
 {
-    public class PictureItem : GalleryItem, IContainDetail
+    public class PictureItem : GalleryItem
     {
         public GalleryImageDetail GalleryDetail { get; set; }
     }

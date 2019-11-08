@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Models.Gallery;
 using Wbooru.Settings;
+using Wbooru.Kernel;
 
 namespace Wbooru.UI.Controls
 {
@@ -58,6 +59,8 @@ namespace Wbooru.UI.Controls
             InitializeComponent();
 
             DataContext = this;
+
+            option = SettingManager.LoadSetting<GlobalSetting>();
 
             UpdateSettingForScroller();
         }
@@ -125,6 +128,7 @@ namespace Wbooru.UI.Controls
         }
 
         double prev_y = 0;
+        private GlobalSetting option;
 
         private void ListScrollViewer_MouseUp(object sender, MouseButtonEventArgs e)
         {

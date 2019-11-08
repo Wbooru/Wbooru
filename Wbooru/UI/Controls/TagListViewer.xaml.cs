@@ -39,14 +39,14 @@ namespace Wbooru.UI.Controls
             }
         ));
 
-        public ObservableCollection<Tag> TagsList
+        public ObservableCollection<TagRecord> TagsList
         {
-            get { return (ObservableCollection<Tag>)GetValue(TagsListProperty); }
+            get { return (ObservableCollection<TagRecord>)GetValue(TagsListProperty); }
             private set { SetValue(TagsListProperty, value); }
         }
 
         public static readonly DependencyProperty TagsListProperty =
-            DependencyProperty.Register("TagsList", typeof(ObservableCollection<Tag>), typeof(TagListViewer), 
+            DependencyProperty.Register("TagsList", typeof(ObservableCollection<TagRecord>), typeof(TagListViewer), 
                 new PropertyMetadata(TagManager.MarkedTags));
 
         public TagListViewer()
@@ -65,8 +65,14 @@ namespace Wbooru.UI.Controls
                 .OfType<CheckBox>()
                 .Where(x => x.IsChecked ?? false)
                 .Select(x => x.DataContext)
-                .OfType<Tag>()
-                .Select(x => x.Name).ToArray();
+                .OfType<TagRecord>()
+                .Select(x => x.Tag.Name).ToArray();
+
+            if (!tags.Any())
+            {
+                Toast.ShowMessage("请至少选择一项标签");
+                return;
+            }
 
             NavigationHelper.NavigationPush(new MainGalleryPage(tags));
         }
@@ -83,9 +89,9 @@ namespace Wbooru.UI.Controls
 
         private void DeleteTagButton_Click(object sender, RoutedEventArgs e)
         {
-            var tag = (sender as FrameworkElement).DataContext as Tag;
+            var tag = (sender as FrameworkElement).DataContext as TagRecord;
 
-            TagManager.RemoveTag(tag, TagsListType);
+            TagManager.RemoveTag(tag);
 
             Toast.ShowMessage("删除标签成功");
         }
