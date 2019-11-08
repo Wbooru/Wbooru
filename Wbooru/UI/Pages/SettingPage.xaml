@@ -52,7 +52,10 @@
                 <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Name="SettingListPanel" Margin="15" />
+            <ScrollViewer Margin="15">
+                <StackPanel Name="SettingListPanel">
+                </StackPanel>
+            </ScrollViewer>
 
             <TreeView
                 Name="SettingView"

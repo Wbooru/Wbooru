@@ -25,11 +25,15 @@ namespace Wbooru.Settings
 
         #endregion
 
-
+        #region Tags Options
 
         [Group("Tags Options")]
         [Description("是否预先下载且缓存标签数据集,此操作将会占用大量空间和网络带宽")]
         public bool PredownloadAndCacheTagData { get; set; } = false;
+
+        #endregion
+
+        #region Download Options
 
         [Group("Download Options")]
         [Path(false,false)]
@@ -38,6 +42,10 @@ namespace Wbooru.Settings
         [Group("Download Options")]
         [Description("分别按照来源子文件夹来下载图片")]
         public bool SeparateGallerySubDirectories { get; set; } = true;
+
+        #endregion
+
+        #region View Options
 
         [Group("View Options")]
         [Range("1","5")]
@@ -48,12 +56,9 @@ namespace Wbooru.Settings
         public int GetPictureCountPerLoad { get; set; } = 20;
 
         [Group("View Options")]
-        [NameAlias("是否使用滚轮或者拖曳滚动图片列表")]
+        [Description("是否使用滚轮或者拖曳滚动图片列表")]
         public bool GalleryListScrollBarVisiable { get; set; } = true;
 
-        [Group("Test")]
-        [NameAlias("Test alias name")]
-        [List(true,false,",","maria","joe","tank","sb")]
-        public string ListTestProp { get; set; } = "maria,sb";
+        #endregion
     }
 }
