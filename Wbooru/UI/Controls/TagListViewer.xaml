@@ -109,8 +109,7 @@
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Center"
                             Background="Transparent"
-                            IsChecked="{Binding TagsListType, Mode=OneWay}"
-                            IsEnabled="{Binding TagsListType, Converter={x:Static vc:SimpleExpressionConverters.ReverseBooleanConverter}}">
+                            Visibility="{Binding IsFilter, Converter={x:Static vc:SimpleExpressionConverters.ReverseBooleanToVisibilityConverter}}">
                             <CheckBox.Resources>
                                 <Style TargetType="Path">
                                     <Setter Property="Stroke" Value="White">
@@ -124,10 +123,17 @@
                                 ToolTip="{Binding Tag.Name}">
                             </TextBlock>
                         </CheckBox>
+                        <TextBlock
+                            FontSize="16"
+                            Text="{Binding Tag.Name}"
+                            TextTrimming="CharacterEllipsis"
+                            ToolTip="{Binding Tag.Name}"
+                            Visibility="{Binding IsFilter, Converter={x:Static vc:SimpleExpressionConverters.BooleanToVisibilityConverter}}">
+                        </TextBlock>
                         <Button
                             Name="DeleteTagButton"
                             Grid.Column="1"
-                            Width="{Binding ActualHeight}"
+                            Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
                             Click="DeleteTagButton_Click"
                             FontFamily="Segoe UI Symbol"
                             ToolTip="删除此标签">
