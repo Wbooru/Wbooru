@@ -11,11 +11,13 @@ namespace Wbooru.Settings.UIAttributes
     /// </summary>
     public class EnableByAttribute : SettingUIAttributeBase
     {
-        public EnableByAttribute(string setting_name)
+        public string SettingName { get; }
+        public bool HideIfDisable { get; }
+
+        public EnableByAttribute(string setting_name,bool hide_if_disable = false)
         {
             SettingName = setting_name;
+            HideIfDisable = hide_if_disable;
         }
-
-        public string SettingName { get; }
     }
 }

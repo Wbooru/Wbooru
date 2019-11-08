@@ -43,6 +43,8 @@ namespace Wbooru.UI.Pages
         public static readonly DependencyProperty SupportSettingWrappersProperty =
             DependencyProperty.Register("SupportSettingWrappers", typeof(IEnumerable<GroupedSupportSettingWrapper>), typeof(SettingPage), new PropertyMetadata(default));
 
+        private Dictionary<SettingBase, FrameworkElement[]> cached_controls = new Dictionary<SettingBase, FrameworkElement[]>();
+
         public SettingPage()
         {
             InitializeComponent();
@@ -66,16 +68,21 @@ namespace Wbooru.UI.Pages
             if (setting == null)
                 return;
 
-            var props = setting.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            if (!cached_controls.TryGetValue(setting, out var grouped_controls))
+            {
+                var props = setting.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            var group_props = props.
-                Select(prop => (prop.GetCustomAttribute<GroupAttribute>()?.GroupName??"Other",new PropertyInfoWrapper() {
-                    OwnerObject=setting,
-                    PropertyInfo=prop
-                }))
-                .GroupBy(x=>x.Item1);
+                var group_props = props.
+                    Select(prop => (prop.GetCustomAttribute<GroupAttribute>()?.GroupName ?? "Other", new PropertyInfoWrapper()
+                    {
+                        OwnerObject = setting,
+                        PropertyInfo = prop
+                    }))
+                    .GroupBy(x => x.Item1);
 
-            var grouped_controls = group_props.Select(x => GenerateGroupedSettingControls(x)).OfType<FrameworkElement>();
+                grouped_controls = group_props.Select(x => GenerateGroupedSettingControls(x)).OfType<FrameworkElement>().ToArray();
+                cached_controls[setting] = grouped_controls;
+            }
 
             SettingListPanel.Children.Clear();
 
@@ -99,12 +106,15 @@ namespace Wbooru.UI.Pages
                 {
                     if (generated_setting_controls.FirstOrDefault(x=>x.Item2.PropertyInfo.Name.Equals(dep_attr.SettingName,StringComparison.InvariantCultureIgnoreCase)).Item1 is CheckBox dep_host)
                     {
-                        control.SetBinding(IsEnabledProperty, new Binding()
+                        var dp = dep_attr.HideIfDisable ? VisibilityProperty : IsEnabledProperty;
+                        var conv = dep_attr.HideIfDisable ? ValueConverter.Create<bool?, Visibility>(e => e.Value ?? false ? Visibility.Visible : Visibility.Collapsed) : ValueConverter.Create<bool?, bool>(e => e.Value ?? false);
+
+                        control.SetBinding(dp, new Binding()
                         {
                             Source = dep_host,
                             Mode= BindingMode.OneWay,
                             Path = new PropertyPath(nameof(CheckBox.IsChecked)),
-                            Converter = ValueConverter.Create<bool?, bool>(e => e.Value ?? false)
+                            Converter = conv
                         });
 
                         Log.Debug($"Bind a enable relation: {control.Name} -> {dep_host.Name}");
@@ -221,7 +231,8 @@ namespace Wbooru.UI.Pages
 
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            ApplySetting((sender as FrameworkElement).DataContext as SettingBase);
+            var control = (sender as FrameworkElement);
+            ApplySetting(control.DataContext as SettingBase);
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)

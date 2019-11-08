@@ -19,7 +19,7 @@ namespace Wbooru.Settings
 
         [Group("Tag Filter Options")]
         [List(typeof(TagFilterTarget), true, ",")]
-        [EnableBy(nameof(EnableTagFilter))]
+        [EnableBy(nameof(EnableTagFilter),true)]
         [Description("需要标签过滤的目标")]
         public TagFilterTarget FilterTarget { get; set; } = TagFilterTarget.MainWindow | TagFilterTarget.SearchResultWindow;
 
