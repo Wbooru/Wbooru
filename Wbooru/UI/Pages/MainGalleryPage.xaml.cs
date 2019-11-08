@@ -310,5 +310,11 @@ namespace Wbooru.UI.Pages
 
             show_sb.Begin(TagListViewerPanel);
         }
+
+        private void CloseLeftPanelButton_Click(object sender, RoutedEventArgs e)
+        {
+            var hide_sb = Resources["HideLeftPane"] as Storyboard;
+            hide_sb.Begin(MainGrid);
+        }
     }
 }

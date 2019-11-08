@@ -83,10 +83,9 @@
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                         HorizontalAlignment="Right"
                         BorderBrush="Transparent"
-                        Click="CloseButton_Click"
+                        Click="CloseLeftPanelButton_Click"
                         FontFamily="Segoe UI Symbol"
-                        FontSize="20"
-                        Visibility="{Binding ShowReturnButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        FontSize="20">
                         
                     </Button>
                 </Border>
