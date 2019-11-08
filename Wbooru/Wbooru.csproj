@@ -165,10 +165,6 @@
     <Compile Include="Models\VisitRecord.cs" />
     <Compile Include="PluginExt\ISchedulable.cs" />
     <Compile Include="PluginExt\IPlugin.cs" />
-    <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">
-      <DependentUpon>SampleDataSource.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SampleData\Wrapper\DownloadList.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
     <Compile Include="Settings\SettingBase.cs" />
     <Compile Include="Settings\SettingFileEntity.cs" />
@@ -259,18 +255,6 @@
     <Compile Include="UI\ValueConverters\ItemMarginConverter.cs" />
     <Compile Include="UI\ValueConverters\TagColorConverter.cs" />
     <Compile Include="Utils\ViusalTreeHelperEx.cs" />
-    <DesignData Include="SampleData\GalleryImageDetailSampleData.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </DesignData>
-    <DesignData Include="SampleData\DownloadListWrapperSampleData.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </DesignData>
-    <Page Include="SampleData\SampleDataSource\SampleDataSource.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="UI\Controls\OperableImageBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -394,7 +378,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="SampleData\SampleDataSource\SampleDataSource.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
