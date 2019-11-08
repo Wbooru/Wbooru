@@ -11,6 +11,22 @@ namespace Wbooru.Settings
     [Export(typeof(IUIVisualizable))]
     public class GlobalSetting : SettingBase , IUIVisualizable
     {
+        #region Tag Filter Options
+
+        [Group("Tag Filter Options")]
+        [Description("是否启用标签过滤，此功能会过滤指定的标签")]
+        public bool EnableTagFilter { get; set; } = false;
+
+        [Group("Tag Filter Options")]
+        [List(typeof(TagFilterTarget), true, ",")]
+        [EnableBy(nameof(EnableTagFilter))]
+        [Description("需要标签过滤的目标")]
+        public TagFilterTarget FilterTarget { get; set; } = TagFilterTarget.MainWindow | TagFilterTarget.SearchResultWindow;
+
+        #endregion
+
+
+
         [Group("Tags Options")]
         [Description("是否预先下载且缓存标签数据集,此操作将会占用大量空间和网络带宽")]
         public bool PredownloadAndCacheTagData { get; set; } = false;
@@ -37,7 +53,7 @@ namespace Wbooru.Settings
 
         [Group("Test")]
         [NameAlias("Test alias name")]
-        [List(true,true,false,",","maria","joe","tank","sb")]
+        [List(true,false,",","maria","joe","tank","sb")]
         public string ListTestProp { get; set; } = "maria,sb";
     }
 }

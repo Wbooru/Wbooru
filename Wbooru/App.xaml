@@ -15,6 +15,9 @@
         <SampleDataSource:SampleDataSource x:Key="SampleDataSource" d:IsDataSource="True" />
         <SolidColorBrush x:Key="BoardColor" Color="#FF1D2031" />
         <SolidColorBrush x:Key="ContentBackgroundColor" Color="#FF23283C" />
+        <SolidColorBrush x:Key="ContentBackgroundColor_LowTransparent" Color="#CC23283C" />
+        <SolidColorBrush x:Key="ContentBackgroundColor_MiddleTransparent" Color="#8023283C" />
+        <SolidColorBrush x:Key="ContentBackgroundColor_HighTransparent" Color="#3023283C" />
 
         <system:UInt32 x:Key="BoardHeaderHeight">40</system:UInt32>
 

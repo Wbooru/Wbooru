@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LambdaConverters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -84,7 +85,7 @@ namespace Wbooru.UI.Pages
 
         private FrameworkElement GenerateGroupedSettingControls(IGrouping<string, (string, PropertyInfoWrapper)> group_props)
         {
-            var generated_setting_controls = group_props.Select(x => GenerateMiniVisualizableSetting(x.Item2)).OfType<FrameworkElement>();
+            var generated_setting_controls = group_props.Select(x => (GenerateMiniVisualizableSetting(x.Item2), x.Item2)).Where(x => x.Item1 != null).ToArray();
 
             if (generated_setting_controls.Count() == 0)
                 return null;
@@ -92,10 +93,26 @@ namespace Wbooru.UI.Pages
             var group_box = new GroupBox();
             var stack_panel= new StackPanel();
 
-            foreach (var child in generated_setting_controls)
+            foreach (var (control,prop_info) in generated_setting_controls)
             {
-                child.Margin = new Thickness(0, 0, 0, 15);
-                stack_panel.Children.Add(child);
+                if (prop_info.PropertyInfo.GetCustomAttribute<EnableByAttribute>() is EnableByAttribute dep_attr)
+                {
+                    if (generated_setting_controls.FirstOrDefault(x=>x.Item2.PropertyInfo.Name.Equals(dep_attr.SettingName,StringComparison.InvariantCultureIgnoreCase)).Item1 is CheckBox dep_host)
+                    {
+                        control.SetBinding(IsEnabledProperty, new Binding()
+                        {
+                            Source = dep_host,
+                            Mode= BindingMode.OneWay,
+                            Path = new PropertyPath(nameof(CheckBox.IsChecked)),
+                            Converter = ValueConverter.Create<bool?, bool>(e => e.Value ?? false)
+                        });
+
+                        Log.Debug($"Bind a enable relation: {control.Name} -> {dep_host.Name}");
+                    }
+                }
+
+                control.Margin = new Thickness(0, 0, 0, 15);
+                stack_panel.Children.Add(control);
             }
 
             group_box.Content = stack_panel;
@@ -129,7 +146,11 @@ namespace Wbooru.UI.Pages
                     break;
 
                 default:
-                    return null;
+                    if (prop_info.PropertyType.IsEnum)
+                        control = GenerateValueControl(wrapper);
+                    else
+                        return null;
+                    break;
             }
 
             #endregion
