@@ -1,0 +1,5 @@
+﻿<Gallery:GalleryItemUIElementWrapper xmlns:Gallery="clr-namespace:Wbooru.Models.Gallery">
+	<Gallery:GalleryItemUIElementWrapper.Item>
+		<Gallery:GalleryItem ImagePath="Aenean vestibulum mauris" ID="Class praesent nam" Name="Aliquam cras adipiscing nullam maecenas"/>
+	</Gallery:GalleryItemUIElementWrapper.Item>
+</Gallery:GalleryItemUIElementWrapper>

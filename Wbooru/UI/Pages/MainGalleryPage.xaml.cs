@@ -108,8 +108,8 @@ namespace Wbooru.UI.Pages
 
         public void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
         {
+            ItemCollectionWrapper = new GalleryItemUIElementWrapper();
             ItemCollectionWrapper.HostGallery = gallery;
-            ItemCollectionWrapper.Pictures.Clear();
 
             if (keywords?.Any() ?? false)
             {
@@ -193,13 +193,13 @@ namespace Wbooru.UI.Pages
 
                 var list=await Task.Run(() => FilterTag(CurrentItems.Skip(count), gallery).Take(Setting.GetPictureCountPerLoad).ToArray());
 
-                Log.Debug($"Skip({count}) Take({Setting.GetPictureCountPerLoad})", "GridViewer_RequestMoreItems");
+                Log.Debug($"Skip({count}) Take({Setting.GetPictureCountPerLoad}) ActualTake({list.Count()})", "GridViewer_RequestMoreItems");
 
                 Dispatcher.Invoke(new Action(() => {
                     foreach (var item in list)
                         ItemCollectionWrapper.Pictures.Add(item);
 
-                    if (list.Length < Setting.GetPictureCountPerLoad)
+                    if (list.Count() < Setting.GetPictureCountPerLoad)
                         Toast.ShowMessage("已到达图片队列末尾");
                 }));
 

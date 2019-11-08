@@ -72,12 +72,24 @@
             MouseEnter="LeftMenuPanel_MouseEnter"
             MouseLeave="LeftMenuPanel_MouseLeave">
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <StackPanel>
-                <Border Height="{Binding Source={StaticResource BoardHeaderHeight}}" />
+                <Border Height="{Binding Source={StaticResource BoardHeaderHeight}}">
+                    <Button
+                        Name="CloseLeftPanelButton"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                        HorizontalAlignment="Right"
+                        BorderBrush="Transparent"
+                        Click="CloseButton_Click"
+                        FontFamily="Segoe UI Symbol"
+                        FontSize="20"
+                        Visibility="{Binding ShowReturnButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        
+                    </Button>
+                </Border>
                 <!--
                     For 强迫症
                 -->
@@ -89,7 +101,7 @@
                 <controls:MenuButton
                     Icon=""
                     IsEnabled="False"
-                    Text="图池" />
+                    Text="订阅" />
                 <controls:MenuButton
                     Icon=""
                     IsEnabled="False"
