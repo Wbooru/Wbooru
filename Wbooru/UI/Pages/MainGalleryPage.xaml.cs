@@ -197,11 +197,6 @@ namespace Wbooru.UI.Pages
             NavigationHelper.NavigationPush(page);
         }
 
-        private void MenuButton_Click_2(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void DownloadPageButton_Click(object sender, RoutedEventArgs e)
         {
             var page = new DownloadListPage();
@@ -244,6 +239,9 @@ namespace Wbooru.UI.Pages
 
         private void ShowMarkPicturesButton_Click(object sender, RoutedEventArgs e)
         {
+            if (GridViewer.ViewType == GalleryViewType.Marked)
+                return;
+
             var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x=>x.GalleryName).ToArray();
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
@@ -266,6 +264,9 @@ namespace Wbooru.UI.Pages
 
         private void ShowPicturePoolButton_Click(object sender, RoutedEventArgs e)
         {
+            if (GridViewer.ViewType == GalleryViewType.Main)
+                return;
+
             ApplyGallery(CurrentGallery, null);
 
             CloseLeftPanel();

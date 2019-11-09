@@ -185,16 +185,6 @@
                 <controls:SearchInput SearchRequest="SearchInput_SearchRequest" SearchTagGallery="{Binding CurrentGallery}">
                 </controls:SearchInput>
                 <Button
-                    Name="RefreshButton"
-                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    FontFamily="Segoe UI Symbol"
-                    FontSize="15"
-                    Foreground="White">
-                    
-                </Button>
-                <Button
                     Name="TagPanelButton"
                     Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                     Background="Transparent"
