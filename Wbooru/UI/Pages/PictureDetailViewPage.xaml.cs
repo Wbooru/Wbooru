@@ -197,6 +197,8 @@ namespace Wbooru.UI.Pages
             Gallery = null;
             PictureInfo = null;
             PictureDetailInfo = null;
+            IsMark = false;
+            IsVoted = false;
 
             try
             {
@@ -230,6 +232,10 @@ namespace Wbooru.UI.Pages
 
         private void MarkButton_Click(object sender, RoutedEventArgs e)
         {
+            if (PictureInfo == null || Gallery==null)
+                return;
+
+
             if (!IsMark)
             {
                 DB.ItemMarks.Add(new GalleryItemMark()
@@ -255,6 +261,9 @@ namespace Wbooru.UI.Pages
 
         private void VoteButton_Click(object sender, RoutedEventArgs e)
         {
+            if (PictureInfo == null || Gallery == null)
+                return;
+
             //todo
             IsVoted = !IsVoted;
 
