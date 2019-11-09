@@ -30,6 +30,9 @@ namespace Wbooru.UI.Controls
         public event Action<GalleryGridView> OnRequestMoreItemStarted;
         public event Action<GalleryGridView> OnRequestMoreItemFinished;
 
+        /// <summary>
+        /// 表示每张图片固定宽度
+        /// </summary>
         public uint GridItemWidth
         {
             get { return (uint)GetValue(GridItemWidthProperty); }
@@ -39,6 +42,9 @@ namespace Wbooru.UI.Controls
         public static readonly DependencyProperty GridItemWidthProperty =
             DependencyProperty.Register("GridItemWidth", typeof(uint), typeof(GalleryGridView), new PropertyMetadata((uint)150));
 
+        /// <summary>
+        /// 表示每张图片之间的间隔
+        /// </summary>
         public uint GridItemMarginWidth
         {
             get { return (uint)GetValue(GridItemMarginWidthProperty); }
@@ -56,8 +62,11 @@ namespace Wbooru.UI.Controls
 
         // Using a DependencyProperty as the backing store for Gallery.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GalleryProperty =
-            DependencyProperty.Register("Gallery", typeof(Gallery), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).CheckIfSetupComplete()));
+            DependencyProperty.Register("Gallery", typeof(Gallery), typeof(GalleryGridView), new PropertyMetadata(null));
 
+        /// <summary>
+        /// 表示可以加载的列表源，一般View会自动遍历此集合来拿更多的图片数据.
+        /// </summary>
         public IEnumerable<GalleryItem> LoadableSource
         {
             get { return (IEnumerable<GalleryItem>)GetValue(LoadableSourceProperty); }
@@ -65,8 +74,11 @@ namespace Wbooru.UI.Controls
         }
 
         public static readonly DependencyProperty LoadableSourceProperty =
-            DependencyProperty.Register("LoadableSource", typeof(IEnumerable<GalleryItem>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).CheckIfSetupComplete()));
+            DependencyProperty.Register("LoadableSource", typeof(IEnumerable<GalleryItem>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).OnLoadableSourceChanged()));
 
+        /// <summary>
+        /// 设置此控件的用处，一般用于过滤指定标签的图片列表
+        /// </summary>
         public GalleryViewType ViewType { get; set; }
 
         private ObservableCollection<GalleryItem> Items = new ObservableCollection<GalleryItem>();
@@ -82,10 +94,9 @@ namespace Wbooru.UI.Controls
             UpdateSettingForScroller();
         }
 
-        private void CheckIfSetupComplete()
+        private void OnLoadableSourceChanged()
         {
-            if (LoadableSource == null || Gallery == null)
-                return;
+            Items.Clear();
 
             TryRequestMoreItemFromLoadableSource();
         }
@@ -125,7 +136,13 @@ namespace Wbooru.UI.Controls
 
         private async void TryRequestMoreItemFromLoadableSource()
         {
-            if (is_requesting || LoadableSource == null || Gallery == null)
+            if (is_requesting)
+            {
+                Log.Debug("Task is running");
+                return;
+            }
+
+            if (LoadableSource == null)
                 return;
 
             OnRequestMoreItemStarted?.Invoke(this);
@@ -137,15 +154,6 @@ namespace Wbooru.UI.Controls
             var count = Items.Count;
             Gallery gallery = Gallery;
             IEnumerable<GalleryItem> source = LoadableSource; 
-
-            /*
-            await Dispatcher.BeginInvoke(new Action(() =>
-            {
-                source = LoadableSource;
-                count = Items.Count;
-                gallery = Gallery;
-            }));
-            */
 
             var list = await Task.Run(() => FilterTag(source.Skip(count), gallery).Take(option.GetPictureCountPerLoad).ToArray());
 
@@ -164,13 +172,14 @@ namespace Wbooru.UI.Controls
             is_requesting = false;
         }
 
-        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, Gallery gallery)
+        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, Gallery gallery=null)
         {
             var option = SettingManager.LoadSetting<GlobalSetting>();
+            IEnumerable<Gallery> galleries = gallery == null ? Container.Default.GetExportedValues<Gallery>() : new[] { gallery };
 
             return items.Where(x =>
             {
-                if (gallery?.GetImageDetial(x) is GalleryImageDetail detail)
+                if (galleries.Select(g=>(g.GetImageDetial(x),g)).FirstOrDefault() is (GalleryImageDetail detail,Gallery gallery))
                 {
                     if (!option.EnableTagFilter)
                         return true;
@@ -271,7 +280,7 @@ namespace Wbooru.UI.Controls
             if (drag_action_state != DragActionState.ReadyDrag || !(((FrameworkElement)sender).DataContext is GalleryItem item))
                 return;
 
-            Log.Debug($"click item {item.ID}");
+            Log.Debug($"click item {item.GalleryItemID}");
             ClickItemEvent?.Invoke(item);
         }
     }

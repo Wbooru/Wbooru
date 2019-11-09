@@ -50,5 +50,7 @@ namespace Wbooru.Galleries
         public abstract IEnumerable<GalleryItem> GetMainPostedImages();
 
         public abstract GalleryImageDetail GetImageDetial(GalleryItem item);
+
+        public abstract GalleryItem GetImage(string id);
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Models.Gallery;
 
 namespace Wbooru.Models
 {
@@ -15,5 +16,7 @@ namespace Wbooru.Models
         public string GalleryName { get; set; }
         public DateTime Time { get; set; }
         public string MarkGalleryID { get; set; }
+
+        public virtual ShadowGalleryItem Item { get; set; }
     }
 }

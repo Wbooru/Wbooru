@@ -26,6 +26,7 @@ using Wbooru.Kernel;
 using Wbooru.Galleries.SupportFeatures;
 using System.Collections.ObjectModel;
 using Wbooru.Models;
+using Wbooru.Persistence;
 
 namespace Wbooru.UI.Pages
 {
@@ -235,6 +236,29 @@ namespace Wbooru.UI.Pages
         {
             item_loading_notify?.Dispose();
             item_loading_notify = null;
+        }
+
+        private void ShowMarkPicturesButton_Click(object sender, RoutedEventArgs e)
+        {
+            var galleries = CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>();
+
+            var source = LocalDBContext.Instance.ItemMarks
+                .ToList()
+                .Select(x => new { gallery = galleries.FirstOrDefault(y => y.GalleryName == x.GalleryName), gallery_item = x })
+                .Where(x => x.gallery != null)
+                .Select(x => LocalDBContext.Instance.Entry(x.gallery_item).Entity)
+                .Select(x => x.Item.ConvertToNormalModel());
+
+            GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + "收藏列表";
+            GridViewer.ViewType = GalleryViewType.Marked;
+            GridViewer.ClearGallery();
+            GridViewer.Gallery = null;
+            GridViewer.LoadableSource = source;
+        }
+
+        private void ShowPicturePoolButton_Click(object sender, RoutedEventArgs e)
+        {
+            ApplyGallery(CurrentGallery, null);
         }
     }
 }

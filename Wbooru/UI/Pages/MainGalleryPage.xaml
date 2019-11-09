@@ -98,12 +98,20 @@
                     IsEnabled="False"
                     Text="登陆" />
                 <controls:MenuButton
+                    x:Name="ShowPicturePoolButton"
                     Icon=""
+                    ButtonBase.Click="ShowPicturePoolButton_Click"
+                    IsEnabled="False"
+                    Text="图池" />
+                <controls:MenuButton
+                    Icon=""
+                    IconSize="15"
                     IsEnabled="False"
                     Text="订阅" />
                 <controls:MenuButton
+                    x:Name="ShowMarkPicturesButton"
+                    ButtonBase.Click="ShowMarkPicturesButton_Click"
                     Icon=""
-                    IsEnabled="False"
                     Text="收藏" />
                 <controls:MenuButton
                     Icon=""

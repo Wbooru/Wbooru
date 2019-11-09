@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Models.Gallery;
 
 namespace Wbooru.Models
 {
@@ -12,11 +13,10 @@ namespace Wbooru.Models
     {
         [Index]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int VisitRecordID { get; set; }
+        public int VisitRecordID { get; set; } = -1000;
 
-        public string GalleryID { get; set; }
+        public virtual ShadowGalleryItem GalleryItem { get; set; }
         public string GalleryName { get; set; }
-        public string VisitFileName { get; set; }
         public DateTime LastVisitTime { get; set; }
     }
 }

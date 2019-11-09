@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wbooru.Galleries;
 using Wbooru.Models;
+using Wbooru.Models.Gallery;
 
 namespace Wbooru.Persistence
 {
@@ -18,6 +19,7 @@ namespace Wbooru.Persistence
 
         public DbSet<Download> Downloads { get; set; }
         public DbSet<TagRecord> Tags { get; set; }
+        public DbSet<ShadowGalleryItem> ShadowGalleryItems { get; set; }
         public DbSet<VisitRecord> VisitRecords { get; set; }
         public DbSet<GalleryItemMark> ItemMarks { get; set; }
     }

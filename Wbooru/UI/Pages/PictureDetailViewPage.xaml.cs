@@ -159,12 +159,12 @@ namespace Wbooru.UI.Pages
                 {
                     var visit = new VisitRecord()
                     {
-                        GalleryID = item.ID,
+                        GalleryItem = item.ConvertToStorableModel(),
                         GalleryName = gallery.GalleryName,
                         LastVisitTime = DateTime.Now
                     };
 
-                    var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryID == item.ID && x.GalleryName == gallery.GalleryName);
+                    var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryName == gallery.GalleryName);
                     if (visit_entity == null)
                         DB.VisitRecords.Add(visit);
                     else
@@ -174,7 +174,7 @@ namespace Wbooru.UI.Pages
                     transaction.Commit();
                 }
 
-                var is_mark = DB.ItemMarks.Where(x => x.GalleryName == gallery.GalleryName && x.MarkGalleryID == item.ID).Any();
+                var is_mark = DB.ItemMarks.Where(x => x.GalleryName == gallery.GalleryName && x.MarkGalleryID == item.GalleryItemID).Any();
                 var detail = gallery.GetImageDetial(item);
 
                 Dispatcher.Invoke(() =>
@@ -234,7 +234,8 @@ namespace Wbooru.UI.Pages
             {
                 DB.ItemMarks.Add(new GalleryItemMark()
                 {
-                    MarkGalleryID = PictureInfo.ID,
+                    Item= PictureInfo.ConvertToStorableModel(),
+                    MarkGalleryID = PictureInfo.GalleryItemID,
                     GalleryName = Gallery.GalleryName,
                     Time = DateTime.Now
                 });
@@ -244,7 +245,7 @@ namespace Wbooru.UI.Pages
             }
             else
             {
-                var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryName == Gallery.GalleryName && x.MarkGalleryID == PictureInfo.ID);
+                var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryName == Gallery.GalleryName && x.MarkGalleryID == PictureInfo.GalleryItemID);
                 DB.ItemMarks.Remove(x);
                 IsMark = false;
             }

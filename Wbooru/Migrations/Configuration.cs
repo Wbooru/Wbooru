@@ -1,4 +1,4 @@
-namespace Wbooru.Migrations
+﻿namespace Wbooru.Migrations
 {
     using System;
     using System.Data.Entity;
@@ -10,7 +10,6 @@ namespace Wbooru.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "Wbooru.Persistence.LocalDBContext";
         }
 
         protected override void Seed(Wbooru.Persistence.LocalDBContext context)

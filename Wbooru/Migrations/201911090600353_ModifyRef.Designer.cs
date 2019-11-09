@@ -7,13 +7,13 @@ namespace Wbooru.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.3.0-preview5-19254-05")]
-    public sealed partial class ModifyDownloadProp : IMigrationMetadata
+    public sealed partial class ModifyRef : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ModifyDownloadProp));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ModifyRef));
         
         string IMigrationMetadata.Id
         {
-            get { return "201911030706152_ModifyDownloadProp"; }
+            get { return "201911090600353_ModifyRef"; }
         }
         
         string IMigrationMetadata.Source

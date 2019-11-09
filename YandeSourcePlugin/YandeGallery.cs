@@ -37,7 +37,7 @@ namespace YandeSourcePlugin
 
         public override GalleryImageDetail GetImageDetial(GalleryItem item)
         {
-            return item is PictureItem c ? c.GalleryDetail : throw new Exception("Can't not get item detail from other gallery item.");
+            return (item as PictureItem)?.GalleryDetail;
         }
 
         public IEnumerable<GalleryItem> GetImagesInternal(IEnumerable<string> tags=null)
@@ -74,12 +74,7 @@ namespace YandeSourcePlugin
                 {
                     var item = BuildItem(pic_info);
 
-                    if (c.Contains(item.ID))
-                    {
-
-                    }
-
-                    c.Add(item.ID);
+                    c.Add(item.GalleryItemID);
 
                     yield return item;
                 }
@@ -93,13 +88,13 @@ namespace YandeSourcePlugin
         private GalleryItem BuildItem(JToken pic_info)
         {
             PictureItem item = new PictureItem();
-            item.ID = pic_info["id"].ToString();
+            item.GalleryItemID = pic_info["id"].ToString();
             item.PreviewImageDownloadLink = pic_info["preview_url"].ToString();
             item.PreviewImageSize = new Size(pic_info["preview_width"].ToObject<int>(), pic_info["preview_height"].ToObject<int>());
 
             var detail = new GalleryImageDetail();
 
-            detail.ID = item.ID;
+            detail.ID = item.GalleryItemID;
             detail.Rate = pic_info["rating"].ToString();
             detail.Tags = pic_info["tags"].ToString().Split(' ').ToList();
             detail.Updater = pic_info["creator_id"].ToString();
@@ -150,7 +145,7 @@ namespace YandeSourcePlugin
 
             item.GalleryDetail = detail;
 
-            item.DownloadFileName = $"{item.ID} {string.Join(" ", detail.Tags)}";
+            item.DownloadFileName = $"{item.GalleryItemID} {string.Join(" ", detail.Tags)}";
 
             return item;
         }
@@ -185,6 +180,11 @@ namespace YandeSourcePlugin
                     }
                 };
             }
+        }
+
+        public override GalleryItem GetImage(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

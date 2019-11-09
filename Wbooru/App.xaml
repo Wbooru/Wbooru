@@ -15,7 +15,7 @@
         <SolidColorBrush x:Key="ContentBackgroundColor_MiddleTransparent" Color="#8023283C" />
         <SolidColorBrush x:Key="ContentBackgroundColor_HighTransparent" Color="#3023283C" />
 
-        <system:UInt32 x:Key="BoardHeaderHeight">40</system:UInt32>
+        <system:Double x:Key="BoardHeaderHeight">40</system:Double>
 
         <Style TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent" />
