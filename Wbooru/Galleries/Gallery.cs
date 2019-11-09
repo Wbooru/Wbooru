@@ -41,7 +41,7 @@ namespace Wbooru.Galleries
             return support;
         }
 
-        public T Feature<T>() where T:class => this as T ?? throw new Exception($"Gallery {GalleryName}({SupportFeatures}) not support feature: {nameof(T)}");
+        public T Feature<T>() where T : class, IGalleryFeature => this as T;
 
         #endregion
 

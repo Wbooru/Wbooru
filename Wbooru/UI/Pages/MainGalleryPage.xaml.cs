@@ -123,6 +123,12 @@ namespace Wbooru.UI.Pages
 
         #region Left Menu Show/Hide
 
+        private void CloseLeftPanel()
+        {
+            var hide_sb = Resources["HideLeftPane"] as Storyboard;
+            hide_sb.Begin(MainGrid);
+        }
+
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
             var show_sb = Resources["ShowLeftPane"] as Storyboard;
@@ -145,8 +151,7 @@ namespace Wbooru.UI.Pages
                     return;
 
                 await Dispatcher.BeginInvoke(new Action(() => {
-                    var hide_sb = Resources["HideLeftPane"] as Storyboard;
-                    hide_sb.Begin(MainGrid);
+                    CloseLeftPanel();
                 }));
                 Log.Debug("Mouse have left menu over 3s,auto close left menu.");
             });
@@ -220,8 +225,7 @@ namespace Wbooru.UI.Pages
 
         private void CloseLeftPanelButton_Click(object sender, RoutedEventArgs e)
         {
-            var hide_sb = Resources["HideLeftPane"] as Storyboard;
-            hide_sb.Begin(MainGrid);
+            CloseLeftPanel();
         }
 
         LoadingTaskNotify item_loading_notify;
@@ -240,24 +244,31 @@ namespace Wbooru.UI.Pages
 
         private void ShowMarkPicturesButton_Click(object sender, RoutedEventArgs e)
         {
-            var galleries = CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>();
+            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x=>x.GalleryName).ToArray();
 
-            var source = LocalDBContext.Instance.ItemMarks
-                .ToArray() //avoid crash caused by SQL generated. 
-                .Select(x => new { gallery = galleries.FirstOrDefault(y => y.GalleryName == x.GalleryName), gallery_item = x })
+            var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
+
+            var source = (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks
+                .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.GalleryName), gallery_item = x })
                 .Where(x => x.gallery != null)
+                .ToArray()//avoid SQL.
                 .Select(x => x.gallery_item.Item.ConvertToNormalModel());
+                 
 
-            GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + "收藏列表";
+            GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature!=null?"在线":"本地") + "收藏列表";
             GridViewer.ViewType = GalleryViewType.Marked;
             GridViewer.ClearGallery();
             GridViewer.Gallery = null;
             GridViewer.LoadableSource = source;
+
+            CloseLeftPanel();
         }
 
         private void ShowPicturePoolButton_Click(object sender, RoutedEventArgs e)
         {
             ApplyGallery(CurrentGallery, null);
+
+            CloseLeftPanel();
         }
     }
 }

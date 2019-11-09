@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Wbooru.Galleries.SupportFeatures
 {
-    public interface IGalleryAccount : IGalleryFeature
+    public interface IGalleryFeature
     {
-        bool IsLoggined { get; }
-        void AccountLogin();
-        void AccountLogout();
+
     }
 }

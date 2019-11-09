@@ -99,9 +99,8 @@
                     Text="登陆" />
                 <controls:MenuButton
                     x:Name="ShowPicturePoolButton"
-                    Icon=""
                     ButtonBase.Click="ShowPicturePoolButton_Click"
-                    IsEnabled="False"
+                    Icon=""
                     Text="图池" />
                 <controls:MenuButton
                     Icon=""

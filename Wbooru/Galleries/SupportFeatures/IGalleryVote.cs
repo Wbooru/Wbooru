@@ -7,7 +7,7 @@ using Wbooru.Models.Gallery;
 
 namespace Wbooru.Galleries.SupportFeatures
 {
-    public interface IGalleryVote
+    public interface IGalleryVote : IGalleryFeature
     {
         void SetVote(GalleryItem item, bool is_mark);
         bool IsVoted(GalleryItem item);

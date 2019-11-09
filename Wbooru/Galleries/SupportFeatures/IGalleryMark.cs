@@ -7,7 +7,7 @@ using Wbooru.Models.Gallery;
 
 namespace Wbooru.Galleries.SupportFeatures
 {
-    public interface IGalleryMark
+    public interface IGalleryMark : IGalleryFeature
     {
         void SetMark(GalleryItem item,bool is_mark);
         bool IsMarked(GalleryItem item);

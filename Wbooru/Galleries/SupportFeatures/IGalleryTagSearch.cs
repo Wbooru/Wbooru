@@ -7,7 +7,7 @@ using Wbooru.Models;
 
 namespace Wbooru.Galleries.SupportFeatures
 {
-    public interface IGalleryTagSearch
+    public interface IGalleryTagSearch : IGalleryFeature
     {
         IEnumerable<Tag> SearchTag(string keywords);
     }

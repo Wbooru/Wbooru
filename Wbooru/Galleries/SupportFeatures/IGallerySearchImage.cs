@@ -7,7 +7,7 @@ using Wbooru.Models.Gallery;
 
 namespace Wbooru.Galleries.SupportFeatures
 {
-    public interface IGallerySearchImage
+    public interface IGallerySearchImage : IGalleryFeature
     {
         IEnumerable<GalleryItem> SearchImages(IEnumerable<string> keywords);
     }

@@ -103,6 +103,7 @@
     <Compile Include="Galleries\Gallery.cs" />
     <Compile Include="Galleries\SupportFeatures\GallerySupportFeature.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryAccount.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGalleryFeature.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryMark.cs" />
     <Compile Include="Galleries\SupportFeatures\IGallerySearchImage.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryTagDataPredownloadAndCache.cs" />
