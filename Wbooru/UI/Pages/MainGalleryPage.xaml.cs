@@ -243,11 +243,10 @@ namespace Wbooru.UI.Pages
             var galleries = CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>();
 
             var source = LocalDBContext.Instance.ItemMarks
-                .ToList()
+                .ToArray() //avoid crash caused by SQL generated. 
                 .Select(x => new { gallery = galleries.FirstOrDefault(y => y.GalleryName == x.GalleryName), gallery_item = x })
                 .Where(x => x.gallery != null)
-                .Select(x => LocalDBContext.Instance.Entry(x.gallery_item).Entity)
-                .Select(x => x.Item.ConvertToNormalModel());
+                .Select(x => x.gallery_item.Item.ConvertToNormalModel());
 
             GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + "收藏列表";
             GridViewer.ViewType = GalleryViewType.Marked;
