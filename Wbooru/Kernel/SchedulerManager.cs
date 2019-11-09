@@ -44,8 +44,10 @@ namespace Wbooru.Kernel
         {
             while (true)
             {
-                foreach (var schedule in Schedulers)
+                for (int i = 0; i < Schedulers.Count(); i++)
                 {
+                    var schedule = Schedulers.ElementAt(i);
+
                     if (schedule.IsAsyncSchedule)
                         Task.Run(schedule.OnScheduleCall);
                     else
