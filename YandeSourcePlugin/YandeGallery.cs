@@ -37,7 +37,15 @@ namespace YandeSourcePlugin
 
         public override GalleryImageDetail GetImageDetial(GalleryItem item)
         {
-            return (item as PictureItem)?.GalleryDetail;
+            if (!((item as PictureItem)?.GalleryDetail is GalleryImageDetail detail))
+            {
+                if (item.GalleryName != GalleryName)
+                    throw new Exception($"This item doesn't belong with gallery {GalleryName}.");
+
+                detail = (GetImage(item.GalleryItemID) as PictureItem).GalleryDetail;
+            }
+
+            return detail;
         }
 
         public IEnumerable<GalleryItem> GetImagesInternal(IEnumerable<string> tags=null)
@@ -88,6 +96,7 @@ namespace YandeSourcePlugin
         private GalleryItem BuildItem(JToken pic_info)
         {
             PictureItem item = new PictureItem();
+
             item.GalleryItemID = pic_info["id"].ToString();
             item.PreviewImageDownloadLink = pic_info["preview_url"].ToString();
             item.PreviewImageSize = new Size(pic_info["preview_width"].ToObject<int>(), pic_info["preview_height"].ToObject<int>());
@@ -145,6 +154,8 @@ namespace YandeSourcePlugin
 
             item.GalleryDetail = detail;
 
+            item.GalleryName = GalleryName;
+
             item.DownloadFileName = $"{item.GalleryItemID} {string.Join(" ", detail.Tags)}";
 
             return item;
@@ -184,7 +195,42 @@ namespace YandeSourcePlugin
 
         public override GalleryItem GetImage(string id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = RequestHelper.CreateDeafult($"https://yande.re/post/show/{id}");
+
+                using var reader = new StreamReader(response.GetResponseStream());
+                var content = reader.ReadToEnd();
+
+                const string CONTENT_HEAD = "Post.register_resp(";
+                var start_index = content.LastIndexOf(CONTENT_HEAD) + CONTENT_HEAD.Length;
+                StringBuilder builder = new StringBuilder(1024);
+                int stack = 1;
+
+                foreach (var ch in content.Skip(start_index))
+                {
+                    if (ch == ')')
+                    {
+                        stack--;
+                        if (stack == 0)
+                            break;
+                    }
+
+                    if (ch == '(')
+                        stack++;
+
+                    builder.Append(ch);
+                }
+
+                var result = JsonConvert.DeserializeObject(builder.ToString()) as JObject;
+                return BuildItem((result["posts"] as JArray).FirstOrDefault());
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
+                ExceptionHelper.DebugThrow(e);
+                return null;
+            }
         }
     }
 }

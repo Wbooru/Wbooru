@@ -247,7 +247,7 @@ namespace Wbooru.UI.Pages
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
 
             var source = (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks
-                .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.GalleryName), gallery_item = x })
+                .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.Item.GalleryName), gallery_item = x })
                 .Where(x => x.gallery != null)
                 .ToArray()//avoid SQL.
                 .Select(x => x.gallery_item.Item.ConvertToNormalModel());

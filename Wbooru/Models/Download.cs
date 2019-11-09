@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Wbooru.Models.Gallery;
 using Wbooru.Utils;
 
 namespace Wbooru.Models
@@ -32,11 +33,9 @@ namespace Wbooru.Models
         /// </summary>
         public DateTime DownloadStartTime { get; set; } = DateTime.Now;
 
-        public string GalleryPictureID { get; set; }
-
         public string DownloadUrl { get; set; }
 
-        public string GalleryName { get; set; }
+        public virtual ShadowGalleryItem GalleryItem { get; set; }
 
         /// <summary>
         /// 文件名
@@ -52,8 +51,8 @@ namespace Wbooru.Models
 
         public bool CheckIfSame(Download another)
         {
-            return another.GalleryName == GalleryName 
-                && another.GalleryPictureID == GalleryPictureID 
+            return another.GalleryItem.GalleryName == GalleryItem.GalleryName
+                && another.GalleryItem.GalleryItemID == GalleryItem.GalleryItemID
                 && another.FileName == FileName 
                 && another.DownloadUrl == DownloadUrl;
         }

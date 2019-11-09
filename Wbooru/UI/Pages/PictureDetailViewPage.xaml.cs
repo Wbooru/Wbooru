@@ -147,7 +147,7 @@ namespace Wbooru.UI.Pages
         {
             var notify = LoadingStatus.BeginBusy("正在读取图片详细信息....");
 
-            Gallery = gallery;
+            Gallery = gallery??Container.Default.GetExportedValues<Gallery>().FirstOrDefault(x=>x.GalleryName==item.GalleryName);
             PictureInfo = item;
 
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
@@ -160,11 +160,10 @@ namespace Wbooru.UI.Pages
                     var visit = new VisitRecord()
                     {
                         GalleryItem = item.ConvertToStorableModel(),
-                        GalleryName = gallery.GalleryName,
                         LastVisitTime = DateTime.Now
                     };
 
-                    var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryName == gallery.GalleryName);
+                    var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
                     if (visit_entity == null)
                         DB.VisitRecords.Add(visit);
                     else
@@ -174,7 +173,7 @@ namespace Wbooru.UI.Pages
                     transaction.Commit();
                 }
 
-                var is_mark = DB.ItemMarks.Where(x => x.GalleryName == gallery.GalleryName && x.MarkGalleryID == item.GalleryItemID).Any();
+                var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
                 var detail = gallery.GetImageDetial(item);
 
                 Dispatcher.Invoke(() =>
@@ -241,8 +240,6 @@ namespace Wbooru.UI.Pages
                 DB.ItemMarks.Add(new GalleryItemMark()
                 {
                     Item= PictureInfo.ConvertToStorableModel(),
-                    MarkGalleryID = PictureInfo.GalleryItemID,
-                    GalleryName = Gallery.GalleryName,
                     Time = DateTime.Now
                 });
 
@@ -251,7 +248,7 @@ namespace Wbooru.UI.Pages
             }
             else
             {
-                var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryName == Gallery.GalleryName && x.MarkGalleryID == PictureInfo.GalleryItemID);
+                var x = DB.ItemMarks.FirstOrDefault(x => x.Item.GalleryName == Gallery.GalleryName && x.Item.GalleryItemID == PictureInfo.GalleryItemID);
                 DB.ItemMarks.Remove(x);
                 IsMark = false;
             }
@@ -294,8 +291,7 @@ namespace Wbooru.UI.Pages
                 {
                     DownloadUrl = download_link.DownloadLink,
                     TotalBytes = download_link.FileLength,
-                    GalleryName = Gallery.GalleryName,
-                    GalleryPictureID = PictureDetailInfo.ID,
+                    GalleryItem = PictureInfo.ConvertToStorableModel(),
                     FileName = file_name,
                     DownloadFullPath = full_file_path,
                     DisplayDownloadedLength = 0,

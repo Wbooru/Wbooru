@@ -15,6 +15,7 @@ namespace Wbooru.Models.Gallery
         public string PreviewImageDownloadLink { get; set; }
         public string DownloadFileName { get; set; }
         public Size PreviewImageSize { get; set; }
+        public string GalleryName { get; set; }
         public string GalleryItemID { get; set; }
 
         public override string ToString() => $"{GalleryItemID} {DownloadFileName}";
@@ -26,6 +27,7 @@ namespace Wbooru.Models.Gallery
                 PreviewImageDownloadLink = this.PreviewImageDownloadLink,
                 DownloadFileName = this.DownloadFileName,
                 PreviewImageSize = this.PreviewImageSize,
+                GalleryName = this.GalleryName,
                 GalleryItemID = this.GalleryItemID,
             };
         }

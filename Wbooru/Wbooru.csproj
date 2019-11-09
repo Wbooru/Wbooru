@@ -122,6 +122,10 @@
     <Compile Include="Migrations\201911090600353_ModifyRef.Designer.cs">
       <DependentUpon>201911090600353_ModifyRef.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911090746080_ModifyItems.cs" />
+    <Compile Include="Migrations\201911090746080_ModifyItems.Designer.cs">
+      <DependentUpon>201911090746080_ModifyItems.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Download.cs" />
     <Compile Include="Models\DownloadTaskStatus.cs" />
@@ -321,6 +325,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911090600353_ModifyRef.resx">
       <DependentUpon>201911090600353_ModifyRef.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911090746080_ModifyItems.resx">
+      <DependentUpon>201911090746080_ModifyItems.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

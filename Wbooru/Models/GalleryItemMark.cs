@@ -13,9 +13,7 @@ namespace Wbooru.Models
         [Key]
         public int GalleryItemMarkID { get; set; }
 
-        public string GalleryName { get; set; }
         public DateTime Time { get; set; }
-        public string MarkGalleryID { get; set; }
 
         public virtual ShadowGalleryItem Item { get; set; }
     }

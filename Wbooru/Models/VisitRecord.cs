@@ -16,7 +16,6 @@ namespace Wbooru.Models
         public int VisitRecordID { get; set; } = -1000;
 
         public virtual ShadowGalleryItem GalleryItem { get; set; }
-        public string GalleryName { get; set; }
         public DateTime LastVisitTime { get; set; }
     }
 }
