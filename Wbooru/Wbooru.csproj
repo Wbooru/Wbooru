@@ -208,6 +208,9 @@
     <Compile Include="UI\Pages\SettingPage.xaml.cs">
       <DependentUpon>SettingPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Pages\TagManagePage.xaml.cs">
+      <DependentUpon>TagManagePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Panels\GridPanel.cs" />
     <Compile Include="UI\ValueConverters\BytesLength2VisibilityConverter.cs" />
     <Compile Include="UI\ValueConverters\DisplaySpeedConverter.cs" />
@@ -306,6 +309,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Pages\SettingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Pages\TagManagePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

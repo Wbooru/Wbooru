@@ -1,0 +1,93 @@
+﻿<Page
+    x:Class="Wbooru.UI.Pages.TagManagePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Wbooru.UI.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="TagManagePage"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource ContentBackgroundColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}">
+            </RowDefinition>
+            <RowDefinition Height="*">
+            </RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Border Background="{StaticResource BoardColor}">
+            <Grid>
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                    <Button
+                        Name="CloseTagPanelButton"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                        HorizontalAlignment="Left"
+                        BorderBrush="Transparent"
+                        Click="CloseTagPanelButton_Click"
+                        FontFamily="Segoe UI Symbol"
+                        FontSize="15">
+                        
+                    </Button>
+                    <TextBlock VerticalAlignment="Center" FontSize="16">标签管理</TextBlock>
+                </StackPanel>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <!--  todo  -->
+                    <ComboBox
+                        Width="150"
+                        Margin="0,0,10,0"
+                        FontSize="16"
+                        Foreground="White"
+                        SelectedIndex="0"
+                        Template="{StaticResource NormalControlBoxTemplate}">
+                        <!--  DataTemplate  -->
+                        <ComboBoxItem FontSize="15" Foreground="White">
+                            ddw
+                        </ComboBoxItem>
+                        <ComboBoxItem FontSize="15" Foreground="White">dd22222asdad</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition>
+                </ColumnDefinition>
+                <ColumnDefinition>
+                </ColumnDefinition>
+                <ColumnDefinition>
+                </ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}">
+                </RowDefinition>
+                <RowDefinition Height="*">
+                </RowDefinition>
+            </Grid.RowDefinitions>
+
+            <!--#region MarkTags-->
+            <TextBlock VerticalAlignment="Center" FontSize="18">
+                收藏
+            </TextBlock>
+
+            <ScrollViewer Grid.Row="1">
+                <ListBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                    <Grid>
+                        <TextBlock FontSize="16">
+                            data
+                        </TextBlock>
+                    </Grid>
+                </ListBox>
+            </ScrollViewer>
+            <!--#endregion-->
+        </Grid>
+    </Grid>
+</Page>
