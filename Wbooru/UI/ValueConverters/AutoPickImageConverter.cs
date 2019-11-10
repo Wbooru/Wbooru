@@ -19,7 +19,7 @@ namespace Wbooru.UI.ValueConverters
 
             var pick_download = detail.DownloadableImageLinks.OrderByDescending(x => x.FileLength).FirstOrDefault();
 
-            return new AsyncImageWrapper(pick_download.DownloadLink, pick_download.DownloadLink);
+            return new AsyncImageWrapper(pick_download.FullFileName, pick_download.DownloadLink);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

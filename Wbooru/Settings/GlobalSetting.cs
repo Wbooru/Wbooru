@@ -65,5 +65,23 @@ namespace Wbooru.Settings
         public bool GalleryListScrollBarVisiable { get; set; } = true;
 
         #endregion
+
+        #region Cache Option
+
+        [Group("Cache Option")]
+        [Description("是否使用文件缓存机制，这将会缓存图片文件等其他资源")]
+        public bool EnableFileCache { get; set; } = false;
+
+        [Group("Cache Option")]
+        [Description("钦定缓存文件夹的大小,以MB为单位，若空间不足则会删除较旧的资源缓存文件")]
+        [EnableBy(nameof(EnableFileCache), true)]
+        public uint CacheFolderMaxSize { get; set; } = 100;
+
+        [Group("Cache Option")]
+        [Description("钦定缓存文件夹的存放位置,%Temp%表示系统临时文件夹路径")]
+        [EnableBy(nameof(EnableFileCache), true)]
+        public string CacheFolderPath { get; set; } = @"%Temp%WbooruCache";
+
+        #endregion
     }
 }

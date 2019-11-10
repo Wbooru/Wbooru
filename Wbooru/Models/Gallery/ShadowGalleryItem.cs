@@ -15,13 +15,16 @@ namespace Wbooru.Models.Gallery
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
+        public int PreviewImageWidth { get; set; }
+        public int PreviewImageHeight { get; set; }
+
         public GalleryItem ConvertToNormalModel()
         {
             return new GalleryItem()
             {
                 PreviewImageDownloadLink = this.PreviewImageDownloadLink,
                 DownloadFileName = this.DownloadFileName,
-                PreviewImageSize = this.PreviewImageSize,
+                PreviewImageSize = new Size(PreviewImageWidth,PreviewImageHeight),
                 GalleryName = this.GalleryName,
                 GalleryItemID = this.GalleryItemID,
             };

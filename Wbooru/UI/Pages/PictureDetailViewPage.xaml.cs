@@ -118,7 +118,7 @@ namespace Wbooru.UI.Pages
 
                     do
                     {
-                        image = ImageResourceManager.RequestImageAsync(pick_download.DownloadLink, () =>
+                        image = ImageResourceManager.RequestImageAsync(pick_download.FullFileName, () =>
                         {
                             return downloader.GetImageAsync(pick_download.DownloadLink).Result;
                         }).Result;

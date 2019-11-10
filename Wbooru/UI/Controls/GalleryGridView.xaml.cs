@@ -161,6 +161,9 @@ namespace Wbooru.UI.Controls
 
             Dispatcher.Invoke(new Action(() =>
             {
+                if (source != LoadableSource)
+                    return;
+
                 foreach (var item in list)
                     Items.Add(item);
 

@@ -6,6 +6,7 @@ using Wbooru.Settings;
 using System.Collections.Generic;
 using Wbooru.Galleries;
 using System;
+using Wbooru.Utils.Resource;
 
 namespace Wbooru
 {
@@ -28,6 +29,8 @@ namespace Wbooru
             SchedulerManager.Init();
 
             TagManager.InitTagManager();
+
+            ImageResourceManager.InitImageResourceManager();
         }
 
         internal static void Term()

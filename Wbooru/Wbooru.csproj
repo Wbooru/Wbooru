@@ -126,6 +126,10 @@
     <Compile Include="Migrations\201911090746080_ModifyItems.Designer.cs">
       <DependentUpon>201911090746080_ModifyItems.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911091423430_AddSize.cs" />
+    <Compile Include="Migrations\201911091423430_AddSize.Designer.cs">
+      <DependentUpon>201911091423430_AddSize.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Download.cs" />
     <Compile Include="Models\DownloadTaskStatus.cs" />
@@ -218,7 +222,6 @@
     <Compile Include="Utils\IEnumerableMultiThreadable.cs" />
     <Compile Include="Utils\ExceptionHelper.cs" />
     <Compile Include="Utils\ImageExtension.cs" />
-    <Compile Include="Utils\IOHelper.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\MathEx.cs" />
     <Compile Include="Utils\ObjectPool.cs" />
@@ -328,6 +331,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911090746080_ModifyItems.resx">
       <DependentUpon>201911090746080_ModifyItems.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911091423430_AddSize.resx">
+      <DependentUpon>201911091423430_AddSize.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

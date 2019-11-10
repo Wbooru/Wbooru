@@ -26,7 +26,8 @@ namespace Wbooru.Models.Gallery
             {
                 PreviewImageDownloadLink = this.PreviewImageDownloadLink,
                 DownloadFileName = this.DownloadFileName,
-                PreviewImageSize = this.PreviewImageSize,
+                PreviewImageHeight = this.PreviewImageSize.Height,
+                PreviewImageWidth = this.PreviewImageSize.Width,
                 GalleryName = this.GalleryName,
                 GalleryItemID = this.GalleryItemID,
             };
