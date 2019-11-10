@@ -218,6 +218,7 @@
     <Compile Include="UI\ValueConverters\SimpleExpressionConverters.cs" />
     <Compile Include="Utils\AsyncImageWrapper.cs" />
     <Compile Include="Utils\CalculatableFormatter.cs" />
+    <Compile Include="Utils\FileNameHelper.cs" />
     <Compile Include="Utils\ICacheCleanable.cs" />
     <Compile Include="Utils\IEnumerableMultiThreadable.cs" />
     <Compile Include="Utils\ExceptionHelper.cs" />

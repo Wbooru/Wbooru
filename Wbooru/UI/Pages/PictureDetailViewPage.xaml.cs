@@ -272,11 +272,8 @@ namespace Wbooru.UI.Pages
             var download_link = (sender as FrameworkElement).DataContext as DownloadableImageLink;
 
             var file_name = string.IsNullOrWhiteSpace(download_link.FullFileName)? 
-                string.Join("", $"{PictureDetailInfo.ID} {string.Join("_", PictureDetailInfo.Tags)}{System.IO.Path.GetExtension(download_link.DownloadLink)}")
-                : download_link.FullFileName;
-
-            foreach (var ic in System.IO.Path.GetInvalidFileNameChars())
-                file_name = file_name.Replace(ic, '_');
+                $"{FileNameHelper.GetFileNameWithoutExtName(PictureDetailInfo)}{System.IO.Path.GetExtension(download_link.DownloadLink)}"
+                :FileNameHelper.FilterFileName( download_link.FullFileName);
 
             var config = SettingManager.LoadSetting<GlobalSetting>();
 

@@ -36,7 +36,7 @@ namespace Wbooru.Utils.Resource
                     return stream.Length;
                 }).Sum();
 
-                Log.Error("Check&Create tempoary cache folder:" + temporary_folder_path);
+                Log.Error($"Check&Create tempoary cache folder({current_record_capacity}):{temporary_folder_path}");
             }
             catch (Exception e)
             {
@@ -175,8 +175,7 @@ namespace Wbooru.Utils.Resource
         {
             res = null;
 
-            foreach (var c in Path.GetInvalidFileNameChars())
-                name = name.Replace(c, '_');
+            name = FileNameHelper.FilterFileName(name);
 
             var file_path = Path.Combine(SettingManager.LoadSetting<GlobalSetting>().DownloadPath, name);
 
