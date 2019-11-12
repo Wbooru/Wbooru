@@ -17,7 +17,7 @@ namespace Wbooru.UI.ValueConverters.SettingUI
             return value switch
             {
                 Assembly a => a.FullName.Split(',').First(),
-                SettingBase t => t.GetType().Name,
+                Type t => t.Name,
                 _ => throw new Exception("Unsupport type")
             };
         }

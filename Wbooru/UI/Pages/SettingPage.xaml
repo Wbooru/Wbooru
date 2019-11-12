@@ -130,15 +130,18 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock
                             Margin="0,0,0,20"
+                            VerticalAlignment="Center"
                             FontSize="26"
-                            Text="{Binding CurrentSettingName}">
+                            Text="{Binding CurrentSettingType.Name}">
                         </TextBlock>
                         <Button
                             Name="DefaultSettingButton"
                             Grid.Column="1"
-                            Click="DefaultSettingButton_Click"
-                            Margin="10"
-                            Padding="20,0,20,0">
+                            Padding="20,10,20,10"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            BorderBrush="White"
+                            Click="DefaultSettingButton_Click">
                             重置此配置
                         </Button>
                     </Grid>
