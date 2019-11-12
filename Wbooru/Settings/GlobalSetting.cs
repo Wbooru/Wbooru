@@ -95,7 +95,7 @@ namespace Wbooru.Settings
         #region Deep Dark Fantasty
 
         [Ignore]
-        internal bool IgnoreSettingChangedComfirm { get; set; } = false;
+        public bool IgnoreSettingChangedComfirm { get; set; } = false;
 
         #endregion
     }
