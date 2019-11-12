@@ -113,8 +113,9 @@
                     Icon=""
                     Text="收藏" />
                 <controls:MenuButton
+                    x:Name="ShowTagManagePageButton"
+                    ButtonBase.Click="ShowTagManagePageButton_Click"
                     Icon=""
-                    IsEnabled="False"
                     Text="标签" />
                 <controls:MenuButton
                     x:Name="DownloadPageButton"

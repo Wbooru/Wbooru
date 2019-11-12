@@ -10,7 +10,7 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <Grid Background="{StaticResource ContentBackgroundColor}">
+    <Grid Name="MainContent" Background="{StaticResource ContentBackgroundColor}">
         <Grid.RowDefinitions>
             <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}">
             </RowDefinition>
@@ -40,17 +40,15 @@
                     Orientation="Horizontal">
                     <!--  todo  -->
                     <ComboBox
+                        Name="GalleriesSelector"
                         Width="150"
                         Margin="0,0,10,0"
                         FontSize="16"
                         Foreground="White"
                         SelectedIndex="0"
+                        SelectionChanged="GalleriesSelector_SelectionChanged"
                         Template="{StaticResource NormalControlBoxTemplate}">
                         <!--  DataTemplate  -->
-                        <ComboBoxItem FontSize="15" Foreground="White">
-                            ddw
-                        </ComboBoxItem>
-                        <ComboBoxItem FontSize="15" Foreground="White">dd22222asdad</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
             </Grid>
@@ -74,17 +72,208 @@
             </Grid.RowDefinitions>
 
             <!--#region MarkTags-->
-            <TextBlock VerticalAlignment="Center" FontSize="18">
+            <TextBlock
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                FontSize="18">
                 收藏
             </TextBlock>
 
+            <Button
+                Name="SearchCheckedTagsButton"
+                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                HorizontalAlignment="Right"
+                BorderBrush="Transparent"
+                Click="SearchCheckedTagsButton_Click"
+                FontFamily="Segoe UI Symbol"
+                FontSize="25">
+                
+            </Button>
+
             <ScrollViewer Grid.Row="1">
-                <ListBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                    <Grid>
-                        <TextBlock FontSize="16">
-                            data
-                        </TextBlock>
-                    </Grid>
+                <ListBox
+                    Name="MarkedTagList"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding MarkedTagsView.View}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*">
+                                    </ColumnDefinition>
+                                    <ColumnDefinition Width="Auto">
+                                    </ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox
+                                    Name="SelectCheckBox"
+                                    HorizontalContentAlignment="Stretch"
+                                    VerticalContentAlignment="Center"
+                                    Background="Transparent">
+
+                                    <CheckBox.Resources>
+                                        <Style TargetType="Path">
+                                            <Setter Property="Stroke" Value="White">
+                                            </Setter>
+                                        </Style>
+                                    </CheckBox.Resources>
+                                    <TextBlock
+                                        FontSize="16"
+                                        Text="{Binding Tag.Name}"
+                                        TextTrimming="CharacterEllipsis"
+                                        ToolTip="{Binding Tag.Name}">
+                                    </TextBlock>
+                                </CheckBox>
+
+                                <StackPanel
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                                    <Button
+                                        Name="MoveTagButton"
+                                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                        HorizontalAlignment="Left"
+                                        BorderBrush="Transparent"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="13">
+                                        
+                                    </Button>
+                                    <Button
+                                        Name="SubscribeButton"
+                                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                        HorizontalAlignment="Left"
+                                        BorderBrush="Transparent"
+                                        Click="SubscribeButton_Click"
+                                        FontFamily="Segoe UI Symbol">
+                                        
+                                    </Button>
+                                    <Button
+                                        Name="DeleteTagButton"
+                                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                        HorizontalAlignment="Left"
+                                        BorderBrush="Transparent"
+                                        Click="DeleteTag_Click"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="13">
+                                        
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+            <!--#endregion-->
+
+            <!--#region FilterTags-->
+            <TextBlock
+                Grid.Column="1"
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                FontSize="18">
+                过滤
+            </TextBlock>
+
+            <ScrollViewer Grid.Row="1" Grid.Column="1">
+                <ListBox
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding FilterTagsView.View}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*">
+                                    </ColumnDefinition>
+                                    <ColumnDefinition Width="Auto">
+                                    </ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    Text="{Binding Tag.Name}">
+                                </TextBlock>
+
+                                <StackPanel
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                                    <Button
+                                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                        HorizontalAlignment="Left"
+                                        BorderBrush="Transparent"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="13">
+                                        
+                                    </Button>
+                                    <Button
+                                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                        HorizontalAlignment="Left"
+                                        BorderBrush="Transparent"
+                                        Click="DeleteTag_Click"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="13">
+                                        
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+            <!--#endregion-->
+
+            <!--#region SubscribedTags-->
+            <TextBlock
+                Grid.Column="2"
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                FontSize="18">
+                已订阅
+            </TextBlock>
+
+            <ScrollViewer Grid.Row="1" Grid.Column="2">
+                <ListBox
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding SubscribedTagsView.View}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*">
+                                    </ColumnDefinition>
+                                    <ColumnDefinition Width="Auto">
+                                    </ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    Text="{Binding Tag.Name}">
+
+                                </TextBlock>
+
+                                <StackPanel
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                                    <Button
+                                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                        HorizontalAlignment="Left"
+                                        BorderBrush="Transparent"
+                                        Click="DeleteTag_Click"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="13"
+                                        ToolTip="取消订阅">
+                                        
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
             </ScrollViewer>
             <!--#endregion-->

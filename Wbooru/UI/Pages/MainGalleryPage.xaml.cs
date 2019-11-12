@@ -271,5 +271,12 @@ namespace Wbooru.UI.Pages
 
             CloseLeftPanel();
         }
+
+        private void ShowTagManagePageButton_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new TagManagePage();
+
+            NavigationHelper.NavigationPush(page);
+        }
     }
 }

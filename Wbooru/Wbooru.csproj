@@ -130,6 +130,10 @@
     <Compile Include="Migrations\201911091423430_AddSize.Designer.cs">
       <DependentUpon>201911091423430_AddSize.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911101658207_ModifyTagRecord.cs" />
+    <Compile Include="Migrations\201911101658207_ModifyTagRecord.Designer.cs">
+      <DependentUpon>201911101658207_ModifyTagRecord.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Download.cs" />
     <Compile Include="Models\DownloadTaskStatus.cs" />
@@ -342,6 +346,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911091423430_AddSize.resx">
       <DependentUpon>201911091423430_AddSize.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911101658207_ModifyTagRecord.resx">
+      <DependentUpon>201911101658207_ModifyTagRecord.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

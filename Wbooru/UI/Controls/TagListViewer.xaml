@@ -108,8 +108,22 @@
                             Name="SelectCheckBox"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Center"
-                            Background="Transparent"
-                            Visibility="{Binding IsFilter, Converter={x:Static vc:SimpleExpressionConverters.ReverseBooleanToVisibilityConverter}}">
+                            Background="Transparent">
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RecordType}" Value="Marked">
+                                            <Setter Property="Visibility" Value="Visible">
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RecordType}" Value="Filter">
+                                            <Setter Property="Visibility" Value="Hidden">
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+
                             <CheckBox.Resources>
                                 <Style TargetType="Path">
                                     <Setter Property="Stroke" Value="White">
@@ -125,10 +139,24 @@
                         </CheckBox>
                         <TextBlock
                             FontSize="16"
+                            Foreground="White"
                             Text="{Binding Tag.Name}"
                             TextTrimming="CharacterEllipsis"
-                            ToolTip="{Binding Tag.Name}"
-                            Visibility="{Binding IsFilter, Converter={x:Static vc:SimpleExpressionConverters.BooleanToVisibilityConverter}}">
+                            ToolTip="{Binding Tag.Name}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RecordType}" Value="Marked">
+                                            <Setter Property="Visibility" Value="Hidden">
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RecordType}" Value="Filter">
+                                            <Setter Property="Visibility" Value="Visible">
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
                         </TextBlock>
                         <Button
                             Name="DeleteTagButton"

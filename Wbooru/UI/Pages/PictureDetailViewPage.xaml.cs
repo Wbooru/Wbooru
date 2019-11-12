@@ -26,6 +26,7 @@ using Wbooru.Settings;
 using Wbooru.UI.Controls;
 using Wbooru.Utils;
 using Wbooru.Utils.Resource;
+using static Wbooru.Models.TagRecord;
 using Brushes = System.Windows.Media.Brushes;
 
 namespace Wbooru.UI.Pages
@@ -316,13 +317,13 @@ namespace Wbooru.UI.Pages
             if (!((sender as FrameworkElement).DataContext is string tag_name))
              return;
 
-            if (TagManager.Contain(tag_name, false))
+            if (TagManager.Contain(tag_name, TagRecordType.Marked))
             {
                 Toast.ShowMessage($"已收藏此标签了");
                 return;
             }
 
-            TagManager.AddTag(tag_name, Gallery.GalleryName, TagType.Unknown, false);
+            TagManager.AddTag(tag_name, Gallery.GalleryName, TagType.Unknown, TagRecordType.Marked);
 
             Toast.ShowMessage($"添加成功");
         }
@@ -332,13 +333,13 @@ namespace Wbooru.UI.Pages
             if (!((sender as FrameworkElement).DataContext is string tag_name))
                 return;
 
-            if (TagManager.Contain(tag_name,true))
+            if (TagManager.Contain(tag_name, TagRecordType.Filter))
             {
                 Toast.ShowMessage($"已过滤此标签了");
                 return;
             }
 
-            TagManager.AddTag(tag_name, Gallery.GalleryName, TagType.Unknown, true);
+            TagManager.AddTag(tag_name, Gallery.GalleryName, TagType.Unknown, TagRecordType.Filter);
 
             Toast.ShowMessage($"过滤标签添加成功");
         }
