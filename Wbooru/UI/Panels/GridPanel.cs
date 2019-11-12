@@ -53,7 +53,7 @@ namespace Wbooru.UI.Panels
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            Console.WriteLine(availableSize);
+            Log.Debug($"availableSize={availableSize} GridItemWidth={GridItemWidth} GridItemMarginWidth={GridItemMarginWidth}" ,"GridFlowPanel::MeasureOverride()");
 
             Size size = default;
 
@@ -87,6 +87,8 @@ namespace Wbooru.UI.Panels
 
         protected override Size ArrangeOverride(Size finalSize)
         {
+            Log.Debug($"finalSize={finalSize} GridItemWidth={GridItemWidth} GridItemMarginWidth={GridItemMarginWidth}", "GridFlowPanel::ArrangeOverride()");
+
             var current_x = 0d;
 
             //calculate X offset so that we could make children element in center.

@@ -91,12 +91,12 @@
             </Button>
 
             <ScrollViewer Grid.Row="1">
-                <ListBox
+                <ItemsControl
                     Name="MarkedTagList"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     ItemsSource="{Binding MarkedTagsView.View}">
-                    <ListBox.ItemTemplate>
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -161,8 +161,8 @@
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
             <!--#endregion-->
 
@@ -176,11 +176,11 @@
             </TextBlock>
 
             <ScrollViewer Grid.Row="1" Grid.Column="1">
-                <ListBox
+                <ItemsControl
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     ItemsSource="{Binding FilterTagsView.View}">
-                    <ListBox.ItemTemplate>
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -220,8 +220,8 @@
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
             <!--#endregion-->
 
@@ -235,11 +235,11 @@
             </TextBlock>
 
             <ScrollViewer Grid.Row="1" Grid.Column="2">
-                <ListBox
+                <ItemsControl
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     ItemsSource="{Binding SubscribedTagsView.View}">
-                    <ListBox.ItemTemplate>
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -273,8 +273,8 @@
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
             <!--#endregion-->
         </Grid>

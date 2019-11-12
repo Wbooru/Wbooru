@@ -76,7 +76,7 @@
             StaysOpen="False">
 
             <Grid Background="#BF1D2031">
-                <ListBox
+                <ItemsControl
                     Name="SuggestList"
                     Width="{Binding Width, ElementName=Input}"
                     MinHeight="50"
@@ -85,15 +85,19 @@
                     ItemsSource="{Binding Suggests}"
                     KeyDown="TextBlock_KeyDown"
                     LostFocus="SuggestList_LostFocus">
-                    <ListBox.ItemTemplate>
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock
-                                Foreground="{Binding Type, Converter={StaticResource TagColorConverter}}"
-                                PreviewMouseLeftButtonDown="TextBox_MouseLeftButtonDown"
-                                Text="{Binding Name}" />
+                            <Button
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Background="Transparent"
+                                Click="Button_Click_1"
+                                Content="{Binding Name}"
+                                Foreground="{Binding Type, Converter={StaticResource TagColorConverter}}">
+                            </Button>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
                 <local:LoadingStatusDisplayer
                     x:Name="LoadingStatus"

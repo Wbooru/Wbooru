@@ -88,13 +88,13 @@
             </Button>
         </StackPanel>
 
-        <ListView
+        <ItemsControl
             Name="TagViewList"
             Grid.Row="1"
             Background="Transparent"
             BorderBrush="Transparent"
             ItemsSource="{Binding TagsList}">
-            <ListView.ItemTemplate>
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <!--  硬编码，秋后算账  -->
                     <Grid Width="160">
@@ -150,6 +150,10 @@
                                             <Setter Property="Visibility" Value="Hidden">
                                             </Setter>
                                         </DataTrigger>
+                                        <DataTrigger Binding="{Binding RecordType}" Value="Subscribed">
+                                            <Setter Property="Visibility" Value="Hidden">
+                                            </Setter>
+                                        </DataTrigger>
                                         <DataTrigger Binding="{Binding RecordType}" Value="Filter">
                                             <Setter Property="Visibility" Value="Visible">
                                             </Setter>
@@ -169,7 +173,7 @@
                         </Button>
                     </Grid>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </UserControl>

@@ -170,9 +170,6 @@ namespace Wbooru.UI.Controls
 
         private void TextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var tag_name = (sender as TextBlock).Text;
-
-            ComfirmTag(tag_name);
         }
 
         private void ComfirmTag(string tag_name)
@@ -246,6 +243,13 @@ namespace Wbooru.UI.Controls
         {
             _popup_focus = false;
             UpdateShowHide();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            var tag_name = (sender as Button).Content.ToString();
+
+            ComfirmTag(tag_name);
         }
 
         public void InputChanged(string input_imcomplete_words)
