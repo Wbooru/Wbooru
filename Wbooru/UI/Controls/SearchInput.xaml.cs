@@ -298,12 +298,13 @@ namespace Wbooru.UI.Controls
 
                             using (LoadingStatus.BeginBusy("Tag searching..."))
                             {
-                                cached_suggests = cur_gallery
+                                var list = cur_gallery
                                 .Feature<IGalleryTagSearch>()
                                 .SearchTag(input_imcomplete_words)
-                                .OrderBy(tag =>tag.Name.IndexOf(input_imcomplete_words))
-                                .Take(SettingManager.LoadSetting<GlobalSetting>().MaxSearchSuggestsCount)
-                                .ToArray();
+                                .OrderBy(tag => tag.Name.IndexOf(input_imcomplete_words));
+
+                                var take_count = SettingManager.LoadSetting<GlobalSetting>().MaxSearchSuggestsCount;
+                                cached_suggests = (take_count == 0 ? list : list.Take(take_count)).ToArray();
 
                                 Logger.Debug($"Got {cached_suggests.Length} tags.");
                             }

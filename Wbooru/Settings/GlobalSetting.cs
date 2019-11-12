@@ -38,9 +38,9 @@ namespace Wbooru.Settings
 
 
         [Group("Tags Options")]
-        [Description("搜索图片标签时，标签建议最大数量")]
-        [Range("5","100")]
-        public int MaxSearchSuggestsCount { get; set; } = 20;
+        [Description("搜索图片标签时，标签建议最大数量,0代表不限制")]
+        [Range("0","1000")]
+        public int MaxSearchSuggestsCount { get; set; } = 100;
 
         #endregion
 

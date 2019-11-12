@@ -26,7 +26,7 @@ namespace Wbooru.UI.Controls.SettingUI
     /// <summary>
     /// RangeValueSetting.xaml 的交互逻辑
     /// </summary>
-    public partial class RangeValueSetting : UserControl , IValueConverter
+    public partial class RangeValueSetting : UserControl
     {
         public PropertyInfoWrapper Wrapper { get; }
 
@@ -79,47 +79,11 @@ namespace Wbooru.UI.Controls.SettingUI
             Binding T2PBinding = new Binding();
             T2PBinding.Mode = BindingMode.TwoWay;
             T2PBinding.Source = ValueRangeSlider;
-            //T2PBinding.Converter = this;
             T2PBinding.Path = new PropertyPath("Value");
 
             SetBinding(ProxyValueProperty, T2PBinding);
 
             #endregion
-
-            //SetValue(ProxyValueProperty, wrapper.ProxyValue);
-        }
-
-        private static IValueConverter GetValueConverter(Type prop_type, RangeAttribute range)
-        {
-            switch (prop_type.Name)
-            {
-                case "Int32":
-                    return new RangeValueConverter<int>(range);
-                case "Single":
-                    return new RangeValueConverter<float>(range);
-                case "Int64":
-                    return new RangeValueConverter<long>(range);
-                case "Int16":
-                    return new RangeValueConverter<short>(range);
-                case "Byte":
-                    return new RangeValueConverter<byte>(range);
-                case "Double":
-                    return new RangeValueConverter<double>(range);
-                default:
-                    throw new NotSupportedException();
-            }
-        }
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-
-
-            return null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
         }
     }
 }
