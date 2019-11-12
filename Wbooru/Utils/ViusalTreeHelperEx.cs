@@ -10,7 +10,9 @@ namespace Wbooru.Utils
 {
     public static class ViusalTreeHelperEx
     {
-        public static FrameworkElement FindName(string name, FrameworkElement root)
+        public static FrameworkElement FindName(string name, FrameworkElement root) => Find(x => x.Name == name, root);
+
+        public static FrameworkElement Find(Func<FrameworkElement,bool> check, FrameworkElement root)
         {
             Stack<FrameworkElement> tree = ObjectPool<Stack<FrameworkElement>>.Get();
             tree.Clear();
@@ -20,7 +22,7 @@ namespace Wbooru.Utils
             while (tree.Count > 0)
             {
                 FrameworkElement current = tree.Pop();
-                if (current.Name == name)
+                if (check(current))
                 {
                     ObjectPool<Stack<FrameworkElement>>.Return(tree);
                     return current;

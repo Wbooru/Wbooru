@@ -58,10 +58,12 @@ namespace Wbooru.Settings
 
         #region View Options
 
+        [NeedRestart]
         [Group("View Options")]
         [Range("1","5")]
         public int LoadingImageThread { get; set; } = 2;
 
+        [NeedRestart]
         [Group("View Options")]
         [Description("每次加载更多图片时所需要图片最低数量(多了的话可能会被ban?)")]
         public int GetPictureCountPerLoad { get; set; } = 20;

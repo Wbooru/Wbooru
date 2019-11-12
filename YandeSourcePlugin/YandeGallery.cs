@@ -52,7 +52,10 @@ namespace YandeSourcePlugin
         {
             int page = 1;
 
-            var base_url = $"https://yande.re/post.json?";
+            var limit = SettingManager.LoadSetting<YandeSetting>().PicturesCountPerRequest;
+            limit = limit == 0 ? SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad : limit;
+
+            var base_url = $"https://yande.re/post.json?limit={limit}&";
 
             if (tags?.Any()??false)
                 base_url += $"tags={string.Join("+",tags)}&";

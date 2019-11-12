@@ -51,6 +51,7 @@
     <Compile Include="PictureItem.cs" />
     <Compile Include="YandeGallery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="YandeSetting.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wbooru\Wbooru.csproj">

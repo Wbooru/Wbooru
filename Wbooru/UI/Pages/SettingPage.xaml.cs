@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Wbooru.Utils;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Kernel;
@@ -28,6 +29,15 @@ namespace Wbooru.UI.Pages
     /// </summary>
     public partial class SettingPage : Page
     {
+        public string CurrentSettingName
+        {
+            get { return (string)GetValue(CurrentSettingNameProperty); }
+            set { SetValue(CurrentSettingNameProperty, value); }
+        }
+
+        public static readonly DependencyProperty CurrentSettingNameProperty =
+            DependencyProperty.Register("CurrentSettingName", typeof(string), typeof(SettingPage), new PropertyMetadata(null));
+
         public class GroupedSupportSettingWrapper
         {
             public Assembly ReferenceAssembly { get; set; }
@@ -44,6 +54,9 @@ namespace Wbooru.UI.Pages
             DependencyProperty.Register("SupportSettingWrappers", typeof(IEnumerable<GroupedSupportSettingWrapper>), typeof(SettingPage), new PropertyMetadata(default));
 
         private Dictionary<SettingBase, FrameworkElement[]> cached_controls = new Dictionary<SettingBase, FrameworkElement[]>();
+
+        private Dictionary<PropertyInfoWrapper, int> record_hash = new Dictionary<PropertyInfoWrapper, int>();
+        private Action comfirm_later_action;
 
         public SettingPage()
         {
@@ -68,9 +81,24 @@ namespace Wbooru.UI.Pages
             if (setting == null)
                 return;
 
+            CurrentSettingName = setting.GetType().Name;
+
+            record_hash.Clear();
+
             if (!cached_controls.TryGetValue(setting, out var grouped_controls))
             {
                 var props = setting.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                foreach (var prop in props.Where(p => p.GetCustomAttribute<NeedRestartAttribute>() != null))
+                {
+                    var wrapper = new PropertyInfoWrapper()
+                    {
+                        PropertyInfo = prop,
+                        OwnerObject = setting
+                    };
+
+                    record_hash[wrapper] = wrapper.ProxyValue.GetHashCode();
+                }
 
                 var group_props = props.
                     Select(prop => (prop.GetCustomAttribute<GroupAttribute>()?.GroupName ?? "Other", new PropertyInfoWrapper()
@@ -229,15 +257,45 @@ namespace Wbooru.UI.Pages
 
         }
 
-        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            var control = (sender as FrameworkElement);
-            ApplySetting(control.DataContext as SettingBase);
-        }
-
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationHelper.NavigationPop();
+            CheckNeedRestartPropsAndNotify(sender as UIElement, () => NavigationHelper.NavigationPop());
+        }
+
+        public void CheckNeedRestartPropsAndNotify(UIElement bind_control,Action action)
+        {
+            var changed_records = record_hash.Where(x => x.Key.ProxyValue.GetHashCode() != x.Value);
+
+            if (changed_records.Any())
+            {
+                //notify user need to restart
+                ComfirmPopup.PlacementTarget = bind_control;
+                ComfirmPopup.IsOpen = true;
+
+                comfirm_later_action = action;
+            }
+            else
+                action?.Invoke();
+        }
+
+        private void RestartComfirmButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Term();
+            Application.Current.Shutdown();
+            //todo
+        }
+
+        private void NotRestartComfirmButton_Click(object sender, RoutedEventArgs e)
+        {
+            ComfirmPopup.IsOpen = false;
+            comfirm_later_action?.Invoke();
+            comfirm_later_action = null;
+        }
+
+        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var control = sender as FrameworkElement;
+            CheckNeedRestartPropsAndNotify(control, () => ApplySetting(control.DataContext as SettingBase));
         }
     }
 }
