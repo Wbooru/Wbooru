@@ -23,6 +23,7 @@ using Wbooru.Galleries;
 using System.Threading;
 using System.Windows.Threading;
 using Wbooru.Galleries.SupportFeatures;
+using Wbooru.Settings;
 
 namespace Wbooru.UI.Controls
 {
@@ -297,10 +298,12 @@ namespace Wbooru.UI.Controls
 
                             using (LoadingStatus.BeginBusy("Tag searching..."))
                             {
-                                cached_suggests = cur_gallery.Feature<IGalleryTagSearch>().SearchTag(input_imcomplete_words).OrderBy(tag =>
-                                {
-                                    return tag.Name.IndexOf(input_imcomplete_words);
-                                }).ToArray();
+                                cached_suggests = cur_gallery
+                                .Feature<IGalleryTagSearch>()
+                                .SearchTag(input_imcomplete_words)
+                                .OrderBy(tag =>tag.Name.IndexOf(input_imcomplete_words))
+                                .Take(SettingManager.LoadSetting<GlobalSetting>().MaxSearchSuggestsCount)
+                                .ToArray();
 
                                 Logger.Debug($"Got {cached_suggests.Length} tags.");
                             }

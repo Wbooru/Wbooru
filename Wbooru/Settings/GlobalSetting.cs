@@ -36,6 +36,12 @@ namespace Wbooru.Settings
         [Description("是否预先下载且缓存标签数据集,此操作将会占用大量空间和网络带宽")]
         public bool PredownloadAndCacheTagData { get; set; } = false;
 
+
+        [Group("Tags Options")]
+        [Description("搜索图片标签时，标签建议最大数量")]
+        [Range("5","100")]
+        public int MaxSearchSuggestsCount { get; set; } = 20;
+
         #endregion
 
         #region Download Options
