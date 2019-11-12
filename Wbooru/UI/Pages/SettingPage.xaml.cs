@@ -41,7 +41,7 @@ namespace Wbooru.UI.Pages
         public class GroupedSupportSettingWrapper
         {
             public Assembly ReferenceAssembly { get; set; }
-            public IEnumerable<SettingBase> SupportSettings { get; set; }
+            public List<SettingBase> SupportSettings { get; set; }
         }
 
         public IEnumerable<GroupedSupportSettingWrapper> SupportSettingWrappers
@@ -56,6 +56,7 @@ namespace Wbooru.UI.Pages
         private Dictionary<SettingBase, FrameworkElement[]> cached_controls = new Dictionary<SettingBase, FrameworkElement[]>();
 
         private Dictionary<PropertyInfoWrapper, int> record_hash = new Dictionary<PropertyInfoWrapper, int>();
+        private Dictionary<SettingBase, IEnumerable<PropertyInfoWrapper>> cached_records = new Dictionary<SettingBase, IEnumerable<PropertyInfoWrapper>>();
         private Action comfirm_later_action;
 
         public SettingPage()
@@ -68,7 +69,7 @@ namespace Wbooru.UI.Pages
                 .GroupBy(x=>x.GetType().Assembly)
                 .Select(x=>new GroupedSupportSettingWrapper() {
                     ReferenceAssembly=x.Key,
-                    SupportSettings=x.AsEnumerable()
+                    SupportSettings=x.AsEnumerable().ToList()
                 });
 
             MainPanel.DataContext = this;
@@ -87,18 +88,17 @@ namespace Wbooru.UI.Pages
 
             if (!cached_controls.TryGetValue(setting, out var grouped_controls))
             {
-                var props = setting.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                var props = setting.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.GetCustomAttribute<IgnoreAttribute>() == null);
 
-                foreach (var prop in props.Where(p => p.GetCustomAttribute<NeedRestartAttribute>() != null))
-                {
-                    var wrapper = new PropertyInfoWrapper()
-                    {
-                        PropertyInfo = prop,
-                        OwnerObject = setting
-                    };
+                var need_restart_wrapper = props.Where(p => p.GetCustomAttribute<NeedRestartAttribute>() != null).Select(x => new PropertyInfoWrapper()
+                {   
+                    PropertyInfo = x,
+                    OwnerObject = setting
+                }).ToArray();
 
-                    record_hash[wrapper] = wrapper.ProxyValue.GetHashCode();
-                }
+                cached_records[setting] = need_restart_wrapper;
+
+                Log.Debug($"Setting {CurrentSettingName} has {record_hash.Count} props need restart.");
 
                 var group_props = props.
                     Select(prop => (prop.GetCustomAttribute<GroupAttribute>()?.GroupName ?? "Other", new PropertyInfoWrapper()
@@ -111,6 +111,9 @@ namespace Wbooru.UI.Pages
                 grouped_controls = group_props.Select(x => GenerateGroupedSettingControls(x)).OfType<FrameworkElement>().ToArray();
                 cached_controls[setting] = grouped_controls;
             }
+
+            foreach (var wrapper in cached_records[setting])
+                record_hash[wrapper] = wrapper.ProxyValue.GetHashCode();
 
             SettingListPanel.Children.Clear();
 
@@ -262,11 +265,13 @@ namespace Wbooru.UI.Pages
             CheckNeedRestartPropsAndNotify(sender as UIElement, () => NavigationHelper.NavigationPop());
         }
 
-        public void CheckNeedRestartPropsAndNotify(UIElement bind_control,Action action)
+        public void CheckNeedRestartPropsAndNotify(UIElement bind_control, Action action)
         {
             var changed_records = record_hash.Where(x => x.Key.ProxyValue.GetHashCode() != x.Value);
 
-            if (changed_records.Any())
+            Log.Debug($"record_hash=({record_hash.Count}) , there are {changed_records.Count()} props had been changed.");
+
+            if (changed_records.Any() && !SettingManager.LoadSetting<GlobalSetting>().IgnoreSettingChangedComfirm)
             {
                 //notify user need to restart
                 ComfirmPopup.PlacementTarget = bind_control;
@@ -295,7 +300,24 @@ namespace Wbooru.UI.Pages
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var control = sender as FrameworkElement;
-            CheckNeedRestartPropsAndNotify(control, () => ApplySetting(control.DataContext as SettingBase));
+            var setting = control.DataContext as SettingBase;
+
+            if (setting.GetType().Name == CurrentSettingName)
+                return;
+
+            CheckNeedRestartPropsAndNotify(control, () => ApplySetting(setting));
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            SettingManager.LoadSetting<GlobalSetting>().IgnoreSettingChangedComfirm = false;
+        }
+
+        private void DefaultSettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            var setting = (sender as FrameworkElement).DataContext as SettingBase;
+
+            SettingManager.ResetConfig(setting);
         }
     }
 }

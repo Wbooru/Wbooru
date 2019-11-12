@@ -91,5 +91,12 @@ namespace Wbooru.Settings
         public string CacheFolderPath { get; set; } = @"%Temp%WbooruCache";
 
         #endregion
+
+        #region Deep Dark Fantasty
+
+        [Ignore]
+        internal bool IgnoreSettingChangedComfirm { get; set; } = false;
+
+        #endregion
     }
 }

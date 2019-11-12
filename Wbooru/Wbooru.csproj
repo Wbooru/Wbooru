@@ -158,6 +158,7 @@
     <Compile Include="Models\Gallery\GalleryItem.cs" />
     <Compile Include="Models\Gallery\GalleryItemUIElementWrapper.cs" />
     <Compile Include="Settings\TagFilterTarget.cs" />
+    <Compile Include="Settings\UIAttributes\IgnoreAttribute.cs" />
     <Compile Include="Settings\UIAttributes\NeedRestartAttribute.cs" />
     <Compile Include="Settings\UIAttributes\EnableByAttribute.cs" />
     <Compile Include="Settings\UIAttributes\PathAttribute.cs" />

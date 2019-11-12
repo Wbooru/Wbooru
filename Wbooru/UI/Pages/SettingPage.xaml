@@ -41,7 +41,7 @@
             Placement="MousePoint"
             PopupAnimation="Fade"
             StaysOpen="False">
-            <Border Background="{StaticResource ContentBackgroundColor_LowTransparent}" BorderBrush="White">
+            <Border Background="{StaticResource ContentBackgroundColor_LowTransparent}">
                 <Grid Margin="20">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*">
@@ -57,13 +57,22 @@
                         </ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock
-                        Grid.ColumnSpan="2"
-                        Padding="30,10,30,10"
-                        HorizontalAlignment="Center"
-                        FontSize="14">
-                        选项保存成功!但有一些选项变更需要重启软件才生效,是否立即重启？
-                    </TextBlock>
+                    <StackPanel Grid.ColumnSpan="2">
+                        <TextBlock
+                            Padding="30,10,30,10"
+                            HorizontalAlignment="Center"
+                            FontSize="14">
+                            选项保存成功!但有一些选项变更需要重启软件才生效,是否立即重启？
+                        </TextBlock>
+
+                        <CheckBox
+                            Margin="30,0,0,0"
+                            Checked="CheckBox_Checked"
+                            FontSize="14"
+                            Foreground="White">
+                            不再提醒
+                        </CheckBox>
+                    </StackPanel>
 
                     <Button
                         Name="NotRestartComfirmButton"
@@ -112,8 +121,27 @@
 
             <ScrollViewer Margin="15">
                 <StackPanel>
-                    <TextBlock FontSize="26" Text="{Binding CurrentSettingName}">
-                    </TextBlock>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*">
+                            </ColumnDefinition>
+                            <ColumnDefinition Width="Auto">
+                            </ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Margin="0,0,0,20"
+                            FontSize="26"
+                            Text="{Binding CurrentSettingName}">
+                        </TextBlock>
+                        <Button
+                            Name="DefaultSettingButton"
+                            Grid.Column="1"
+                            Click="DefaultSettingButton_Click"
+                            Margin="10"
+                            Padding="20,0,20,0">
+                            重置此配置
+                        </Button>
+                    </Grid>
                     <StackPanel Name="SettingListPanel">
                     </StackPanel>
                 </StackPanel>

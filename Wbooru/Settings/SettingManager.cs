@@ -94,5 +94,24 @@ namespace Wbooru.Settings
                 Log.Error($"save settings failed:{e}");
             }
         }
+
+        public static void ResetConfig(Type setting_type)
+        {
+            var name = setting_type.Name;
+
+            try
+            {
+                var setting = setting_type.Assembly.CreateInstance(setting_type.FullName) as SettingBase;
+                entity.Settings[name] = setting;
+
+                Log.Info($"Reset(reflect-create) config {name} object successfully.");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Reset(reflect-create) config {name} object failed : {e.Message}");
+            }
+        }
+
+        public static void ResetConfig<T>() => ResetConfig(typeof(T));
     }
 }
