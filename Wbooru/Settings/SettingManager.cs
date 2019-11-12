@@ -57,11 +57,13 @@ namespace Wbooru.Settings
             return LoadSetting(typeof(T)) as T;
         }
 
-        public static void LoadSettingFile()
+        internal static void LoadSettingFile()
         {
             try
             {
                 load = true;
+
+                Log.Info($"Load config file from {Path.GetFullPath(CONFIG_FILE_PATH)}");
 
                 using var reader = File.OpenText(CONFIG_FILE_PATH);
 
@@ -77,7 +79,7 @@ namespace Wbooru.Settings
             }
         }
 
-        public static void SaveSettingFile()
+        internal static void SaveSettingFile()
         {
             try
             {
@@ -95,7 +97,7 @@ namespace Wbooru.Settings
             }
         }
 
-        public static void ResetConfig(Type setting_type)
+        public static void ResetSetting(Type setting_type)
         {
             var name = setting_type.Name;
 
@@ -112,6 +114,6 @@ namespace Wbooru.Settings
             }
         }
 
-        public static void ResetConfig<T>() => ResetConfig(typeof(T));
+        public static void ResetSetting<T>() => ResetSetting(typeof(T));
     }
 }
