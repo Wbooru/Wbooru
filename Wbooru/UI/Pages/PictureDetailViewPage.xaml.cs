@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Galleries;
+using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
@@ -176,10 +177,12 @@ namespace Wbooru.UI.Pages
 
                 var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
                 var detail = gallery.GetImageDetial(item);
+                var is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
 
                 Dispatcher.Invoke(() =>
                 {
                     IsMark = is_mark;
+                    IsVoted = is_vote ?? false;
                     MarkButton.IsEnabled = true;
                     PictureDetailInfo = detail;
                     notify.Dispose();
@@ -262,10 +265,23 @@ namespace Wbooru.UI.Pages
             if (PictureInfo == null || Gallery == null)
                 return;
 
-            //todo
-            IsVoted = !IsVoted;
+            var item = PictureInfo;
+            var is_vote = IsVoted;
 
-            Log<PictureDetailViewPage>.Debug($"Now IsVoted={IsVoted}");
+            Task.Run(() =>
+            {
+                Gallery.Feature<IGalleryVote>().SetVote(item, !is_vote);
+
+                Dispatcher.Invoke(() =>
+                {
+                    if (item == PictureInfo)
+                    {
+                        IsVoted = !is_vote;
+                        Toast.ShowMessage($"已{(!is_vote?"投票":"取消投票")}");
+                    }
+                    
+                });
+            }, cancel_source.Token);
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)

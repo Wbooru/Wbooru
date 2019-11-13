@@ -15,6 +15,8 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <valueconverters:VisiableIfFeatureSupportConverter x:Key="VisiableIfFeatureSupportConverter">
+        </valueconverters:VisiableIfFeatureSupportConverter>
         <valueconverters:AutoPickImageConverter x:Key="AutoPickImageConverter" />
         <valueconverters:CustomBindableMarginConverter x:Key="CustomBindableMarginConverter" />
         <valueconverters:GalleryFeatureContainConverter x:Key="GalleryFeatureContainConverter" />
@@ -138,7 +140,7 @@
                         Name="VoteButton"
                         Grid.Column="2"
                         Click="VoteButton_Click"
-                        IsEnabled="{Binding Gallery, Converter={StaticResource GalleryFeatureContainConverter}, ConverterParameter=Vote}">
+                        Visibility="{Binding Gallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Vote}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -445,24 +447,24 @@
                                     Orientation="Horizontal">
                                     <Button
                                         Name="AddTagCollectionButton"
-                                        FontFamily="Segoe UI Symbol"
                                         Click="AddTagCollectionButton_Click"
+                                        FontFamily="Segoe UI Symbol"
                                         FontSize="16"
                                         ToolTip="收藏此标签">
                                         
                                     </Button>
                                     <Button
                                         Name="AddTagFilterButton"
-                                        FontFamily="Segoe UI Symbol"
                                         Click="AddTagFilterButton_Click"
+                                        FontFamily="Segoe UI Symbol"
                                         FontSize="16"
                                         ToolTip="过滤此标签">
                                         
                                     </Button>
                                     <Button
                                         Name="SearchButton"
-                                        FontFamily="Segoe UI Symbol"
                                         Click="SearchButton_Click"
+                                        FontFamily="Segoe UI Symbol"
                                         FontSize="16"
                                         ToolTip="查看此标签的图片池">
                                         

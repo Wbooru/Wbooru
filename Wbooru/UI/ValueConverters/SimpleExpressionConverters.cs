@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using Wbooru.Galleries.SupportFeatures;
 
 namespace Wbooru.UI.ValueConverters
 {

@@ -225,6 +225,7 @@
     <Compile Include="UI\ValueConverters\SettingUI\AutoValueConverter.cs" />
     <Compile Include="UI\ValueConverters\SettingUI\RangeValueConverter.cs" />
     <Compile Include="UI\ValueConverters\SimpleExpressionConverters.cs" />
+    <Compile Include="UI\ValueConverters\VisiableIfFeatureSupportConverter.cs" />
     <Compile Include="Utils\AsyncImageWrapper.cs" />
     <Compile Include="Utils\CalculatableFormatter.cs" />
     <Compile Include="Utils\FileNameHelper.cs" />
