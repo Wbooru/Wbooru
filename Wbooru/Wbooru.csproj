@@ -207,6 +207,9 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Pages\CustomLoginPage.cs" />
+    <Compile Include="UI\Pages\DefaultLoginPage.xaml.cs">
+      <DependentUpon>DefaultLoginPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Pages\DownloadListPage.xaml.cs">
       <DependentUpon>DownloadListPage.xaml</DependentUpon>
     </Compile>
@@ -278,6 +281,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\Toast.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Pages\DefaultLoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
