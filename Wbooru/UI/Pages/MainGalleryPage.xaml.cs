@@ -278,5 +278,22 @@ namespace Wbooru.UI.Pages
 
             NavigationHelper.NavigationPush(page);
         }
+
+        private async void AccountButton_Click(object sender, RoutedEventArgs e)
+        {
+            var feature = CurrentGallery.Feature<IGalleryAccount>();
+
+            await Task.Run(() =>
+            {
+                if (feature.IsLoggined)
+                {
+                    feature.AccountLogout();
+                }
+                else
+                {
+                    //feature.AccountLogin();
+                }
+            });
+        }
     }
 }

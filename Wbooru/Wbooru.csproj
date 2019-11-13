@@ -101,6 +101,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Galleries\Gallery.cs" />
+    <Compile Include="Galleries\SupportFeatures\AccountInfo.cs" />
     <Compile Include="Galleries\SupportFeatures\GallerySupportFeature.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryAccount.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryFeature.cs" />
@@ -205,6 +206,7 @@
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Pages\CustomLoginPage.cs" />
     <Compile Include="UI\Pages\DownloadListPage.xaml.cs">
       <DependentUpon>DownloadListPage.xaml</DependentUpon>
     </Compile>

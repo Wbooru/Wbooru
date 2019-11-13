@@ -16,6 +16,8 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <Converter:VisiableIfFeatureSupportConverter x:Key="VisiableIfFeatureSupportConverter">
+        </Converter:VisiableIfFeatureSupportConverter>
         <Converter:AutoFitHeightConverter x:Key="AutoFitHeightConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter">
         </BooleanToVisibilityConverter>
@@ -94,9 +96,11 @@
                 -->
 
                 <controls:MenuButton
+                    x:Name="AccountButton"
+                    ButtonBase.Click="AccountButton_Click"
                     Icon=""
-                    IsEnabled="False"
-                    Text="登陆" />
+                    Text="登陆"
+                    Visibility="{Binding CurrentGallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Account}" />
                 <controls:MenuButton
                     x:Name="ShowPicturePoolButton"
                     ButtonBase.Click="ShowPicturePoolButton_Click"

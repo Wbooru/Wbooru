@@ -15,7 +15,7 @@ namespace Wbooru.UI.ValueConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value as Gallery)?.SupportFeatures.HasFlag((GallerySupportFeature)parameter) ?? false ? Visibility.Visible : Visibility.Hidden;
+            return (value as Gallery)?.SupportFeatures.HasFlag((GallerySupportFeature)parameter) ?? false ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
