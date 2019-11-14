@@ -38,6 +38,9 @@ namespace Wbooru.Galleries
             if (this is IGallerySearchImage)
                 support |= GallerySupportFeature.ImageSearch;
 
+            if (this is IGalleryItemIteratorFastSkipable)
+                support |= GallerySupportFeature.ImageFastSkipable;
+
             return support;
         }
 

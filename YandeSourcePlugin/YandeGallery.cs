@@ -22,7 +22,7 @@ using Wbooru.Utils;
 namespace YandeSourcePlugin
 {
     [Export(typeof(Gallery))]
-    public class YandeGallery : Gallery, IGalleryTagSearch, IGallerySearchImage
+    public class YandeGallery : Gallery, IGalleryTagSearch, IGallerySearchImage , IGalleryItemIteratorFastSkipable
     {
         public override string GalleryName => "Yande";
 
@@ -48,10 +48,8 @@ namespace YandeSourcePlugin
             return detail;
         }
 
-        public IEnumerable<GalleryItem> GetImagesInternal(IEnumerable<string> tags=null)
+        public IEnumerable<GalleryItem> GetImagesInternal(IEnumerable<string> tags=null,int page = 1)
         {
-            int page = 1;
-
             var limit = SettingManager.LoadSetting<YandeSetting>().PicturesCountPerRequest;
             limit = limit == 0 ? SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad : limit;
 
@@ -234,6 +232,16 @@ namespace YandeSourcePlugin
                 ExceptionHelper.DebugThrow(e);
                 return null;
             }
+        }
+
+        public IEnumerable<GalleryItem> IteratorSkip(int skip_count)
+        {
+            var limit_count = SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
+
+            var page = skip_count / limit_count + 1;
+            skip_count = skip_count % SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
+
+            return GetImagesInternal(null, page).Skip(skip_count);
         }
     }
 }

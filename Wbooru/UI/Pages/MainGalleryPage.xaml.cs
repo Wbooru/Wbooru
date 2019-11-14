@@ -315,8 +315,29 @@ namespace Wbooru.UI.Pages
             else
             {
                 Log.Info($"Show default login page for gallery {CurrentGallery?.GalleryName}.");
-
+                NavigationHelper.NavigationPush(new DefaultLoginPage(CurrentGallery));
             }
+        }
+
+        private void PageJumpLabel_MouseEnter(object sender, MouseEventArgs e)
+        {
+            DisplayLoadedPageCount.Text = GridViewer.DisplayedLogicPageIndex.ToString();
+            PageJumpPopup.IsOpen = true;
+        }
+
+        private void JumpConfirmButton_Click(object sender, RoutedEventArgs e)
+        {
+            PageJumpPopup.IsOpen = false;
+
+            if (!int.TryParse(JumpPageInput.Text,out var page))
+                return;
+
+            GridViewer.ChangePage(page);
+        }
+
+        private void PageJumpPopup_MouseLeave(object sender, MouseEventArgs e)
+        {
+            PageJumpPopup.IsOpen = false;
         }
     }
 }

@@ -91,13 +91,11 @@
                         
                     </Button>
                 </Border>
-                <!--
-                    For 强迫症
-                -->
 
                 <controls:MenuButton
                     x:Name="AccountButton"
                     ButtonBase.Click="AccountButton_Click"
+                    DataContext="{Binding .}"
                     Icon=""
                     Text="登陆"
                     Visibility="{Binding CurrentGallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Account}" />
@@ -110,7 +108,8 @@
                     Icon=""
                     IconSize="15"
                     IsEnabled="False"
-                    Text="订阅" />
+                    Text="订阅"
+                    Visibility="Collapsed" />
                 <controls:MenuButton
                     x:Name="ShowMarkPicturesButton"
                     ButtonBase.Click="ShowMarkPicturesButton_Click"
@@ -189,6 +188,20 @@
                 Orientation="Horizontal">
                 <controls:SearchInput SearchRequest="SearchInput_SearchRequest" SearchTagGallery="{Binding CurrentGallery}">
                 </controls:SearchInput>
+                <Label
+                    Name="PageJumpLabel"
+                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Background="Transparent"
+                    FontFamily="Segoe UI Symbol"
+                    FontSize="16"
+                    Foreground="White"
+                    MouseEnter="PageJumpLabel_MouseEnter">
+                    
+                </Label>
                 <Button
                     Name="TagPanelButton"
                     Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
@@ -201,6 +214,50 @@
                     
                 </Button>
             </StackPanel>
+
+            <Popup
+                Name="PageJumpPopup"
+                AllowsTransparency="True"
+                Placement="Bottom"
+                PlacementTarget="{Binding ElementName=PageJumpLabel}"
+                PopupAnimation="Fade"
+                StaysOpen="False">
+                <StackPanel Background="{StaticResource ContentBackgroundColor_LowTransparent}" MouseLeave="PageJumpPopup_MouseLeave">
+                    <StackPanel
+                        Margin="30"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                        <TextBlock FontSize="16">跳到</TextBlock>
+                        <TextBox
+                            Name="JumpPageInput"
+                            Width="75"
+                            HorizontalContentAlignment="Center"
+                            FontSize="16">
+                        </TextBox>
+                        <TextBlock FontSize="16">页</TextBlock>
+                    </StackPanel>
+
+                    <TextBlock Margin="5,5,5,20" FontSize="16">*跳页后无法遍历之前的内容</TextBlock>
+                    <StackPanel Margin="5,5,5,20" Orientation="Horizontal">
+                        <TextBlock FontSize="16">*当前已加载了</TextBlock>
+                        <TextBlock
+                            Name="DisplayLoadedPageCount"
+                            Margin="5,0,5,0"
+                            FontSize="16">
+                        </TextBlock>
+                        <TextBlock FontSize="16">页</TextBlock>
+                    </StackPanel>
+
+                    <Button
+                        Name="JumpConfirmButton"
+                        Margin="10"
+                        BorderBrush="White"
+                        Click="JumpConfirmButton_Click"
+                        FontSize="20">
+                        确定
+                    </Button>
+                </StackPanel>
+            </Popup>
 
             <controls:GalleryGridView
                 x:Name="GridViewer"

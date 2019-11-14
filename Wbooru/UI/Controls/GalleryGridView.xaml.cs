@@ -18,6 +18,7 @@ using Wbooru.Settings;
 using Wbooru.Kernel;
 using Wbooru.Galleries;
 using static Wbooru.UI.Pages.MainGalleryPage;
+using Wbooru.Galleries.SupportFeatures;
 
 namespace Wbooru.UI.Controls
 {
@@ -81,7 +82,11 @@ namespace Wbooru.UI.Controls
         /// </summary>
         public GalleryViewType ViewType { get; set; }
 
-        private ObservableCollection<GalleryItem> Items = new ObservableCollection<GalleryItem>();
+        public ObservableCollection<GalleryItem> Items { get; } = new ObservableCollection<GalleryItem>();
+
+        private int current_index = 0;
+
+        public int DisplayedLogicPageIndex => current_index / SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
 
         public GalleryGridView()
         {
@@ -96,7 +101,8 @@ namespace Wbooru.UI.Controls
 
         private void OnLoadableSourceChanged()
         {
-            Items.Clear();
+            Items.Clear(); 
+            current_index = 0;
 
             TryRequestMoreItemFromLoadableSource();
         }
@@ -151,13 +157,12 @@ namespace Wbooru.UI.Controls
 
             is_requesting = true;
 
-            var count = Items.Count;
             Gallery gallery = Gallery;
             IEnumerable<GalleryItem> source = LoadableSource; 
 
-            var list = await Task.Run(() => FilterTag(source.Skip(count), gallery).Take(option.GetPictureCountPerLoad).ToArray());
+            var list = await Task.Run(() => FilterTag(source.Skip(current_index), gallery).Take(option.GetPictureCountPerLoad).ToArray());
 
-            Log.Debug($"Skip({count}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Count()})", "GridViewer_RequestMoreItems");
+            Log.Debug($"Skip({current_index}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Length})", "GridViewer_RequestMoreItems");
 
             Dispatcher.Invoke(new Action(() =>
             {
@@ -169,6 +174,7 @@ namespace Wbooru.UI.Controls
 
                 if (list.Count() < option.GetPictureCountPerLoad)
                     Toast.ShowMessage("已到达图片队列末尾");
+                current_index += list.Length;
             }));
 
             OnRequestMoreItemFinished?.Invoke(this);
@@ -263,6 +269,26 @@ namespace Wbooru.UI.Controls
 
         double prev_y = 0;
         private bool is_requesting;
+
+        public void ChangePage(int page)
+        {
+            /*
+             * 如果Gallery支持IGalleryItemIteratorFastSkipable,且此插件是用于主页面显示的，则使用此接口的功能
+             */
+
+            if (ViewType != GalleryViewType.Main || !(Gallery is IGalleryItemIteratorFastSkipable feature))
+            {
+                Log.Info($"Use default method to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
+                Items.Clear();
+                current_index = page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
+                TryRequestMoreItemFromLoadableSource();
+            }
+            else
+            {
+                Log.Info($"Use IGalleryItemIteratorFastSkipable.IteratorSkip() to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
+                LoadableSource = feature.IteratorSkip(page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad);
+            }
+        }
 
         private void ListScrollViewer_MouseUp(object sender, MouseButtonEventArgs e)
         {
