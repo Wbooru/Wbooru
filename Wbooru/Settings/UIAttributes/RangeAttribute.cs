@@ -8,10 +8,16 @@ namespace Wbooru.Settings.UIAttributes
 {
     public class RangeAttribute:SettingUIAttributeBase
     {
-        public RangeAttribute(string min_value, string max_value)
+        public RangeAttribute(double min_value, double max_value)
         {
-            Min = min_value;
-            Max = max_value;
+            Min = min_value.ToString();
+            Max = max_value.ToString();
+        }
+
+        public RangeAttribute(int min_value, int max_value)
+        {
+            Min = min_value.ToString();
+            Max = max_value.ToString();
         }
 
         public string Min { get; }

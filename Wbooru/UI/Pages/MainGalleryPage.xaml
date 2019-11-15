@@ -16,6 +16,8 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <Converter:CheckIfJumpPageButtonConverter x:Key="CheckIfJumpPageButtonConverter">
+        </Converter:CheckIfJumpPageButtonConverter>
         <Converter:VisiableIfFeatureSupportConverter x:Key="VisiableIfFeatureSupportConverter">
         </Converter:VisiableIfFeatureSupportConverter>
         <Converter:AutoFitHeightConverter x:Key="AutoFitHeightConverter" />
@@ -200,6 +202,14 @@
                     FontSize="16"
                     Foreground="White"
                     MouseEnter="PageJumpLabel_MouseEnter">
+                    <Label.Visibility>
+                        <MultiBinding Converter="{StaticResource CheckIfJumpPageButtonConverter}">
+                            <Binding Path="CurrentGallery">
+                            </Binding>
+                            <Binding ElementName="GridViewer" Path="ViewType">
+                            </Binding>
+                        </MultiBinding>
+                    </Label.Visibility>
                     
                 </Label>
                 <Button

@@ -15,7 +15,7 @@ namespace YandeSourcePlugin
         [NeedRestart]
         [Group("View Options")]
         [Description("每次加载图片信息的数量,0代表采用软件GlobalSetting的GetPictureCountPerLoad选项")]
-        [Range("0","100")]
+        [Range(0,100)]
         public int PicturesCountPerRequest { get; set; } = 20;
     }
 }

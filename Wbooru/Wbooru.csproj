@@ -225,6 +225,7 @@
     </Compile>
     <Compile Include="UI\Panels\GridPanel.cs" />
     <Compile Include="UI\ValueConverters\BytesLength2VisibilityConverter.cs" />
+    <Compile Include="UI\ValueConverters\CheckIfJumpPageButtonConverter.cs" />
     <Compile Include="UI\ValueConverters\DisplaySpeedConverter.cs" />
     <Compile Include="UI\ValueConverters\FormatBytesLengthConverter.cs" />
     <Compile Include="UI\ValueConverters\SettingUI\AssemblyTypeDisplayConverter.cs" />

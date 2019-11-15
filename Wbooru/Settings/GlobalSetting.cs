@@ -39,7 +39,7 @@ namespace Wbooru.Settings
 
         [Group("Tags Options")]
         [Description("搜索图片标签时，标签建议最大数量,0代表不限制")]
-        [Range("0","1000")]
+        [Range(0,1000)]
         public int MaxSearchSuggestsCount { get; set; } = 100;
 
         #endregion
@@ -60,17 +60,22 @@ namespace Wbooru.Settings
 
         [NeedRestart]
         [Group("View Options")]
-        [Range("1","5")]
+        [Range(1,5)]
         public int LoadingImageThread { get; set; } = 2;
 
         [NeedRestart]
         [Group("View Options")]
         [Description("每次加载更多图片时所需要图片最低数量(多了的话可能会被ban?)")]
+        [Range(1,100)]
         public int GetPictureCountPerLoad { get; set; } = 20;
 
         [Group("View Options")]
         [Description("是否使用滚轮或者拖曳滚动图片列表")]
         public bool GalleryListScrollBarVisiable { get; set; } = true;
+
+        [Group("View Options")]
+        [Description("强制使用图片页面跳转功能，但这可能会花费很长时间和出现大量的网络请求")]
+        public bool ForceEnablePageJumpFeature { get; set; } = false;
 
         #endregion
 
