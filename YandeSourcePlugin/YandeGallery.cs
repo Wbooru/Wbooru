@@ -39,7 +39,9 @@ namespace YandeSourcePlugin
 
         public GlobalSetting setting;
 
-        HashSet<string> c=new HashSet<string>();
+        private YandeAccountInfo current_account_info;
+
+        private CookieContainer cookie_container;
 
         public YandeGallery()
         {
@@ -93,8 +95,6 @@ namespace YandeSourcePlugin
                 foreach (var pic_info in json)
                 {
                     var item = BuildItem(pic_info);
-
-                    c.Add(item.GalleryItemID);
 
                     yield return item;
                 }
@@ -255,8 +255,6 @@ namespace YandeSourcePlugin
             return GetImagesInternal(null, page).Skip(skip_count);
         }
 
-        private YandeAccountInfo current_account_info;
-
         public void AccountLogin(AccountInfo info)
         {
             var buffer = SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"choujin-steiner--your-password--".Replace("your-password", info.Password)));
@@ -266,15 +264,15 @@ namespace YandeSourcePlugin
             {
                 var yande_account = new YandeAccountInfo(info);
 
-                CookieContainer container = new CookieContainer();
+                cookie_container = new CookieContainer();
 
                 var response = RequestHelper.CreateDeafult("https://yande.re/user/authenticate", req =>
                 {
                     req.Method = "POST";
-                    req.CookieContainer = container;
+                    req.CookieContainer = cookie_container;
                     req.ContentType = "application/x-www-form-urlencoded";
 
-                    var csrf_token = WebUtility.UrlEncode(GetCSRFToken(container));
+                    var csrf_token = WebUtility.UrlEncode(GetCSRFToken(cookie_container));
                     var body = $"authenticity_token={csrf_token}&url=&user%5Bname%5D={info.Name}&user%5Bpassword%5D={info.Password}&commit=Login";
 
                     using var req_writer = new StreamWriter(req.GetRequestStream());
@@ -282,7 +280,7 @@ namespace YandeSourcePlugin
                     req_writer.Flush();
                 });
 
-                var cookies = container.GetCookies(response.ResponseUri).OfType<Cookie>().ToArray();
+                var cookies = cookie_container.GetCookies(response.ResponseUri).OfType<Cookie>().ToArray();
 
                 using var reader = new StreamReader(response.GetResponseStream());
                 var content = reader.ReadToEnd();
@@ -312,12 +310,26 @@ namespace YandeSourcePlugin
              <meta name="csrf-token" content="2s3jOIwFfoOjCxchwh3U06H126ca3Fog7mmRM5AMKyqNKR7c3nBxOAfXEBTB4TBzBMxHbxDnhJhzb+4eEgr/UA==" />
              */
 
-            return Regex.Match(reader.ReadToEnd(), @"<meta\s+name=""csrf-token""\s+content=""(.+?)""\s+/>")?.Groups[1].Value;
+            var token = Regex.Match(reader.ReadToEnd(), @"<meta\s+name=""csrf-token""\s+content=""(.+?)""\s+/>")?.Groups[1].Value;
+
+            return string.IsNullOrWhiteSpace(token)?throw new Exception("无法获取CSRF令牌"):token;
         }
 
         public void AccountLogout()
         {
+            if (!IsLoggined)
+                return;
 
+            var response = RequestHelper.CreateDeafult("https://yande.re/user/logout", req =>
+            {
+                req.CookieContainer = cookie_container;
+            }) as HttpWebResponse;
+
+            Log.Info("Logout");
+
+            //clean 
+
+            current_account_info = null;
         }
     }
 }

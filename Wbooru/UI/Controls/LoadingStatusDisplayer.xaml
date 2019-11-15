@@ -49,7 +49,10 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <StackPanel Name="MainPanel" Orientation="Horizontal">
+    <StackPanel
+        Name="MainPanel"
+        Opacity="0"
+        Orientation="Horizontal">
         <Canvas>
             <TextBlock
                 Canvas.Left="0"
