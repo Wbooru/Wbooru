@@ -68,6 +68,7 @@ namespace Wbooru.Utils.Resource
 
         private static bool TryGetImageFromTempFolder(string resource_name, out Image res)
         {
+            resource_name = FileNameHelper.FilterFileName(resource_name);
             resource_name = resource_name.EndsWith(".cache") ? resource_name : (resource_name + ".cache");
             var file_path = Path.Combine(temporary_folder_path, resource_name);
             res = null;
@@ -92,6 +93,8 @@ namespace Wbooru.Utils.Resource
         private static void CacheImageResourceAsFile(string resource_name, Image obj)
         {
             Stream stream = null;
+
+            resource_name = FileNameHelper.FilterFileName(resource_name);
             resource_name = resource_name.EndsWith(".cache") ? resource_name : (resource_name + ".cache");
             var file_path = Path.Combine(temporary_folder_path, resource_name);
 

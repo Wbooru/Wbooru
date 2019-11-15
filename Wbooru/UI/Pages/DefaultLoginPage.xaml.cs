@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Wbooru.Galleries;
 using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel;
+using Wbooru.UI.Controls;
 
 namespace Wbooru.UI.Pages
 {
@@ -57,7 +58,23 @@ namespace Wbooru.UI.Pages
             {
                 using (LoadingStatus.BeginBusy("正在登录..."))
                 {
-                    Gallery?.Feature<IGalleryAccount>()?.AccountLogin(AccountInfo);
+                    try
+                    {
+                        var feature = Gallery.Feature<IGalleryAccount>();
+
+                        feature.AccountLogin(AccountInfo);
+
+                        if (feature.IsLoggined)
+                        {
+                            Toast.ShowMessage($"登录成功");
+
+                            Dispatcher.Invoke(() => NavigationHelper.NavigationPop());
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Toast.ShowMessage($"登录失败!原因:{e.Message}");
+                    }
                     Dispatcher.Invoke(() => IsLoginRequesting = false);
                 }
             });

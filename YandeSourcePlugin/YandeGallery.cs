@@ -7,7 +7,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Wbooru;
 using Wbooru.Galleries;
@@ -31,7 +33,7 @@ namespace YandeSourcePlugin
     {
         public override string GalleryName => "Yande";
 
-        public bool IsLoggined => false;
+        public bool IsLoggined => current_account_info!=null;
 
         public CustomLoginPage CustomLoginPage => null;
 
@@ -253,9 +255,64 @@ namespace YandeSourcePlugin
             return GetImagesInternal(null, page).Skip(skip_count);
         }
 
+        private YandeAccountInfo current_account_info;
+
         public void AccountLogin(AccountInfo info)
         {
+            var buffer = SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes($"choujin-steiner--your-password--".Replace("your-password", info.Password)));
+            var password_hash = string.Join("", buffer.Select(x => x.ToString("X2")));
 
+            try
+            {
+                var yande_account = new YandeAccountInfo(info);
+
+                CookieContainer container = new CookieContainer();
+
+                var response = RequestHelper.CreateDeafult("https://yande.re/user/authenticate", req =>
+                {
+                    req.Method = "POST";
+                    req.CookieContainer = container;
+                    req.ContentType = "application/x-www-form-urlencoded";
+
+                    var csrf_token = WebUtility.UrlEncode(GetCSRFToken(container));
+                    var body = $"authenticity_token={csrf_token}&url=&user%5Bname%5D={info.Name}&user%5Bpassword%5D={info.Password}&commit=Login";
+
+                    using var req_writer = new StreamWriter(req.GetRequestStream());
+                    req_writer.Write(body);
+                    req_writer.Flush();
+                });
+
+                var cookies = container.GetCookies(response.ResponseUri).OfType<Cookie>().ToArray();
+
+                using var reader = new StreamReader(response.GetResponseStream());
+                var content = reader.ReadToEnd();
+
+                foreach (var cookie in cookies)
+                {
+                    if (cookie.Name == "pass_hash")
+                    {
+                        yande_account.PasswordHash = cookie.Value;
+                        current_account_info = yande_account;
+                        return;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private string GetCSRFToken(CookieContainer container)
+        {
+            var req = RequestHelper.CreateDeafult("https://yande.re/user/login", req => req.CookieContainer = container);
+            var reader = new StreamReader(req.GetResponseStream());
+
+            /*
+             <meta name="csrf-token" content="2s3jOIwFfoOjCxchwh3U06H126ca3Fog7mmRM5AMKyqNKR7c3nBxOAfXEBTB4TBzBMxHbxDnhJhzb+4eEgr/UA==" />
+             */
+
+            return Regex.Match(reader.ReadToEnd(), @"<meta\s+name=""csrf-token""\s+content=""(.+?)""\s+/>")?.Groups[1].Value;
         }
 
         public void AccountLogout()

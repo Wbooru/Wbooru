@@ -119,6 +119,8 @@ namespace Wbooru.UI.Pages
             GridViewer.ClearGallery();
             GridViewer.Gallery = gallery;
             GridViewer.LoadableSource = items_source;
+
+            UpdateAccountButtonText();
         }
 
         #region Left Menu Show/Hide
@@ -288,12 +290,18 @@ namespace Wbooru.UI.Pages
                 if (feature.IsLoggined)
                 {
                     feature.AccountLogout();
+                    Dispatcher.Invoke(() => UpdateAccountButtonText());
                 }
                 else
                 {
                     DoLogin();
                 }
             });
+        }
+
+        private void UpdateAccountButtonText()
+        {
+            AccountButton.Text = CurrentGallery?.Feature<IGalleryAccount>()?.IsLoggined ?? false ? "登出" : "登录";
         }
 
         HashSet<CustomLoginPage> cache_login_page = new HashSet<CustomLoginPage>();
@@ -308,7 +316,7 @@ namespace Wbooru.UI.Pages
                 {
                     if (!cache_login_page.Contains(page))
                     {
-                        page.Unloaded += (e, d) => { };
+                        page.Unloaded += (e, d) => UpdateAccountButtonText();
                         cache_login_page.Add(page);
                     }
 
@@ -318,7 +326,9 @@ namespace Wbooru.UI.Pages
                 else
                 {
                     Log.Info($"Show default login page for gallery {CurrentGallery?.GalleryName}.");
-                    NavigationHelper.NavigationPush(new DefaultLoginPage(CurrentGallery));
+                    page = new DefaultLoginPage(CurrentGallery);
+                    page.Unloaded += (e, d) => UpdateAccountButtonText();
+                    NavigationHelper.NavigationPush(page);
                 }
             });
         }
