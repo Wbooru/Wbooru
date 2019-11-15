@@ -8,7 +8,7 @@
     d:DesignHeight="50"
     d:DesignWidth="200"
     mc:Ignorable="d">
-    <Button HorizontalContentAlignment="Left">
+    <Button Name="MainButton" HorizontalContentAlignment="Left">
         <Button.Resources>
             <Style TargetType="Label">
                 <Setter Property="Foreground" Value="White" />

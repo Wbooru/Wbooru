@@ -291,32 +291,36 @@ namespace Wbooru.UI.Pages
                 }
                 else
                 {
-                    //feature.AccountLogin();
-                    DoLogin(feature);
+                    DoLogin();
                 }
             });
         }
 
         HashSet<CustomLoginPage> cache_login_page = new HashSet<CustomLoginPage>();
 
-        private void DoLogin(IGalleryAccount feature)
+        private void DoLogin()
         {
-            if (feature.CustomLoginPage is CustomLoginPage page)
+            Dispatcher.Invoke(() =>
             {
-                if (!cache_login_page.Contains(page))
-                {
-                    page.Unloaded += (e, d) => { };
-                    cache_login_page.Add(page);
-                }
+                var feature = CurrentGallery?.Feature<IGalleryAccount>();
 
-                Log.Info($"Show gallery {CurrentGallery?.GalleryName}'s custom login page {page.GetType().Name}.");
-                NavigationHelper.NavigationPush(page);
-            }
-            else
-            {
-                Log.Info($"Show default login page for gallery {CurrentGallery?.GalleryName}.");
-                NavigationHelper.NavigationPush(new DefaultLoginPage(CurrentGallery));
-            }
+                if (feature?.CustomLoginPage is CustomLoginPage page)
+                {
+                    if (!cache_login_page.Contains(page))
+                    {
+                        page.Unloaded += (e, d) => { };
+                        cache_login_page.Add(page);
+                    }
+
+                    Log.Info($"Show gallery {CurrentGallery?.GalleryName}'s custom login page {page.GetType().Name}.");
+                    NavigationHelper.NavigationPush(page);
+                }
+                else
+                {
+                    Log.Info($"Show default login page for gallery {CurrentGallery?.GalleryName}.");
+                    NavigationHelper.NavigationPush(new DefaultLoginPage(CurrentGallery));
+                }
+            });
         }
 
         private void PageJumpLabel_MouseEnter(object sender, MouseEventArgs e)

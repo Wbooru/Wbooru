@@ -17,14 +17,23 @@ using Wbooru.Models.Gallery;
 using Wbooru.Network;
 using Wbooru.PluginExt;
 using Wbooru.Settings;
+using Wbooru.UI.Pages;
 using Wbooru.Utils;
 
 namespace YandeSourcePlugin
 {
     [Export(typeof(Gallery))]
-    public class YandeGallery : Gallery, IGalleryTagSearch, IGallerySearchImage , IGalleryItemIteratorFastSkipable
+    public class YandeGallery : Gallery,
+        IGalleryTagSearch,
+        IGallerySearchImage ,
+        IGalleryItemIteratorFastSkipable,
+        IGalleryAccount
     {
         public override string GalleryName => "Yande";
+
+        public bool IsLoggined => false;
+
+        public CustomLoginPage CustomLoginPage => null;
 
         public GlobalSetting setting;
 
@@ -242,6 +251,16 @@ namespace YandeSourcePlugin
             skip_count = skip_count % SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
 
             return GetImagesInternal(null, page).Skip(skip_count);
+        }
+
+        public void AccountLogin(AccountInfo info)
+        {
+
+        }
+
+        public void AccountLogout()
+        {
+
         }
     }
 }

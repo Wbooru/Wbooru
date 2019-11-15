@@ -23,7 +23,7 @@ namespace Wbooru.UI.Pages
     /// </summary>
     public partial class DefaultLoginPage : CustomLoginPage
     {
-        public override AccountInfo AccountInfo { get; protected set; }
+        public override AccountInfo AccountInfo { get; protected set; } = new AccountInfo();
         public Gallery Gallery { get; }
 
         public bool IsLoginRequesting
@@ -51,8 +51,16 @@ namespace Wbooru.UI.Pages
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             AccountInfo.Password = PasswordInput.Password;
+            IsLoginRequesting = true;
 
-            Gallery?.Feature<IGalleryAccount>()?.AccountLogin(AccountInfo);
+            Task.Run(() =>
+            {
+                using (LoadingStatus.BeginBusy("正在登录..."))
+                {
+                    Gallery?.Feature<IGalleryAccount>()?.AccountLogin(AccountInfo);
+                    Dispatcher.Invoke(() => IsLoginRequesting = false);
+                }
+            });
         }
     }
 }

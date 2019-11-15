@@ -110,10 +110,13 @@
                     BorderBrush="White"
                     Click="LoginButton_Click"
                     FontSize="30"
-                    Visibility="{Binding IsLoginRequesting, Converter={x:Static converter:SimpleExpressionConverters.BooleanToVisibilityConverter}}">
+                    Visibility="{Binding IsLoginRequesting, Converter={x:Static converter:SimpleExpressionConverters.ReverseBooleanToVisibilityConverter}}">
                     登录
                 </Button>
-                <controls:LoadingStatusDisplayer x:Name="LoadingStatus" HorizontalAlignment="Center">
+                <controls:LoadingStatusDisplayer
+                    x:Name="LoadingStatus"
+                    HorizontalAlignment="Center"
+                    Visibility="Hidden">
                 </controls:LoadingStatusDisplayer>
             </StackPanel>
         </Grid>

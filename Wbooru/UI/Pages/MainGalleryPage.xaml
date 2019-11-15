@@ -97,7 +97,6 @@
                 <controls:MenuButton
                     x:Name="AccountButton"
                     ButtonBase.Click="AccountButton_Click"
-                    DataContext="{Binding .}"
                     Icon=""
                     Text="登陆"
                     Visibility="{Binding CurrentGallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Account}" />

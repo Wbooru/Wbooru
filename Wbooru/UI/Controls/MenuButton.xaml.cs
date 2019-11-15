@@ -74,7 +74,7 @@ namespace Wbooru.UI.Controls
         {
             InitializeComponent();
 
-            DataContext = this;
+            MainButton.DataContext = this;
         }
     }
 }
