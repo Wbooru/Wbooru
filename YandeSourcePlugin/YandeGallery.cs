@@ -29,7 +29,8 @@ namespace YandeSourcePlugin
         IGalleryTagSearch,
         IGallerySearchImage ,
         IGalleryItemIteratorFastSkipable,
-        IGalleryAccount
+        IGalleryAccount,
+        IGalleryVote
     {
         public override string GalleryName => "Yande";
 
@@ -330,6 +331,49 @@ namespace YandeSourcePlugin
             //clean 
 
             current_account_info = null;
+        }
+
+        public void SetVote(GalleryItem item, bool is_mark)
+        {
+            if (current_account_info == null)
+                throw new Exception("投票功能需要事先用户登录.");
+
+            var score = (is_mark ? SettingManager.LoadSetting<YandeSetting>().VoteValue : 0);
+            var url = "https://yande.re/post/vote.json?" + $"score={score}&id={item.GalleryItemID}&password_hash={current_account_info.PasswordHash}&login={current_account_info.Name}";
+
+            var response = RequestHelper.CreateDeafult(url, req => req.Method = "POST");
+
+            if (RequestHelper.GetJsonObject(response) is JObject result)
+            {
+                if (!result["success"].ToObject<bool>())
+                    throw new Exception(result["reason"].ToString());
+                else
+                    Log.Info($"Voted item {item.GalleryItemID} , score {score}");
+            }
+            else
+                Log.Error($"Can't get json object from response.");
+        }
+
+        public bool IsVoted(GalleryItem item)
+        {
+            if (current_account_info == null) 
+                throw new Exception("投票功能需要事先用户登录.");
+
+            var result = RequestHelper.GetJsonObject(RequestHelper.CreateDeafult($"https://yande.re/favorite/list_users.json?id={item.GalleryItemID}"));
+            var user_list = result["favorited_users"].ToString().Split(',');
+
+            return user_list
+                .Any(x => x.Equals(current_account_info.Name, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public IEnumerable<GalleryItem> GetVotedGalleryItem()
+        {
+            if (current_account_info == null)
+                throw new Exception("投票功能需要事先用户登录.");
+
+            var score = SettingManager.LoadSetting<YandeSetting>().VoteValue;
+
+            return GetImagesInternal(new[] { $"vote:{score}:mikirasora","order:vote" });
         }
     }
 }

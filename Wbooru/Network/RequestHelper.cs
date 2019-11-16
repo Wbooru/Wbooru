@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -21,6 +24,21 @@ namespace Wbooru.Network
             Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}]create http(s) async request :{url}", "RequestHelper");
 
             return req.GetResponseAsync();
+        }
+
+        public static JObject GetJsonObject(WebResponse response)
+        {
+            using var reader = new StreamReader(response.GetResponseStream());
+
+            try
+            {
+                return JsonConvert.DeserializeObject(reader.ReadToEnd()) as JObject;
+            }
+            catch (Exception e)
+            {
+                Log.Info($"Can't get json object from request : {response.ResponseUri.AbsoluteUri} , message : {e.Message}");
+                return null;
+            }
         }
     }
 }

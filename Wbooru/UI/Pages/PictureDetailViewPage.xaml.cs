@@ -177,7 +177,17 @@ namespace Wbooru.UI.Pages
 
                 var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
                 var detail = gallery.GetImageDetial(item);
-                var is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
+
+                bool? is_vote = default;
+
+                try
+                {
+                    is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e.Message);
+                }
 
                 Dispatcher.Invoke(() =>
                 {
@@ -267,20 +277,27 @@ namespace Wbooru.UI.Pages
 
             var item = PictureInfo;
             var is_vote = IsVoted;
+            var gallery = Gallery;
 
             Task.Run(() =>
             {
-                Gallery.Feature<IGalleryVote>().SetVote(item, !is_vote);
-
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    if (item == PictureInfo)
+                    gallery.Feature<IGalleryVote>().SetVote(item, !is_vote);
+
+                    Dispatcher.Invoke(() =>
                     {
-                        IsVoted = !is_vote;
-                        Toast.ShowMessage($"已{(!is_vote?"投票":"取消投票")}");
-                    }
-                    
-                });
+                        if (item == PictureInfo)
+                        {
+                            IsVoted = !is_vote;
+                            Toast.ShowMessage($"已{(!is_vote ? "投票" : "取消投票")}");
+                        }
+                    });
+                }
+                catch (Exception e)
+                {
+                    Toast.ShowMessage($"投票失败,{e.Message}");
+                }
             }, cancel_source.Token);
         }
 
