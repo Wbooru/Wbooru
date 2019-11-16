@@ -96,8 +96,10 @@
 
                 <controls:MenuButton
                     x:Name="AccountButton"
+                    BusyStatusDescription="Busy~"
                     ButtonBase.Click="AccountButton_Click"
                     Icon=""
+                    IsBusy="True"
                     Text="登录"
                     Visibility="{Binding CurrentGallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Account}" />
                 <controls:MenuButton

@@ -30,6 +30,26 @@ namespace Wbooru.UI.Controls
         public static readonly DependencyProperty IconSizeProperty =
             DependencyProperty.Register("IconSize", typeof(int), typeof(MenuButton), new PropertyMetadata(12));
 
+        public Brush IconBrush
+        {
+            get { return (Brush)GetValue(IconBrushProperty); }
+            set { SetValue(IconBrushProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IconBrush.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IconBrushProperty =
+            DependencyProperty.Register("IconBrush", typeof(Brush), typeof(MenuButton), new PropertyMetadata(Brushes.White));
+
+        public string BusyStatusDescription
+        {
+            get { return (string)GetValue(BusyStatusDescriptionProperty); }
+            set { SetValue(BusyStatusDescriptionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BusyStatusDescription.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BusyStatusDescriptionProperty =
+            DependencyProperty.Register("BusyStatusDescription", typeof(string), typeof(MenuButton), new PropertyMetadata(""));
+
         public string Icon
         {
             get { return (string)GetValue(IconProperty); }
@@ -92,7 +112,7 @@ namespace Wbooru.UI.Controls
 
         private void MainButton_Click(object sender, RoutedEventArgs e)
         {
-            e.Handled = true;
+            e.Handled = IsBusy;
         }
     }
 }

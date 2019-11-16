@@ -12,7 +12,23 @@
     <Button
         Name="MainButton"
         HorizontalContentAlignment="Left"
+        Background="Transparent"
+        BorderBrush="Transparent"
         Click="MainButton_Click">
+        <Button.Style>
+            <Style TargetType="Button">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                        <Setter Property="ToolTip" Value="{Binding BusyStatusDescription}">
+                        </Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsBusy}" Value="False">
+                        <Setter Property="ToolTip" Value="{x:Null}">
+                        </Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Button.Style>
         <Button.Resources>
             <Style TargetType="Label">
                 <Setter Property="Foreground" Value="White" />
@@ -29,7 +45,8 @@
                 VerticalContentAlignment="Center"
                 Content="{Binding Icon}"
                 FontFamily="Segoe UI Symbol"
-                FontSize="{Binding IconSize}">
+                FontSize="{Binding IconSize}"
+                Foreground="{Binding IconBrush}">
             </Label>
 
             <Label
