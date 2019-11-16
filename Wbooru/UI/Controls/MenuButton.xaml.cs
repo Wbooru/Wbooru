@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Wbooru.UI.Controls
     /// <summary>
     /// MenuButton.xaml 的交互逻辑
     /// </summary>
-    public partial class MenuButton : UserControl
+    public partial class MenuButton : UserControl , INotifyPropertyChanged
     {
         public int IconSize
         {
@@ -47,12 +48,22 @@ namespace Wbooru.UI.Controls
             set { SetValue(ContentMarginProperty, value); }
         }
 
+        private bool is_busy = false;
+
+        public bool IsBusy
+        {
+            get => is_busy;
+            set
+            {
+                is_busy = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsBusy)));
+            }
+        }
+
         // Using a DependencyProperty as the backing store for ContentMargin.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ContentMarginProperty =
             DependencyProperty.Register("ContentMargin", typeof(Thickness), typeof(MenuButton), 
                 new PropertyMetadata(new Thickness(40,2,10,2)));
-
-
 
         // Using a DependencyProperty as the backing store for TextSize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TextSizeProperty =
@@ -70,11 +81,18 @@ namespace Wbooru.UI.Controls
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(MenuButton), new PropertyMetadata(string.Empty));
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public MenuButton()
         {
             InitializeComponent();
 
             MainButton.DataContext = this;
+        }
+
+        private void MainButton_Click(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

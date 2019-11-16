@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wbooru", "Wbooru\Wbooru.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YandeSourcePlugin", "YandeSourcePlugin\YandeSourcePlugin.csproj", "{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{E13DBDDD-248E-4D2C-BCD7-3B5265A758CC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadingIndicators.WPF", "Dependencies\LoadingIndicators.WPF\src\LoadingIndicators.WPF\LoadingIndicators.WPF.csproj", "{77F764D6-27CE-4B6D-BEB1-C6520CE1B6A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CB0A1DB-AFE9-4CFB-9ADE-835FFBDFC23D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77F764D6-27CE-4B6D-BEB1-C6520CE1B6A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77F764D6-27CE-4B6D-BEB1-C6520CE1B6A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77F764D6-27CE-4B6D-BEB1-C6520CE1B6A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77F764D6-27CE-4B6D-BEB1-C6520CE1B6A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{77F764D6-27CE-4B6D-BEB1-C6520CE1B6A2} = {E13DBDDD-248E-4D2C-BCD7-3B5265A758CC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {085640C6-0CAB-4295-B65D-86AA4622F986}
