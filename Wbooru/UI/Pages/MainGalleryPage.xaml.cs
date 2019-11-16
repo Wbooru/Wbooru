@@ -290,7 +290,12 @@ namespace Wbooru.UI.Pages
                 if (feature.IsLoggined)
                 {
                     feature.AccountLogout();
-                    Dispatcher.Invoke(() => UpdateAccountButtonText());
+                    Dispatcher.Invoke(() =>
+                    {
+                        UpdateAccountButtonText();
+                        Toast.ShowMessage("登出成功");
+                        CloseLeftPanel();
+                    });
                 }
                 else
                 {
