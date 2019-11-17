@@ -106,7 +106,9 @@ namespace Wbooru.UI.Pages
 
             Task.Run(() =>
             {
-                using (var _ = LoadingStatus.BeginBusy("加载图片中......"))
+                const string notify_content = "加载图片中......";
+
+                using (var notify = LoadingStatus.BeginBusy(notify_content))
                 {
                     var pick_download = galleryImageDetail.DownloadableImageLinks.OrderByDescending(x => x.FileLength).FirstOrDefault();
 
@@ -124,7 +126,10 @@ namespace Wbooru.UI.Pages
                     {
                         image = ImageResourceManager.RequestImageAsync(pick_download.FullFileName, () =>
                         {
-                            return downloader.GetImageAsync(pick_download.DownloadLink).Result;
+                            return downloader.GetImageAsync(pick_download.DownloadLink, cancel_source.Token,d => {
+                                (long cur, long total) = d;
+                                notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
+                            }).Result;
                         }).Result;
                     } while (image == null);
 

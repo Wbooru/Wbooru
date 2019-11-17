@@ -240,6 +240,7 @@
     <Compile Include="Utils\IEnumerableMultiThreadable.cs" />
     <Compile Include="Utils\ExceptionHelper.cs" />
     <Compile Include="Utils\ImageExtension.cs" />
+    <Compile Include="Utils\InteropStream.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\MathEx.cs" />
     <Compile Include="Utils\ObjectPool.cs" />
