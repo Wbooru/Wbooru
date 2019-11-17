@@ -121,7 +121,7 @@
 
             <ScrollViewer Margin="15">
                 <StackPanel>
-                    <Grid>
+                    <Grid Margin="0,0,0,20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*">
                             </ColumnDefinition>
@@ -129,7 +129,6 @@
                             </ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock
-                            Margin="0,0,0,20"
                             VerticalAlignment="Center"
                             FontSize="26"
                             Text="{Binding CurrentSettingType.Name}">
