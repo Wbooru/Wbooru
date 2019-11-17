@@ -102,8 +102,7 @@
                 <local:LoadingStatusDisplayer
                     x:Name="LoadingStatus"
                     Padding="10,4,10,4"
-                    VerticalAlignment="Top"
-                    Description="Tag searching..." />
+                    VerticalAlignment="Top" />
             </Grid>
         </Popup>
     </Grid>

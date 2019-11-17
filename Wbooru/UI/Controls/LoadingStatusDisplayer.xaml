@@ -164,7 +164,7 @@
             Margin="15,0,0,0"
             VerticalAlignment="Center"
             Foreground="White"
-            Text="{Binding Description}">
+            Text="{Binding CurrentTaskNotify.Description}">
 
         </TextBlock>
     </StackPanel>

@@ -37,11 +37,15 @@ namespace Wbooru.UI.Controls
         private Storyboard hide_action;
         private readonly Storyboard trans;
 
-        public string Description
+        public LoadingTaskNotify CurrentTaskNotify
         {
-            get { return (string)GetValue(DescriptionProperty); }
-            set { SetValue(DescriptionProperty, value); }
+            get { return (LoadingTaskNotify)GetValue(CurrentTaskNotifyProperty); }
+            set { SetValue(CurrentTaskNotifyProperty, value); }
         }
+
+        // Using a DependencyProperty as the backing store for CurrentTaskNotify.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CurrentTaskNotifyProperty =
+            DependencyProperty.Register("CurrentTaskNotify", typeof(LoadingTaskNotify), typeof(LoadingStatusDisplayer), new PropertyMetadata(null));
 
         public string TaskCount
         {
@@ -76,7 +80,7 @@ namespace Wbooru.UI.Controls
 
             Dispatcher.InvokeAsync(() =>
             {
-                Description = reg_notifies.LastOrDefault()?.Description??string.Empty;
+                CurrentTaskNotify = reg_notifies.LastOrDefault();
 
                 show_action.Begin();
                 UpdateCountString();
@@ -110,7 +114,7 @@ namespace Wbooru.UI.Controls
                     hide_action.Begin();
                 }
 
-                Description = reg_notifies.LastOrDefault()?.Description ?? Description;
+                CurrentTaskNotify = reg_notifies.LastOrDefault();
                 UpdateCountString();
             });
         }
