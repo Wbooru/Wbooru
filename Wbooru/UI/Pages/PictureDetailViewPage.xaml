@@ -50,7 +50,7 @@
                     Orientation="Horizontal">
                     <controls:MenuButton
                         ButtonBase.Click="MenuButton_Click"
-                        ContentMargin="5,0,15,0"
+                        ContentMargin="5,0,0,0"
                         Icon=""
                         Text="返回" />
                     <TextBlock
