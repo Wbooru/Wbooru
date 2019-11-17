@@ -71,7 +71,8 @@ namespace Wbooru.UI.Pages
         }
 
         public static readonly DependencyProperty IsMarkProperty =
-            DependencyProperty.Register("IsMark", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
+            DependencyProperty.Register("IsMark", typeof(bool), typeof(PictureDetailViewPage),
+                new PropertyMetadata(false));
 
         public bool IsVoted
         {
@@ -80,7 +81,8 @@ namespace Wbooru.UI.Pages
         }
 
         public static readonly DependencyProperty IsVotedProperty =
-            DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage), new PropertyMetadata(false));
+            DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage),
+                new PropertyMetadata(false));
 
         public LocalDBContext DB { get; }
 
@@ -247,7 +249,6 @@ namespace Wbooru.UI.Pages
         {
             if (PictureInfo == null || Gallery==null)
                 return;
-
 
             if (!IsMark)
             {

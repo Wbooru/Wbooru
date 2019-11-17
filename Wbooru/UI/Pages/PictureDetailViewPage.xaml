@@ -77,102 +77,53 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <Button>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Label
-                                VerticalContentAlignment="Center"
-                                FontFamily="Segoe UI Symbol"
-                                Foreground="White">
-                                
-                            </Label>
-                            <Label
-                                Grid.Column="1"
-                                VerticalContentAlignment="Center"
-                                FontFamily="黑体"
-                                Foreground="White">
-                                刷新
-                            </Label>
-                        </Grid>
-                    </Button>
+                    <controls:MenuButton Icon="" Text="刷新" />
 
-                    <Button
-                        Name="MarkButton"
+                    <controls:MenuButton
+                        x:Name="MarkButton"
                         Grid.Column="1"
-                        Click="MarkButton_Click">
+                        Button.Click="MarkButton_Click"
+                        Icon=""
+                        Text="收藏">
+                        <controls:MenuButton.Style>
+                            <Style TargetType="controls:MenuButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMark}" Value="True">
+                                        <Setter Property="IconBrush" Value="LightGreen">
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMark}" Value="False">
+                                        <Setter Property="IconBrush" Value="White">
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </controls:MenuButton.Style>
+                    </controls:MenuButton>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock>
-                                <TextBlock x:Name="IsMarkIcon" FontFamily="Segoe UI Symbol">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsMark}" Value="True">
-                                                    <Setter Property="Foreground" Value="LightGreen">
-                                                    </Setter>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsMark}" Value="False">
-                                                    <Setter Property="Foreground" Value="White">
-                                                    </Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                    
-                                </TextBlock>
-                                <TextBlock
-                                    Grid.Column="1"
-                                    FontFamily="黑体"
-                                    Foreground="White">
-                                    收藏
-                                </TextBlock>
-                            </TextBlock>
-                        </Grid>
-                    </Button>
-                    <Button
-                        Name="VoteButton"
+                    <controls:MenuButton
+                        x:Name="VoteButton"
                         Grid.Column="2"
-                        Click="VoteButton_Click"
+                        Button.Click="VoteButton_Click"
+                        Icon=""
+                        Text="点赞"
                         Visibility="{Binding Gallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Vote}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock>
-                                <TextBlock FontFamily="Segoe UI Symbol">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsVoted}" Value="True">
-                                                    <Setter Property="Foreground" Value="LightPink">
-                                                    </Setter>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsVoted}" Value="False">
-                                                    <Setter Property="Foreground" Value="White">
-                                                    </Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                    
-                                </TextBlock>
-                                <TextBlock
-                                    Grid.Column="1"
-                                    FontFamily="黑体"
-                                    Foreground="White">
-                                    点赞
-                                </TextBlock>
-                            </TextBlock>
-                        </Grid>
-                    </Button>
+                        <controls:MenuButton.Style>
+                            <Style TargetType="controls:MenuButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsVoted}" Value="True">
+                                        <Setter Property="IconBrush" Value="LightPink">
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsVoted}" Value="False">
+                                        <Setter Property="IconBrush" Value="White">
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </controls:MenuButton.Style>
+                    </controls:MenuButton>
+
                     <Button Grid.Column="4" Grid.ColumnSpan="1">
                         <Button.Triggers>
                             <EventTrigger RoutedEvent="Button.Click">
@@ -199,10 +150,7 @@
             </Grid>
         </Grid>
 
-        <Grid
-            Grid.Column="1"
-            d:DataContext="{d:DesignData /SampleData/GalleryImageDetailSampleData.xaml}"
-            DataContext="{Binding PictureDetailInfo}">
+        <Grid Grid.Column="1" DataContext="{Binding PictureDetailInfo}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}" />
                 <RowDefinition />
