@@ -56,7 +56,7 @@ namespace YandeSourcePlugin
                 if (item.GalleryName != GalleryName)
                     throw new Exception($"This item doesn't belong with gallery {GalleryName}.");
 
-                detail = (GetImage(item.GalleryItemID) as PictureItem).GalleryDetail;
+                detail = (GetImage(item.GalleryItemID) as PictureItem)?.GalleryDetail;
             }
 
             return detail;
