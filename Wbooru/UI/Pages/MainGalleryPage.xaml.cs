@@ -340,8 +340,6 @@ namespace Wbooru.UI.Pages
 
         private void PageJumpLabel_MouseEnter(object sender, MouseEventArgs e)
         {
-            DisplayLoadedPageCount.Text = GridViewer.DisplayedLogicPageIndex.ToString();
-            PageJumpPopup.IsOpen = true;
         }
 
         private void JumpConfirmButton_Click(object sender, RoutedEventArgs e)
@@ -352,6 +350,12 @@ namespace Wbooru.UI.Pages
                 return;
 
             GridViewer.ChangePage(page);
+        }
+
+        private void PageJumpLabel_Click(object sender, RoutedEventArgs e)
+        {
+            DisplayLoadedPageCount.Text = GridViewer.DisplayedLogicPageIndex.ToString();
+            PageJumpPopup.IsOpen = true;
         }
 
         private void PageJumpPopup_MouseLeave(object sender, MouseEventArgs e)

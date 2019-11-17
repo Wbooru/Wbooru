@@ -189,7 +189,7 @@
                 Orientation="Horizontal">
                 <controls:SearchInput SearchRequest="SearchInput_SearchRequest" SearchTagGallery="{Binding CurrentGallery}">
                 </controls:SearchInput>
-                <Label
+                <Button
                     Name="PageJumpLabel"
                     Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                     HorizontalAlignment="Stretch"
@@ -197,20 +197,20 @@
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
                     Background="Transparent"
+                    Click="PageJumpLabel_Click"
                     FontFamily="Segoe UI Symbol"
                     FontSize="16"
-                    Foreground="White"
-                    MouseEnter="PageJumpLabel_MouseEnter">
-                    <Label.Visibility>
+                    Foreground="White">
+                    <Button.Visibility>
                         <MultiBinding Converter="{StaticResource CheckIfJumpPageButtonConverter}">
                             <Binding Path="CurrentGallery">
                             </Binding>
                             <Binding ElementName="GridViewer" Path="ViewType">
                             </Binding>
                         </MultiBinding>
-                    </Label.Visibility>
+                    </Button.Visibility>
                     
-                </Label>
+                </Button>
                 <Button
                     Name="TagPanelButton"
                     Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
