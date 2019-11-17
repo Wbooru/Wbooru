@@ -67,8 +67,6 @@ namespace Wbooru.Utils.Resource
                 return res;
             }
 
-
-
             if (manual_request() is Image obj)
             {
                 CacheImageResourceAsFile(resource_name,obj);
