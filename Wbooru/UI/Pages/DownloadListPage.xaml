@@ -25,13 +25,11 @@
         </valueconverters:BytesLength2VisibilityConverter>
     </Page.Resources>
 
-    <Grid
-        x:Name="MainPanel"
-        Background="{StaticResource ContentBackgroundColor}">
+    <Grid x:Name="MainPanel" Background="{StaticResource ContentBackgroundColor}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding ElementName=MainDownloadListPage, Path=ActualWidth}">
+            <ColumnDefinition Width="*">
             </ColumnDefinition>
-            <ColumnDefinition>
+            <ColumnDefinition Width="Auto">
             </ColumnDefinition>
         </Grid.ColumnDefinitions>
 
@@ -40,232 +38,260 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <controls:MenuButton
-            x:Name="ReturnButton"
-            HorizontalAlignment="Left"
-            ButtonBase.Click="ReturnButton_Click"
-            ContentMargin="5,0,15,0"
-            Icon="&#xE2B6;"
-            Text="返回" />
+        <Border Background="{StaticResource BoardColor}">
+            <controls:MenuButton
+                x:Name="ReturnButton"
+                HorizontalAlignment="Left"
+                ButtonBase.Click="ReturnButton_Click"
+                ContentMargin="5,0,0,0"
+                Icon="&#xE2B6;"
+                Text="返回" />
+        </Border>
 
-        <ListView
-            x:Name="DownloadList"
-            Grid.Row="1"
-            HorizontalContentAlignment="Stretch"
-            Background="Transparent"
-            BorderBrush="Transparent"
-            SelectionMode="Extended">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*">
-                            </ColumnDefinition>
-                            <ColumnDefinition Width="auto">
-                            </ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition>
-                            </RowDefinition>
-                            <RowDefinition>
-                            </RowDefinition>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock
-                            MaxWidth="300"
-                            Margin="0,0,0,5"
-                            HorizontalAlignment="Left"
-                            FontSize="15"
-                            Text="{Binding Path=DownloadInfo.FileName}"
-                            TextTrimming="CharacterEllipsis">
-                        </TextBlock>
-
-                        <Grid Grid.Row="1">
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl
+                x:Name="DownloadList"
+                HorizontalContentAlignment="Stretch"
+                Background="Transparent"
+                BorderBrush="Transparent">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="5">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*">
-                                </ColumnDefinition>
-                                <ColumnDefinition Width="10*">
+                                <ColumnDefinition Width="Auto">
                                 </ColumnDefinition>
                                 <ColumnDefinition Width="*">
+                                </ColumnDefinition>
+                                <ColumnDefinition Width="Auto">
                                 </ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Label HorizontalContentAlignment="Right" Content="{Binding CurrentDownloadedLength, Converter={StaticResource FormatBytesLengthConverter}}">
-                            </Label>
-                            <ProgressBar
-                                Grid.Column="1"
-                                Width="400"
-                                Height="10"
-                                HorizontalAlignment="Left"
-                                Maximum="{Binding DownloadInfo.TotalBytes}"
-                                Minimum="0"
-                                Visibility="{Binding DownloadInfo.TotalBytes, Converter={StaticResource BytesLength2VisibilityConverter}}"
-                                Value="{Binding CurrentDownloadedLength}">
-                            </ProgressBar>
-                            <Label
+
+                            <!--<Border
+                                Grid.RowSpan="2"
+                                Width="50"
+                                Margin="0,0,10,0">
+                                <Image Source="{Binding DownloadInfo.DownloadFullPath, IsAsync=True}" Stretch="Uniform">
+                                </Image>
+                            </Border>-->
+
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition>
+                                    </RowDefinition>
+                                    <RowDefinition>
+                                    </RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Border Name="DunnyWidthCap1">
+                                </Border>
+
+                                <TextBlock
+                                    Width="{Binding ActualWidth, ElementName=DunnyWidthCap1}"
+                                    Margin="0,0,0,5"
+                                    HorizontalAlignment="Left"
+                                    FontSize="15"
+                                    Text="{Binding DownloadInfo.FileName}"
+                                    TextTrimming="CharacterEllipsis">
+                                </TextBlock>
+
+
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*">
+                                        </ColumnDefinition>
+                                        <ColumnDefinition Width="10*">
+                                        </ColumnDefinition>
+                                        <ColumnDefinition Width="2*">
+                                        </ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Label
+                                        HorizontalContentAlignment="Right"
+                                        VerticalContentAlignment="Center"
+                                        Content="{Binding CurrentDownloadedLength, Converter={StaticResource FormatBytesLengthConverter}}">
+                                    </Label>
+                                    <Border Name="DunnyWidthCap2" Grid.Column="1">
+                                    </Border>
+                                    <ProgressBar
+                                        Grid.Column="1"
+                                        Width="{Binding ElementName=DunnyWidthCap2, Path=ActualWidth}"
+                                        Height="10"
+                                        HorizontalAlignment="Left"
+                                        Foreground="LightSkyBlue"
+                                        Maximum="{Binding DownloadInfo.TotalBytes}"
+                                        Minimum="0"
+                                        Visibility="{Binding DownloadInfo.TotalBytes, Converter={StaticResource BytesLength2VisibilityConverter}}"
+                                        Value="{Binding CurrentDownloadedLength}">
+                                    </ProgressBar>
+                                    <Label
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Left"
+                                        Content="{Binding DownloadSpeed, Converter={StaticResource DisplaySpeedConverter}}">
+                                        <Label.Style>
+                                            <Style TargetType="Label">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Status}" Value="Finished">
+                                                        <Setter Property="Visibility" Value="Hidden">
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Status}" Value="Paused">
+                                                        <Setter Property="Visibility" Value="Hidden">
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Status}" Value="Started">
+                                                        <Setter Property="Visibility" Value="Visible">
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Label.Style>
+                                    </Label>
+                                </Grid>
+                            </Grid>
+
+
+
+
+                            <StackPanel
+                                Grid.RowSpan="2"
                                 Grid.Column="2"
-                                Margin="10,0,0,0"
-                                HorizontalContentAlignment="Right"
-                                Content="{Binding DownloadSpeed, Converter={StaticResource DisplaySpeedConverter}}">
-                                <Label.Style>
-                                    <Style TargetType="Label">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Status}" Value="Finished">
-                                                <Setter Property="Visibility" Value="Hidden">
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <Button
+                                    Name="ControlButton"
+                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    Click="Button_Click_1"
+                                    FontFamily="Segoe UI Symbol"
+                                    FontSize="25">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="Finished">
+                                                    <Setter Property="Content" Value="" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Paused">
+                                                    <Setter Property="Content" Value="⏵">
+                                                    </Setter>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Started">
+                                                    <Setter Property="Content" Value="⏸">
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Popup
+                                    Name="RedownloadPanel"
+                                    AllowsTransparency="True"
+                                    Placement="Bottom"
+                                    PlacementTarget="{Binding ElementName=ControlButton}"
+                                    StaysOpen="False">
+                                    <StackPanel Background="#BF1D2031">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="BorderBrush" Value="White">
                                                 </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Paused">
-                                                <Setter Property="Visibility" Value="Hidden">
+                                                <Setter Property="Margin" Value="10">
                                                 </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Started">
-                                                <Setter Property="Visibility" Value="Visible">
+                                                <Setter Property="HorizontalAlignment" Value="Stretch">
                                                 </Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Label.Style>
-                            </Label>
+                                                <Setter Property="Background" Value="Transparent">
+                                                </Setter>
+                                                <Setter Property="Padding" Value="30,10,30,10">
+                                                </Setter>
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <TextBlock Margin="10" FontSize="15">
+                                            是否重新下载此任务?
+                                        </TextBlock>
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition>
+                                                </ColumnDefinition>
+                                                <ColumnDefinition>
+                                                </ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Button Click="Button_Click_5" DataContext="{Binding ElementName=RedownloadPanel}">确认</Button>
+                                            <Button
+                                                Grid.Column="1"
+                                                Click="Button_Click_4"
+                                                DataContext="{Binding ElementName=RedownloadPanel}">
+                                                取消
+                                            </Button>
+                                        </Grid>
+                                    </StackPanel>
+                                </Popup>
+                                <Button
+                                    x:Name="DeleteButton"
+                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    Click="Button_Click"
+                                    DataContext="{Binding ElementName=DeletePanel}"
+                                    FontFamily="Segoe UI Symbol"
+                                    FontSize="25">
+                                    
+                                </Button>
+                                <Popup
+                                    Name="DeletePanel"
+                                    AllowsTransparency="True"
+                                    Placement="Bottom"
+                                    PlacementTarget="{Binding ElementName=DeleteButton}"
+                                    StaysOpen="False">
+                                    <StackPanel Background="#BF1D2031">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="BorderBrush" Value="White">
+                                                </Setter>
+                                                <Setter Property="Margin" Value="10">
+                                                </Setter>
+                                                <Setter Property="HorizontalAlignment" Value="Stretch">
+                                                </Setter>
+                                                <Setter Property="Background" Value="Transparent">
+                                                </Setter>
+                                                <Setter Property="Padding" Value="30,10,30,10">
+                                                </Setter>
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <TextBlock Margin="10" FontSize="15">
+                                            是否删除此下载任务?
+                                        </TextBlock>
+                                        <CheckBox
+                                            Name="DeleteFileCheckBox"
+                                            Margin="10"
+                                            FontSize="15">
+                                            顺便删除本地文件
+                                        </CheckBox>
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition>
+                                                </ColumnDefinition>
+                                                <ColumnDefinition>
+                                                </ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Button Click="Button_Click_2" DataContext="{Binding ElementName=DeletePanel}">删除</Button>
+                                            <Button
+                                                Grid.Column="1"
+                                                Click="Button_Click_3"
+                                                DataContext="{Binding ElementName=DeletePanel}">
+                                                取消
+                                            </Button>
+                                        </Grid>
+                                    </StackPanel>
+                                </Popup>
+                            </StackPanel>
                         </Grid>
-
-
-                        <StackPanel
-                            Grid.RowSpan="2"
-                            Grid.Column="1"
-                            Orientation="Horizontal">
-                            <Button
-                                Name="ControlButton"
-                                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                                Background="Transparent"
-                                BorderBrush="Transparent"
-                                Click="Button_Click_1"
-                                FontFamily="Segoe UI Symbol"
-                                FontSize="25">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Status}" Value="Finished">
-                                                <Setter Property="Content" Value="" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Paused">
-                                                <Setter Property="Content" Value="⏵">
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Started">
-                                                <Setter Property="Content" Value="⏸">
-                                                </Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
-                            <Popup
-                                Name="RedownloadPanel"
-                                AllowsTransparency="True"
-                                Placement="Bottom"
-                                PlacementTarget="{Binding ElementName=ControlButton}"
-                                StaysOpen="False">
-                                <StackPanel Background="#BF1D2031">
-                                    <StackPanel.Resources>
-                                        <Style TargetType="Button">
-                                            <Setter Property="BorderBrush" Value="White">
-                                            </Setter>
-                                            <Setter Property="Margin" Value="10">
-                                            </Setter>
-                                            <Setter Property="HorizontalAlignment" Value="Stretch">
-                                            </Setter>
-                                            <Setter Property="Background" Value="Transparent">
-                                            </Setter>
-                                            <Setter Property="Padding" Value="30,10,30,10">
-                                            </Setter>
-                                        </Style>
-                                    </StackPanel.Resources>
-                                    <TextBlock Margin="10" FontSize="15">
-                                        是否重新下载此任务?
-                                    </TextBlock>
-
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition>
-                                            </ColumnDefinition>
-                                            <ColumnDefinition>
-                                            </ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Button Click="Button_Click_5" DataContext="{Binding ElementName=RedownloadPanel}">确认</Button>
-                                        <Button
-                                            Grid.Column="1"
-                                            Click="Button_Click_4"
-                                            DataContext="{Binding ElementName=RedownloadPanel}">
-                                            取消
-                                        </Button>
-                                    </Grid>
-                                </StackPanel>
-                            </Popup>
-                            <Button
-                                x:Name="DeleteButton"
-                                Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                                Background="Transparent"
-                                BorderBrush="Transparent"
-                                Click="Button_Click"
-                                DataContext="{Binding ElementName=DeletePanel}"
-                                FontFamily="Segoe UI Symbol"
-                                FontSize="25">
-                                
-                            </Button>
-                            <Popup
-                                Name="DeletePanel"
-                                AllowsTransparency="True"
-                                Placement="Bottom"
-                                PlacementTarget="{Binding ElementName=DeleteButton}"
-                                StaysOpen="False">
-                                <StackPanel Background="#BF1D2031">
-                                    <StackPanel.Resources>
-                                        <Style TargetType="Button">
-                                            <Setter Property="BorderBrush" Value="White">
-                                            </Setter>
-                                            <Setter Property="Margin" Value="10">
-                                            </Setter>
-                                            <Setter Property="HorizontalAlignment" Value="Stretch">
-                                            </Setter>
-                                            <Setter Property="Background" Value="Transparent">
-                                            </Setter>
-                                            <Setter Property="Padding" Value="30,10,30,10">
-                                            </Setter>
-                                        </Style>
-                                    </StackPanel.Resources>
-                                    <TextBlock Margin="10" FontSize="15">
-                                        是否删除此下载任务?
-                                    </TextBlock>
-                                    <CheckBox
-                                        Name="DeleteFileCheckBox"
-                                        Margin="10"
-                                        FontSize="15">
-                                        顺便删除本地文件
-                                    </CheckBox>
-
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition>
-                                            </ColumnDefinition>
-                                            <ColumnDefinition>
-                                            </ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Button Click="Button_Click_2" DataContext="{Binding ElementName=DeletePanel}">删除</Button>
-                                        <Button
-                                            Grid.Column="1"
-                                            Click="Button_Click_3"
-                                            DataContext="{Binding ElementName=DeletePanel}">
-                                            取消
-                                        </Button>
-                                    </Grid>
-                                </StackPanel>
-                            </Popup>
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Page>
