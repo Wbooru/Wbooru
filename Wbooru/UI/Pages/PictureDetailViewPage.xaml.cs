@@ -155,7 +155,8 @@ namespace Wbooru.UI.Pages
             PictureInfo = item;
 
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
-            MarkButton.IsEnabled = false;
+
+            VoteButton.IsBusy = MarkButton.IsBusy = true;
 
             Task.Run(() =>
             {
@@ -195,7 +196,7 @@ namespace Wbooru.UI.Pages
                 {
                     IsMark = is_mark;
                     IsVoted = is_vote ?? false;
-                    MarkButton.IsEnabled = true;
+                    VoteButton.IsBusy = MarkButton.IsBusy = false;
                     PictureDetailInfo = detail;
                     notify.Dispose();
                 });
@@ -250,6 +251,8 @@ namespace Wbooru.UI.Pages
             if (PictureInfo == null || Gallery==null)
                 return;
 
+            MarkButton.IsBusy = true;
+
             if (!IsMark)
             {
                 DB.ItemMarks.Add(new GalleryItemMark()
@@ -268,6 +271,8 @@ namespace Wbooru.UI.Pages
                 IsMark = false;
             }
 
+            MarkButton.IsBusy = false;
+
             Log<PictureDetailViewPage>.Debug($"Now IsMark={IsMark}");
         }
 
@@ -279,6 +284,8 @@ namespace Wbooru.UI.Pages
             var item = PictureInfo;
             var is_vote = IsVoted;
             var gallery = Gallery;
+
+            VoteButton.IsBusy = true;
 
             Task.Run(() =>
             {
@@ -298,6 +305,10 @@ namespace Wbooru.UI.Pages
                 catch (Exception e)
                 {
                     Toast.ShowMessage($"投票失败,{e.Message}");
+                }
+                finally
+                {
+                    VoteButton.IsBusy = false;
                 }
             }, cancel_source.Token);
         }
