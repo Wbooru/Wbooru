@@ -216,7 +216,15 @@ namespace YandeSourcePlugin
                 var content = reader.ReadToEnd();
 
                 const string CONTENT_HEAD = "Post.register_resp(";
-                var start_index = content.LastIndexOf(CONTENT_HEAD) + CONTENT_HEAD.Length;
+                var start_index = content.LastIndexOf(CONTENT_HEAD);
+
+                if (start_index < 0)
+                {
+                    Log.Warn($"Can't get any information with id {id}.");
+                    return null;
+                }
+
+                start_index += CONTENT_HEAD.Length;
                 StringBuilder builder = new StringBuilder(1024);
                 int stack = 1;
 

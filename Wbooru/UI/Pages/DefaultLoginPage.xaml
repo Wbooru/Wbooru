@@ -22,6 +22,7 @@
         <Border Height="40" Background="{StaticResource BoardColor}">
             <controls:MenuButton
                 x:Name="ReturnButton"
+                HorizontalAlignment="Left"
                 Button.Click="ReturnButton_Click"
                 ContentMargin="5,0,15,0"
                 Icon=""
