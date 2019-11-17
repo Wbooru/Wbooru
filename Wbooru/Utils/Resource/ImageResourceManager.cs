@@ -16,7 +16,7 @@ namespace Wbooru.Utils.Resource
 {
     public static class ImageResourceManager
     {
-        private static ObjectCache cache = MemoryCache.Default;
+        private static ObjectCache cache;
         private static GlobalSetting option;
 
         private static string temporary_folder_path;
@@ -26,6 +26,9 @@ namespace Wbooru.Utils.Resource
         {
             option = SettingManager.LoadSetting<GlobalSetting>();
             temporary_folder_path = option.CacheFolderPath.Replace("%Temp%", Path.GetTempPath());
+
+            if (option.EnableMemoryCache)
+                cache = MemoryCache.Default;
 
             try
             {
@@ -46,25 +49,61 @@ namespace Wbooru.Utils.Resource
 
         public static Image RequestImage(string resource_name,Func<Image> manual_request)
         {
-            if (TryGetImageFromMemoryCache(resource_name,out var res))
+            if (TryGetImageFromMemoryCache(resource_name, out var res))
+            {
+                Log.Debug("Get image resoure from memory cache : " + resource_name);
                 return res;
+            }
 
             if (TryGetImageFromTempFolder(resource_name, out res))
+            {
+                Log.Debug("Get image resoure from temporary folder : " + resource_name);
                 return res;
+            }
 
             if (TryGetImageFromDownloadFolder(resource_name, out res))
+            {
+                Log.Debug("Get image resoure from download folder : " + resource_name);
                 return res;
+            }
+
+
 
             if (manual_request() is Image obj)
             {
                 CacheImageResourceAsFile(resource_name,obj);
 
-                cache[resource_name] = obj;
+                CacheImageResourceInMemory(resource_name, obj);
+
                 return obj;
             }
 
             return null;
         }
+
+        public static Task<Image> RequestImageAsync(string resource_name,Func<Image> manual_request)
+        {
+            return Task.Run(()=> RequestImage(resource_name,manual_request));
+        }
+
+        private static bool TryGetImageFromDownloadFolder(string name, out Image res)
+        {
+            res = null;
+
+            name = FileNameHelper.FilterFileName(name);
+
+            var file_path = Path.Combine(SettingManager.LoadSetting<GlobalSetting>().DownloadPath, name);
+
+            if (!File.Exists(file_path))
+                return false;
+
+            res = Image.FromFile(file_path);
+
+            //todo
+            return false;
+        }
+
+        #region Temp Folder Cache
 
         private static bool TryGetImageFromTempFolder(string resource_name, out Image res)
         {
@@ -100,7 +139,7 @@ namespace Wbooru.Utils.Resource
 
             try
             {
-                if (!CheckAndDeleteCacheFile(obj,out stream))
+                if (!CheckAndDeleteCacheFile(obj, out stream))
                     return;
 
                 var file_stream = File.OpenWrite(file_path);
@@ -112,7 +151,7 @@ namespace Wbooru.Utils.Resource
                 {
                     read = stream.Read(buffer, 0, buffer.Length);
                     file_stream.Write(buffer, 0, read);
-                } while (read!=0);
+                } while (read != 0);
 
                 Log.Debug($"Saved cache file :{file_path}");
             }
@@ -169,36 +208,28 @@ namespace Wbooru.Utils.Resource
             }
         }
 
-        public static Task<Image> RequestImageAsync(string resource_name,Func<Image> manual_request)
-        {
-            return Task.Run(()=> RequestImage(resource_name,manual_request));
-        }
+        #endregion
 
-        private static bool TryGetImageFromDownloadFolder(string name, out Image res)
-        {
-            res = null;
-
-            name = FileNameHelper.FilterFileName(name);
-
-            var file_path = Path.Combine(SettingManager.LoadSetting<GlobalSetting>().DownloadPath, name);
-
-            if (!File.Exists(file_path))
-                return false;
-
-            res = Image.FromFile(file_path);
-
-            //todo
-            return false;
-        }
+        #region Memory Cache
 
         private static bool TryGetImageFromMemoryCache(string name, out Image res)
         {
             res = null;
 
-            if (cache.Contains(name))
+            if (cache?.Contains(name)??false)
                 return (res=cache[name] as Image) !=null;
 
             return false;
         }
+
+        private static void CacheImageResourceInMemory(string resource_name, Image obj)
+        {
+            if (cache == null)
+                return;
+
+            cache[resource_name] = obj;
+        }
+
+        #endregion
     }
 }

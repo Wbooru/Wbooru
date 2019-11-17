@@ -82,6 +82,10 @@ namespace Wbooru.Settings
         #region Cache Option
 
         [Group("Cache Option")]
+        [Description("是否使用内存缓存机制，这将会缓存图片文件等其他资源")]
+        public bool EnableMemoryCache { get; set; } = false;
+
+        [Group("Cache Option")]
         [Description("是否使用文件缓存机制，这将会缓存图片文件等其他资源")]
         public bool EnableFileCache { get; set; } = false;
 

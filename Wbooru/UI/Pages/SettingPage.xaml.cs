@@ -177,12 +177,15 @@ namespace Wbooru.UI.Pages
                     control = GenerateBoolControl(wrapper);
                     break;
 
+                case "String":
                 case "Double":
                 case "Byte":
-                case "String":
-                case "Int64":
                 case "Int16":
+                case "UInt16":
+                case "Int64":
+                case "UInt64":
                 case "Int32":
+                case "UInt32":
                 case "Single":
                     control = GenerateValueControl(wrapper);
                     break;
@@ -191,7 +194,10 @@ namespace Wbooru.UI.Pages
                     if (prop_info.PropertyType.IsEnum)
                         control = GenerateValueControl(wrapper);
                     else
+                    {
+                        Log.Warn($"Skip generate this setting prop {prop_info.Name} , because its type {prop_info.PropertyType.Name} is not supported.");
                         return null;
+                    }
                     break;
             }
 
