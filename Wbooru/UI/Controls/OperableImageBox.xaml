@@ -57,6 +57,7 @@
         </Storyboard>
     </UserControl.Resources>
     <Grid
+        SizeChanged="WrapPanel_SizeChanged"
         Name="WrapPanel"
         Background="Transparent"
         MouseDown="Grid_MouseDown"

@@ -119,14 +119,16 @@ namespace Wbooru.UI.Controls
         {
             if (e.ClickCount == 2)
             {
+                /*
                 var point = e.GetPosition(ImageCoreBox);
                 point.X = Math.Min(ImageCoreBox.ActualWidth, Math.Max(0, point.X));
                 point.Y = Math.Min(ImageCoreBox.ActualHeight, Math.Max(0, point.Y));
+                */
 
                 current_switch_index = (++current_switch_index) % SWITCH_ROLL.Length;
                 var next_scale = SWITCH_ROLL[current_switch_index];
 
-                ApplyScale(next_scale, point);
+                ApplyScale(next_scale, /*point*/null);
             }
         }
 
@@ -153,6 +155,9 @@ namespace Wbooru.UI.Controls
 
         private void ReboundImageBox()
         {
+            if (ImageCoreBox.Source == null)
+                return;
+
             /*
                 p11  ----------  p12
                  |                |
@@ -160,6 +165,7 @@ namespace Wbooru.UI.Controls
                  |                |
                 p21  ----------  p22
              */
+
             Vector offset = CurrentTranslateOffset;
 
             var scaled_size = GetScaledPictureSize();
@@ -282,6 +288,11 @@ namespace Wbooru.UI.Controls
         {
             drag_action_state = DragActionState.Idle;
             Console.WriteLine($"Grid_MouseLeave:{drag_action_state}");
+        }
+
+        private void WrapPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ReboundImageBox();
         }
     }
 }
