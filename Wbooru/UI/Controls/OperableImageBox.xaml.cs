@@ -167,15 +167,32 @@ namespace Wbooru.UI.Controls
             var p11 = ImageCoreBox.TranslatePoint(new Point(0, 0), WrapPanel);
             var p22 = new Point(p11.X + scaled_size.Width, p11.Y + scaled_size.Height);
 
-            if (p11.Y > 0)
+            if (scaled_size.Height >= WrapPanel.ActualHeight)
             {
-                offset.Y = /*CurrentTranslateOffset.Y - p11.Y*/0;
-                Console.WriteLine($">0 p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
+                if (p11.Y > 0)
+                {
+                    offset.Y = CurrentTranslateOffset.Y - p11.Y;
+                    Console.WriteLine($">0 p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
+                }
+                else if (p22.Y < WrapPanel.ActualHeight)
+                {
+                    offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight - p22.Y);
+                    Console.WriteLine($"<{WrapPanel.ActualHeight}  p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
+                }
             }
-            else if (p22.Y < WrapPanel.ActualHeight)
+
+            if (scaled_size.Width >= WrapPanel.ActualWidth)
             {
-                offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight - p22.Y);
-                Console.WriteLine($"<{WrapPanel.ActualHeight}  p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
+                if (p11.X > 0)
+                {
+                    offset.X = CurrentTranslateOffset.X - p11.X;
+                    Console.WriteLine($">0 p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
+                }
+                else if (p22.X < WrapPanel.ActualWidth)
+                {
+                    offset.X = CurrentTranslateOffset.X + (WrapPanel.ActualWidth - p22.X);
+                    Console.WriteLine($"<{WrapPanel.ActualHeight}  p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
+                }
             }
 
             ApplyTranslate(offset);
