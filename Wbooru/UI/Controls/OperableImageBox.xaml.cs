@@ -172,12 +172,23 @@ namespace Wbooru.UI.Controls
                 if (p11.Y > 0)
                 {
                     offset.Y = CurrentTranslateOffset.Y - p11.Y;
-                    Console.WriteLine($">0 p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
                 }
                 else if (p22.Y < WrapPanel.ActualHeight)
                 {
                     offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight - p22.Y);
-                    Console.WriteLine($"<{WrapPanel.ActualHeight}  p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
+                }
+            }
+            else
+            {
+                var limit_height = WrapPanel.ActualHeight * 0.9;
+
+                if (p11.Y > limit_height)
+                {
+                    offset.Y = CurrentTranslateOffset.Y - (p11.Y - limit_height);
+                }
+                else if (p22.Y < WrapPanel.ActualHeight * 0.1)
+                {
+                    offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight * 0.1 - p22.Y);
                 }
             }
 
@@ -186,12 +197,23 @@ namespace Wbooru.UI.Controls
                 if (p11.X > 0)
                 {
                     offset.X = CurrentTranslateOffset.X - p11.X;
-                    Console.WriteLine($">0 p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
                 }
                 else if (p22.X < WrapPanel.ActualWidth)
                 {
                     offset.X = CurrentTranslateOffset.X + (WrapPanel.ActualWidth - p22.X);
-                    Console.WriteLine($"<{WrapPanel.ActualHeight}  p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
+                }
+            }
+            else
+            {
+                var limit_width = WrapPanel.ActualWidth * 0.9;
+
+                if (p11.X > limit_width)
+                {
+                    offset.X = CurrentTranslateOffset.X - (p11.X - limit_width);
+                }
+                else if (p22.X < WrapPanel.ActualWidth * 0.1)
+                {
+                    offset.X = CurrentTranslateOffset.X + (WrapPanel.ActualWidth*0.1 - p22.X);
                 }
             }
 
