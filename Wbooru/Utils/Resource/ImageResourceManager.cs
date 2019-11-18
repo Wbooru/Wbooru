@@ -51,13 +51,13 @@ namespace Wbooru.Utils.Resource
         {
             if (TryGetImageFromMemoryCache(resource_name, out var res))
             {
-                Log.Debug("Get image resoure from memory cache : " + resource_name);
+                Log.Debug("Get cache image resoure from memory cache : " + resource_name);
                 return res;
             }
 
             if (TryGetImageFromTempFolder(resource_name, out res))
             {
-                Log.Debug("Get image resoure from temporary folder : " + resource_name);
+                Log.Debug("Get cache image resoure from temporary folder : " + resource_name);
                 return res;
             }
 

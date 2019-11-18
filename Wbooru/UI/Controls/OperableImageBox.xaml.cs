@@ -42,17 +42,19 @@ namespace Wbooru.UI.Controls
 
         public enum ScaleState
         {
-            NoScale,
-            Scale2x,
-            Scale4x,
-            ScaleRawPixel
+            NoScale = 1,
+            Scale2x = 2,
+            Scale4x = 4,
+            ScaleRawPixel = 0
         }
 
         private DragActionState drag_action_state = DragActionState.Idle;
         private ScaleState CurrentScale { get; set; }
         private Vector CurrentTranslateOffset { get; set; }
         private Dictionary<ScaleState, Storyboard> TransformScaleMap { get; set; }
-        private bool need_raw_pixel;
+
+        private readonly static ScaleState[] SWITCH_ROLL = { ScaleState.NoScale, ScaleState.Scale2x, ScaleState.Scale4x, ScaleState.ScaleRawPixel };
+        private int current_switch_index = 0;
 
         private double ImageBoxTranslateTransformX
         {
@@ -89,6 +91,9 @@ namespace Wbooru.UI.Controls
                 {ScaleState.ScaleRawPixel,Resources["ScaleRawPixelAction"]as Storyboard },
             };
 
+            foreach (var sb in TransformScaleMap.Values)
+                sb.Completed += (_, __) => ReboundImageBox();
+
             if (ImageCoreBox.Source != null)
             {
                 ApplyImage(ImageCoreBox.Source);
@@ -108,19 +113,6 @@ namespace Wbooru.UI.Controls
 
             if (source==null)
                 return;
-
-            var pic_width = (source as BitmapSource).PixelHeight;
-            var box_width = ImageCoreBox.ActualWidth;
-
-            need_raw_pixel = pic_width > box_width;
-
-            //update ScaleRawPixelAction sb values
-            /*
-            foreach (var animation in TransformScaleMap[ScaleState.ScaleRawPixel].Children.OfType<DoubleAnimation>())
-            {
-                animation.To = pic_width * 1.0d / (box_width == 0 ? pic_width : box_width);
-            }  
-            */
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -131,7 +123,8 @@ namespace Wbooru.UI.Controls
                 point.X = Math.Min(ImageCoreBox.ActualWidth, Math.Max(0, point.X));
                 point.Y = Math.Min(ImageCoreBox.ActualHeight, Math.Max(0, point.Y));
 
-                var next_scale = (ScaleState)((((int)CurrentScale) + 1) % 4);
+                current_switch_index = (++current_switch_index) % SWITCH_ROLL.Length;
+                var next_scale = SWITCH_ROLL[current_switch_index];
 
                 ApplyScale(next_scale, point);
             }
@@ -148,20 +141,14 @@ namespace Wbooru.UI.Controls
             var sb = TransformScaleMap[CurrentScale];
 
             sb.Begin(ImageCoreBox);
-
-            ReboundImageBox();
         }
 
         public void ApplyTranslate(Vector offset)
         {
-            
             ((ImageCoreBox.RenderTransform as TransformGroup).Children[1] as TranslateTransform).X = offset.X;
             ((ImageCoreBox.RenderTransform as TransformGroup).Children[1] as TranslateTransform).Y = offset.Y;
 
-            /*
             CurrentTranslateOffset = new Vector(((ImageCoreBox.RenderTransform as TransformGroup).Children[1] as TranslateTransform).X, ((ImageCoreBox.RenderTransform as TransformGroup).Children[1] as TranslateTransform).Y);
-            Console.WriteLine(CurrentTranslateOffset);
-            */
         }
 
         private void ReboundImageBox()
@@ -175,34 +162,55 @@ namespace Wbooru.UI.Controls
              */
             Vector offset = CurrentTranslateOffset;
 
+            var scaled_size = GetScaledPictureSize();
+
             var p11 = ImageCoreBox.TranslatePoint(new Point(0, 0), WrapPanel);
-            var p12 = new Point(p11.X + ImageCoreBox.ActualWidth, p11.Y);
-            var p21 = new Point(p11.X, p11.Y + ImageCoreBox.ActualHeight);
-            var p22 = new Point(p11.X + ImageCoreBox.ActualWidth, p11.Y + ImageCoreBox.ActualHeight);
+            var p22 = new Point(p11.X + scaled_size.Width, p11.Y + scaled_size.Height);
 
             if (p11.Y > 0)
             {
-                offset.Y = CurrentTranslateOffset.Y - p11.Y;
-                Console.WriteLine(">0");
+                offset.Y = /*CurrentTranslateOffset.Y - p11.Y*/0;
+                Console.WriteLine($">0 p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
             }
-            else if (p21.Y < WrapPanel.ActualHeight)
+            else if (p22.Y < WrapPanel.ActualHeight)
             {
-                offset.Y = CurrentTranslateOffset.Y + (-p11.Y);
-                Console.WriteLine($"<{WrapPanel.ActualHeight}");
+                offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight - p22.Y);
+                Console.WriteLine($"<{WrapPanel.ActualHeight}  p11 = {p11}  |  p22 = {p22} | CTO = {CurrentTranslateOffset}");
             }
 
-            //ApplyTranslate(offset);
+            ApplyTranslate(offset);
+        }
+
+        private Size GetScaledPictureSize()
+        {
+            var pic = ImageCoreBox.Source as BitmapSource;
+            var width = ImageCoreBox.ActualWidth;
+            var height = ImageCoreBox.ActualHeight;
+
+            var scale = (int)CurrentScale;
+
+            if (scale!=0)
+            {
+                width *= scale;
+                height *= scale;
+            }
+            else
+            {
+                width = pic.PixelWidth;
+                height = pic.PixelHeight;
+            }
+
+            return new Size(width, height);
         }
 
         Point prev_point;
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
+            
             if (drag_action_state == DragActionState.ReadyDrag)
             {
                 drag_action_state = DragActionState.Dragging;
-
-                prev_point = e.GetPosition(this);
                 Console.WriteLine($"Grid_MouseMove:{drag_action_state} {prev_point}");
             }
             else if (drag_action_state == DragActionState.Dragging)
@@ -211,10 +219,12 @@ namespace Wbooru.UI.Controls
                 var offset = now_point - prev_point;
 
                 ApplyTranslate(CurrentTranslateOffset + offset);
-                ReboundImageBox();
                 Console.WriteLine($"Grid_MouseMove:{drag_action_state} {prev_point}");
-                prev_point = now_point;
+                prev_point = e.GetPosition(this);
+                ReboundImageBox();
             }
+
+            prev_point = e.GetPosition(this);
         }
 
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
