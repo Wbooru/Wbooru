@@ -126,7 +126,7 @@ namespace Wbooru.UI.Pages
                     {
                         image = ImageResourceManager.RequestImageAsync(pick_download.FullFileName, () =>
                         {
-                            return downloader.GetImageAsync(pick_download.DownloadLink, cancel_source.Token,d => {
+                            return downloader.GetImageAsync(pick_download.DownloadLink, null,d => {
                                 (long cur, long total) = d;
                                 notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
                             }).Result;

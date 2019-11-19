@@ -223,7 +223,8 @@
     <Compile Include="UI\Pages\TagManagePage.xaml.cs">
       <DependentUpon>TagManagePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Panels\GridPanel.cs" />
+    <Compile Include="UI\Panels\GridFlowPanel.cs" />
+    <Compile Include="UI\Panels\VirtualizingGridFlowPanel.cs" />
     <Compile Include="UI\ValueConverters\BytesLength2VisibilityConverter.cs" />
     <Compile Include="UI\ValueConverters\CheckIfJumpPageButtonConverter.cs" />
     <Compile Include="UI\ValueConverters\DisplaySpeedConverter.cs" />

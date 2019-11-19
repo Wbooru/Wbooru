@@ -29,13 +29,12 @@
             MouseUp="ListScrollViewer_MouseUp"
             PreviewMouseLeftButtonDown="ListScrollViewer_PreviewMouseLeftButtonDown"
             ScrollChanged="ListScrollViewer_ScrollChanged">
-            <ListBox
+            <ItemsControl
                 x:Name="GalleryList"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                SelectionMode="Single">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}">
+                VerticalAlignment="Stretch">
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type ContentPresenter}">
                         <Setter Property="RenderTransform">
                             <Setter.Value>
                                 <TranslateTransform />
@@ -64,23 +63,23 @@
                             </EventTrigger>
                         </Style.Triggers>
                     </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemsPanel>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <local1:GridFlowPanel
                             Width="{Binding ActualWidth, ElementName=GalleryList}"
                             GridItemMarginWidth="{Binding GridItemMarginWidth}"
                             GridItemWidth="{Binding GridItemWidth}" />
                     </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.Template>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Template>
                     <ControlTemplate>
                         <ItemsPresenter />
                     </ControlTemplate>
-                </ListBox.Template>
-                <ListBox.ItemTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel PreviewMouseUp="StackPanel_PreviewMouseUp">
+                        <StackPanel Margin="5" PreviewMouseUp="StackPanel_PreviewMouseUp">
                             <Border
                                 Name="GalleryImageBorder"
                                 Width="{Binding GridItemWidth, ElementName=controlss}"
@@ -100,8 +99,8 @@
                             </Border>
                         </StackPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </ScrollViewer>
     </Grid>
 </UserControl>
