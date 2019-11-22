@@ -39,12 +39,6 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommandLine, Version=2.6.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandLineParser.2.6.0\lib\net461\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="DynamicExpresso.Core, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicExpresso.Core.2.3.1\lib\net461\DynamicExpresso.Core.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.3.0-preview5-19254-05\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -119,7 +113,6 @@
     <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
     <Compile Include="Kernel\ProgramUpdater\ProgramUpdater.cs" />
-    <Compile Include="Kernel\ProgramUpdater\UpdaterCommandLineOption.cs" />
     <Compile Include="Kernel\SchedulerManager.cs" />
     <Compile Include="Kernel\TagManager.cs" />
     <Compile Include="Migrations\201911090504417_ModifyShadowModel.cs" />
