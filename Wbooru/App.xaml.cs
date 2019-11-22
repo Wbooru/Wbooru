@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using Wbooru.Galleries;
 using System;
 using Wbooru.Utils.Resource;
+using System.Diagnostics;
+using System.Threading;
+using Wbooru.Kernel.ProgramUpdater;
 
 namespace Wbooru
 {
@@ -17,7 +20,35 @@ namespace Wbooru
     {
         public App()
         {
+            BlockApplicationUntilSingle();
+
+            PreprocessCommandLine();
+
             Init();
+
+            if (ProgramUpdater.IsUpdatable())
+            {
+                ProgramUpdater.BeginUpdate();
+            }
+        }
+
+        private void PreprocessCommandLine()
+        {
+            var args = Environment.GetCommandLineArgs();
+
+            //check if it need finish updating.
+            if (args.Where(x => x == "-update").Any())
+            {
+                ProgramUpdater.ApplyUpdate();
+            }
+        }
+
+        private void BlockApplicationUntilSingle()
+        {
+            var cur_process = Process.GetCurrentProcess();
+
+            while (Process.GetProcessesByName(cur_process.ProcessName).Where(x => x.Id != cur_process.Id).Any())
+                Thread.Sleep(100);
         }
 
         internal static void Init()
@@ -38,6 +69,12 @@ namespace Wbooru
             DownloadManager.Close();
             SettingManager.SaveSettingFile();
             SchedulerManager.Term();
+        }
+
+        internal static void UnusualSafeExit()
+        {
+            Term();
+            Current.Shutdown();
         }
     }
 }

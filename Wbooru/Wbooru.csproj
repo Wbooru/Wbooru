@@ -39,6 +39,9 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine, Version=2.6.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.2.6.0\lib\net461\CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="DynamicExpresso.Core, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicExpresso.Core.2.3.1\lib\net461\DynamicExpresso.Core.dll</HintPath>
     </Reference>
@@ -74,6 +77,7 @@
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.110.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Caching" />
@@ -114,6 +118,8 @@
     <Compile Include="Kernel\Container.cs" />
     <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
+    <Compile Include="Kernel\ProgramUpdater\ProgramUpdater.cs" />
+    <Compile Include="Kernel\ProgramUpdater\UpdaterCommandLineOption.cs" />
     <Compile Include="Kernel\SchedulerManager.cs" />
     <Compile Include="Kernel\TagManager.cs" />
     <Compile Include="Migrations\201911090504417_ModifyShadowModel.cs" />

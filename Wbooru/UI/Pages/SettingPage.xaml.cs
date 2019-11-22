@@ -292,8 +292,7 @@ namespace Wbooru.UI.Pages
 
         private void RestartComfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            App.Term();
-            Application.Current.Shutdown();
+            App.UnusualSafeExit();
             //todo
         }
 

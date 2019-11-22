@@ -26,19 +26,21 @@ namespace Wbooru.Network
             return req.GetResponseAsync();
         }
 
-        public static JObject GetJsonObject(WebResponse response)
+        public static T GetJsonContainer<T>(WebResponse response) where T : JContainer
         {
             using var reader = new StreamReader(response.GetResponseStream());
 
             try
             {
-                return JsonConvert.DeserializeObject(reader.ReadToEnd()) as JObject;
+                return JsonConvert.DeserializeObject(reader.ReadToEnd()) as T;
             }
             catch (Exception e)
             {
                 Log.Info($"Can't get json object from request : {response.ResponseUri.AbsoluteUri} , message : {e.Message}");
-                return null;
+                return default;
             }
         }
+
+        public static JObject GetJsonObject(WebResponse response) => GetJsonContainer<JObject>(response);
     }
 }

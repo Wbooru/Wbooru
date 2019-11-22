@@ -79,7 +79,7 @@ namespace Wbooru.Settings
 
         #endregion
 
-        #region Cache Option
+        #region Cache Options
 
         [Group("Cache Option")]
         [Description("是否使用内存缓存机制，这将会缓存图片文件等其他资源")]
@@ -101,7 +101,37 @@ namespace Wbooru.Settings
 
         #endregion
 
+        #region Other Options
+
+        [Description("是否自动检查程序是否有更新，通常会在程序启动时自动检查")]
+        public bool EnableAutoCheckProgramUpdatable { get; set; } = true;
+
+        public enum UpdatableTarget
+        {
+            Stable, Preview
+        }
+
+        [List(typeof(UpdatableTarget), true, ",")]
+        public UpdatableTarget UpdatableTargetVersion { get; set; } = UpdatableTarget.Stable;
+
+        #endregion
+
         #region Deep Dark Fantasty
+
+        #region Special Options
+
+        [Group("Advanced Option")]
+        [Description("是否显示高级选项(不建议修改其选项值)")]
+        public bool ShowAdvancedOptions { get; set; } = false;
+
+        /*
+        [Group("Advanced Option")]
+        [EnableBy(nameof(ShowAdvancedOptions),true)]
+        [Description("程序的Github地址，通常用于更新功能")]
+        public string ProgramRepoURL { get; set; } = "https://github.com/MikiraSora/Wbooru";
+        */
+
+        #endregion
 
         [Ignore]
         public bool IgnoreSettingChangedComfirm { get; set; } = false;
