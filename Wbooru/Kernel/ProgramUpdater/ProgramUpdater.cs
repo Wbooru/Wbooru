@@ -27,13 +27,6 @@ namespace Wbooru.Kernel.ProgramUpdater
 
         public static bool IsUpdatable()
         {
-            cached_updatable_release_info = new ReleaseInfo()
-            {
-                DownloadURL = "https://github.com/MikiraSora/ReOsuStoryboardPlayer/releases/download/v2.4.3/ReOsuStoryboardPlayer.zip"
-            };
-
-            return true;
-
             var option = SettingManager.LoadSetting<GlobalSetting>();
 
             var releases_url = $"https://api.github.com/repos/MikiraSora/Wbooru/releases";

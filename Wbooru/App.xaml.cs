@@ -25,11 +25,6 @@ namespace Wbooru
             PreprocessCommandLine();
 
             Init();
-
-            if (ProgramUpdater.IsUpdatable())
-            {
-                ProgramUpdater.BeginUpdate();
-            }
         }
 
         private void PreprocessCommandLine()
