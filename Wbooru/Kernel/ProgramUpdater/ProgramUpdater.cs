@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Wbooru.Network;
 using Wbooru.Settings;
+using Wbooru.Utils;
 
 namespace Wbooru.Kernel.ProgramUpdater
 {
@@ -127,7 +128,7 @@ namespace Wbooru.Kernel.ProgramUpdater
             {
                 var current_path = AppDomain.CurrentDomain.BaseDirectory;
 
-                var command_line = $"-update -UpdateTargetPath \"{current_path}\"";
+                var command_line = $"-update -UpdateTargetPath=\"{current_path}\"";
 
                 Process.Start(new ProcessStartInfo(updater_exe_file, command_line));
 
@@ -143,9 +144,10 @@ namespace Wbooru.Kernel.ProgramUpdater
 
             var current_exe_name = Path.GetFileName(Process.GetCurrentProcess().Modules[0].FileName);
             var current_path = AppDomain.CurrentDomain.BaseDirectory;
-            var target_path = Regex.Match(command_line, @"-UpdateTargetPath\s+\""(.+?)\""\s*").Groups[1].Value;
+            CommandLine.TryGetOptionValue("UpdateTargetPath", out string target_path);
 
             var files = Directory.EnumerateFiles(current_path).Where(x => Path.GetFileName(x) != current_exe_name).ToArray();
+            var copied_fully = true;
 
             for (int i = 0; i < files.Length; i++)
             {
@@ -161,10 +163,18 @@ namespace Wbooru.Kernel.ProgramUpdater
                 catch (Exception e)
                 {
                     Log.Error($"Copy file \"{display_file_path}\" failed:{e.Message}");
+                    copied_fully = false;
                 }
             }
 
-            MessageBox.Show("更新成功!");
+            if (copied_fully)
+            {
+                MessageBox.Show("更新成功!");
+            }
+            else
+            {
+                MessageBox.Show("更新失败，请看日志!");
+            }
         }
 
         private static void CopyRelativeFile(string source_file_path, string source_root_folder, string destination_root_folder)
@@ -226,7 +236,7 @@ namespace Wbooru.Kernel.ProgramUpdater
                     Type = x["prerelease"].ToObject<bool>() ? ReleaseInfo.ReleaseType.Preview : ReleaseInfo.ReleaseType.Stable,
                     ReleaseURL = x["html_url"].ToString(),
                     Version = Version.Parse(x["tag_name"].ToString().TrimStart('v')),
-                    DownloadURL = ((x["assets"] as JArray)?["browser_download_url"])?.ToString()
+                    DownloadURL = ((x["assets"] as JArray)?.FirstOrDefault()["browser_download_url"])?.ToString()
                 };
             }
             catch (Exception e)

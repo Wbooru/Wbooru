@@ -10,6 +10,7 @@ using Wbooru.Utils.Resource;
 using System.Diagnostics;
 using System.Threading;
 using Wbooru.Kernel.ProgramUpdater;
+using Wbooru.Utils;
 
 namespace Wbooru
 {
@@ -22,9 +23,9 @@ namespace Wbooru
         {
             BlockApplicationUntilSingle();
 
-            PreprocessCommandLine();
-
             Init();
+
+            PreprocessCommandLine();
         }
 
         private void PreprocessCommandLine()
@@ -32,7 +33,7 @@ namespace Wbooru
             var args = Environment.GetCommandLineArgs();
 
             //check if it need finish updating.
-            if (args.Where(x => x == "-update").Any())
+            if (CommandLine.ContainSwitchOption("update"))
             {
                 ProgramUpdater.ApplyUpdate();
             }
@@ -64,6 +65,7 @@ namespace Wbooru
             DownloadManager.Close();
             SettingManager.SaveSettingFile();
             SchedulerManager.Term();
+            Log.Term();
         }
 
         internal static void UnusualSafeExit()

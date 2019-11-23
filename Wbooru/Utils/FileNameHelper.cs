@@ -10,15 +10,14 @@ namespace Wbooru.Utils
 {
     public static class FileNameHelper
     {
-        const char REPLACE_VAILD_CHAR = '_';
         readonly static char[] INVAILD_CHARS = Path.GetInvalidFileNameChars().Concat(new[] { '\\','/' }).ToArray();
 
-        public static string FilterFileName(string file_name)
+        public static string FilterFileName(string file_name,char repleace_char='_')
         {
             var result = file_name;
 
             foreach (var ch in INVAILD_CHARS)
-                result = result.Replace(ch, REPLACE_VAILD_CHAR);
+                result = result.Replace(ch, repleace_char);
 
             Log.Debug($"{file_name} -> {result}");
 

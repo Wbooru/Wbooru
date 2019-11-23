@@ -104,6 +104,7 @@ namespace Wbooru.Settings
         #region Other Options
 
         [Description("是否自动检查程序是否有更新，通常会在程序启动时自动检查")]
+        [NeedRestart]
         public bool EnableAutoCheckProgramUpdatable { get; set; } = true;
 
         public enum UpdatableTarget
@@ -112,7 +113,12 @@ namespace Wbooru.Settings
         }
 
         [List(typeof(UpdatableTarget), true, ",")]
+        [NeedRestart]
         public UpdatableTarget UpdatableTargetVersion { get; set; } = UpdatableTarget.Stable;
+
+        [Path(false, false)]
+        [NeedRestart]
+        public string LogOutputDirectory { get; set; } = "./Logs";
 
         #endregion
 
