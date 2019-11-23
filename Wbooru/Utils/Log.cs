@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Wbooru.Settings;
+using System.IO;
+using Wbooru.Utils;
 
 namespace Wbooru
 {
@@ -20,6 +23,40 @@ namespace Wbooru
 
         private static ConsoleColor DefaultBackgroundColor = Console.BackgroundColor;
         private static ConsoleColor DefaultForegroundColor = Console.ForegroundColor;
+
+        private static string log_file_path;
+        private static StreamWriter file_writer; 
+
+        static Log()
+        {
+            var log_dir =Path.GetFullPath(SettingManager.LoadSetting<GlobalSetting>().LogOutputDirectory);
+            Directory.CreateDirectory(log_dir);
+            log_file_path = Path.Combine(log_dir, FileNameHelper.FilterFileName(DateTime.Now.ToString() + ".log", '-'));
+
+            file_writer = File.AppendText(log_file_path);
+            file_writer.AutoFlush = true;
+
+            Info($"log_file_path = {log_file_path}");
+        }
+
+        private static void FileWrite(string content)
+        {
+            if (file_writer!=null)
+            {
+                file_writer.Write(content);
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(log_file_path))
+                    File.AppendAllText(log_file_path, content);
+            }
+        }
+
+        public static void Term()
+        {
+            file_writer.Flush();
+            file_writer.Close();
+        }
 
         public static string BuildLogMessage(string message, bool new_line, bool time, string prefix)
         {
@@ -51,6 +88,7 @@ namespace Wbooru
             OutputDebugString(message);
 #endif
             Console.Write(message);
+            FileWrite(message);
         }
 
         internal static void ColorizeOutput(string message , ConsoleColor f,ConsoleColor b)
