@@ -18,8 +18,20 @@ using Wbooru.Utils;
 
 namespace Wbooru.UI.Controls
 {
-    public partial class LoadingStatusDisplayer : UserControl
+    public partial class LoadingStatusDisplayer : UserControl, INotifyPropertyChanged
     {
+        private bool has_task_running;
+
+        public bool HasTaskRunning
+        {
+            get => has_task_running;
+            set
+            {
+                has_task_running = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasTaskRunning)));
+            }
+        }
+
         public LoadingStatusDisplayer()
         {
             InitializeComponent();
@@ -45,7 +57,7 @@ namespace Wbooru.UI.Controls
 
         // Using a DependencyProperty as the backing store for CurrentTaskNotify.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CurrentTaskNotifyProperty =
-            DependencyProperty.Register("CurrentTaskNotify", typeof(LoadingTaskNotify), typeof(LoadingStatusDisplayer), new PropertyMetadata(null));
+            DependencyProperty.Register("CurrentTaskNotify", typeof(LoadingTaskNotify), typeof(LoadingStatusDisplayer), new PropertyMetadata(null,(d,e)=> (d as LoadingStatusDisplayer).HasTaskRunning = e.NewValue != null));
 
         public string TaskCount
         {
@@ -68,6 +80,8 @@ namespace Wbooru.UI.Controls
 
         public static readonly DependencyProperty ContentForegroundProperty =
             DependencyProperty.Register("ContentForeground", typeof(Brush), typeof(LoadingStatusDisplayer), new PropertyMetadata(new SolidColorBrush(Colors.White)));
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public LoadingTaskNotify BeginBusy(string description = null)
         {

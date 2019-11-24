@@ -362,5 +362,12 @@ namespace Wbooru.UI.Pages
         {
             PageJumpPopup.IsOpen = false;
         }
+
+        private void AboutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new AboutPage();
+
+            NavigationHelper.NavigationPush(page);
+        }
     }
 }

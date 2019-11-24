@@ -71,7 +71,7 @@ namespace Wbooru
         internal static void UnusualSafeExit()
         {
             Term();
-            Current.Shutdown();
+            Environment.Exit(0);
         }
     }
 }

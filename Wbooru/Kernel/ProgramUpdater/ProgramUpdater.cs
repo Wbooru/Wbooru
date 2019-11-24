@@ -23,9 +23,9 @@ namespace Wbooru.Kernel.ProgramUpdater
 
         public static Version CurrentProgramVersion => typeof(ProgramUpdater).Assembly.GetName().Version;
 
-        private static ReleaseInfo cached_updatable_release_info;
+        public static ReleaseInfo CacheUpdatableReleaseInfo { get; private set; }
 
-        public static bool IsUpdatable()
+        public static bool CheckUpdatable()
         {
             var option = SettingManager.LoadSetting<GlobalSetting>();
 
@@ -52,9 +52,9 @@ namespace Wbooru.Kernel.ProgramUpdater
                 var updatable_releases = releases.Where(x => x.Version > CurrentProgramVersion)
                     .OrderByDescending(x => x.Version);
 
-                cached_updatable_release_info = (option.UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Preview) : null) ?? releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Stable);
+                CacheUpdatableReleaseInfo = (option.UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Preview) : null) ?? releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Stable);
 
-                if (cached_updatable_release_info == null)
+                if (CacheUpdatableReleaseInfo == null)
                 {
                     Log.Info($"There is no any updatable({option.UpdatableTargetVersion}) release info ,skip update check.");
                     return false;
@@ -71,14 +71,14 @@ namespace Wbooru.Kernel.ProgramUpdater
 
         public static void BeginUpdate(Action<long, long> reporter = null,Func<bool> restart_comfirm=null)
         {
-            if (cached_updatable_release_info == null)
+            if (CacheUpdatableReleaseInfo == null)
                 throw new Exception("Must call IsUpdatable() before.");
 
             var file_save_path = Path.GetTempFileName();
 
             #region Download Packaged File
 
-            var response = RequestHelper.CreateDeafult(cached_updatable_release_info.DownloadURL);
+            var response = RequestHelper.CreateDeafult(CacheUpdatableReleaseInfo.DownloadURL);
 
             var length = response.ContentLength;
             var buffer = new byte[1024];
@@ -244,21 +244,6 @@ namespace Wbooru.Kernel.ProgramUpdater
                 Log.Error($"Can't parse release info from json content: {e.Message} \n {x.ToString()}");
                 return null;
             }
-        }
-
-        class ReleaseInfo
-        {
-            public enum ReleaseType
-            {
-                Stable, Preview
-            }
-
-            public ReleaseType Type { get; set; }
-            public Version Version { get; set; }
-            public DateTime ReleaseDate { get; set; }
-            public string DownloadURL { get; set; }
-            public string ReleaseURL { get; set; }
-            public string Description { get; set; }
         }
     }
 }

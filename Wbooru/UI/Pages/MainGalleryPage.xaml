@@ -129,6 +129,15 @@
             </StackPanel>
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
                 <controls:MenuButton
+                    x:Name="AboutButton"
+                    Button.Click="AboutButton_Click"
+                    Icon=""
+                    Text="关于" />
+                <controls:MenuButton
+                    Button.Click="MenuButton_Click_1"
+                    Icon=""
+                    Text="功能" />
+                <controls:MenuButton
                     Button.Click="MenuButton_Click_1"
                     Icon=""
                     Text="设置" />

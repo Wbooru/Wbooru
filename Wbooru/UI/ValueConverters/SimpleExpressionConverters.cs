@@ -16,5 +16,11 @@ namespace Wbooru.UI.ValueConverters
         public static IValueConverter ReverseBooleanToVisibilityConverter => ValueConverter.Create<bool?, Visibility>(b => !(b.Value ?? false) ? Visibility.Visible : Visibility.Hidden);
         public static IValueConverter BooleanToVisibilityConverter => ValueConverter.Create<bool?, Visibility>(b => (b.Value ?? false) ? Visibility.Visible : Visibility.Hidden);
         public static IValueConverter LoginStatusStringConverter => ValueConverter.Create<bool, string>(b => (b.Value) ? "登出" : "登录");
+
+        public static IValueConverter NullToBooleanConverter => ValueConverter.Create<object, bool>(
+            b => {
+                Log.Debug("{b.Value}", nameof(NullToBooleanConverter));
+                return b.Value != null;
+            });
     }
 }
