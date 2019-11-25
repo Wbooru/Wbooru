@@ -8,8 +8,8 @@ using Wbooru.Settings.UIAttributes;
 
 namespace Wbooru.Settings
 {
-    [Export(typeof(IUIVisualizable))]
-    public class GlobalSetting : SettingBase , IUIVisualizable
+    [Export(typeof(SettingBase))]
+    public class GlobalSetting : SettingBase
     {
         #region Tag Filter Options
 

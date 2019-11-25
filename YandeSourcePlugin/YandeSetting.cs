@@ -9,8 +9,8 @@ using Wbooru.Settings.UIAttributes;
 
 namespace YandeSourcePlugin
 {
-    [Export(typeof(IUIVisualizable))]
-    public class YandeSetting:SettingBase,IUIVisualizable
+    [Export(typeof(SettingBase))]
+    public class YandeSetting:SettingBase
     {
         [NeedRestart]
         [Group("View Options")]
@@ -22,6 +22,5 @@ namespace YandeSourcePlugin
         [Description("投票默认值")]
         [Range(1, 3)]
         public int VoteValue { get; set; } = 1;
-
     }
 }

@@ -19,7 +19,10 @@
             Margin="0,0,15,0"
             Text="{Binding ProxyValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-        <Button Width="75" Click="Button_Click">
+        <Button
+            Width="75"
+            BorderBrush="White"
+            Click="Button_Click">
             浏览
         </Button>
     </StackPanel>

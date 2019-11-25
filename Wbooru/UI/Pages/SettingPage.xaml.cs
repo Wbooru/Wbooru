@@ -64,7 +64,7 @@ namespace Wbooru.UI.Pages
         {
             InitializeComponent();
 
-            SupportSettingWrappers = Container.Default.GetExports<IUIVisualizable>()
+            SupportSettingWrappers = Container.Default.GetExports<SettingBase>()
                 .Select(x=> SettingManager.LoadSetting(x.Value.GetType()))
                 .OfType<SettingBase>()
                 .GroupBy(x=>x.GetType().Assembly)
