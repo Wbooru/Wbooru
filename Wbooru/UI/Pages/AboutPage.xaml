@@ -112,6 +112,7 @@
                         </TextBlock>
                         <controls:LoadingStatusDisplayer
                             x:Name="VersionCheckStatusDispalyer"
+                            Margin="10,0,0,0"
                             VerticalAlignment="Center"
                             VerticalContentAlignment="Center">
                         </controls:LoadingStatusDisplayer>
