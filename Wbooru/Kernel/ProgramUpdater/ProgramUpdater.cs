@@ -141,7 +141,7 @@ namespace Wbooru.Kernel.ProgramUpdater
             {
                 var current_path = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('/', '\\');
 
-                var command_line = $"-update -UpdateTargetPath=\"{current_path}\"";
+                var command_line = $"-update -UpdateTargetPath=\"{current_path}\" -ReleaseReadmeURL=\"{CacheUpdatableReleaseInfo.ReleaseURL}\"";
                 Log.Info($"command_line = {command_line}");
 
                 Process.Start(new ProcessStartInfo(updater_exe_file, command_line));
@@ -161,6 +161,7 @@ namespace Wbooru.Kernel.ProgramUpdater
             var current_path = AppDomain.CurrentDomain.BaseDirectory;
             Log.Info($"current_path = {current_path}");
             CommandLine.TryGetOptionValue("UpdateTargetPath", out string target_path);
+            CommandLine.TryGetOptionValue("ReleaseReadmeURL", out string readme_url);
             Log.Info($"target_path = {target_path}");
 
             var files = Directory.EnumerateFiles(current_path, "*", SearchOption.AllDirectories).Where(x => {
@@ -192,6 +193,7 @@ namespace Wbooru.Kernel.ProgramUpdater
 
             var delete_file_list_path = Path.Combine(current_path, DELETE_LIST_NAME);
 
+            /*有丶危险，暂时屏蔽
             if (execute_successfully && File.Exists(delete_file_list_path))
             {
                 Log.Info($"file \"{DELETE_LIST_NAME}\" found,delete files....");
@@ -215,15 +217,20 @@ namespace Wbooru.Kernel.ProgramUpdater
 
                 Log.Info($"delete_fully = {execute_successfully}");
             }
+            */
 
             if (execute_successfully)
             {
+                if (!string.IsNullOrWhiteSpace(readme_url))
+                    Process.Start(readme_url);
+
                 MessageBox.Show("更新成功!");
             }
             else
             {
                 Process.Start(Log.LogFilePath);
-                MessageBox.Show("更新失败，请看日志!");
+
+                MessageBox.Show("更新失败，请查看日志!");
             }
 
             App.UnusualSafeExit();
