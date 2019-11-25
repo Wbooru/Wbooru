@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -31,6 +32,7 @@ namespace Wbooru.Utils
         static CommandLine()
         {
             var command_line = string.Join(" ", Environment.GetCommandLineArgs()) + " ";
+            Log.Debug($"command_line = {command_line}", "CommandLineParse");
 
             cached_options = Regex.Matches(command_line, @"-([a-zA-Z_]\w*)\s*(=\s*((""[(\\"")\w\s]+"")|(.+?\s)))?")
                 .OfType<Match>()
@@ -41,7 +43,7 @@ namespace Wbooru.Utils
 
                     if (!string.IsNullOrWhiteSpace(val))
                     {
-                        val = val.FirstOrDefault() == val.LastOrDefault() && val[0] == '"' ? val.Substring(1, val.Length - 2) : val;
+                        val = val.FirstOrDefault() == val.LastOrDefault() && val[0] == '"' ? (val.Length >= 3 ? val.Substring(1, val.Length - 3) : string.Empty) : val;
                         val = val.Trim();
 
                         return new ValueOption()
@@ -58,6 +60,9 @@ namespace Wbooru.Utils
                         };
                     }
                 }).ToArray();
+
+            foreach (var options in cached_options)
+                Log.Debug(options.ToString(), "CommandLineParseResult");
         }
 
         public static IEnumerable<Option> SwitchOptions => cached_options.Where(x => !(x is ValueOption));

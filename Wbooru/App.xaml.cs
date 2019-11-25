@@ -23,15 +23,13 @@ namespace Wbooru
         {
             BlockApplicationUntilSingle();
 
-            Init();
-
             PreprocessCommandLine();
+
+            Init();
         }
 
         private void PreprocessCommandLine()
         {
-            var args = Environment.GetCommandLineArgs();
-
             //check if it need finish updating.
             if (CommandLine.ContainSwitchOption("update"))
             {
@@ -43,12 +41,19 @@ namespace Wbooru
         {
             var cur_process = Process.GetCurrentProcess();
 
+            Log.Info("Check&Block Application single instance.......");
+
             while (Process.GetProcessesByName(cur_process.ProcessName).Where(x => x.Id != cur_process.Id).Any())
                 Thread.Sleep(100);
+
+            Log.Info("OK.");
         }
 
         internal static void Init()
         {
+            AppDomain.CurrentDomain.UnhandledException+= (e, d) => Log.Error($"{(d.ExceptionObject as Exception).Message} {Environment.NewLine} {(d.ExceptionObject as Exception).StackTrace}", "UnhandledException");
+            Current.DispatcherUnhandledException += (e, d) => Log.Error($"{d.Exception.Message} {Environment.NewLine} {d.Exception.StackTrace}", "UnhandledException");
+
             Container.BuildDefault();
 
             DownloadManager.Init();

@@ -120,6 +120,9 @@ namespace Wbooru.Settings
         [NeedRestart]
         public string LogOutputDirectory { get; set; } = "./Logs";
 
+        [NeedRestart]
+        public bool EnableOutputDebugMessage { get; set; } = false;
+
         #endregion
 
         #region Deep Dark Fantasty

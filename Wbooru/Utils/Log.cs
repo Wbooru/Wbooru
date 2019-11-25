@@ -24,19 +24,26 @@ namespace Wbooru
         private static ConsoleColor DefaultBackgroundColor = Console.BackgroundColor;
         private static ConsoleColor DefaultForegroundColor = Console.ForegroundColor;
 
-        private static string log_file_path;
-        private static StreamWriter file_writer; 
+        public static string LogFilePath { get; private set; }
+
+        private static StreamWriter file_writer;
+        private static bool enable_debug_output;
 
         static Log()
         {
-            var log_dir =Path.GetFullPath(SettingManager.LoadSetting<GlobalSetting>().LogOutputDirectory);
+            var log_dir = SettingManager.LoadSetting<GlobalSetting>().LogOutputDirectory;
+#if !DEBUG
+            enable_debug_output = SettingManager.LoadSetting<GlobalSetting>().EnableOutputDebugMessage;
+#else
+            enable_debug_output = true;
+#endif
             Directory.CreateDirectory(log_dir);
-            log_file_path = Path.Combine(log_dir, FileNameHelper.FilterFileName(DateTime.Now.ToString() + ".log", '-'));
+            LogFilePath = Path.Combine(log_dir, FileNameHelper.FilterFileName(DateTime.Now.ToString() + ".log", '-'));
 
-            file_writer = File.AppendText(log_file_path);
+            file_writer = File.AppendText(LogFilePath);
             file_writer.AutoFlush = true;
 
-            Info($"log_file_path = {log_file_path}");
+            Info($"log_file_path = {LogFilePath}");
         }
 
         private static void FileWrite(string content)
@@ -47,8 +54,8 @@ namespace Wbooru
             }
             else
             {
-                if (!string.IsNullOrWhiteSpace(log_file_path))
-                    File.AppendAllText(log_file_path, content);
+                if (!string.IsNullOrWhiteSpace(LogFilePath))
+                    File.AppendAllText(LogFilePath, content);
             }
         }
 
@@ -91,7 +98,7 @@ namespace Wbooru
             FileWrite(message);
         }
 
-        internal static void ColorizeOutput(string message , ConsoleColor f,ConsoleColor b)
+        internal static void ColorizeConsoleOutput(string message , ConsoleColor f,ConsoleColor b)
         {
             Console.BackgroundColor = b;
             Console.ForegroundColor = f;
@@ -109,22 +116,23 @@ namespace Wbooru
 
         public static void Debug(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
-#if DEBUG
-            var msg = BuildLogMessage(message, true, true, prefix);
-            Output(msg);
-#endif
+            if (enable_debug_output)
+            {
+                var msg = BuildLogMessage(message, true, true, prefix);
+                Output(msg);
+            }
         }
 
         public static void Warn(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
             var msg = BuildLogMessage(message, true, true, prefix);
-            ColorizeOutput(msg,ConsoleColor.Yellow,DefaultBackgroundColor);
+            ColorizeConsoleOutput(msg,ConsoleColor.Yellow,DefaultBackgroundColor);
         }
 
         public static void Error(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
             var msg = BuildLogMessage(message, true, true, prefix);
-            ColorizeOutput(msg, ConsoleColor.Red, ConsoleColor.Yellow);
+            ColorizeConsoleOutput(msg, ConsoleColor.Red, ConsoleColor.Yellow);
         }
     }
 

@@ -75,6 +75,7 @@ namespace Wbooru.Kernel.ProgramUpdater
                 throw new Exception("Must call IsUpdatable() before.");
 
             var file_save_path = Path.GetTempFileName();
+            Log.Info($"file_save_path = {file_save_path}");
 
             #region Download Packaged File
 
@@ -84,6 +85,7 @@ namespace Wbooru.Kernel.ProgramUpdater
             var buffer = new byte[1024];
             long total_read = 0;
 
+            Log.Info($"Started download update file : {CacheUpdatableReleaseInfo.DownloadURL}");
             using (var net_stream = response.GetResponseStream())
             {
                 using (var file_stream = File.OpenWrite(file_save_path))
@@ -98,6 +100,7 @@ namespace Wbooru.Kernel.ProgramUpdater
                     } while (read != 0);
                 }
             }
+            Log.Info($"Finished download update file");
 
             #endregion
 
@@ -105,6 +108,8 @@ namespace Wbooru.Kernel.ProgramUpdater
 
             var unzip_target_path = Path.Combine(Path.GetTempPath(), DateTime.Now.GetHashCode().ToString());
             Directory.CreateDirectory(unzip_target_path);
+
+            Log.Info($"unzip_target_path = {unzip_target_path}");
 
             using (ZipArchive archive = ZipFile.Open(file_save_path, ZipArchiveMode.Read))
             {
@@ -116,9 +121,14 @@ namespace Wbooru.Kernel.ProgramUpdater
             #region Create new temp exe
 
             var exe_file_path = Directory.EnumerateFiles(unzip_target_path, EXE_NAME, SearchOption.AllDirectories).FirstOrDefault();
+            Log.Info($"exe_file_path = {exe_file_path}");
+
             unzip_target_path = Directory.GetParent(exe_file_path).FullName;
-            var updater_exe_file = Path.Combine(unzip_target_path, UPDATE_EXE_NAME);
+            var updater_exe_file = Path.Combine(unzip_target_path, UPDATE_EXE_NAME); 
+            Log.Info($"updater_exe_file = {updater_exe_file}");
+
             File.Copy(exe_file_path, updater_exe_file, true);
+
 
             #endregion
 
@@ -126,9 +136,10 @@ namespace Wbooru.Kernel.ProgramUpdater
 
             if (restart_comfirm?.Invoke()??true)
             {
-                var current_path = AppDomain.CurrentDomain.BaseDirectory;
+                var current_path = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('/', '\\');
 
                 var command_line = $"-update -UpdateTargetPath=\"{current_path}\"";
+                Log.Info($"command_line = {command_line}");
 
                 Process.Start(new ProcessStartInfo(updater_exe_file, command_line));
 
@@ -143,10 +154,13 @@ namespace Wbooru.Kernel.ProgramUpdater
             var command_line = string.Join(" ", Environment.GetCommandLineArgs());
 
             var current_exe_name = Path.GetFileName(Process.GetCurrentProcess().Modules[0].FileName);
+            Log.Info($"current_exe_name = {current_exe_name}");
             var current_path = AppDomain.CurrentDomain.BaseDirectory;
+            Log.Info($"current_path = {current_path}");
             CommandLine.TryGetOptionValue("UpdateTargetPath", out string target_path);
+            Log.Info($"target_path = {target_path}");
 
-            var files = Directory.EnumerateFiles(current_path).Where(x => Path.GetFileName(x) != current_exe_name).ToArray();
+            var files = Directory.EnumerateFiles(current_path, "*", SearchOption.AllDirectories).Where(x => Path.GetFileName(x) != current_exe_name).ToArray();
             var copied_fully = true;
 
             for (int i = 0; i < files.Length; i++)
@@ -167,14 +181,19 @@ namespace Wbooru.Kernel.ProgramUpdater
                 }
             }
 
+            Log.Info($"copied_fully = {copied_fully}");
+
             if (copied_fully)
             {
                 MessageBox.Show("更新成功!");
             }
             else
             {
+                Process.Start(Log.LogFilePath);
                 MessageBox.Show("更新失败，请看日志!");
             }
+
+            App.UnusualSafeExit();
         }
 
         private static void CopyRelativeFile(string source_file_path, string source_root_folder, string destination_root_folder)
@@ -191,6 +210,8 @@ namespace Wbooru.Kernel.ProgramUpdater
             Directory.CreateDirectory(distination_dir_path);
 
             File.Copy(source_file_path, distination_file_path, true);
+
+            Log.Info($"source_file_path = {source_file_path} | distination_file_path = {distination_file_path}");
         }
 
         private static string RelativePath(string absolutePath, string relativeTo)
@@ -222,6 +243,7 @@ namespace Wbooru.Kernel.ProgramUpdater
                 relativePath.Append(relativeDirectories[index] + "\\");
             relativePath.Append(relativeDirectories[relativeDirectories.Length - 1]);
 
+            Log.Info($"absolutePath = {absolutePath} | relativeTo = {relativeTo} | relativePath = {relativePath}");
             return relativePath.ToString();
         }
 
