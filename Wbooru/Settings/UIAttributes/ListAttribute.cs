@@ -17,7 +17,7 @@ namespace Wbooru.Settings.UIAttributes
             MultiSelect = enum_type.GetCustomAttribute<FlagsAttribute>() != null;
             Values = Enum.GetNames(enum_type);
             CaseIgnore = ignore_case;
-            SplitContent = "|";
+            SplitContent = ",";
         }
 
         public ListAttribute(bool multi_select,bool ignore_case,string split_content,params string[] values)

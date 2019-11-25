@@ -88,10 +88,10 @@ namespace Wbooru.UI.Controls.SettingUI
         private void GenerateComboBoxItems()
         {
             var cur_values = Wrapper.ProxyValue.ToString()
-                .Split(new[] { PropListAttribute.SplitContent }, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { PropListAttribute.SplitContent }, StringSplitOptions.RemoveEmptyEntries).Select(x=>x.Trim())
                 .Intersect(PropListAttribute.Values);
             var value_controls = PropListAttribute.Values
-                .Select(x=>PropListAttribute.MultiSelect? GenerateCheckbox(x,cur_values.Any(y=>y==x)):GenerateTextblock(x));
+                .Select(x => PropListAttribute.MultiSelect ? GenerateCheckbox(x, cur_values.Any(y => y == x)) : GenerateTextblock(x));
 
             MainComboBox.Items.Clear();
 
