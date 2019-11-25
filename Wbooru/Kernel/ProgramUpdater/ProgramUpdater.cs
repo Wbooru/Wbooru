@@ -18,9 +18,9 @@ namespace Wbooru.Kernel.ProgramUpdater
 {
     public static class ProgramUpdater
     {
-        private const string UPDATE_EXE_NAME = "updater_temp.exe";
+        public const string UPDATE_EXE_NAME = "updater_temp.exe";
         private const string DELETE_LIST_NAME = "update_remove_list.txt";
-        private const string EXE_NAME = "Wbooru.exe";
+        public const string EXE_NAME = "Wbooru.exe";
 
         private readonly static string[] exclude_copy_file_names = new[] { UPDATE_EXE_NAME, DELETE_LIST_NAME };
 

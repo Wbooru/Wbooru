@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Threading;
 using Wbooru.Kernel.ProgramUpdater;
 using Wbooru.Utils;
+using System.IO;
 
 namespace Wbooru
 {
@@ -42,17 +43,18 @@ namespace Wbooru
             var cur_process = Process.GetCurrentProcess();
 
             Log.Info("Check&Block Application single instance.......");
+            Log.Debug($"Current process info : {cur_process.Id}/{cur_process.SessionId} - {cur_process.ProcessName}");
 
             var time = DateTime.Now;
 
             while (true)
             {
-                var processes = Process.GetProcessesByName(cur_process.ProcessName).Where(x => x.Id != cur_process.Id);
+                var processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProgramUpdater.EXE_NAME)).Concat(Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ProgramUpdater.UPDATE_EXE_NAME))).Where(x => x.Id != cur_process.Id);
 
                 if (!processes.Any())
                     break;
 
-                if ((DateTime.Now - time).TotalSeconds > 3)
+                if ((DateTime.Now - time).TotalSeconds > -1)
                 {
                     Log.Debug($"Current other instances pid:{string.Join(" ", processes.Select(x => x.Id))}");
                     time = DateTime.Now;
@@ -92,7 +94,7 @@ namespace Wbooru
             SettingManager.SaveSettingFile();
             SchedulerManager.Term();
             Log.Term();
-            Log.Info("-----------------Begin Term()-----------------");
+            Log.Info("-----------------End Term()-----------------");
         }
 
         internal static void UnusualSafeExit()

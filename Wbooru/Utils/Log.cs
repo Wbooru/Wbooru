@@ -61,8 +61,10 @@ namespace Wbooru
 
         public static void Term()
         {
-            file_writer.Flush();
-            file_writer.Close();
+            var s = file_writer;
+            file_writer = null;
+            s.Flush();
+            s.Close();
         }
 
         public static string BuildLogMessage(string message, bool new_line, bool time, string prefix)
