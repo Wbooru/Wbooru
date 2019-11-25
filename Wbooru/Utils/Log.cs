@@ -36,7 +36,14 @@ namespace Wbooru
             enable_debug_output = SettingManager.LoadSetting<GlobalSetting>().EnableOutputDebugMessage;
 #else
             enable_debug_output = true;
+
+            if (enable_debug_output)
+            {
+                //show console window
+                ConsoleWindow.Show();
+            }
 #endif
+
             Directory.CreateDirectory(log_dir);
             LogFilePath = Path.Combine(log_dir, FileNameHelper.FilterFileName(DateTime.Now.ToString() + ".log", '-'));
 

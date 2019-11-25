@@ -248,6 +248,7 @@
     <Compile Include="Utils\AsyncImageWrapper.cs" />
     <Compile Include="Utils\CalculatableFormatter.cs" />
     <Compile Include="Utils\CommandLineParser.cs" />
+    <Compile Include="Utils\ConsoleWindow.cs" />
     <Compile Include="Utils\FileNameHelper.cs" />
     <Compile Include="Utils\ICacheCleanable.cs" />
     <Compile Include="Utils\IEnumerableMultiThreadable.cs" />
