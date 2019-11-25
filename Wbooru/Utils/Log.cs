@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using Wbooru.Settings;
 using System.IO;
 using Wbooru.Utils;
+using static Wbooru.Settings.GlobalSetting;
 
 namespace Wbooru
 {
@@ -36,13 +37,13 @@ namespace Wbooru
             enable_debug_output = SettingManager.LoadSetting<GlobalSetting>().EnableOutputDebugMessage;
 #else
             enable_debug_output = true;
-
-            if (enable_debug_output)
-            {
-                //show console window
-                ConsoleWindow.Show();
-            }
 #endif
+
+            var console_window_option = SettingManager.LoadSetting<GlobalSetting>().ShowOutputWindow;
+            var enable_show_console_window = console_window_option == LogWindowShowOption.None ? false : (console_window_option == LogWindowShowOption.Always ? true : enable_debug_output);
+
+            if (enable_show_console_window)
+                ConsoleWindow.Show();
 
             Directory.CreateDirectory(log_dir);
             LogFilePath = Path.Combine(log_dir, FileNameHelper.FilterFileName(DateTime.Now.ToString() + ".log", '-'));

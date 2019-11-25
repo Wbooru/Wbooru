@@ -212,9 +212,9 @@ namespace Wbooru.Kernel.ProgramUpdater
                         execute_successfully = false;
                     }
                 }
-            }
 
-            Log.Info($"delete_fully = {execute_successfully}");
+                Log.Info($"delete_fully = {execute_successfully}");
+            }
 
             if (execute_successfully)
             {

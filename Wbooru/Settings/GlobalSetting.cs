@@ -123,6 +123,18 @@ namespace Wbooru.Settings
         [NeedRestart]
         public bool EnableOutputDebugMessage { get; set; } = false;
 
+        public enum LogWindowShowOption
+        {
+            None,
+            OnlyDebugEnable,
+            Always
+        }
+
+        [NeedRestart]
+        [List(typeof(LogWindowShowOption), true, ",")]
+        [Description("是否显示一个控制台窗口来显示日志内容")]
+        public LogWindowShowOption ShowOutputWindow { get; set; } = LogWindowShowOption.OnlyDebugEnable;
+
         #endregion
 
         #region Deep Dark Fantasty
