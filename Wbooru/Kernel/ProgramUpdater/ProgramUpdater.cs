@@ -19,7 +19,10 @@ namespace Wbooru.Kernel.ProgramUpdater
     public static class ProgramUpdater
     {
         private const string UPDATE_EXE_NAME = "updater_temp.exe";
+        private const string DELETE_LIST_NAME = "update_remove_list.txt";
         private const string EXE_NAME = "Wbooru.exe";
+
+        private readonly static string[] exclude_copy_file_names = new[] { UPDATE_EXE_NAME, DELETE_LIST_NAME };
 
         public static Version CurrentProgramVersion => typeof(ProgramUpdater).Assembly.GetName().Version;
 
@@ -160,8 +163,12 @@ namespace Wbooru.Kernel.ProgramUpdater
             CommandLine.TryGetOptionValue("UpdateTargetPath", out string target_path);
             Log.Info($"target_path = {target_path}");
 
-            var files = Directory.EnumerateFiles(current_path, "*", SearchOption.AllDirectories).Where(x => Path.GetFileName(x) != current_exe_name).ToArray();
-            var copied_fully = true;
+            var files = Directory.EnumerateFiles(current_path, "*", SearchOption.AllDirectories).Where(x => {
+                var file_name = Path.GetFileName(x);
+                return !exclude_copy_file_names.Any(y => file_name == y);
+            }).ToArray();
+
+            var execute_successfully = true;
 
             for (int i = 0; i < files.Length; i++)
             {
@@ -177,13 +184,39 @@ namespace Wbooru.Kernel.ProgramUpdater
                 catch (Exception e)
                 {
                     Log.Error($"Copy file \"{display_file_path}\" failed:{e.Message}");
-                    copied_fully = false;
+                    execute_successfully = false;
                 }
             }
 
-            Log.Info($"copied_fully = {copied_fully}");
+            Log.Info($"copied_fully = {execute_successfully}");
 
-            if (copied_fully)
+            var delete_file_list_path = Path.Combine(current_path, DELETE_LIST_NAME);
+
+            if (execute_successfully && File.Exists(delete_file_list_path))
+            {
+                Log.Info($"file \"{DELETE_LIST_NAME}\" found,delete files....");
+                var lines = File.ReadAllLines(delete_file_list_path);
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var need_delete_file_name = lines[i];
+
+                    try
+                    {
+                        var file_path = Path.Combine(target_path, need_delete_file_name);
+                        Log.Info($"Delete file({i + 1}/{lines.Length}): {need_delete_file_name} -> {file_path}");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Delete file \"{need_delete_file_name}\" failed:{e.Message}");
+                        execute_successfully = false;
+                    }
+                }
+            }
+
+            Log.Info($"delete_fully = {execute_successfully}");
+
+            if (execute_successfully)
             {
                 MessageBox.Show("更新成功!");
             }

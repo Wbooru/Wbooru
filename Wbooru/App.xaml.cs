@@ -43,16 +43,34 @@ namespace Wbooru
 
             Log.Info("Check&Block Application single instance.......");
 
-            while (Process.GetProcessesByName(cur_process.ProcessName).Where(x => x.Id != cur_process.Id).Any())
+            var time = DateTime.Now;
+
+            while (true)
+            {
+                var processes = Process.GetProcessesByName(cur_process.ProcessName).Where(x => x.Id != cur_process.Id);
+
+                if (!processes.Any())
+                    break;
+
+                if ((DateTime.Now - time).TotalSeconds > 3)
+                {
+                    Log.Debug($"Current other instances pid:{string.Join(" ", processes.Select(x => x.Id))}");
+                    time = DateTime.Now;
+                }
+
                 Thread.Sleep(100);
+            }
 
             Log.Info("OK.");
         }
 
         internal static void Init()
         {
+            Log.Info("-----------------Begin Init()-----------------");
             AppDomain.CurrentDomain.UnhandledException+= (e, d) => Log.Error($"{(d.ExceptionObject as Exception).Message} {Environment.NewLine} {(d.ExceptionObject as Exception).StackTrace}", "UnhandledException");
             Current.DispatcherUnhandledException += (e, d) => Log.Error($"{d.Exception.Message} {Environment.NewLine} {d.Exception.StackTrace}", "UnhandledException");
+
+            Log.Info("Program version:" + ProgramUpdater.CurrentProgramVersion.ToString());
 
             Container.BuildDefault();
 
@@ -63,18 +81,23 @@ namespace Wbooru
             TagManager.InitTagManager();
 
             ImageResourceManager.InitImageResourceManager();
+
+            Log.Info("-----------------End Init()-----------------");
         }
 
         internal static void Term()
         {
+            Log.Info("-----------------Begin Term()-----------------");
             DownloadManager.Close();
             SettingManager.SaveSettingFile();
             SchedulerManager.Term();
             Log.Term();
+            Log.Info("-----------------Begin Term()-----------------");
         }
 
         internal static void UnusualSafeExit()
         {
+            Log.Info("Call UnusualSafeExit()");
             Term();
             Environment.Exit(0);
         }
