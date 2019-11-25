@@ -9,12 +9,15 @@ namespace Wbooru.Settings.UIAttributes
 {
     public class ListAttribute : SettingUIAttributeBase
     {
-        public ListAttribute(Type enum_type, bool ignore_case, string split_content)
+        public ListAttribute(Type enum_type, bool ignore_case)
         {
+            if (!enum_type.IsEnum)
+                throw new Exception("in ListAttribute(Type enum_type, bool ignore_case) , enum_type must be the type of enum");
+
             MultiSelect = enum_type.GetCustomAttribute<FlagsAttribute>() != null;
             Values = Enum.GetNames(enum_type);
             CaseIgnore = ignore_case;
-            SplitContent = split_content;
+            SplitContent = "|";
         }
 
         public ListAttribute(bool multi_select,bool ignore_case,string split_content,params string[] values)

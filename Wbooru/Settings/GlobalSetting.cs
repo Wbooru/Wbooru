@@ -18,7 +18,7 @@ namespace Wbooru.Settings
         public bool EnableTagFilter { get; set; } = false;
 
         [Group("Tag Filter Options")]
-        [List(typeof(TagFilterTarget), true, ",")]
+        [List(typeof(TagFilterTarget), true)]
         [EnableBy(nameof(EnableTagFilter),true)]
         [Description("需要标签过滤的目标")]
         public TagFilterTarget FilterTarget { get; set; } = TagFilterTarget.MainWindow | TagFilterTarget.SearchResultWindow;
@@ -112,7 +112,7 @@ namespace Wbooru.Settings
             Stable, Preview
         }
 
-        [List(typeof(UpdatableTarget), true, ",")]
+        [List(typeof(UpdatableTarget), true)]
         [NeedRestart]
         public UpdatableTarget UpdatableTargetVersion { get; set; } = UpdatableTarget.Stable;
 
@@ -131,7 +131,7 @@ namespace Wbooru.Settings
         }
 
         [NeedRestart]
-        [List(typeof(LogWindowShowOption), true, ",")]
+        [List(typeof(LogWindowShowOption), true)]
         [Description("是否显示一个控制台窗口来显示日志内容")]
         public LogWindowShowOption ShowOutputWindow { get; set; } = LogWindowShowOption.OnlyDebugEnable;
 
