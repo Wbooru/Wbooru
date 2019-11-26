@@ -152,6 +152,11 @@ namespace Wbooru.Settings
         public string ProgramRepoURL { get; set; } = "https://github.com/MikiraSora/Wbooru";
         */
 
+        [Group("Advanced Option")]
+        [EnableBy(nameof(ShowAdvancedOptions), true)]
+        [Description("Sqlite数据库文件的路径")]
+        public string DBFilePath { get; set; } = "data.db";
+
         #endregion
 
         [Ignore]
