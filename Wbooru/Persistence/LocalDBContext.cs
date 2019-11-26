@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Data.Entity;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,11 @@ namespace Wbooru.Persistence
         private static LocalDBContext _instance;
 
         public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
+
+        public LocalDBContext() : base(DBConnectionFactory.GetConnection(),true)
+        {
+
+        }
 
         public DbSet<Download> Downloads { get; set; }
         public DbSet<TagRecord> Tags { get; set; }

@@ -40,6 +40,17 @@
     <WarningLevel>4</WarningLevel>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SQLITE_DEBUG|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\SQLITE_DEBUG\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SQLITE_DEBUG</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>preview</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.3.0-preview5-19254-05\lib\net45\EntityFramework.dll</HintPath>
@@ -155,10 +166,12 @@
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Network\ImageFetchDownloadScheduler.cs" />
     <Compile Include="Network\RequestHelper.cs" />
+    <Compile Include="Persistence\DBConnectionFactory.cs" />
     <Compile Include="Persistence\LocalDBContext.cs" />
     <Compile Include="Models\GalleryItemMark.cs" />
     <Compile Include="Models\TagRecord.cs" />
     <Compile Include="Models\VisitRecord.cs" />
+    <Compile Include="Persistence\SQLiteConfiguration.cs" />
     <Compile Include="PluginExt\ISchedulable.cs" />
     <Compile Include="PluginExt\IPlugin.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
