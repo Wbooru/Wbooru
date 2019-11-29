@@ -61,6 +61,34 @@
                         Text="{Binding PictureDetailInfo.ID, StringFormat=#{0}}" />
                 </StackPanel>
 
+
+                <controls:MenuButton
+                    HorizontalAlignment="Right"
+                    ContentMargin="5,0,15,0"
+                    FlowDirection="RightToLeft"
+                    Icon=""
+                    Text="下载">
+                    <controls:MenuButton.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation
+                                        DecelerationRatio="0.9"
+                                        Storyboard.Target="{Binding ElementName=MainGrid}"
+                                        Storyboard.TargetProperty="Margin"
+                                        Duration="0:0:0.4">
+                                        <ThicknessAnimation.To>
+                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="-\{0\},0,0,0">
+                                                <Binding ElementName="ViewPage" Path="ActualWidth" />
+                                            </MultiBinding>
+                                        </ThicknessAnimation.To>
+                                    </ThicknessAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </controls:MenuButton.Triggers>
+                </controls:MenuButton>
+
                 <controls:LoadingStatusDisplayer
                     x:Name="LoadingStatus"
                     Grid.Row="1"
@@ -123,29 +151,6 @@
                             </Style>
                         </controls:MenuButton.Style>
                     </controls:MenuButton>
-
-                    <Button Grid.Column="4" Grid.ColumnSpan="1">
-                        <Button.Triggers>
-                            <EventTrigger RoutedEvent="Button.Click">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ThicknessAnimation
-                                            DecelerationRatio="0.9"
-                                            Storyboard.Target="{Binding ElementName=MainGrid}"
-                                            Storyboard.TargetProperty="Margin"
-                                            Duration="0:0:0.4">
-                                            <ThicknessAnimation.To>
-                                                <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="-\{0\},0,0,0">
-                                                    <Binding ElementName="ViewPage" Path="ActualWidth" />
-                                                </MultiBinding>
-                                            </ThicknessAnimation.To>
-                                        </ThicknessAnimation>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Button.Triggers>
-                        详细&amp;下载  &gt;
-                    </Button>
                 </Grid>
             </Grid>
         </Grid>
@@ -287,43 +292,34 @@
                         </ListBox.Template>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button
+                                        Name="DownloadButton"
+                                        Click="DownloadButton_Click"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="20">
+                                        
+                                    </Button>
+                                    <Button
+                                        Name="BrowserOpenButton"
+                                        Click="BrowserOpenButton_Click"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="20">
+                                        
+                                    </Button>
+                                    <Button
+                                        Name="CopyLinkButton"
+                                        FontFamily="Segoe UI Symbol"
+                                        FontSize="20">
+                                        
+                                    </Button>
                                     <Label
+                                        Margin="10,0,0,0"
                                         VerticalContentAlignment="Center"
                                         Content="{Binding Converter={StaticResource FormatDownloadDescriptionConverter}}"
                                         FontSize="13"
                                         Foreground="White" />
-
-                                    <StackPanel
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Orientation="Horizontal">
-                                        <Button
-                                            Name="DownloadButton"
-                                            Click="DownloadButton_Click"
-                                            FontFamily="Segoe UI Symbol"
-                                            FontSize="20">
-                                            
-                                        </Button>
-                                        <Button
-                                            Name="BrowserOpenButton"
-                                            Click="BrowserOpenButton_Click"
-                                            FontFamily="Segoe UI Symbol"
-                                            FontSize="20">
-                                            
-                                        </Button>
-                                        <Button
-                                            Name="CopyLinkButton"
-                                            FontFamily="Segoe UI Symbol"
-                                            FontSize="20">
-                                            
-                                        </Button>
-                                    </StackPanel>
-                                </Grid>
+                                </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
@@ -376,49 +372,37 @@
                     </ListBox.Template>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-
+                            <StackPanel Orientation="Horizontal">
+                                <Button
+                                    Name="AddTagCollectionButton"
+                                    Click="AddTagCollectionButton_Click"
+                                    FontFamily="Segoe UI Symbol"
+                                    FontSize="16"
+                                    ToolTip="收藏此标签">
+                                    
+                                </Button>
+                                <Button
+                                    Name="AddTagFilterButton"
+                                    Click="AddTagFilterButton_Click"
+                                    FontFamily="Segoe UI Symbol"
+                                    FontSize="16"
+                                    ToolTip="过滤此标签">
+                                    
+                                </Button>
+                                <Button
+                                    Name="SearchButton"
+                                    Click="SearchButton_Click"
+                                    FontFamily="Segoe UI Symbol"
+                                    FontSize="16"
+                                    ToolTip="查看此标签的图片池">
+                                    
+                                </Button>
                                 <TextBlock
-                                    Margin="5,0,0,0"
+                                    Margin="10,0,0,0"
                                     FontSize="18"
                                     Foreground="White"
                                     Text="{Binding}" />
-
-                                <StackPanel
-                                    Grid.Column="1"
-                                    Margin="0,0,5,0"
-                                    HorizontalAlignment="Right"
-                                    Orientation="Horizontal">
-                                    <Button
-                                        Name="AddTagCollectionButton"
-                                        Click="AddTagCollectionButton_Click"
-                                        FontFamily="Segoe UI Symbol"
-                                        FontSize="16"
-                                        ToolTip="收藏此标签">
-                                        
-                                    </Button>
-                                    <Button
-                                        Name="AddTagFilterButton"
-                                        Click="AddTagFilterButton_Click"
-                                        FontFamily="Segoe UI Symbol"
-                                        FontSize="16"
-                                        ToolTip="过滤此标签">
-                                        
-                                    </Button>
-                                    <Button
-                                        Name="SearchButton"
-                                        Click="SearchButton_Click"
-                                        FontFamily="Segoe UI Symbol"
-                                        FontSize="16"
-                                        ToolTip="查看此标签的图片池">
-                                        
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
+                            </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
