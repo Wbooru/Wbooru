@@ -32,7 +32,21 @@ namespace Wbooru
 
         static Log()
         {
-            var log_dir = SettingManager.LoadSetting<GlobalSetting>().LogOutputDirectory;
+            try
+            {
+                var log_dir = SettingManager.LoadSetting<GlobalSetting>().LogOutputDirectory;
+                Directory.CreateDirectory(log_dir);
+                LogFilePath = Path.Combine(log_dir, FileNameHelper.FilterFileName(DateTime.Now.ToString() + ".log", '-'));
+
+                file_writer = File.AppendText(LogFilePath);
+                file_writer.AutoFlush = true;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Can't create log file {LogFilePath} : {e.Message}");
+                LogFilePath = null;
+            }
+
 #if !DEBUG
             enable_debug_output = SettingManager.LoadSetting<GlobalSetting>().EnableOutputDebugMessage;
 #else
@@ -40,16 +54,20 @@ namespace Wbooru
 #endif
 
             var console_window_option = SettingManager.LoadSetting<GlobalSetting>().ShowOutputWindow;
+
+#if DEBUG
+            //Disable log window in designer mode
+            if (App.Current.MainWindow == null || System.ComponentModel.DesignerProperties.GetIsInDesignMode(App.Current.MainWindow))
+            {
+                console_window_option = LogWindowShowOption.None;
+                Info("Maybe in designer mode , hide console window.");
+            }
+#endif
+
             var enable_show_console_window = console_window_option == LogWindowShowOption.None ? false : (console_window_option == LogWindowShowOption.Always ? true : enable_debug_output);
 
             if (enable_show_console_window)
                 ConsoleWindow.Show();
-
-            Directory.CreateDirectory(log_dir);
-            LogFilePath = Path.Combine(log_dir, FileNameHelper.FilterFileName(DateTime.Now.ToString() + ".log", '-'));
-
-            file_writer = File.AppendText(LogFilePath);
-            file_writer.AutoFlush = true;
 
             Info($"log_file_path = {LogFilePath}");
         }
