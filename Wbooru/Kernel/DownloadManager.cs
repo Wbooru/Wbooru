@@ -258,6 +258,7 @@ namespace Wbooru.Kernel
                 //error ocured
                 download.ErrorMessage = e.Message;
                 DownloadPause(download);
+                Toast.ShowMessage($"无法开始下载此图片:{e.Message}");
             }
             finally
             {

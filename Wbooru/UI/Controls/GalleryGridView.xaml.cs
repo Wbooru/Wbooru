@@ -160,7 +160,18 @@ namespace Wbooru.UI.Controls
             Gallery gallery = Gallery;
             IEnumerable<GalleryItem> source = LoadableSource; 
 
-            var list = await Task.Run(() => FilterTag(source.Skip(current_index), gallery).Take(option.GetPictureCountPerLoad).ToArray());
+            (GalleryItem[] list, bool success ) = await Task.Run(() => {
+                try
+                {
+                    var l = FilterTag(source.Skip(current_index), gallery).Take(option.GetPictureCountPerLoad).ToArray();
+                    return (l, true);
+                }
+                catch (Exception e)
+                {
+                    Toast.ShowMessage($"无法获取图片列表数据:{e.Message}");
+                    return (new GalleryItem[0], false);
+                }
+            });
 
             Log.Debug($"Skip({current_index}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Length})", "GridViewer_RequestMoreItems");
 
@@ -172,7 +183,7 @@ namespace Wbooru.UI.Controls
                 foreach (var item in list)
                     Items.Add(item);
 
-                if (list.Count() < option.GetPictureCountPerLoad)
+                if (success && list.Count() < option.GetPictureCountPerLoad)
                     Toast.ShowMessage("已到达图片队列末尾");
                 current_index += list.Length;
             }));
