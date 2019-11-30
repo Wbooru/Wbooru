@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,13 @@ namespace Wbooru.Kernel
         public static void InitNavigationHelper(Frame main_frame)
         {
             service = main_frame.NavigationService;
+            service.Navigated += Service_Navigated;
+        }
+
+        private static void Service_Navigated(object sender, NavigationEventArgs e)
+        {
+            Log.Debug($"Navigated : ({e?.Content?.GetHashCode()}){e.Uri}");
+            //service.RemoveBackEntry();
         }
 
         public static void NavigationPush(Page page)
@@ -28,6 +36,8 @@ namespace Wbooru.Kernel
 
         public static Page NavigationPop()
         {
+            Debug.Assert(page_stack.Count != 0, "page_stack is null");
+
             var page = page_stack.Pop();
             Log.Debug($"Pop page : {page.ToString()}");
 
@@ -35,6 +45,22 @@ namespace Wbooru.Kernel
             Log.Debug($"Current page : {page_stack.Peek().ToString()}");
 
             return page;
+        }
+
+        internal static void RequestPageBackAction()
+        {
+            if (page_stack.Count == 0)
+                return;
+
+            (page_stack.Peek() as INavigatableAction)?.OnNavigationBackAction();
+        }
+
+        internal static void RequestPageForwardAction()
+        {
+            if (page_stack.Count == 0)
+                return;
+
+            (page_stack.Peek() as INavigatableAction)?.OnNavigationForwardAction();
         }
     }
 }

@@ -13,6 +13,12 @@
     mc:Ignorable="d">
     <Grid>
         <Frame Name="WindowFrame" NavigationUIVisibility="Hidden">
+            <Frame.CommandBindings>
+                <CommandBinding CanExecute="OnRequestNavigateBack" Command="NavigationCommands.BrowseBack">
+                </CommandBinding>
+                <CommandBinding CanExecute="OnRequestNavigateForward" Command="NavigationCommands.BrowseForward">
+                </CommandBinding>
+            </Frame.CommandBindings>
         </Frame>
 
         <StackPanel

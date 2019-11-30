@@ -130,6 +130,7 @@
     <Compile Include="Galleries\SupportFeatures\IGalleryVote.cs" />
     <Compile Include="Kernel\Container.cs" />
     <Compile Include="Kernel\DownloadManager.cs" />
+    <Compile Include="Kernel\INavigatableAction.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
     <Compile Include="Kernel\ProgramUpdater\ProgramUpdater.cs" />
     <Compile Include="Kernel\ProgramUpdater\ReleaseInfo.cs" />

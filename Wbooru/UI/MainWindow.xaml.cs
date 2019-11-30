@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using Wbooru.Kernel;
 using Wbooru.Settings;
 using Wbooru.UI.Pages;
@@ -38,6 +39,29 @@ namespace Wbooru.UI
 
             NavigationHelper.InitNavigationHelper(WindowFrame);
             NavigationHelper.NavigationPush(new MainGalleryPage());
+
+            //disable navigation actions
+            foreach (var vNavigationCommand in new RoutedUICommand[]
+                {   
+                    //NavigationCommands.BrowseBack,
+                    //NavigationCommands.BrowseForward,
+                    NavigationCommands.BrowseHome,
+                    NavigationCommands.BrowseStop,
+                    NavigationCommands.Refresh,
+                    NavigationCommands.Favorites,
+                    NavigationCommands.Search,
+                    NavigationCommands.IncreaseZoom,
+                    NavigationCommands.DecreaseZoom,
+                    NavigationCommands.Zoom,
+                    NavigationCommands.NextPage,
+                    NavigationCommands.PreviousPage,
+                    NavigationCommands.FirstPage,
+                    NavigationCommands.LastPage,
+                    NavigationCommands.GoToPage,
+                    NavigationCommands.NavigateJournal })
+            {
+                WindowFrame.CommandBindings.Add(new CommandBinding(vNavigationCommand, (sender, args) => { }));
+            }
         }
 
         protected override void OnClosed(EventArgs e)
@@ -55,6 +79,18 @@ namespace Wbooru.UI
         private void Window_LocationChanged(object sender, EventArgs e)
         {
             setting.WindowLocation = new Point(Left, Top);
+        }
+
+        private void OnRequestNavigateBack(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            NavigationHelper.RequestPageBackAction();
+        }
+
+        private void OnRequestNavigateForward(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            NavigationHelper.RequestPageForwardAction();
         }
     }
 }
