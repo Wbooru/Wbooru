@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Wbooru.Settings.UIAttributes;
 
 namespace Wbooru.Settings
@@ -135,6 +136,9 @@ namespace Wbooru.Settings
         [Description("是否显示一个控制台窗口来显示日志内容")]
         public LogWindowShowOption ShowOutputWindow { get; set; } = LogWindowShowOption.OnlyDebugEnable;
 
+        [Description("是否记住当前窗口的大小和位置，下次打开会按照上次布局来恢复大小和位置")]
+        public bool RememberWindowSizeAndLocation { get; set; } = true;
+
         #endregion
 
         #region Deep Dark Fantasty
@@ -161,6 +165,15 @@ namespace Wbooru.Settings
 
         [Ignore]
         public bool IgnoreSettingChangedComfirm { get; set; } = false;
+
+        /*
+         * 用于记录窗口的，下次开启会恢复成上次的大小和位置
+         * 其中一个为0的话则不恢复
+         */
+        [Ignore]
+        public Size? WindowSize { get; set; } = null;
+        [Ignore]
+        public Point? WindowLocation { get; set; } = null;
 
         #endregion
     }

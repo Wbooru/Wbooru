@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Wbooru.Kernel;
 using Wbooru.Settings;
 using Wbooru.UI.Pages;
-using static Wbooru.UI.Controls.Toast;
 
 namespace Wbooru.UI
 {
@@ -25,9 +11,30 @@ namespace Wbooru.UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        GlobalSetting setting;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            setting = SettingManager.LoadSetting<GlobalSetting>();
+
+            if (setting.RememberWindowSizeAndLocation)
+            {
+                //restore size
+                if (setting.WindowSize != null)
+                {
+                    Width = setting.WindowSize.Value.Width;
+                    Height = setting.WindowSize.Value.Height;
+                }
+
+                //restore location
+                if (setting.WindowLocation != null)
+                {
+                    Left = setting.WindowLocation.Value.X;
+                    Top = setting.WindowLocation.Value.Y;
+                }
+            }
 
             NavigationHelper.InitNavigationHelper(WindowFrame);
             NavigationHelper.NavigationPush(new MainGalleryPage());
@@ -38,6 +45,16 @@ namespace Wbooru.UI
             base.OnClosed(e);
 
             App.Term();
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            setting.WindowSize = e.NewSize;
+        }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+            setting.WindowLocation = new Point(Left, Top);
         }
     }
 }

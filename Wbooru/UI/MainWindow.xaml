@@ -8,6 +8,8 @@
     Title="Wbooru"
     Width="800"
     Height="450"
+    LocationChanged="Window_LocationChanged"
+    SizeChanged="Window_SizeChanged"
     mc:Ignorable="d">
     <Grid>
         <Frame Name="WindowFrame" NavigationUIVisibility="Hidden">
@@ -22,7 +24,5 @@
 
             </controls:Toast>
         </StackPanel>
-
-
     </Grid>
 </Window>
