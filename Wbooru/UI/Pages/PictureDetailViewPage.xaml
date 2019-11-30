@@ -34,10 +34,7 @@
             Name="ImagePart"
             Grid.Column="0"
             Background="{StaticResource ContentBackgroundColor}">
-            <controls:OperableImageBox
-                x:Name="DetailImageBox"
-                Panel.ZIndex="1"
-                Background="Transparent" />
+
             <Grid Panel.ZIndex="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="{Binding Source={StaticResource BoardHeaderHeight}}" />
@@ -69,25 +66,6 @@
                     FlowDirection="RightToLeft"
                     Icon=""
                     Text="下载">
-                    <!--<controls:MenuButton.Triggers>
-                        <EventTrigger RoutedEvent="Button.Click">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ThicknessAnimation
-                                        DecelerationRatio="0.9"
-                                        Storyboard.Target="{Binding ElementName=MainGrid}"
-                                        Storyboard.TargetProperty="Margin"
-                                        Duration="0:0:0.4">
-                                        <ThicknessAnimation.To>
-                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="-\{0\},0,0,0">
-                                                <Binding ElementName="ViewPage" Path="ActualWidth" />
-                                            </MultiBinding>
-                                        </ThicknessAnimation.To>
-                                    </ThicknessAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </controls:MenuButton.Triggers>-->
                 </controls:MenuButton>
 
                 <controls:LoadingStatusDisplayer
@@ -96,6 +74,12 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
                 </controls:LoadingStatusDisplayer>
+
+                <controls:OperableImageBox
+                    x:Name="DetailImageBox"
+                    Grid.Row="1"
+                    Panel.ZIndex="-1"
+                    Background="Transparent" />
 
                 <Grid Grid.Row="2" Background="{StaticResource BoardColor}">
                     <Grid.ColumnDefinitions>
@@ -168,23 +152,6 @@
                     ContentMargin="5,0,15,0"
                     Icon=""
                     Text="返回">
-                    <!--<controls:MenuButton.Triggers>
-                        <EventTrigger RoutedEvent="Button.Click">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ThicknessAnimation
-                                        DecelerationRatio="0.9"
-                                        Storyboard.Target="{Binding ElementName=MainGrid}"
-                                        Storyboard.TargetProperty="Margin"
-                                        Duration="0:0:0.4">
-                                        <ThicknessAnimation.To>
-                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="0,0,0,0" />
-                                        </ThicknessAnimation.To>
-                                    </ThicknessAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </controls:MenuButton.Triggers>-->
                 </controls:MenuButton>
             </StackPanel>
 
@@ -195,25 +162,6 @@
                     FlowDirection="RightToLeft"
                     Icon=""
                     Text="标签">
-                    <!--<controls:MenuButton.Triggers>
-                        <EventTrigger RoutedEvent="Button.Click">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ThicknessAnimation
-                                        DecelerationRatio="0.9"
-                                        Storyboard.Target="{Binding ElementName=MainGrid}"
-                                        Storyboard.TargetProperty="Margin"
-                                        Duration="0:0:0.4">
-                                        <ThicknessAnimation.To>
-                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="$\{-2*\{0\}\},0,0,0">
-                                                <Binding ElementName="ViewPage" Path="ActualWidth" />
-                                            </MultiBinding>
-                                        </ThicknessAnimation.To>
-                                    </ThicknessAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </controls:MenuButton.Triggers>-->
                 </controls:MenuButton>
             </StackPanel>
 
@@ -343,25 +291,6 @@
                     ContentMargin="5,0,15,0"
                     Icon=""
                     Text="返回">
-                    <!--<controls:MenuButton.Triggers>
-                        <EventTrigger RoutedEvent="Button.Click">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ThicknessAnimation
-                                        DecelerationRatio="0.9"
-                                        Storyboard.Target="{Binding ElementName=MainGrid}"
-                                        Storyboard.TargetProperty="Margin"
-                                        Duration="0:0:0.4">
-                                        <ThicknessAnimation.To>
-                                            <MultiBinding Converter="{StaticResource CustomBindableMarginConverter}" ConverterParameter="-\{0\},0,0,0">
-                                                <Binding ElementName="ViewPage" Path="ActualWidth" />
-                                            </MultiBinding>
-                                        </ThicknessAnimation.To>
-                                    </ThicknessAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </controls:MenuButton.Triggers>-->
                 </controls:MenuButton>
             </StackPanel>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
