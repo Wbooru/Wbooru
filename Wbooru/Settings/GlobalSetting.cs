@@ -59,12 +59,10 @@ namespace Wbooru.Settings
 
         #region View Options
 
-        [NeedRestart]
         [Group("View Options")]
         [Range(1,5)]
         public int LoadingImageThread { get; set; } = 2;
 
-        [NeedRestart]
         [Group("View Options")]
         [Description("每次加载更多图片时所需要图片最低数量(多了的话可能会被ban?)")]
         [Range(1,100)]
@@ -94,6 +92,7 @@ namespace Wbooru.Settings
         #region Cache Options
 
         [Group("Cache Option")]
+        [NeedRestart]
         [Description("是否使用内存缓存机制，这将会缓存图片文件等其他资源")]
         public bool EnableMemoryCache { get; set; } = false;
 
@@ -102,11 +101,13 @@ namespace Wbooru.Settings
         public bool EnableFileCache { get; set; } = false;
 
         [Group("Cache Option")]
+        [NeedRestart]
         [Description("钦定缓存文件夹的大小,以MB为单位，若空间不足则会删除较旧的资源缓存文件")]
         [EnableBy(nameof(EnableFileCache), true)]
         public uint CacheFolderMaxSize { get; set; } = 100;
 
         [Group("Cache Option")]
+        [NeedRestart]
         [Description("钦定缓存文件夹的存放位置,%Temp%表示系统临时文件夹路径")]
         [EnableBy(nameof(EnableFileCache), true)]
         public string CacheFolderPath { get; set; } = @"%Temp%WbooruCache";
