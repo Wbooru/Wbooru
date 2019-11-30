@@ -25,25 +25,29 @@ namespace Wbooru.Utils.Resource
         public static void InitImageResourceManager()
         {
             option = SettingManager.LoadSetting<GlobalSetting>();
-            temporary_folder_path = option.CacheFolderPath.Replace("%Temp%", Path.GetTempPath());
 
             if (option.EnableMemoryCache)
                 cache = MemoryCache.Default;
 
-            try
+            if (option.EnableFileCache)
             {
-                Directory.CreateDirectory(temporary_folder_path);
+                try
+                {
+                    temporary_folder_path = option.CacheFolderPath.Replace("%Temp%", Path.GetTempPath());
+                    Directory.CreateDirectory(temporary_folder_path);
 
-                current_record_capacity = Directory.EnumerateFiles(temporary_folder_path, "*.cache").Select(x => {
-                    using var stream = File.OpenRead(x);
-                    return stream.Length;
-                }).Sum();
+                    current_record_capacity = Directory.EnumerateFiles(temporary_folder_path, "*.cache").Select(x =>
+                    {
+                        using var stream = File.OpenRead(x);
+                        return stream.Length;
+                    }).Sum();
 
-                Log.Error($"Check&Create tempoary cache folder({current_record_capacity}):{temporary_folder_path}");
-            }
-            catch (Exception e)
-            {
-                Log.Error("Failed to check&create tempoary cache folder:" + e.Message);
+                    Log.Error($"Check&Create tempoary cache folder({current_record_capacity}):{temporary_folder_path}");
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Failed to check&create tempoary cache folder:" + e.Message);
+                }
             }
         }
 
@@ -105,10 +109,14 @@ namespace Wbooru.Utils.Resource
 
         private static bool TryGetImageFromTempFolder(string resource_name, out Image res)
         {
+            res = null;
+
+            if (!option.EnableFileCache || temporary_folder_path == null)
+                return false;
+
             resource_name = FileNameHelper.FilterFileName(resource_name);
             resource_name = resource_name.EndsWith(".cache") ? resource_name : (resource_name + ".cache");
-            var file_path = Path.Combine(temporary_folder_path, resource_name);
-            res = null;
+            var file_path = Path.Combine("\\\\?\\"+temporary_folder_path, resource_name);
 
             if (File.Exists(file_path))
             {
@@ -129,6 +137,9 @@ namespace Wbooru.Utils.Resource
 
         private static void CacheImageResourceAsFile(string resource_name, Image obj)
         {
+            if (!option.EnableFileCache || temporary_folder_path==null)
+                return;
+
             Stream stream = null;
 
             resource_name = FileNameHelper.FilterFileName(resource_name);

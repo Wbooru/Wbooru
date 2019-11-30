@@ -240,6 +240,11 @@ namespace Wbooru.Kernel.ProgramUpdater
             App.UnusualSafeExit();
         }
 
+        internal static void DownloadAndApplyDefaultSqliteDatabaseFile()
+        {
+
+        }
+
         private static void CopyRelativeFile(string source_file_path, string source_root_folder, string destination_root_folder)
         {
             if (!File.Exists(source_file_path))
