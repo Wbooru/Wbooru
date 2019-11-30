@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MihaZupan;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Wbooru.Settings;
 
 namespace Wbooru.Network
 {
@@ -15,9 +17,38 @@ namespace Wbooru.Network
     {
         public static WebResponse CreateDeafult(string url, Action<HttpWebRequest> custom = null) => CreateDeafultAsync(url, custom).Result;
 
+        private static IWebProxy socks5_proxy;
+
+        private static GlobalSetting setting = SettingManager.LoadSetting<GlobalSetting>();
+
+        private static IWebProxy TryGetAvaliableProxy()
+        {
+            if (!setting.EnableSocks5Proxy)
+                return null;
+
+            if (socks5_proxy != null)
+                return socks5_proxy;
+
+            try
+            {
+                socks5_proxy = new HttpToSocks5Proxy(setting.Socks5ProxyAddress, setting.Socks5ProxyPort);
+
+                if (socks5_proxy != null)
+                    Log.Info($"Enable sock5 , addr:port -> {setting.Socks5ProxyAddress}:{setting.Socks5ProxyPort}");
+
+                return socks5_proxy;
+            }
+            catch (Exception e)
+            {
+                Log.Info($"Create sock5 proxy failed:"+e.Message);
+                return null;
+            }
+        } 
+
         public static Task<WebResponse> CreateDeafultAsync(string url, Action<HttpWebRequest> custom = null)
         {
             var req = HttpWebRequest.Create(url);
+            req.Proxy = TryGetAvaliableProxy();
 
             custom?.Invoke(req as HttpWebRequest);
 

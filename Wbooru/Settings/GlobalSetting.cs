@@ -142,6 +142,25 @@ namespace Wbooru.Settings
 
         #endregion
 
+        #region Network Options
+
+        [Description("是否开启Socks5代理功能")]
+        [Group("Network Option")]
+        [NeedRestart]
+        public bool EnableSocks5Proxy { get; set; } = false;
+
+        [Description("Socks5代理地址")]
+        [Group("Network Option")]
+        [EnableBy(nameof(EnableSocks5Proxy),true)]
+        public string Socks5ProxyAddress { get; set; } = "localhost";
+
+        [Description("Socks5代理地址的端口号")]
+        [Group("Network Option")]
+        [EnableBy(nameof(EnableSocks5Proxy), true)]
+        public int Socks5ProxyPort { get; set; } = 1080;
+
+        #endregion
+
         #region Deep Dark Fantasty
 
         #region Special Options
