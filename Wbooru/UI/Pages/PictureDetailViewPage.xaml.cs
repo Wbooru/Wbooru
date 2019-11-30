@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -86,6 +87,11 @@ namespace Wbooru.UI.Pages
 
         public LocalDBContext DB { get; }
 
+        static PictureDetailViewPage()
+        {
+            ObjectPool<ThicknessAnimation>.EnableTrim = false;
+        }
+
         public PictureDetailViewPage()
         {
             InitializeComponent();
@@ -93,6 +99,12 @@ namespace Wbooru.UI.Pages
             DB = LocalDBContext.Instance;
 
             MainGrid.DataContext = this;
+
+            layout_translate_storyboard = new Storyboard();
+            layout_translate_storyboard.Completed += (e, d) => {
+                ViewPage_SizeChanged(null, null);
+                ObjectPool<ThicknessAnimation>.Return(e as ThicknessAnimation);
+            };
         }
 
         private void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
@@ -400,6 +412,88 @@ namespace Wbooru.UI.Pages
                 return;
 
             NavigationHelper.NavigationPush(new MainGalleryPage(new[] { tag_name }));
+        }
+
+        enum LayoutState
+        {
+            One,Two,Three
+        }
+
+        LayoutState current_layout = LayoutState.One;
+        private Storyboard layout_translate_storyboard;
+
+        private void MenuButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            current_layout = LayoutState.Two;
+            ApplyTranslate();
+        }
+
+        private void MenuButton_Click_2(object sender, RoutedEventArgs e)
+        {
+            current_layout = LayoutState.One;
+            ApplyTranslate();
+        }
+
+        private void MenuButton_Click_3(object sender, RoutedEventArgs e)
+        {
+            current_layout = LayoutState.Three;
+            ApplyTranslate();
+        }
+
+        private void MenuButton_Click_4(object sender, RoutedEventArgs e)
+        {
+            current_layout = LayoutState.Two;
+            ApplyTranslate();
+        }
+
+        private Thickness CalculateMargin()
+        {
+            double margin_left = 0;
+
+            switch (current_layout)
+            {
+                case LayoutState.One:
+                    margin_left = 0;
+                    break;
+                case LayoutState.Two:
+                    margin_left = 1;
+                    break;
+                case LayoutState.Three:
+                    margin_left = 2;
+                    break;
+                default:
+                    break;
+            }
+
+            margin_left *= -ViewPage.ActualWidth;
+
+            return new Thickness(margin_left, 0, 0, 0);
+        }
+
+        private void ApplyTranslate()
+        {
+            layout_translate_storyboard.Children.Clear();
+
+            if (ObjectPool<ThicknessAnimation>.Get(out var animation))
+            {
+                //init 
+                animation.Duration = new Duration(TimeSpan.FromMilliseconds(250));
+                animation.FillBehavior = FillBehavior.Stop;
+                Storyboard.SetTargetProperty(animation, new PropertyPath(Grid.MarginProperty));
+                animation.EasingFunction = animation.EasingFunction ?? new QuadraticEase() { EasingMode = EasingMode.EaseOut };
+            }
+
+            animation.To = CalculateMargin();
+
+            layout_translate_storyboard.Children.Clear();
+            layout_translate_storyboard.Children.Add(animation);
+            layout_translate_storyboard.Begin(MainGrid);
+        }
+
+        private void ViewPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var new_margin = CalculateMargin();
+            MainGrid.Margin = new_margin;
         }
     }
 }

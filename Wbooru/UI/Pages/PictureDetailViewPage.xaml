@@ -23,7 +23,7 @@
         <valueconverters:FormatDownloadDescriptionConverter x:Key="FormatDownloadDescriptionConverter" />
     </Page.Resources>
 
-    <Grid Name="MainGrid">
+    <Grid Name="MainGrid" SizeChanged="ViewPage_SizeChanged">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
             <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
@@ -64,11 +64,12 @@
 
                 <controls:MenuButton
                     HorizontalAlignment="Right"
+                    ButtonBase.Click="MenuButton_Click_1"
                     ContentMargin="5,0,15,0"
                     FlowDirection="RightToLeft"
                     Icon=""
                     Text="下载">
-                    <controls:MenuButton.Triggers>
+                    <!--<controls:MenuButton.Triggers>
                         <EventTrigger RoutedEvent="Button.Click">
                             <BeginStoryboard>
                                 <Storyboard>
@@ -86,7 +87,7 @@
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
-                    </controls:MenuButton.Triggers>
+                    </controls:MenuButton.Triggers>-->
                 </controls:MenuButton>
 
                 <controls:LoadingStatusDisplayer
@@ -163,10 +164,11 @@
 
             <StackPanel Background="{StaticResource BoardColor}" Orientation="Horizontal">
                 <controls:MenuButton
+                    ButtonBase.Click="MenuButton_Click_2"
                     ContentMargin="5,0,15,0"
                     Icon=""
                     Text="返回">
-                    <controls:MenuButton.Triggers>
+                    <!--<controls:MenuButton.Triggers>
                         <EventTrigger RoutedEvent="Button.Click">
                             <BeginStoryboard>
                                 <Storyboard>
@@ -182,17 +184,18 @@
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
-                    </controls:MenuButton.Triggers>
+                    </controls:MenuButton.Triggers>-->
                 </controls:MenuButton>
             </StackPanel>
 
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <controls:MenuButton
+                    ButtonBase.Click="MenuButton_Click_3"
                     ContentMargin="5,0,15,0"
                     FlowDirection="RightToLeft"
                     Icon=""
                     Text="标签">
-                    <controls:MenuButton.Triggers>
+                    <!--<controls:MenuButton.Triggers>
                         <EventTrigger RoutedEvent="Button.Click">
                             <BeginStoryboard>
                                 <Storyboard>
@@ -210,7 +213,7 @@
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
-                    </controls:MenuButton.Triggers>
+                    </controls:MenuButton.Triggers>-->
                 </controls:MenuButton>
             </StackPanel>
 
@@ -336,10 +339,11 @@
             </Grid.RowDefinitions>
             <StackPanel Background="{StaticResource BoardColor}" Orientation="Horizontal">
                 <controls:MenuButton
+                    ButtonBase.Click="MenuButton_Click_4"
                     ContentMargin="5,0,15,0"
                     Icon=""
                     Text="返回">
-                    <controls:MenuButton.Triggers>
+                    <!--<controls:MenuButton.Triggers>
                         <EventTrigger RoutedEvent="Button.Click">
                             <BeginStoryboard>
                                 <Storyboard>
@@ -357,7 +361,7 @@
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
-                    </controls:MenuButton.Triggers>
+                    </controls:MenuButton.Triggers>-->
                 </controls:MenuButton>
             </StackPanel>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">

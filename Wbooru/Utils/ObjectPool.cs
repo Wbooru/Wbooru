@@ -20,7 +20,7 @@ namespace Wbooru.Utils
         {
             var now = DateTime.Now;
 
-            if (now-last_schedule>ReduceTime)
+            if (now - last_schedule>ReduceTime)
             {
                 var before = CachingObjectCount;
                 OnReduceObjects();
@@ -90,10 +90,15 @@ namespace Wbooru.Utils
 
         private HashSet<T> cache_obj=new HashSet<T>();
 
+        public static bool EnableTrim { get; set; } = true;
+
         public override int CachingObjectCount => cache_obj.Count;
 
         protected override void OnReduceObjects()
         {
+            if (!EnableTrim)
+                return;
+
             var count = CachingObjectCount > MaxTempCache ? 
                 (MaxTempCache + ((CachingObjectCount - MaxTempCache) / 2)) : 
                 CachingObjectCount / 4; ;
@@ -104,22 +109,39 @@ namespace Wbooru.Utils
 
         #region Sugar~
 
-        public static T Get()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj">gained object</param>
+        /// <returns>it's a new object if returns true</returns>
+        public static bool Get(out T obj)
         {
             var cache_obj = Instance.cache_obj;
 
-            if (cache_obj.Count==0)
-                return new T();
+            if (cache_obj.Count == 0)
+            {
+                obj = new T();
+                return true;
+            }
 
-            var o = cache_obj.First();
-            cache_obj.Remove(o);
+            obj = cache_obj.First();
+            cache_obj.Remove(obj);
 
-            (o as ICacheCleanable)?.OnBeforeGetClean();
-            return o;
+            (obj as ICacheCleanable)?.OnBeforeGetClean();
+            return false;
+        }
+
+        public static T Get()
+        {
+            Get(out var t);
+            return t;
         }
 
         public static void Return(T obj)
         {
+            if (obj == null)
+                return;
+
             Instance.cache_obj.Add(obj);
             (obj as ICacheCleanable)?.OnAfterPutClean();
         }

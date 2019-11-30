@@ -369,5 +369,10 @@ namespace Wbooru.UI.Pages
 
             NavigationHelper.NavigationPush(page);
         }
+
+        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+        }
     }
 }
