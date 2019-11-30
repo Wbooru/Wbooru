@@ -36,7 +36,7 @@ namespace Wbooru.UI.Pages
     /// <summary>
     /// PictureDetailViewPage.xaml 的交互逻辑
     /// </summary>
-    public partial class PictureDetailViewPage : Page,ICacheCleanable
+    public partial class PictureDetailViewPage : Page,ICacheCleanable,INavigatableAction
     {
         public Gallery Gallery
         {
@@ -494,6 +494,39 @@ namespace Wbooru.UI.Pages
         {
             var new_margin = CalculateMargin();
             MainGrid.Margin = new_margin;
+        }
+
+        public void OnNavigationForwardAction()
+        {
+            switch (current_layout)
+            {
+                case LayoutState.One:
+                    MenuButton_Click_1(null, null);
+                    break;
+                case LayoutState.Two:
+                    MenuButton_Click_3(null, null);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void OnNavigationBackAction()
+        {
+            switch (current_layout)
+            {
+                case LayoutState.One:
+                    MenuButton_Click(null, null);
+                    break;
+                case LayoutState.Two:
+                    MenuButton_Click_2(null, null);
+                    break;
+                case LayoutState.Three:
+                    MenuButton_Click_1(null, null);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Wbooru.UI.Pages
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
         {
-            var page = NavigationHelper.NavigationPop() as DownloadListPage;
+            NavigationHelper.NavigationPop();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

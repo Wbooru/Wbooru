@@ -36,7 +36,11 @@ namespace Wbooru.Kernel
 
         public static Page NavigationPop()
         {
-            Debug.Assert(page_stack.Count != 0, "page_stack is null");
+            if (page_stack.Count == 1)
+            {
+                Log.Warn($"page_stack will be empty so it not allow pop current page.");
+                return null;
+            }
 
             var page = page_stack.Pop();
             Log.Debug($"Pop page : {page.ToString()}");
@@ -52,7 +56,10 @@ namespace Wbooru.Kernel
             if (page_stack.Count == 0)
                 return;
 
-            (page_stack.Peek() as INavigatableAction)?.OnNavigationBackAction();
+            if (page_stack.Peek() is INavigatableAction action)
+                action.OnNavigationBackAction();
+            else
+                NavigationPop();
         }
 
         internal static void RequestPageForwardAction()
