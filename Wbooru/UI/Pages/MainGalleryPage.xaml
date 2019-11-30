@@ -26,8 +26,6 @@
         <Converter:ItemMarginConverter x:Key="ItemMarginConverter" />
         <Converter:DefaultBorderHeightConverter x:Key="DefaultBorderHeightConverter" />
         <Converter:ImageAsyncLoadingConverter x:Key="ImageAsyncLoadingConverter" />
-        <sys:UInt32 x:Key="GridItemWidth">150</sys:UInt32>
-        <sys:UInt32 x:Key="GridItemMarginWidth">10</sys:UInt32>
         <sys:UInt32 x:Key="GridPaneWidth">170</sys:UInt32>
 
         <Storyboard x:Key="ShowLeftPane">
@@ -283,8 +281,6 @@
                 Grid.Row="1"
                 Grid.ColumnSpan="2"
                 ClickItemEvent="GridViewer_ClickItemEvent"
-                GridItemMarginWidth="{Binding Source={StaticResource GridItemMarginWidth}}"
-                GridItemWidth="{Binding Source={StaticResource GridItemWidth}}"
                 OnRequestMoreItemFinished="GridViewer_OnRequestMoreItemFinished"
                 OnRequestMoreItemStarted="GridViewer_OnRequestMoreItemStarted" />
 

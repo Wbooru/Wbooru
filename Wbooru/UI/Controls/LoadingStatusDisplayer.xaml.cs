@@ -25,7 +25,7 @@ namespace Wbooru.UI.Controls
         public bool HasTaskRunning
         {
             get => has_task_running;
-            set
+            private set
             {
                 has_task_running = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasTaskRunning)));

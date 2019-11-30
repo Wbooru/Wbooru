@@ -79,6 +79,16 @@ namespace Wbooru.Settings
         [Description("强制使用图片页面跳转功能，但这可能会花费很长时间和出现大量的网络请求")]
         public bool ForceEnablePageJumpFeature { get; set; } = false;
 
+        [Group("View Options")]
+        [NeedRestart]
+        [Description("设置画廊浏览列表每个缩略图的宽度(px)")]
+        public uint PictureGridItemWidth { get; set; } = 150;
+
+        [Group("View Options")]
+        [NeedRestart]
+        [Description("设置画廊浏览列表每个缩略图之间的间距(px)")]
+        public uint PictureGridItemMarginWidth { get; set; } = 10;
+
         #endregion
 
         #region Cache Options

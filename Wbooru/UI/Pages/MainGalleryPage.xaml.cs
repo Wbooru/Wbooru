@@ -78,12 +78,16 @@ namespace Wbooru.UI.Pages
         {
             InitializeComponent();
 
+            Setting = SettingManager.LoadSetting<GlobalSetting>();
+
+            GridViewer.GridItemWidth = Setting.PictureGridItemWidth;
+            GridViewer.GridItemMarginWidth = Setting.PictureGridItemMarginWidth;
+
             DataContext = this;
 
             try
             {
                 var gallery = Container.Default.GetExportedValue<Gallery>();
-                Setting = SettingManager.LoadSetting<GlobalSetting>();
                 ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
                 if (gallery != null)
