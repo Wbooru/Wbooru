@@ -119,12 +119,6 @@ namespace Wbooru.UI.Controls
         {
             if (e.ClickCount == 2)
             {
-                /*
-                var point = e.GetPosition(ImageCoreBox);
-                point.X = Math.Min(ImageCoreBox.ActualWidth, Math.Max(0, point.X));
-                point.Y = Math.Min(ImageCoreBox.ActualHeight, Math.Max(0, point.Y));
-                */
-
                 current_switch_index = (++current_switch_index) % SWITCH_ROLL.Length;
                 var next_scale = SWITCH_ROLL[current_switch_index];
 
@@ -142,6 +136,7 @@ namespace Wbooru.UI.Controls
 
             var sb = TransformScaleMap[CurrentScale];
 
+            Log.Debug($"scale = {scale} | scale_center_point = {scale_center_point}");
             sb.Begin(ImageCoreBox);
         }
 

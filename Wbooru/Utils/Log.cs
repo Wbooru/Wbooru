@@ -74,7 +74,7 @@ namespace Wbooru
 
         private static void FileWrite(string content)
         {
-            if (file_writer!=null)
+            if (file_writer != null)
             {
                 file_writer.Write(content);
             }
@@ -93,7 +93,7 @@ namespace Wbooru
             s.Close();
         }
 
-        public static string BuildLogMessage(string message, bool new_line, bool time, string prefix)
+        public static string BuildLogMessage(string message, string type, bool new_line, bool time, string prefix)
         {
             lock (sb)
             {
@@ -102,7 +102,7 @@ namespace Wbooru
                 if (time)
                 {
                     var t = DateTime.Now;
-                    sb.AppendFormat("[{0} {1}]", t.ToShortDateString(), t.ToShortTimeString());
+                    sb.AppendFormat("[{0} {1} {2}]", t.ToShortDateString(), t.ToShortTimeString(), type);
                 }
 
                 if (!string.IsNullOrWhiteSpace(prefix))
@@ -126,7 +126,7 @@ namespace Wbooru
             FileWrite(message);
         }
 
-        internal static void ColorizeConsoleOutput(string message , ConsoleColor f,ConsoleColor b)
+        internal static void ColorizeConsoleOutput(string message, ConsoleColor f, ConsoleColor b)
         {
             Console.BackgroundColor = b;
             Console.ForegroundColor = f;
@@ -138,7 +138,7 @@ namespace Wbooru
 
         public static void Info(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
-            var msg = BuildLogMessage(message, true, true, prefix);
+            var msg = BuildLogMessage(message, "INFO", true, true, prefix);
             Output(msg);
         }
 
@@ -146,20 +146,20 @@ namespace Wbooru
         {
             if (enable_debug_output)
             {
-                var msg = BuildLogMessage(message, true, true, prefix);
+                var msg = BuildLogMessage(message, "DEBUG", true, true, prefix);
                 Output(msg);
             }
         }
 
         public static void Warn(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
-            var msg = BuildLogMessage(message, true, true, prefix);
-            ColorizeConsoleOutput(msg,ConsoleColor.Yellow,DefaultBackgroundColor);
+            var msg = BuildLogMessage(message, "WARN", true, true, prefix);
+            ColorizeConsoleOutput(msg, ConsoleColor.Yellow, DefaultBackgroundColor);
         }
 
         public static void Error(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
-            var msg = BuildLogMessage(message, true, true, prefix);
+            var msg = BuildLogMessage(message, "ERROR", true, true, prefix);
             ColorizeConsoleOutput(msg, ConsoleColor.Red, ConsoleColor.Yellow);
         }
     }
