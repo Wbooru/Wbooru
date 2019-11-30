@@ -28,23 +28,27 @@ namespace Wbooru.Kernel.ProgramUpdater
 
         public static ReleaseInfo CacheUpdatableReleaseInfo { get; private set; }
 
+        public static IEnumerable<ReleaseInfo> GetAllReleaseInfoList()
+        {
+            var releases_url = $"https://api.github.com/repos/MikiraSora/Wbooru/releases";
+
+            var array = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(releases_url, req =>
+            {
+                req.UserAgent = "WbooruProgramUpdater";
+            }));
+
+            return array
+                .Select(x => TryGetReleaseInfo(x))
+                .OfType<ReleaseInfo>().ToArray();
+        }
+
         public static bool CheckUpdatable()
         {
             var option = SettingManager.LoadSetting<GlobalSetting>();
 
-            var releases_url = $"https://api.github.com/repos/MikiraSora/Wbooru/releases";
-
             try
             {
-                if (!(RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(releases_url, req =>
-                {
-                    req.UserAgent = "WbooruProgramUpdater";
-                })) is JArray array))
-                    return false;
-
-                var releases = array
-                    .Select(x => TryGetReleaseInfo(x))
-                    .OfType<ReleaseInfo>().ToArray();
+                var releases = GetAllReleaseInfoList();
 
                 if (!releases.Any())
                 {
@@ -55,7 +59,7 @@ namespace Wbooru.Kernel.ProgramUpdater
                 var updatable_releases = releases.Where(x => x.Version > CurrentProgramVersion)
                     .OrderByDescending(x => x.Version);
 
-                CacheUpdatableReleaseInfo = (option.UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Preview) : null) ?? releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Stable);
+                CacheUpdatableReleaseInfo = (option.UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? updatable_releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Preview) : null) ?? updatable_releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Stable);
 
                 if (CacheUpdatableReleaseInfo == null)
                 {
