@@ -72,6 +72,7 @@ namespace Wbooru.Settings
 
         [Group("View Options")]
         [Description("是否使用滚轮或者拖曳滚动图片列表")]
+        [NeedRestart]
         public bool GalleryListScrollBarVisiable { get; set; } = true;
 
         [Group("View Options")]
