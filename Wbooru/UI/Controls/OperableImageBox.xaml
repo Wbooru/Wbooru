@@ -57,14 +57,14 @@
         </Storyboard>
     </UserControl.Resources>
     <Grid
-        SizeChanged="WrapPanel_SizeChanged"
         Name="WrapPanel"
         Background="Transparent"
         MouseDown="Grid_MouseDown"
         MouseLeave="Grid_MouseLeave"
         MouseLeftButtonDown="Grid_MouseLeftButtonDown"
         MouseLeftButtonUp="Grid_MouseLeftButtonUp"
-        MouseMove="Grid_MouseMove">
+        MouseMove="Grid_MouseMove"
+        SizeChanged="WrapPanel_SizeChanged">
         <Image Name="ImageCoreBox">
             <Image.RenderTransform>
                 <TransformGroup>
@@ -73,6 +73,120 @@
                 </TransformGroup>
             </Image.RenderTransform>
         </Image>
+        <Grid>
+            <StackPanel
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Background="#70000000">
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="9">
+                        </Setter>
+                        <Setter Property="Foreground" Value="White">
+                        </Setter>
+                    </Style>
+                </StackPanel.Resources>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">p11:</TextBlock>
+                        <TextBlock Name="DEBUG_p11">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">p22:</TextBlock>
+                        <TextBlock Name="DEBUG_p22">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">pic_w:</TextBlock>
+                        <TextBlock Name="DEBUG_pic_w">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">pic_h:</TextBlock>
+                        <TextBlock Name="DEBUG_pic_h">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">scale:</TextBlock>
+                        <TextBlock Name="DEBUG_scale">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">scaled.width:</TextBlock>
+                        <TextBlock Name="DEBUG_scaled_width">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">scaled.height:</TextBlock>
+                        <TextBlock Name="DEBUG_scaled_height">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">wp.width:</TextBlock>
+                        <TextBlock Name="DEBUG_wp_width">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,10,0">wp.height:</TextBlock>
+                        <TextBlock Name="DEBUG_wp_height">
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+            </StackPanel>
 
+            <StackPanel
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Background="#70000000">
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="9">
+                        </Setter>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Name="DEBUG_w11">
+                    p11.Y &#62; 0
+                </TextBlock>
+                <TextBlock Name="DEBUG_w12">
+                    p22.Y &#60; WrapPanel.ActualHeight
+                </TextBlock>
+                <TextBlock Name="DEBUG_w13">
+                    p11.Y &#62; limit_height
+                </TextBlock>
+                <TextBlock Name="DEBUG_w14" Margin="0,0,0,15">
+                    p22.Y &#60; WrapPanel.ActualHeight * 0.1
+                </TextBlock>
+
+                <TextBlock Name="DEBUG_w15">
+                    p11.X &#62; 0
+                </TextBlock>
+                <TextBlock Name="DEBUG_w16">
+                    p22.X &#60; WrapPanel.ActualWidth
+                </TextBlock>
+                <TextBlock Name="DEBUG_w17">
+                    p11.X &#62; limit_height
+                </TextBlock>
+                <TextBlock Name="DEBUG_w18">
+                    p22.X &#60; WrapPanel.ActualWidth * 0.1
+                </TextBlock>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

@@ -45,7 +45,7 @@ namespace Wbooru.UI.Controls
             NoScale = 1,
             Scale2x = 2,
             Scale4x = 4,
-            ScaleRawPixel = 0
+            //ScaleRawPixel = 0 //todo:有bug,暂时屏蔽
         }
 
         private DragActionState drag_action_state = DragActionState.Idle;
@@ -53,7 +53,7 @@ namespace Wbooru.UI.Controls
         private Vector CurrentTranslateOffset { get; set; }
         private Dictionary<ScaleState, Storyboard> TransformScaleMap { get; set; }
 
-        private readonly static ScaleState[] SWITCH_ROLL = { ScaleState.NoScale, ScaleState.Scale2x, ScaleState.Scale4x, ScaleState.ScaleRawPixel };
+        private readonly static ScaleState[] SWITCH_ROLL = { ScaleState.NoScale, ScaleState.Scale2x, ScaleState.Scale4x/*, ScaleState.ScaleRawPixel*/ };
         private int current_switch_index = 0;
 
         private double ImageBoxTranslateTransformX
@@ -88,7 +88,7 @@ namespace Wbooru.UI.Controls
                 {ScaleState.NoScale,Resources["NoScaleAction"] as Storyboard },
                 {ScaleState.Scale2x,Resources["Scale2xAction"] as Storyboard },
                 {ScaleState.Scale4x,Resources["Scale4xAction"] as Storyboard },
-                {ScaleState.ScaleRawPixel,Resources["ScaleRawPixelAction"]as Storyboard },
+                //{ScaleState.ScaleRawPixel,Resources["ScaleRawPixelAction"]as Storyboard },
             };
 
             foreach (var sb in TransformScaleMap.Values)
@@ -168,15 +168,30 @@ namespace Wbooru.UI.Controls
             var p11 = ImageCoreBox.TranslatePoint(new Point(0, 0), WrapPanel);
             var p22 = new Point(p11.X + scaled_size.Width, p11.Y + scaled_size.Height);
 
+            DEBUG_p11.Text = p11.ToString();
+            DEBUG_p22.Text = p22.ToString();
+            DEBUG_pic_w.Text = (ImageCoreBox.Source as BitmapSource).PixelWidth.ToString();
+            DEBUG_pic_h.Text = (ImageCoreBox.Source as BitmapSource).PixelHeight.ToString();
+            DEBUG_scale.Text = CurrentScale.ToString();
+            DEBUG_scaled_width.Text = scaled_size.Width.ToString();
+            DEBUG_scaled_height.Text = scaled_size.Height.ToString();
+            DEBUG_wp_height.Text = WrapPanel.ActualHeight.ToString();
+            DEBUG_wp_width.Text = WrapPanel.ActualWidth.ToString();
+            DEBUG_w11.Foreground = DEBUG_w12.Foreground = DEBUG_w13.Foreground = DEBUG_w14.Foreground
+                = DEBUG_w15.Foreground = DEBUG_w16.Foreground = DEBUG_w17.Foreground = DEBUG_w18.Foreground = Brushes
+                .White;
+
             if (scaled_size.Height >= WrapPanel.ActualHeight)
             {
                 if (p11.Y > 0)
                 {
                     offset.Y = CurrentTranslateOffset.Y - p11.Y;
+                    DEBUG_w11.Foreground = Brushes.OrangeRed;
                 }
                 else if (p22.Y < WrapPanel.ActualHeight)
                 {
                     offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight - p22.Y);
+                    DEBUG_w12.Foreground = Brushes.OrangeRed;
                 }
             }
             else
@@ -186,10 +201,12 @@ namespace Wbooru.UI.Controls
                 if (p11.Y > limit_height)
                 {
                     offset.Y = CurrentTranslateOffset.Y - (p11.Y - limit_height);
+                    DEBUG_w13.Foreground = Brushes.OrangeRed;
                 }
                 else if (p22.Y < WrapPanel.ActualHeight * 0.1)
                 {
                     offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight * 0.1 - p22.Y);
+                    DEBUG_w14.Foreground = Brushes.OrangeRed;
                 }
             }
 
@@ -198,10 +215,12 @@ namespace Wbooru.UI.Controls
                 if (p11.X > 0)
                 {
                     offset.X = CurrentTranslateOffset.X - p11.X;
+                    DEBUG_w15.Foreground = Brushes.OrangeRed;
                 }
                 else if (p22.X < WrapPanel.ActualWidth)
                 {
                     offset.X = CurrentTranslateOffset.X + (WrapPanel.ActualWidth - p22.X);
+                    DEBUG_w16.Foreground = Brushes.OrangeRed;
                 }
             }
             else
@@ -211,10 +230,12 @@ namespace Wbooru.UI.Controls
                 if (p11.X > limit_width)
                 {
                     offset.X = CurrentTranslateOffset.X - (p11.X - limit_width);
+                    DEBUG_w17.Foreground = Brushes.OrangeRed;
                 }
                 else if (p22.X < WrapPanel.ActualWidth * 0.1)
                 {
                     offset.X = CurrentTranslateOffset.X + (WrapPanel.ActualWidth*0.1 - p22.X);
+                    DEBUG_w18.Foreground = Brushes.OrangeRed;
                 }
             }
 
@@ -227,7 +248,9 @@ namespace Wbooru.UI.Controls
             var width = ImageCoreBox.ActualWidth;
             var height = ImageCoreBox.ActualHeight;
 
-            var scale = (int)CurrentScale;
+            double p = width / height;
+
+            double scale = (int)CurrentScale;
 
             if (scale!=0)
             {
@@ -236,8 +259,11 @@ namespace Wbooru.UI.Controls
             }
             else
             {
-                width = pic.PixelWidth;
-                height = pic.PixelHeight;
+                Log.Debug($"ImageCoreBox r:{p:F2}  | Bitmap r:{pic.PixelWidth * 1.0 / pic.PixelHeight:F2}");
+                scale = pic.PixelWidth / ImageCoreBox.ActualWidth;
+
+                width *= scale;
+                height *= scale;
             }
 
             return new Size(width, height);
