@@ -73,7 +73,7 @@
                 </TransformGroup>
             </Image.RenderTransform>
         </Image>
-        <Grid>
+        <Grid Name="DEBUG_PANEL">
             <StackPanel
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"

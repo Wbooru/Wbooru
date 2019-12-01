@@ -98,6 +98,10 @@ namespace Wbooru.UI.Controls
             {
                 ApplyImage(ImageCoreBox.Source);
             }
+
+#if !DEBUG
+            WrapPanel.Children.Remove(DEBUG_PANEL);
+#endif
         }
 
         public void ResetTransform()
@@ -168,6 +172,9 @@ namespace Wbooru.UI.Controls
             var p11 = ImageCoreBox.TranslatePoint(new Point(0, 0), WrapPanel);
             var p22 = new Point(p11.X + scaled_size.Width, p11.Y + scaled_size.Height);
 
+            #region DEBUG_CONTENT
+
+#if DEBUG
             DEBUG_p11.Text = p11.ToString();
             DEBUG_p22.Text = p22.ToString();
             DEBUG_pic_w.Text = (ImageCoreBox.Source as BitmapSource).PixelWidth.ToString();
@@ -181,17 +188,24 @@ namespace Wbooru.UI.Controls
                 = DEBUG_w15.Foreground = DEBUG_w16.Foreground = DEBUG_w17.Foreground = DEBUG_w18.Foreground = Brushes
                 .White;
 
+            void _c(TextBlock t)=>t.Foreground = Brushes.OrangeRed;
+#else
+            void _c(TextBlock t){ }
+#endif
+
+            #endregion
+
             if (scaled_size.Height >= WrapPanel.ActualHeight)
             {
                 if (p11.Y > 0)
                 {
                     offset.Y = CurrentTranslateOffset.Y - p11.Y;
-                    DEBUG_w11.Foreground = Brushes.OrangeRed;
+                    _c(DEBUG_w11);
                 }
                 else if (p22.Y < WrapPanel.ActualHeight)
                 {
                     offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight - p22.Y);
-                    DEBUG_w12.Foreground = Brushes.OrangeRed;
+                    _c(DEBUG_w12);
                 }
             }
             else
@@ -201,12 +215,12 @@ namespace Wbooru.UI.Controls
                 if (p11.Y > limit_height)
                 {
                     offset.Y = CurrentTranslateOffset.Y - (p11.Y - limit_height);
-                    DEBUG_w13.Foreground = Brushes.OrangeRed;
+                    _c(DEBUG_w13);
                 }
                 else if (p22.Y < WrapPanel.ActualHeight * 0.1)
                 {
                     offset.Y = CurrentTranslateOffset.Y + (WrapPanel.ActualHeight * 0.1 - p22.Y);
-                    DEBUG_w14.Foreground = Brushes.OrangeRed;
+                    _c(DEBUG_w14);
                 }
             }
 
@@ -215,12 +229,12 @@ namespace Wbooru.UI.Controls
                 if (p11.X > 0)
                 {
                     offset.X = CurrentTranslateOffset.X - p11.X;
-                    DEBUG_w15.Foreground = Brushes.OrangeRed;
+                    _c(DEBUG_w15);
                 }
                 else if (p22.X < WrapPanel.ActualWidth)
                 {
                     offset.X = CurrentTranslateOffset.X + (WrapPanel.ActualWidth - p22.X);
-                    DEBUG_w16.Foreground = Brushes.OrangeRed;
+                    _c(DEBUG_w16);
                 }
             }
             else
@@ -230,12 +244,12 @@ namespace Wbooru.UI.Controls
                 if (p11.X > limit_width)
                 {
                     offset.X = CurrentTranslateOffset.X - (p11.X - limit_width);
-                    DEBUG_w17.Foreground = Brushes.OrangeRed;
+                    _c(DEBUG_w17);
                 }
                 else if (p22.X < WrapPanel.ActualWidth * 0.1)
                 {
                     offset.X = CurrentTranslateOffset.X + (WrapPanel.ActualWidth*0.1 - p22.X);
-                    DEBUG_w18.Foreground = Brushes.OrangeRed;
+                    _c(DEBUG_w18);
                 }
             }
 
@@ -259,7 +273,6 @@ namespace Wbooru.UI.Controls
             }
             else
             {
-                Log.Debug($"ImageCoreBox r:{p:F2}  | Bitmap r:{pic.PixelWidth * 1.0 / pic.PixelHeight:F2}");
                 scale = pic.PixelWidth / ImageCoreBox.ActualWidth;
 
                 width *= scale;
