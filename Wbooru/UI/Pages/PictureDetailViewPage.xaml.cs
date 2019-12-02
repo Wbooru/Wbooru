@@ -340,7 +340,7 @@ namespace Wbooru.UI.Pages
 
             var config = SettingManager.LoadSetting<GlobalSetting>();
 
-            var full_file_path = System.IO.Path.Combine("\\\\?\\"+ config.DownloadPath, config.SeparateGallerySubDirectories ? Gallery.GalleryName : "", file_name);
+            var full_file_path = System.IO.Path.Combine(config.DownloadPath, config.SeparateGallerySubDirectories ? Gallery.GalleryName : "", file_name);
 
             foreach (var ic in System.IO.Path.GetInvalidPathChars())
                 full_file_path = full_file_path.Replace(ic, '_');

@@ -116,7 +116,7 @@ namespace Wbooru.Utils.Resource
 
             resource_name = FileNameHelper.FilterFileName(resource_name);
             resource_name = resource_name.EndsWith(".cache") ? resource_name : (resource_name + ".cache");
-            var file_path = Path.Combine("\\\\?\\"+temporary_folder_path, resource_name);
+            var file_path = Path.Combine(temporary_folder_path, resource_name);
 
             if (File.Exists(file_path))
             {
