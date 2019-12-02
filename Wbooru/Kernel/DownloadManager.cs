@@ -277,7 +277,7 @@ namespace Wbooru.Kernel
             download.Status = DownloadTaskStatus.Paused;
             download.CancelTokenSource?.Cancel();
 
-            if (FileStreamHolder[download] is Stream stream)
+            if (FileStreamHolder.TryGetValue(download,out var stream))
                 stream.Dispose();
 
             Log.Info($"Paused downloading task :{download.DownloadInfo.FileName}");
