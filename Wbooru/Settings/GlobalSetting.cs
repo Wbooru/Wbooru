@@ -87,6 +87,20 @@ namespace Wbooru.Settings
         [Description("设置画廊浏览列表每个缩略图之间的间距(px)")]
         public uint PictureGridItemMarginWidth { get; set; } = 10;
 
+        public enum SelectViewQualityTarget
+        {
+            Lowest,
+            Lower,
+            Middle,
+            Higher,
+            Highest
+        }
+
+        [Group("View Options")]
+        [List(typeof(SelectViewQualityTarget), true)]
+        [Description("详细页面图片质量选择，即会按照文件大小排序并根据值来选择合适的图片来加载，越低文件越小，画质可能越差")]
+        public SelectViewQualityTarget SelectPreferViewQualityTarget { get; set; } = SelectViewQualityTarget.Middle;
+
         #endregion
 
         #region Cache Options

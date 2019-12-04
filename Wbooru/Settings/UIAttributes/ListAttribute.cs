@@ -9,7 +9,7 @@ namespace Wbooru.Settings.UIAttributes
 {
     public class ListAttribute : SettingUIAttributeBase
     {
-        public ListAttribute(Type enum_type, bool ignore_case)
+        public ListAttribute(Type enum_type, bool ignore_case=true)
         {
             if (!enum_type.IsEnum)
                 throw new Exception("in ListAttribute(Type enum_type, bool ignore_case) , enum_type must be the type of enum");

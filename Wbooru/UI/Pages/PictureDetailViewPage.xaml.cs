@@ -124,7 +124,7 @@ namespace Wbooru.UI.Pages
 
                 using (var notify = LoadingStatus.BeginBusy(notify_content))
                 {
-                    var pick_download = galleryImageDetail.DownloadableImageLinks.OrderByDescending(x => x.FileLength).FirstOrDefault();
+                    var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
 
                     if (pick_download == null)
                     {
@@ -165,6 +165,31 @@ namespace Wbooru.UI.Pages
                     });
                 }
             }, cancel_source.Token);
+        }
+
+        private DownloadableImageLink PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
+        {
+            var prefer_target = SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget;
+            var target_list = downloadableImageLinks.OrderByDescending(x => x.FileLength).ToArray();
+
+            if (target_list.Length==0)
+                return null;
+
+            switch (prefer_target)
+            {
+                case GlobalSetting.SelectViewQualityTarget.Lowest:
+                    return target_list.Last();
+                case GlobalSetting.SelectViewQualityTarget.Lower:
+                    return target_list.Length > 1 ? target_list[target_list.Length - 2] : target_list.First();
+                case GlobalSetting.SelectViewQualityTarget.Middle:
+                    return target_list[target_list.Length/2];
+                case GlobalSetting.SelectViewQualityTarget.Higher:
+                    return target_list.Length > 1 ? target_list[1] : target_list.First();
+                case GlobalSetting.SelectViewQualityTarget.Highest:
+                    return target_list.First();
+                default:
+                    return target_list.Last();
+            }
         }
 
         CancellationTokenSource cancel_source = new CancellationTokenSource();
