@@ -16,6 +16,7 @@ namespace Wbooru.Utils
 #if DEBUG
             throw new AggregateException("DebugThrow", e);
 #endif
+            Log.Error("Caught a exception but program needn't exit:" + e.Message + Environment.NewLine + e.StackTrace);
         }
 
         public static void ToastNotice(Exception e)
