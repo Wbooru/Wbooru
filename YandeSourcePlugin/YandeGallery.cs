@@ -120,6 +120,7 @@ namespace YandeSourcePlugin
             detail.Rate = pic_info["rating"].ToString();
             detail.Tags = pic_info["tags"].ToString().Split(' ').ToList();
             detail.Updater = pic_info["creator_id"].ToString();
+            detail.Source = pic_info["source"].ToString();
             detail.CreateDate = DateTimeOffset.FromUnixTimeSeconds(pic_info["created_at"].ToObject<long>()).DateTime;
             detail.Author = pic_info["author"].ToString();
             detail.Resolution = new Size(pic_info["width"].ToObject<int>(), pic_info["height"].ToObject<int>());
