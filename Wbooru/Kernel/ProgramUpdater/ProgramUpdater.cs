@@ -158,8 +158,6 @@ namespace Wbooru.Kernel.ProgramUpdater
 
         public static void ApplyUpdate()
         {
-            var command_line = string.Join(" ", Environment.GetCommandLineArgs());
-
             var current_exe_name = Path.GetFileName(Process.GetCurrentProcess().Modules[0].FileName);
             Log.Info($"current_exe_name = {current_exe_name}");
             var current_path = AppDomain.CurrentDomain.BaseDirectory;
