@@ -90,7 +90,11 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <controls:MenuButton Icon="" Text="刷新" />
+                    <controls:MenuButton
+                        x:Name="RefreshButton"
+                        ButtonBase.Click="MenuButton_Click_5"
+                        Icon=""
+                        Text="刷新" />
 
                     <controls:MenuButton
                         x:Name="MarkButton"

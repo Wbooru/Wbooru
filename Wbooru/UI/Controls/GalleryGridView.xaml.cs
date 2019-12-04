@@ -103,9 +103,9 @@ namespace Wbooru.UI.Controls
 
         private void OnLoadableSourceChanged()
         {
-            ListScrollViewer.ScrollToVerticalOffset(0);
             Items.Clear(); 
             current_index = 0;
+            ListScrollViewer.ScrollToVerticalOffset(0);
 
             loadable_items = LoadableSourceFactory?.Invoke();
 

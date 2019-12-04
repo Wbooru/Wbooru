@@ -109,12 +109,13 @@ namespace Wbooru.UI.Pages
 
         private void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
         {
+            //clean.
+            DetailImageBox.ImageSource = null;
+
             if (galleryImageDetail == null)
-            {
-                //clean.
-                DetailImageBox.ImageSource = null;
                 return;
-            }
+
+            RefreshButton.IsBusy = true;
 
             Task.Run(() =>
             {
@@ -149,6 +150,8 @@ namespace Wbooru.UI.Pages
 
                     Dispatcher.Invoke(() =>
                     {
+                        RefreshButton.IsBusy = false;
+
                         if (PictureDetailInfo == galleryImageDetail)
                         {
                             DetailImageBox.ImageSource = source;
@@ -173,23 +176,28 @@ namespace Wbooru.UI.Pages
 
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
 
-            VoteButton.IsBusy = MarkButton.IsBusy = true;
+            VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = true;
 
             Task.Run(() =>
             {
                 using (var transaction = DB.Database.BeginTransaction())
                 {
-                    var visit = new VisitRecord()
-                    {
-                        GalleryItem = item.ConvertToStorableModel(),
-                        LastVisitTime = DateTime.Now
-                    };
-
                     var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
                     if (visit_entity == null)
+                    {
+                        var visit = new VisitRecord()
+                        {
+                            GalleryItem = item.ConvertToStorableModel(),
+                            LastVisitTime = DateTime.Now
+                        };
+
                         DB.VisitRecords.Add(visit);
+                    }
                     else
+                    {
+                        visit_entity.LastVisitTime = DateTime.Now;
                         DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
+                    }
 
                     DB.SaveChanges();
                     transaction.Commit();
@@ -213,7 +221,7 @@ namespace Wbooru.UI.Pages
                 {
                     IsMark = is_mark;
                     IsVoted = is_vote ?? false;
-                    VoteButton.IsBusy = MarkButton.IsBusy = false;
+                    VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = false;
                     PictureDetailInfo = detail;
                     notify.Dispose();
                 });
@@ -527,6 +535,12 @@ namespace Wbooru.UI.Pages
                 default:
                     break;
             }
+        }
+
+        private void MenuButton_Click_5(object sender, RoutedEventArgs e)
+        {
+            ApplyItem(Gallery, PictureInfo);
+            ChangeDetailPicture(PictureDetailInfo);
         }
     }
 }
