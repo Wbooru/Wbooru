@@ -170,6 +170,11 @@ namespace Wbooru.UI.Pages
         private DownloadableImageLink PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
         {
             var prefer_target = SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget;
+
+            if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
+                foreach (var i in downloadableImageLinks.AsParallel().Where(x => x.FileLength == 0))
+                    i.FileLength = TryGetVaildDownloadFileSize(i.DownloadLink);
+
             var target_list = downloadableImageLinks.OrderByDescending(x => x.FileLength).ToArray();
 
             if (target_list.Length==0)
@@ -189,6 +194,19 @@ namespace Wbooru.UI.Pages
                     return target_list.First();
                 default:
                     return target_list.Last();
+            }
+        }
+
+        private long TryGetVaildDownloadFileSize(string downloadLink)
+        {
+            try
+            {
+                return RequestHelper.CreateDeafult(downloadLink, req => req.Method = "HEAD").ContentLength;
+            }
+            catch (Exception e)
+            {
+                Log.Warn($"Can't get file size ({downloadLink}) though ContentLength :{e.Message}");
+                return 0;
             }
         }
 

@@ -101,6 +101,9 @@ namespace Wbooru.Settings
         [Description("详细页面图片质量选择，即会按照文件大小排序并根据值来选择合适的图片来加载，越低文件越小，画质可能越差")]
         public SelectViewQualityTarget SelectPreferViewQualityTarget { get; set; } = SelectViewQualityTarget.Middle;
 
+        [Group("Other Options")]
+        [Description("尝试获取一些可下载图片的文件大小值(开启此项可能会有大量的网络请求)")]
+        public bool TryGetVaildDownloadFileSize { get; set; } = false;
         #endregion
 
         #region Cache Options

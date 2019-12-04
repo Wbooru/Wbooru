@@ -38,7 +38,9 @@ namespace YandeSourcePlugin
 
         public CustomLoginPage CustomLoginPage => null;
 
-        public GlobalSetting setting;
+        public GlobalSetting global_setting;
+
+        public YandeSetting yander_setting;
 
         private YandeAccountInfo current_account_info;
 
@@ -46,7 +48,8 @@ namespace YandeSourcePlugin
 
         public YandeGallery()
         {
-            setting = SettingManager.LoadSetting<GlobalSetting>();
+            global_setting = SettingManager.LoadSetting<GlobalSetting>();
+            yander_setting = SettingManager.LoadSetting<YandeSetting>();
         }
 
         public override GalleryImageDetail GetImageDetial(GalleryItem item)
@@ -64,8 +67,8 @@ namespace YandeSourcePlugin
 
         public IEnumerable<GalleryItem> GetImagesInternal(IEnumerable<string> tags=null,int page = 1)
         {
-            var limit = SettingManager.LoadSetting<YandeSetting>().PicturesCountPerRequest;
-            limit = limit == 0 ? SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad : limit;
+            var limit = yander_setting.PicturesCountPerRequest;
+            limit = limit == 0 ? global_setting.GetPictureCountPerLoad : limit;
 
             var base_url = $"https://yande.re/post.json?limit={limit}&";
 
@@ -93,10 +96,8 @@ namespace YandeSourcePlugin
                     ExceptionHelper.DebugThrow(e);
                 }
 
-                foreach (var pic_info in json)
+                foreach (var item in json.AsParallel().Select(x => BuildItem(x)))
                 {
-                    var item = BuildItem(pic_info);
-
                     yield return item;
                 }
 

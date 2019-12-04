@@ -250,7 +250,6 @@ namespace Wbooru.UI.Controls
         private void ListScrollViewer_MouseLeave(object sender, MouseEventArgs e)
         {
             drag_action_state = DragActionState.Idle;
-            Log.Debug($"{drag_action_state}", "ListScrollViewer_MouseLeave");
         }
 
         private void ListScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
