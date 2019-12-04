@@ -79,7 +79,46 @@
                     x:Name="DetailImageBox"
                     Grid.Row="1"
                     Panel.ZIndex="-1"
-                    Background="Transparent" />
+                    Background="Transparent">
+
+                    <controls:OperableImageBox.ContextMenu>
+                        <ContextMenu>
+                            <ContextMenu.Style>
+                                <Style TargetType="{x:Type ContextMenu}">
+                                    <Setter Property="OverridesDefaultStyle" Value="True" />
+                                    <Setter Property="SnapsToDevicePixels" Value="True" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ContextMenu}">
+                                                <Border
+                                                    Background="{StaticResource ContentBackgroundColor_LowTransparent}"
+                                                    BorderBrush="White"
+                                                    BorderThickness="1">
+                                                    <StackPanel
+                                                        ClipToBounds="True"
+                                                        IsItemsHost="True"
+                                                        Orientation="Vertical" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ContextMenu.Style>
+
+                            <MenuItem
+                                Padding="5,10,5,10"
+                                Background="Transparent"
+                                Click="MenuItem_Click"
+                                FontSize="14"
+                                Header="复制">
+                                <MenuItem.Icon>
+                                    <Grid Background="Transparent">
+                                    </Grid>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </controls:OperableImageBox.ContextMenu>
+                </controls:OperableImageBox>
 
                 <Grid Grid.Row="2" Background="{StaticResource BoardColor}">
                     <Grid.ColumnDefinitions>
@@ -99,6 +138,7 @@
                     <controls:MenuButton
                         x:Name="MarkButton"
                         Grid.Column="1"
+                        BusyStatusDescription="正在获取图片信息..."
                         Button.Click="MarkButton_Click"
                         Icon=""
                         Text="收藏">
@@ -121,6 +161,7 @@
                     <controls:MenuButton
                         x:Name="VoteButton"
                         Grid.Column="2"
+                        BusyStatusDescription="正在获取图片信息..."
                         Button.Click="VoteButton_Click"
                         Icon=""
                         Text="点赞"

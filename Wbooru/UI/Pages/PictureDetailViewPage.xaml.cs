@@ -36,7 +36,7 @@ namespace Wbooru.UI.Pages
     /// <summary>
     /// PictureDetailViewPage.xaml 的交互逻辑
     /// </summary>
-    public partial class PictureDetailViewPage : Page,ICacheCleanable,INavigatableAction
+    public partial class PictureDetailViewPage : Page, ICacheCleanable, INavigatableAction
     {
         public Gallery Gallery
         {
@@ -101,7 +101,8 @@ namespace Wbooru.UI.Pages
             MainGrid.DataContext = this;
 
             layout_translate_storyboard = new Storyboard();
-            layout_translate_storyboard.Completed += (e, d) => {
+            layout_translate_storyboard.Completed += (e, d) =>
+            {
                 ViewPage_SizeChanged(null, null);
                 ObjectPool<ThicknessAnimation>.Return(e as ThicknessAnimation);
             };
@@ -139,7 +140,8 @@ namespace Wbooru.UI.Pages
                     {
                         image = ImageResourceManager.RequestImageAsync(pick_download.FullFileName, () =>
                         {
-                            return downloader.GetImageAsync(pick_download.DownloadLink, null,d => {
+                            return downloader.GetImageAsync(pick_download.DownloadLink, null, d =>
+                            {
                                 (long cur, long total) = d;
                                 notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
                             }).Result;
@@ -171,7 +173,7 @@ namespace Wbooru.UI.Pages
         {
             var notify = LoadingStatus.BeginBusy("正在读取图片详细信息....");
 
-            Gallery = gallery??Container.Default.GetExportedValues<Gallery>().FirstOrDefault(x=>x.GalleryName==item.GalleryName);
+            Gallery = gallery ?? Container.Default.GetExportedValues<Gallery>().FirstOrDefault(x => x.GalleryName == item.GalleryName);
             PictureInfo = item;
 
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
@@ -261,7 +263,7 @@ namespace Wbooru.UI.Pages
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            var page= NavigationHelper.NavigationPop() as PictureDetailViewPage;
+            var page = NavigationHelper.NavigationPop() as PictureDetailViewPage;
 
             ObjectPool<PictureDetailViewPage>.Return(page);
         }
@@ -273,7 +275,7 @@ namespace Wbooru.UI.Pages
 
         private void MarkButton_Click(object sender, RoutedEventArgs e)
         {
-            if (PictureInfo == null || Gallery==null)
+            if (PictureInfo == null || Gallery == null)
                 return;
 
             MarkButton.IsBusy = true;
@@ -282,7 +284,7 @@ namespace Wbooru.UI.Pages
             {
                 DB.ItemMarks.Add(new GalleryItemMark()
                 {
-                    Item= PictureInfo.ConvertToStorableModel(),
+                    Item = PictureInfo.ConvertToStorableModel(),
                     Time = DateTime.Now
                 });
 
@@ -342,9 +344,9 @@ namespace Wbooru.UI.Pages
         {
             var download_link = (sender as FrameworkElement).DataContext as DownloadableImageLink;
 
-            var file_name = string.IsNullOrWhiteSpace(download_link.FullFileName)? 
+            var file_name = string.IsNullOrWhiteSpace(download_link.FullFileName) ?
                 $"{FileNameHelper.GetFileNameWithoutExtName(PictureDetailInfo)}{System.IO.Path.GetExtension(download_link.DownloadLink)}"
-                :FileNameHelper.FilterFileName( download_link.FullFileName);
+                : FileNameHelper.FilterFileName(download_link.FullFileName);
 
             var config = SettingManager.LoadSetting<GlobalSetting>();
 
@@ -385,7 +387,7 @@ namespace Wbooru.UI.Pages
         private void AddTagCollectionButton_Click(object sender, RoutedEventArgs e)
         {
             if (!((sender as FrameworkElement).DataContext is string tag_name))
-             return;
+                return;
 
             if (TagManager.Contain(tag_name, TagRecordType.Marked))
             {
@@ -424,7 +426,7 @@ namespace Wbooru.UI.Pages
 
         enum LayoutState
         {
-            One,Two,Three
+            One, Two, Three
         }
 
         LayoutState current_layout = LayoutState.One;
@@ -541,6 +543,26 @@ namespace Wbooru.UI.Pages
         {
             ApplyItem(Gallery, PictureInfo);
             ChangeDetailPicture(PictureDetailInfo);
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs eee)
+        {
+            try
+            {
+                if (DetailImageBox.ImageSource is BitmapSource source)
+                {
+                    Clipboard.SetImage(source);
+
+                    Toast.ShowMessage("复制成功");
+                }
+                else
+                    Toast.ShowMessage("复制失败,图片未加载");
+            }
+            catch (Exception e)
+            {
+                ExceptionHelper.DebugThrow(e);
+                Toast.ShowMessage("复制失败," + e.Message);
+            }
         }
     }
 }
