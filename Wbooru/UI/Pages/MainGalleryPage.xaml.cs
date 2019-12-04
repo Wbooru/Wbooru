@@ -101,19 +101,19 @@ namespace Wbooru.UI.Pages
 
         public void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
         {
-            IEnumerable<GalleryItem> items_source;
+            Func<IEnumerable<GalleryItem>> items_source_creator;
 
             if (keywords?.Any() ?? false)
             {
                 GridViewer.ViewType = GalleryViewType.SearchResult;
-                items_source = gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable();
+                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable());
                 GalleryTitle = $"{gallery.GalleryName} ({string.Join(" ", keywords)})";
                 ShowReturnButton = true;
             }
             else
             {
                 GridViewer.ViewType = GalleryViewType.Main;
-                items_source = gallery.GetMainPostedImages().MakeMultiThreadable();
+                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.GetMainPostedImages().MakeMultiThreadable());
                 GalleryTitle = gallery.GalleryName;
                 ShowReturnButton = false;
             }
@@ -122,7 +122,7 @@ namespace Wbooru.UI.Pages
 
             GridViewer.ClearGallery();
             GridViewer.Gallery = gallery;
-            GridViewer.LoadableSource = items_source;
+            GridViewer.LoadableSourceFactory = items_source_creator;
 
             UpdateAccountButtonText();
         }
@@ -252,18 +252,18 @@ namespace Wbooru.UI.Pages
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
 
-            var source = (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks
+            var source = new Func<IEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks
                 .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.Item.GalleryName), gallery_item = x })
                 .Where(x => x.gallery != null)
                 .ToArray()//avoid SQL.
-                .Select(x => x.gallery_item.Item.ConvertToNormalModel());
+                .Select(x => x.gallery_item.Item.ConvertToNormalModel()));
                  
 
             GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature!=null?"在线":"本地") + "收藏列表";
             GridViewer.ViewType = GalleryViewType.Marked;
             GridViewer.ClearGallery();
             GridViewer.Gallery = null;
-            GridViewer.LoadableSource = source;
+            GridViewer.LoadableSourceFactory = source;
 
             CloseLeftPanel();
         }
@@ -377,6 +377,11 @@ namespace Wbooru.UI.Pages
         private void window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
 
+        }
+
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            GridViewer.RefreshItem();
         }
     }
 }

@@ -68,14 +68,14 @@ namespace Wbooru.UI.Controls
         /// <summary>
         /// 表示可以加载的列表源，一般View会自动遍历此集合来拿更多的图片数据.
         /// </summary>
-        public IEnumerable<GalleryItem> LoadableSource
+        public Func<IEnumerable<GalleryItem>> LoadableSourceFactory
         {
-            get { return (IEnumerable<GalleryItem>)GetValue(LoadableSourceProperty); }
+            get { return (Func<IEnumerable<GalleryItem>>)GetValue(LoadableSourceProperty); }
             set { SetValue(LoadableSourceProperty, value); }
         }
 
         public static readonly DependencyProperty LoadableSourceProperty =
-            DependencyProperty.Register("LoadableSource", typeof(IEnumerable<GalleryItem>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).OnLoadableSourceChanged()));
+            DependencyProperty.Register("LoadableSource", typeof(Func<IEnumerable<GalleryItem>>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).OnLoadableSourceChanged()));
 
         /// <summary>
         /// 设置此控件的用处，一般用于过滤指定标签的图片列表
@@ -99,10 +99,15 @@ namespace Wbooru.UI.Controls
             UpdateSettingForScroller();
         }
 
+        private IEnumerable<GalleryItem> loadable_items;
+
         private void OnLoadableSourceChanged()
         {
+            ListScrollViewer.ScrollToVerticalOffset(0);
             Items.Clear(); 
             current_index = 0;
+
+            loadable_items = LoadableSourceFactory?.Invoke();
 
             TryRequestMoreItemFromLoadableSource();
         }
@@ -137,7 +142,7 @@ namespace Wbooru.UI.Controls
         {
             Items.Clear();
             Gallery = null;
-            LoadableSource = null;
+            LoadableSourceFactory = null;
         }
 
         private async void TryRequestMoreItemFromLoadableSource()
@@ -148,7 +153,7 @@ namespace Wbooru.UI.Controls
                 return;
             }
 
-            if (LoadableSource == null)
+            if (loadable_items == null)
                 return;
 
             OnRequestMoreItemStarted?.Invoke(this);
@@ -158,7 +163,7 @@ namespace Wbooru.UI.Controls
             is_requesting = true;
 
             Gallery gallery = Gallery;
-            IEnumerable<GalleryItem> source = LoadableSource; 
+            IEnumerable<GalleryItem> source = loadable_items; 
 
             (GalleryItem[] list, bool success ) = await Task.Run(() => {
                 try
@@ -177,7 +182,7 @@ namespace Wbooru.UI.Controls
 
             Dispatcher.Invoke(new Action(() =>
             {
-                if (source != LoadableSource)
+                if (source != loadable_items)
                     return;
 
                 foreach (var item in list)
@@ -286,7 +291,6 @@ namespace Wbooru.UI.Controls
             /*
              * 如果Gallery支持IGalleryItemIteratorFastSkipable,且此插件是用于主页面显示的，则使用此接口的功能
              */
-
             if (ViewType != GalleryViewType.Main || !(Gallery is IGalleryItemIteratorFastSkipable feature))
             {
                 Log.Info($"Use default method to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
@@ -297,7 +301,10 @@ namespace Wbooru.UI.Controls
             else
             {
                 Log.Info($"Use IGalleryItemIteratorFastSkipable.IteratorSkip() to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
-                LoadableSource = feature.IteratorSkip(page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad);
+               
+                //这里不会根据因刷新而开头会有不同的变化
+                var list = feature.IteratorSkip(page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad);
+                LoadableSourceFactory = new Func<IEnumerable<GalleryItem>>(() => list);
             }
         }
 
@@ -322,6 +329,11 @@ namespace Wbooru.UI.Controls
 
             Log.Debug($"click item {item.GalleryItemID}");
             ClickItemEvent?.Invoke(item);
+        }
+
+        internal void RefreshItem()
+        {
+            OnLoadableSourceChanged();
         }
     }
 }
