@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,19 +68,38 @@ namespace Wbooru.Kernel.Updater
             }
 
             var exe_path = Process.GetCurrentProcess().MainModule.FileName;
+
+            Process.Start(exe_path, command_line);
+            App.UnusualSafeExit();
         }
 
         internal static void ApplyPluginUpdate()
         {
             var zip_files = CommandLine.ValueOptions
                 .Where(x => x.Name == "update_plugin_zip_file")
-                .Select(x => x.Value)
-                .Where(x=>File.Exists(x));
+                .Select(x => x.Value);
+
+            var exe_path = Directory.GetParent(Process.GetCurrentProcess().MainModule.FileName).FullName;
 
             foreach (var file in zip_files)
             {
+                try
+                {
+                    using (ZipArchive archive = ZipFile.Open(file, ZipArchiveMode.Read))
+                    {
+                        archive.ExtractToDirectory(exe_path);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Applied zip file {file} failed : "+e.Message);
+                }
 
+                Log.Info("Applied zip file extract:" + file);
             }
+
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
+            App.UnusualSafeExit();
         }
     }
 }

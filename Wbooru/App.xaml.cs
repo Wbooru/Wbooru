@@ -34,12 +34,11 @@ namespace Wbooru
 
         private async void BeginCheckUpdatable()
         {
-            if (!SettingManager.LoadSetting<GlobalSetting>().EnableAutoCheckUpdatable)
+            if (SettingManager.LoadSetting<GlobalSetting>().EnableAutoCheckUpdatable)
+            {
+                ProgramUpdater.CheckUpdatable();
                 return;
-
-            ProgramUpdater.CheckUpdatable();
-
-            
+            }
         }
 
         private void PreprocessCommandLine()
@@ -48,6 +47,11 @@ namespace Wbooru
             if (CommandLine.ContainSwitchOption("update"))
             {
                 ProgramUpdater.ApplyUpdate();
+            }
+
+            if (CommandLine.ContainSwitchOption("update_plugin"))
+            {
+                PluginUpdaterManager.ApplyPluginUpdate();
             }
         }
 

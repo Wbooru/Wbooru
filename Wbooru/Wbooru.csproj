@@ -135,6 +135,7 @@
     <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\INavigatableAction.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
+    <Compile Include="Kernel\Updater\PluginUpdaterManager.cs" />
     <Compile Include="Kernel\Updater\ProgramUpdater.cs" />
     <Compile Include="Kernel\Updater\ReleaseInfo.cs" />
     <Compile Include="Kernel\SchedulerManager.cs" />
@@ -239,9 +240,6 @@
     <Compile Include="UI\Pages\DefaultLoginPage.xaml.cs">
       <DependentUpon>DefaultLoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Pages\DownloadListPage.xaml.cs">
-      <DependentUpon>DownloadListPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Pages\PictureDetailViewPage.xaml.cs">
       <DependentUpon>PictureDetailViewPage.xaml</DependentUpon>
     </Compile>
@@ -324,10 +322,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Pages\DefaultLoginPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Pages\DownloadListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
