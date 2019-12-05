@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,14 +28,15 @@ namespace Wbooru
 
         public static void BuildDefault()
         {
-            if (!Directory.Exists("Plugins"))
-                Directory.CreateDirectory("Plugins");
+            Directory.CreateDirectory("Plugins");
+
+            var plugin_folders = Directory.GetDirectories("Plugins").Select(x => new DirectoryCatalog(x)).OfType<ComposablePartCatalog>();
 
             var catalog = new AggregateCatalog(
-                new DirectoryCatalog("Plugins"),
-                new DirectoryCatalog("."),
-                new AssemblyCatalog(typeof(Container).Assembly)
-                );
+                plugin_folders.Concat(new[] {
+                    new AssemblyCatalog(typeof(Container).Assembly)
+                }
+               ));
 
             instance = new CompositionContainer(catalog);
         }

@@ -28,27 +28,13 @@ namespace Wbooru.Kernel.ProgramUpdater
 
         public static ReleaseInfo CacheUpdatableReleaseInfo { get; private set; }
 
-        public static IEnumerable<ReleaseInfo> GetAllReleaseInfoList()
-        {
-            var releases_url = $"https://api.github.com/repos/MikiraSora/Wbooru/releases";
-
-            var array = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(releases_url, req =>
-            {
-                req.UserAgent = "WbooruProgramUpdater";
-            }));
-
-            return array
-                .Select(x => TryGetReleaseInfo(x))
-                .OfType<ReleaseInfo>().ToArray();
-        }
-
         public static bool CheckUpdatable()
         {
             var option = SettingManager.LoadSetting<GlobalSetting>();
 
             try
             {
-                var releases = GetAllReleaseInfoList();
+                var releases = UpdaterHelper.GetGithubAllReleaseInfoList($"https://api.github.com/repos/MikiraSora/Wbooru/releases");
 
                 if (!releases.Any())
                 {
@@ -292,27 +278,6 @@ namespace Wbooru.Kernel.ProgramUpdater
 
             Log.Info($"absolutePath = {absolutePath} | relativeTo = {relativeTo} | relativePath = {relativePath}");
             return relativePath.ToString();
-        }
-
-        private static ReleaseInfo TryGetReleaseInfo(JToken x)
-        {
-            try
-            {
-                return new ReleaseInfo
-                {
-                    Description = x["body"].ToString(),
-                    ReleaseDate = DateTime.Parse(x["published_at"].ToString()),
-                    Type = x["prerelease"].ToObject<bool>() ? ReleaseInfo.ReleaseType.Preview : ReleaseInfo.ReleaseType.Stable,
-                    ReleaseURL = x["html_url"].ToString(),
-                    Version = Version.Parse(x["tag_name"].ToString().TrimStart('v')),
-                    DownloadURL = ((x["assets"] as JArray)?.FirstOrDefault()["browser_download_url"])?.ToString()
-                };
-            }
-            catch (Exception e)
-            {
-                Log.Error($"Can't parse release info from json content: {e.Message} \n {x.ToString()}");
-                return null;
-            }
         }
     }
 }
