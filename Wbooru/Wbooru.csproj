@@ -240,8 +240,14 @@
     <Compile Include="UI\Pages\DefaultLoginPage.xaml.cs">
       <DependentUpon>DefaultLoginPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Pages\DownloadListPage.xaml.cs">
+      <DependentUpon>DownloadListPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Pages\PictureDetailViewPage.xaml.cs">
       <DependentUpon>PictureDetailViewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Pages\PluginManagerPage.xaml.cs">
+      <DependentUpon>PluginManagerPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Pages\SettingPage.xaml.cs">
       <DependentUpon>SettingPage.xaml</DependentUpon>
@@ -325,6 +331,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Pages\DownloadListPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\Pages\MainGalleryPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -354,6 +364,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Pages\PictureDetailViewPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Pages\PluginManagerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
