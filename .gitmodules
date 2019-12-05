@@ -1,3 +1,6 @@
 [submodule "Dependencies/LoadingIndicators.WPF"]
 	path = Dependencies/LoadingIndicators.WPF
 	url = https://github.com/MikiraSora/LoadingIndicators.WPF
+[submodule "Plugins/WbooruPlugin.Yandere"]
+	path = Plugins/WbooruPlugin.Yandere
+	url = https://github.com/MikiraSora/WbooruPlugin.Yandere

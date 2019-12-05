@@ -9,9 +9,10 @@ using System;
 using Wbooru.Utils.Resource;
 using System.Diagnostics;
 using System.Threading;
-using Wbooru.Kernel.ProgramUpdater;
+using Wbooru.Kernel.Updater;
 using Wbooru.Utils;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Wbooru
 {
@@ -27,6 +28,18 @@ namespace Wbooru
             PreprocessCommandLine();
 
             Init();
+
+            BeginCheckUpdatable();
+        }
+
+        private async void BeginCheckUpdatable()
+        {
+            if (!SettingManager.LoadSetting<GlobalSetting>().EnableAutoCheckUpdatable)
+                return;
+
+            ProgramUpdater.CheckUpdatable();
+
+            
         }
 
         private void PreprocessCommandLine()

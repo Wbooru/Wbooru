@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wbooru.Kernel.ProgramUpdater
+namespace Wbooru.Kernel.Updater
 {
     public class ReleaseInfo
     {

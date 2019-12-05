@@ -14,7 +14,7 @@ using Wbooru.Network;
 using Wbooru.Settings;
 using Wbooru.Utils;
 
-namespace Wbooru.Kernel.ProgramUpdater
+namespace Wbooru.Kernel.Updater
 {
     public static class ProgramUpdater
     {

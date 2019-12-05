@@ -133,9 +133,9 @@ namespace Wbooru.Settings
 
         #region Other Options
 
-        [Description("是否自动检查程序是否有更新，通常会在程序启动时自动检查")]
+        [Description("是否自动检查程序和插件是否有更新，通常会在程序启动时自动开始检查")]
         [NeedRestart]
-        public bool EnableAutoCheckProgramUpdatable { get; set; } = true;
+        public bool EnableAutoCheckUpdatable { get; set; } = true;
 
         public enum UpdatableTarget
         {

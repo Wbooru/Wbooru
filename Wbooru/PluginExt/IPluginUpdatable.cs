@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wbooru.Kernel.ProgramUpdater;
+using Wbooru.Kernel.Updater;
 
 namespace Wbooru.PluginExt
 {

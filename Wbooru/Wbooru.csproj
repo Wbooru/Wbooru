@@ -135,8 +135,8 @@
     <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\INavigatableAction.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
-    <Compile Include="Kernel\ProgramUpdater\ProgramUpdater.cs" />
-    <Compile Include="Kernel\ProgramUpdater\ReleaseInfo.cs" />
+    <Compile Include="Kernel\Updater\ProgramUpdater.cs" />
+    <Compile Include="Kernel\Updater\ReleaseInfo.cs" />
     <Compile Include="Kernel\SchedulerManager.cs" />
     <Compile Include="Kernel\TagManager.cs" />
     <Compile Include="Migrations\201911090504417_ModifyShadowModel.cs" />
