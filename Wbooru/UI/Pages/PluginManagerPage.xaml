@@ -14,12 +14,97 @@
     <Grid Name="MainPanel" Background="{StaticResource ContentBackgroundColor}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Grid Background="{StaticResource BoardColor}">
-            <controls:MenuButton>
-            </controls:MenuButton>
+            <controls:MenuButton
+                ButtonBase.Click="MenuButton_Click"
+                ContentMargin="5,0,0,0"
+                Icon=""
+                Text="返回" />
         </Grid>
+
+        <TextBlock
+            Grid.Row="1"
+            Margin="15,10,10,30"
+            FontSize="30">
+            已安装的插件:
+        </TextBlock>
+        <ScrollViewer Grid.Row="2">
+            <StackPanel>
+                <ItemsControl Name="PluginInfoList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <GroupBox Margin="20,0,60,0" Header="{Binding PluginInfo.PluginName}">
+                                <StackPanel>
+                                    <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,10,0"
+                                            FontSize="16"
+                                            Foreground="Gray">
+                                            作者:
+                                        </TextBlock>
+                                        <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginAuthor}">
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,10,5"
+                                            FontSize="16"
+                                            Foreground="Gray">
+                                            插件描述:
+                                        </TextBlock>
+                                        <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginDescription}">
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,10,5"
+                                            FontSize="16"
+                                            Foreground="Gray">
+                                            插件网站:
+                                        </TextBlock>
+
+                                        <TextBlock FontSize="16">
+                                            <Hyperlink
+                                                Foreground="White"
+                                                NavigateUri="{Binding PluginInfo.PluginProjectWebsite}"
+                                                RequestNavigate="Hyperlink_RequestNavigate">
+                                                <TextBlock Text="{Binding PluginInfo.PluginProjectWebsite}">
+                                                </TextBlock>
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel
+                                        Margin="0,0,0,10"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,10,0"
+                                            FontSize="16"
+                                            Foreground="Gray">
+                                            插件版本:
+                                        </TextBlock>
+                                        <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginVersion}">
+                                        </TextBlock>
+                                        <Button
+                                            Margin="20,0,0,0"
+                                            Padding="10,5,10,5"
+                                            BorderBrush="White">
+                                            更新检查
+                                        </Button>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                        <Button Padding="10,5,10,5" BorderBrush="White">删除插件</Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

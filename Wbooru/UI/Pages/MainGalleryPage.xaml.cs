@@ -87,7 +87,7 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                var gallery = Container.Default.GetExportedValue<Gallery>();
+                var gallery = Container.Default.GetExportedValues<Gallery>().FirstOrDefault();
                 ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
                 if (gallery != null)
@@ -382,6 +382,13 @@ namespace Wbooru.UI.Pages
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             GridViewer.RefreshItem();
+        }
+
+        private void MenuButton_Click_2(object sender, RoutedEventArgs e)
+        {
+            var page = new PluginManagerPage();
+
+            NavigationHelper.NavigationPush(page);
         }
     }
 }

@@ -132,10 +132,9 @@
                     Icon=""
                     Text="关于" />
                 <controls:MenuButton
-                    Button.Click="MenuButton_Click_1"
+                    Button.Click="MenuButton_Click_2"
                     Icon=""
-                    Text="功能"
-                    Visibility="Collapsed" />
+                    Text="插件" />
                 <controls:MenuButton
                     Button.Click="MenuButton_Click_1"
                     Icon=""
