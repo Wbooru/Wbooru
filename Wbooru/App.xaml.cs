@@ -13,6 +13,7 @@ using Wbooru.Kernel.Updater;
 using Wbooru.Utils;
 using System.IO;
 using System.Threading.Tasks;
+using Wbooru.PluginExt;
 
 namespace Wbooru
 {
@@ -34,11 +35,16 @@ namespace Wbooru
 
         private async void BeginCheckUpdatable()
         {
-            if (SettingManager.LoadSetting<GlobalSetting>().EnableAutoCheckUpdatable)
+            await Task.Run(() =>
             {
-                ProgramUpdater.CheckUpdatable();
-                return;
-            }
+                if (SettingManager.LoadSetting<GlobalSetting>().EnableAutoCheckUpdatable)
+                {
+                    ProgramUpdater.CheckUpdatable();
+
+                    foreach (var updatable in Container.Default.GetExportedValues<PluginInfo>().OfType<IPluginUpdatable>())
+                        PluginUpdaterManager.CheckPluginUpdatable(updatable);
+                }
+            });
         }
 
         private void PreprocessCommandLine()
@@ -93,6 +99,8 @@ namespace Wbooru
 
             Container.BuildDefault();
 
+            CheckPlugin();
+
             DownloadManager.Init();
 
             SchedulerManager.Init();
@@ -102,6 +110,21 @@ namespace Wbooru
             ImageResourceManager.InitImageResourceManager();
 
             Log.Info("-----------------End Init()-----------------");
+        }
+
+        private static void CheckPlugin()
+        {
+            var conflict_plugin_group = Container.Default.GetExportedValues<PluginInfo>().GroupBy(x => x.PluginName).Where(x => x.Count() > 1);
+
+            foreach (var p in conflict_plugin_group)
+            {
+                Log.Error($"There contains plugin conflict that plugin name is same:\"{p.Key}\" : {string.Join(Environment.NewLine,p.Select(x=>x.GetType().Assembly.Location).Select(x=>$" -- {x}"))}");
+            }
+
+            if (conflict_plugin_group.Any())
+            {
+                UnusualSafeExit();
+            }
         }
 
         internal static void Term()
@@ -117,8 +140,19 @@ namespace Wbooru
         internal static void UnusualSafeExit()
         {
             Log.Info("Call UnusualSafeExit()");
-            Term();
-            Environment.Exit(0);
+
+            try
+            {
+                Term();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Term() thrown exception:{e.Message}{Environment.NewLine}{e.StackTrace}");
+            }
+            finally
+            {
+                Environment.Exit(0);
+            }
         }
     }
 }

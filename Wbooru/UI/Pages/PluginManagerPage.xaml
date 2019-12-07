@@ -4,107 +4,174 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Wbooru.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ld="http://github.com/zeluisping/loadingIndicators/xaml/controls"
     xmlns:local="clr-namespace:Wbooru.UI.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vc="clr-namespace:Wbooru.UI.ValueConverters"
     Title="PluginManagerPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-
     <Grid Name="MainPanel" Background="{StaticResource ContentBackgroundColor}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <Grid Background="{StaticResource BoardColor}">
-            <controls:MenuButton
-                ButtonBase.Click="MenuButton_Click"
-                ContentMargin="5,0,0,0"
-                Icon=""
-                Text="返回" />
+            <Grid Background="{StaticResource BoardColor}">
+                <controls:MenuButton
+                    ButtonBase.Click="MenuButton_Click"
+                    ContentMargin="5,0,0,0"
+                    Icon=""
+                    Text="返回" />
+            </Grid>
+
+            <TextBlock
+                Grid.Row="1"
+                Margin="15,10,10,30"
+                FontSize="30">
+                已安装的插件:
+            </TextBlock>
+            <ScrollViewer Grid.Row="2">
+                <StackPanel>
+                    <ItemsControl Name="PluginInfoList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <GroupBox Margin="20,0,0,40" Header="{Binding PluginInfo.PluginName}">
+                                    <StackPanel>
+                                        <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,10,0"
+                                                FontSize="16"
+                                                Foreground="Gray">
+                                                作者:
+                                            </TextBlock>
+                                            <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginAuthor}">
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,10,5"
+                                                FontSize="16"
+                                                Foreground="Gray">
+                                                插件描述:
+                                            </TextBlock>
+                                            <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginDescription}">
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,10,5"
+                                                FontSize="16"
+                                                Foreground="Gray">
+                                                插件网站:
+                                            </TextBlock>
+
+                                            <TextBlock FontSize="16">
+                                                <Hyperlink
+                                                    Foreground="White"
+                                                    NavigateUri="{Binding PluginInfo.PluginProjectWebsite}"
+                                                    RequestNavigate="Hyperlink_RequestNavigate">
+                                                    <TextBlock Text="{Binding PluginInfo.PluginProjectWebsite}">
+                                                    </TextBlock>
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel
+                                            Margin="0,0,0,10"
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,10,0"
+                                                FontSize="16"
+                                                Foreground="Gray">
+                                                插件版本:
+                                            </TextBlock>
+                                            <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginVersion}">
+                                            </TextBlock>
+                                            <TextBlock
+                                                Margin="10,0,0,0"
+                                                FontSize="16"
+                                                Foreground="Aqua"
+                                                Text="{Binding UpdatableVersion, StringFormat=(有更新{0})}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding UpdatableVersion}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed">
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding UpdatableVersion, Converter={x:Static vc:SimpleExpressionConverters.NullToBooleanConverter}}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible">
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <Button
+                                                Margin="20,0,0,0"
+                                                Padding="10,5,10,5"
+                                                Background="Transparent"
+                                                BorderBrush="White"
+                                                Click="Button_Click">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding UpdatableVersion}" Value="{x:Null}">
+                                                                <Setter Property="Content" Value="更新检查">
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding UpdatableVersion, Converter={x:Static vc:SimpleExpressionConverters.NullToBooleanConverter}}" Value="True">
+                                                                <Setter Property="Content" Value="立即更新">
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                        </StackPanel>
+                                        <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                            <Button Padding="10,5,10,5" BorderBrush="White">删除插件</Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </GroupBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
-
-        <TextBlock
-            Grid.Row="1"
-            Margin="15,10,10,30"
-            FontSize="30">
-            已安装的插件:
-        </TextBlock>
-        <ScrollViewer Grid.Row="2">
+        <Grid
+            Name="UpdatingPanel"
+            Background="#EE000000"
+            Visibility="Hidden">
             <StackPanel>
-                <ItemsControl Name="PluginInfoList">
+                <StackPanel Margin="20,50,0,20" Orientation="Horizontal">
+                    <ld:LoadingIndicator Foreground="White" Mode="Wave">
+                        <ld:LoadingIndicator.RenderTransform>
+                            <ScaleTransform ScaleX="0.65">
+                            </ScaleTransform>
+                        </ld:LoadingIndicator.RenderTransform>
+                    </ld:LoadingIndicator>
+                    <TextBlock FontSize="30">正在更新...</TextBlock>
+
+                </StackPanel>
+
+                <ItemsControl Name="MessageList" Margin="20,0,0,0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <GroupBox Margin="20,0,60,0" Header="{Binding PluginInfo.PluginName}">
-                                <StackPanel>
-                                    <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,10,0"
-                                            FontSize="16"
-                                            Foreground="Gray">
-                                            作者:
-                                        </TextBlock>
-                                        <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginAuthor}">
-                                        </TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,10,5"
-                                            FontSize="16"
-                                            Foreground="Gray">
-                                            插件描述:
-                                        </TextBlock>
-                                        <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginDescription}">
-                                        </TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,10,5"
-                                            FontSize="16"
-                                            Foreground="Gray">
-                                            插件网站:
-                                        </TextBlock>
-
-                                        <TextBlock FontSize="16">
-                                            <Hyperlink
-                                                Foreground="White"
-                                                NavigateUri="{Binding PluginInfo.PluginProjectWebsite}"
-                                                RequestNavigate="Hyperlink_RequestNavigate">
-                                                <TextBlock Text="{Binding PluginInfo.PluginProjectWebsite}">
-                                                </TextBlock>
-                                            </Hyperlink>
-                                        </TextBlock>
-                                    </StackPanel>
-                                    <StackPanel
-                                        Margin="0,0,0,10"
-                                        VerticalAlignment="Center"
-                                        Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,10,0"
-                                            FontSize="16"
-                                            Foreground="Gray">
-                                            插件版本:
-                                        </TextBlock>
-                                        <TextBlock FontSize="16" Text="{Binding PluginInfo.PluginVersion}">
-                                        </TextBlock>
-                                        <Button
-                                            Margin="20,0,0,0"
-                                            Padding="10,5,10,5"
-                                            BorderBrush="White">
-                                            更新检查
-                                        </Button>
-                                    </StackPanel>
-                                    <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
-                                        <Button Padding="10,5,10,5" BorderBrush="White">删除插件</Button>
-                                    </StackPanel>
-                                </StackPanel>
-                            </GroupBox>
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="LightGray"
+                                Text="{Binding .}">
+                            </TextBlock>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </StackPanel>
-        </ScrollViewer>
+        </Grid>
     </Grid>
 </Page>

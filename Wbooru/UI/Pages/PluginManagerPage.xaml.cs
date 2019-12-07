@@ -24,7 +24,7 @@ namespace Wbooru.UI.Pages
     /// <summary>
     /// PluginManagerPage.xaml 的交互逻辑
     /// </summary>
-    public partial class PluginManagerPage : Page
+    public partial class PluginManagerPage : Page , INavigatableAction
     {
         public class PluginInfoWrapper : System.ComponentModel.INotifyPropertyChanged
         {
@@ -108,6 +108,39 @@ namespace Wbooru.UI.Pages
 
                 info.IsUpdatableChecking = false;
             });
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is PluginInfoWrapper wrapper))
+                return;
+
+            if (wrapper.UpdatableVersion == null)
+            {
+                CheckPluginUpdatable(wrapper);
+            }
+            else
+            {
+                UpdatingPanel.Visibility = Visibility.Visible;
+                var list =new ObservableCollection<string>();
+                MessageList.ItemsSource = list;
+
+                Task.Run(()=>
+                PluginUpdaterManager.BeginPluginUpdate(new[] { wrapper.PluginInfo as IPluginUpdatable },msg=> {
+                    Dispatcher.Invoke(() =>list.Add(msg));
+                    Log.Info("BeginPluginUpdate Message:" + msg);
+                }));
+            }
+        }
+
+        public void OnNavigationBackAction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNavigationForwardAction()
+        {
+            throw new NotImplementedException();
         }
     }
 }

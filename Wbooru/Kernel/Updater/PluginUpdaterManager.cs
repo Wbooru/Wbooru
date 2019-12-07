@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Wbooru.Network;
 using Wbooru.PluginExt;
@@ -48,7 +49,7 @@ namespace Wbooru.Kernel.Updater
                 var length = response.ContentLength;
                 var buffer = new byte[1024];
 
-                reporter?.Invoke($"Started download plugin {plugin.GetType().Name} update file : {release_info.DownloadURL}");
+                reporter?.Invoke($"Started download plugin {plugin.GetType().Name} update file : {release_info.DownloadURL} , save file :{file_save_path}");
 
                 using (var net_stream = response.GetResponseStream())
                 {
@@ -67,9 +68,16 @@ namespace Wbooru.Kernel.Updater
                 reporter?.Invoke($"Finished all download update files");
             }
 
+
             var exe_path = Process.GetCurrentProcess().MainModule.FileName;
 
+            reporter?.Invoke($"command line = {command_line}");
+            reporter?.Invoke($"exe path = {command_line}");
             Process.Start(exe_path, command_line);
+
+            reporter?.Invoke("Started another Wbooru program. Now wait 3 seconds , and then exit.");
+            Thread.Sleep(3000);
+
             App.UnusualSafeExit();
         }
 
