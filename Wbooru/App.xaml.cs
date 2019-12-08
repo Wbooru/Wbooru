@@ -14,6 +14,7 @@ using Wbooru.Utils;
 using System.IO;
 using System.Threading.Tasks;
 using Wbooru.PluginExt;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace Wbooru
 {
@@ -118,7 +119,10 @@ namespace Wbooru
 
             foreach (var p in conflict_plugin_group)
             {
-                Log.Error($"There contains plugin conflict that plugin name is same:\"{p.Key}\" : {string.Join(Environment.NewLine,p.Select(x=>x.GetType().Assembly.Location).Select(x=>$" -- {x}"))}");
+                var message = $"There contains plugin conflict that plugin name is same:\"{p.Key}\" : {Environment.NewLine} {string.Join(Environment.NewLine, p.Select(x => x.GetType().Assembly.Location).Select(x => $" -- {x}"))}";
+                Log.Error(message);
+
+                MessageBox.Show(message,"Wbooru.CheckPlugin()");
             }
 
             if (conflict_plugin_group.Any())

@@ -32,6 +32,9 @@ namespace Wbooru
 
             var plugin_folders = Directory.GetDirectories("Plugins").Select(x => new DirectoryCatalog(x)).OfType<ComposablePartCatalog>();
 
+            foreach (var folder in plugin_folders)
+                Log.Info($"Add folder for loading plugins : {folder}");
+
             var catalog = new AggregateCatalog(
                 plugin_folders.Concat(new[] {
                     new AssemblyCatalog(typeof(Container).Assembly)

@@ -41,33 +41,47 @@ namespace Wbooru.Kernel.Updater
 
             var command_line = "-update_plugin ";
 
+            reporter?.Invoke($"开始下载插件压缩包....");
+
             foreach (var (plugin,release_info) in update_params)
             {
                 var file_save_path = Path.GetTempFileName();
-                var response = RequestHelper.CreateDeafult(release_info.DownloadURL);
+                reporter?.Invoke($"开始下载插件{plugin.GetType().Name} 的压缩包 {release_info.DownloadURL} 至 :{file_save_path}");
 
-                var length = response.ContentLength;
-                var buffer = new byte[1024];
-
-                reporter?.Invoke($"Started download plugin {plugin.GetType().Name} update file : {release_info.DownloadURL} , save file :{file_save_path}");
-
-                using (var net_stream = response.GetResponseStream())
+                try
                 {
-                    using (var file_stream = File.OpenWrite(file_save_path))
+                    var response = RequestHelper.CreateDeafult(release_info.DownloadURL);
+
+                    var length = response.ContentLength;
+                    reporter?.Invoke($"ContentLength = {length}");
+                    
+                    var buffer = new byte[1024];
+
+                    using (var net_stream = response.GetResponseStream())
                     {
-                        int read = 0;
-                        do
+                        using (var file_stream = File.OpenWrite(file_save_path))
                         {
-                            read = net_stream.Read(buffer, 0, buffer.Length);
-                            file_stream.Write(buffer, 0, read);
-                        } while (read != 0);
+                            int read = 0;
+                            do
+                            {
+                                read = net_stream.Read(buffer, 0, buffer.Length);
+                                file_stream.Write(buffer, 0, read);
+                            } while (read != 0);
+                        }
                     }
+
+                    reporter?.Invoke($"插件 {plugin.GetType().Name} 下载成功!");
+                }
+                catch (Exception)
+                {
+
+                    throw;
                 }
 
                 command_line += $"-update_plugin_zip_file=\"{file_save_path}\" ";
-                reporter?.Invoke($"Finished all download update files");
             }
 
+            reporter?.Invoke($"Finished all download update files");
 
             var exe_path = Process.GetCurrentProcess().MainModule.FileName;
 

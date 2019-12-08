@@ -5,7 +5,6 @@
     xmlns:controls="clr-namespace:Wbooru.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ld="http://github.com/zeluisping/loadingIndicators/xaml/controls"
-    xmlns:local="clr-namespace:Wbooru.UI.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vc="clr-namespace:Wbooru.UI.ValueConverters"
     Title="PluginManagerPage"

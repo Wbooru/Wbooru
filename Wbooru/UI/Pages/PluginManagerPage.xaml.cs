@@ -26,7 +26,7 @@ namespace Wbooru.UI.Pages
     /// </summary>
     public partial class PluginManagerPage : Page , INavigatableAction
     {
-        public class PluginInfoWrapper : System.ComponentModel.INotifyPropertyChanged
+        public class PluginInfoWrapper : INotifyPropertyChanged
         {
             private PluginInfo plugin_info;
 
@@ -135,12 +135,12 @@ namespace Wbooru.UI.Pages
 
         public void OnNavigationBackAction()
         {
-            throw new NotImplementedException();
+            if (UpdatingPanel.Visibility != Visibility.Visible)
+                NavigationHelper.NavigationPop();
         }
 
         public void OnNavigationForwardAction()
         {
-            throw new NotImplementedException();
         }
     }
 }
