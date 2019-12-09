@@ -119,10 +119,26 @@
                                                 <Button.Style>
                                                     <Style TargetType="Button">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding UpdatableVersion}" Value="{x:Null}">
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding UpdatableVersion}" Value="{x:Null}">
+                                                                    </Condition>
+                                                                    <Condition Binding="{Binding IsUpdatableChecking}" Value="False">
+                                                                    </Condition>
+                                                                </MultiDataTrigger.Conditions>
                                                                 <Setter Property="Content" Value="更新检查">
                                                                 </Setter>
-                                                            </DataTrigger>
+                                                            </MultiDataTrigger>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding UpdatableVersion}" Value="{x:Null}">
+                                                                    </Condition>
+                                                                    <Condition Binding="{Binding IsUpdatableChecking}" Value="True">
+                                                                    </Condition>
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="Content" Value="正在检查...">
+                                                                </Setter>
+                                                            </MultiDataTrigger>
                                                             <DataTrigger Binding="{Binding UpdatableVersion, Converter={x:Static vc:SimpleExpressionConverters.NullToBooleanConverter}}" Value="True">
                                                                 <Setter Property="Content" Value="立即更新">
                                                                 </Setter>

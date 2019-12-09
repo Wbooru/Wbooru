@@ -74,7 +74,7 @@ namespace Wbooru.UI.Pages
             PluginInfoList.ItemsSource = Container.Default.GetExportedValues<PluginInfo>().Select(x => new PluginInfoWrapper()
             {
                 PluginInfo = x,
-                UpdatableVersion = PluginUpdaterManager.UpdatablePluginsInfo.TryGetValue(x.GetType(), out var info) ? info.Version : null
+                UpdatableVersion = PluginUpdaterManager.UpdatablePluginsInfo.TryGetValue(x.GetType(), out var info) ? info?.Version : null
             });
         }
 
@@ -104,7 +104,7 @@ namespace Wbooru.UI.Pages
                     PluginUpdaterManager.UpdatablePluginsInfo.TryGetValue(info.PluginInfo.GetType(), out release_info);
                 }
 
-                info.UpdatableVersion = release_info.Version;
+                info.UpdatableVersion = release_info?.Version;
 
                 info.IsUpdatableChecking = false;
             });
