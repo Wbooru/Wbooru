@@ -34,7 +34,7 @@ namespace Wbooru.Kernel.Updater
 
             try
             {
-                var releases = UpdaterHelper.GetGithubAllReleaseInfoList($"https://api.github.com/repos/MikiraSora/Wbooru/releases");
+                var releases = UpdaterHelper.GetGithubAllReleaseInfoList("MikiraSora","Wbooru");
 
                 if (!releases.Any())
                 {
