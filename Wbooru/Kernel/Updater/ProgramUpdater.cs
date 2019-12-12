@@ -45,7 +45,7 @@ namespace Wbooru.Kernel.Updater
                 var updatable_releases = releases.Where(x => x.Version > CurrentProgramVersion)
                     .OrderByDescending(x => x.Version);
 
-                CacheUpdatableReleaseInfo = (option.UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? updatable_releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Preview) : null) ?? updatable_releases.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Stable);
+                CacheUpdatableReleaseInfo = (option.UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? updatable_releases.FirstOrDefault(x => x.ReleaseType == ReleaseType.Preview) : null) ?? updatable_releases.FirstOrDefault(x => x.ReleaseType == ReleaseType.Stable);
 
                 if (CacheUpdatableReleaseInfo == null)
                 {

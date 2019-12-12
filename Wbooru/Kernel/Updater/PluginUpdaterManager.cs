@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Wbooru.Kernel.Updater.PluginMarket;
 using Wbooru.Network;
 using Wbooru.PluginExt;
 using Wbooru.Settings;
@@ -29,7 +30,7 @@ namespace Wbooru.Kernel.Updater
             if (!releases_list.Any())
                 return;
 
-            var release_info = (SettingManager.LoadSetting<GlobalSetting>().UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases_list.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Preview) : null) ?? releases_list.FirstOrDefault(x => x.Type == ReleaseInfo.ReleaseType.Stable);
+            var release_info = (SettingManager.LoadSetting<GlobalSetting>().UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Preview) : null) ?? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Stable);
 
             UpdatablePluginsInfo[type] = release_info;
         }
@@ -93,6 +94,30 @@ namespace Wbooru.Kernel.Updater
             Thread.Sleep(3000);
 
             App.UnusualSafeExit();
+        }
+
+        internal static void DownloadPluginRelease(PluginMarketRelease release)
+        {
+            var file_save_path = Path.GetTempFileName();
+
+            var response = RequestHelper.CreateDeafult(release.DownloadURL);
+
+            var length = response.ContentLength;
+
+            var buffer = new byte[1024];
+
+            using (var net_stream = response.GetResponseStream())
+            {
+                using (var file_stream = File.OpenWrite(file_save_path))
+                {
+                    int read = 0;
+                    do
+                    {
+                        read = net_stream.Read(buffer, 0, buffer.Length);
+                        file_stream.Write(buffer, 0, read);
+                    } while (read != 0);
+                }
+            }
         }
 
         internal static void ApplyPluginUpdate()

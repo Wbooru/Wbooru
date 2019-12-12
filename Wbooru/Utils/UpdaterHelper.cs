@@ -32,9 +32,9 @@ namespace Wbooru.Utils
             {
                 return new ReleaseInfo
                 {
-                    Description = x["body"].ToString(),
+                    ReleaseDescription = x["body"].ToString(),
                     ReleaseDate = DateTime.Parse(x["published_at"].ToString()),
-                    Type = x["prerelease"].ToObject<bool>() ? ReleaseInfo.ReleaseType.Preview : ReleaseInfo.ReleaseType.Stable,
+                    ReleaseType = x["prerelease"].ToObject<bool>() ? ReleaseType.Preview : ReleaseType.Stable,
                     ReleaseURL = x["html_url"].ToString(),
                     Version = Version.Parse(x["tag_name"].ToString().TrimStart('v')),
                     DownloadURL = ((x["assets"] as JArray)?.FirstOrDefault()["browser_download_url"])?.ToString()

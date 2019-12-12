@@ -135,11 +135,16 @@
     <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\INavigatableAction.cs" />
     <Compile Include="Kernel\NavigationHelper.cs" />
+    <Compile Include="Kernel\Updater\PluginMarket\DefaultPluginMarket.cs" />
+    <Compile Include="Kernel\Updater\PluginMarket\PluginMarket.cs" />
+    <Compile Include="Kernel\Updater\PluginMarket\PluginMarketPost.cs" />
+    <Compile Include="Kernel\Updater\PluginMarket\PluginMarketRelease.cs" />
     <Compile Include="Kernel\Updater\PluginUpdaterManager.cs" />
     <Compile Include="Kernel\Updater\ProgramUpdater.cs" />
     <Compile Include="Kernel\Updater\ReleaseInfo.cs" />
     <Compile Include="Kernel\SchedulerManager.cs" />
     <Compile Include="Kernel\TagManager.cs" />
+    <Compile Include="Kernel\Updater\ReleaseType.cs" />
     <Compile Include="Migrations\201911090504417_ModifyShadowModel.cs" />
     <Compile Include="Migrations\201911090504417_ModifyShadowModel.Designer.cs">
       <DependentUpon>201911090504417_ModifyShadowModel.cs</DependentUpon>

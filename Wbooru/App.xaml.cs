@@ -15,6 +15,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Wbooru.PluginExt;
 using MessageBox = System.Windows.Forms.MessageBox;
+using Wbooru.Kernel.Updater.PluginMarket;
 
 namespace Wbooru
 {

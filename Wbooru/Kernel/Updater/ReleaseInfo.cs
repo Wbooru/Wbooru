@@ -8,16 +8,11 @@ namespace Wbooru.Kernel.Updater
 {
     public class ReleaseInfo
     {
-        public enum ReleaseType
-        {
-            Stable, Preview
-        }
-
-        public ReleaseType Type { get; set; }
+        public ReleaseType ReleaseType { get; set; }
         public Version Version { get; set; }
         public DateTime ReleaseDate { get; set; }
         public string DownloadURL { get; set; }
         public string ReleaseURL { get; set; }
-        public string Description { get; set; }
+        public string ReleaseDescription { get; set; }
     }
 }
