@@ -10,5 +10,7 @@ namespace Wbooru.Kernel.Updater.PluginMarket
     {
         public abstract string MarketName { get; }
         public abstract IEnumerable<PluginMarketPost> GetPluginPosts();
+
+        public override string ToString() => MarketName;
     }
 }

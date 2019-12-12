@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using Wbooru.Galleries.SupportFeatures;
+using Wbooru.Kernel.Updater.PluginMarket;
 
 namespace Wbooru.UI.ValueConverters
 {
@@ -22,5 +23,16 @@ namespace Wbooru.UI.ValueConverters
                 Log.Debug("{b.Value}", nameof(NullToBooleanConverter));
                 return b.Value != null;
             });
+
+        public static IValueConverter LatestUpdateDateConverter => ValueConverter.Create<IEnumerable<PluginMarketRelease>, DateTime?>(post => {
+            if (post.Value is IEnumerable<PluginMarketRelease> list && list.Count() != 0)
+            {
+                return list.Max(x => x.ReleaseDate);
+            }
+            else
+            {
+                return default;
+            }
+        }); 
     }
 }

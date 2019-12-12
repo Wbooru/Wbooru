@@ -607,5 +607,10 @@ namespace Wbooru.UI.Pages
                 Toast.ShowMessage("复制失败," + e.Message);
             }
         }
+
+        private void ViewPage_SizeChanged_1(object sender, SizeChangedEventArgs e)
+        {
+
+        }
     }
 }

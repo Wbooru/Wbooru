@@ -12,12 +12,15 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Kernel;
 using Wbooru.Kernel.Updater;
+using Wbooru.Kernel.Updater.PluginMarket;
 using Wbooru.PluginExt;
+using Wbooru.Utils;
 
 namespace Wbooru.UI.Pages
 {
@@ -71,11 +74,26 @@ namespace Wbooru.UI.Pages
         {
             InitializeComponent();
 
+            PluginMarketPosts = new ObservableCollection<PluginMarketPost>();
+
             PluginInfoList.ItemsSource = Container.Default.GetExportedValues<PluginInfo>().Select(x => new PluginInfoWrapper()
             {
                 PluginInfo = x,
                 UpdatableVersion = PluginUpdaterManager.UpdatablePluginsInfo.TryGetValue(x.GetType(), out var info) ? info?.Version : null
             });
+
+            layout_translate_storyboard = new Storyboard();
+            layout_translate_storyboard.Completed += (e, d) =>
+            {
+                ViewPage_SizeChanged(null, null);
+                ObjectPool<ThicknessAnimation>.Return(e as ThicknessAnimation);
+            };
+
+            var plugin_markets = Container.Default.GetExportedValues<PluginMarket>();
+
+            PluginMarketList.ItemsSource = plugin_markets;
+
+            MainPanel.DataContext = this;
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -135,12 +153,136 @@ namespace Wbooru.UI.Pages
 
         public void OnNavigationBackAction()
         {
-            if (UpdatingPanel.Visibility != Visibility.Visible)
-                NavigationHelper.NavigationPop();
+            if (UpdatingPanel.Visibility == Visibility.Visible)
+                return;
+
+            switch (current_layout)
+            {
+                case LayoutState.One:
+                    NavigationHelper.NavigationPop();
+                    break;
+                case LayoutState.Two:
+                    MenuButton_Click_2(null, null);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void OnNavigationForwardAction()
         {
+            if (UpdatingPanel.Visibility == Visibility.Visible)
+                return;
+
+            switch (current_layout)
+            {
+                case LayoutState.One:
+                    MenuButton_Click_1(null, null);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        enum LayoutState
+        {
+            One, Two
+        }
+
+        LayoutState current_layout = LayoutState.One;
+        private Storyboard layout_translate_storyboard;
+
+        private void MenuButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            current_layout = LayoutState.Two;
+            ApplyTranslate();
+        }
+
+        private void MenuButton_Click_2(object sender, RoutedEventArgs e)
+        {
+            current_layout = LayoutState.One;
+            ApplyTranslate();
+        }
+
+        private Thickness CalculateMargin()
+        {
+            double margin_left = 0;
+
+            switch (current_layout)
+            {
+                case LayoutState.One:
+                    margin_left = 0;
+                    break;
+                case LayoutState.Two:
+                    margin_left = 1;
+                    break;
+                default:
+                    break;
+            }
+
+            margin_left *= -ViewPage.ActualWidth;
+
+            return new Thickness(margin_left, 0, 0, 0);
+        }
+
+        private void ApplyTranslate()
+        {
+            layout_translate_storyboard.Children.Clear();
+
+            if (ObjectPool<ThicknessAnimation>.Get(out var animation))
+            {
+                //init 
+                animation.Duration = new Duration(TimeSpan.FromMilliseconds(250));
+                animation.FillBehavior = FillBehavior.Stop;
+                Storyboard.SetTargetProperty(animation, new PropertyPath(Grid.MarginProperty));
+                animation.EasingFunction = animation.EasingFunction ?? new QuadraticEase() { EasingMode = EasingMode.EaseOut };
+            }
+
+            animation.To = CalculateMargin();
+
+            layout_translate_storyboard.Children.Clear();
+            layout_translate_storyboard.Children.Add(animation);
+            layout_translate_storyboard.Begin(MainPanel);
+        }
+
+        private void ViewPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var new_margin = CalculateMargin();
+            MainPanel.Margin = new_margin;
+        }
+
+        public ObservableCollection<PluginMarketPost> PluginMarketPosts
+        {       
+            get { return (ObservableCollection<PluginMarketPost>)GetValue(PluginMarketPostsProperty); }
+            set { SetValue(PluginMarketPostsProperty, value); }
+        }
+
+        public static readonly DependencyProperty PluginMarketPostsProperty =
+            DependencyProperty.Register("PluginMarketPosts", typeof(ObservableCollection<PluginMarketPost>), typeof(PluginManagerPage), new PropertyMetadata(null));
+
+        private void PluginMarketList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PluginMarketList.IsEnabled = false;
+
+            if (PluginMarketList.SelectedItem is PluginMarket market)
+            {
+                Task.Run(() =>
+                {
+                    using (var status = MarketStatusDisplayer.BeginBusy("正在获取插件列表"))
+                    {
+                        var plugin_list = market.GetPluginPosts().ToArray();
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            PluginMarketList.IsEnabled = true;
+                            PluginMarketPosts.Clear();
+
+                            foreach (var item in plugin_list)
+                                PluginMarketPosts.Add(item);
+                        });
+                    }
+                });
+            }
         }
     }
 }
