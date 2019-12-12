@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +14,7 @@ using Wbooru.Utils;
 
 namespace Wbooru.Kernel.Updater.PluginMarket
 {
+    [Export(typeof(PluginMarket))]
     public class DefaultPluginMarket : PluginMarket
     {
         static DefaultPluginMarket()
