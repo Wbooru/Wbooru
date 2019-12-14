@@ -10,11 +10,13 @@
         <Storyboard x:Key="NoScaleAction">
             <DoubleAnimation
                 AccelerationRatio="0.9"
+                FillBehavior="Stop"
                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
                 To="1"
                 Duration="0:0:0.250" />
             <DoubleAnimation
                 AccelerationRatio="0.9"
+                FillBehavior="Stop"
                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
                 To="1"
                 Duration="0:0:0.250" />
@@ -22,11 +24,13 @@
         <Storyboard x:Key="Scale2xAction">
             <DoubleAnimation
                 AccelerationRatio="0.9"
+                FillBehavior="Stop"
                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
                 To="2"
                 Duration="0:0:0.250" />
             <DoubleAnimation
                 AccelerationRatio="0.9"
+                FillBehavior="Stop"
                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
                 To="2"
                 Duration="0:0:0.250" />
@@ -34,11 +38,13 @@
         <Storyboard x:Key="Scale4xAction">
             <DoubleAnimation
                 AccelerationRatio="0.9"
+                FillBehavior="Stop"
                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
                 To="4"
                 Duration="0:0:0.250" />
             <DoubleAnimation
                 AccelerationRatio="0.9"
+                FillBehavior="Stop"
                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
                 To="4"
                 Duration="0:0:0.250" />
@@ -46,11 +52,13 @@
         <Storyboard x:Key="ScaleRawPixelAction">
             <DoubleAnimation
                 AccelerationRatio="0.9"
+                FillBehavior="Stop"
                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
                 To="4"
                 Duration="0:0:0.250" />
             <DoubleAnimation
                 AccelerationRatio="0.9"
+                FillBehavior="Stop"
                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
                 To="4"
                 Duration="0:0:0.250" />
@@ -64,6 +72,7 @@
         MouseLeftButtonDown="Grid_MouseLeftButtonDown"
         MouseLeftButtonUp="Grid_MouseLeftButtonUp"
         MouseMove="Grid_MouseMove"
+        MouseWheel="WrapPanel_MouseWheel"
         SizeChanged="WrapPanel_SizeChanged">
         <Image Name="ImageCoreBox">
             <Image.RenderTransform>

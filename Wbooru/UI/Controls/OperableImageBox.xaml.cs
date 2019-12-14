@@ -50,6 +50,7 @@ namespace Wbooru.UI.Controls
 
         private DragActionState drag_action_state = DragActionState.Idle;
         private ScaleState CurrentScale { get; set; }
+        private float CurrentScaleValue { get; set; }
         private Vector CurrentTranslateOffset { get; set; }
         private Dictionary<ScaleState, Storyboard> TransformScaleMap { get; set; }
 
@@ -91,8 +92,12 @@ namespace Wbooru.UI.Controls
                 //{ScaleState.ScaleRawPixel,Resources["ScaleRawPixelAction"]as Storyboard },
             };
 
-            foreach (var sb in TransformScaleMap.Values)
-                sb.Completed += (_, __) => ReboundImageBox();
+            foreach (var pair in TransformScaleMap)
+                pair.Value.Completed += (_, __) =>
+                {
+                    ApplyScale((int)pair.Key);
+                    ReboundImageBox();
+                };
 
             if (ImageCoreBox.Source != null)
             {
@@ -130,9 +135,19 @@ namespace Wbooru.UI.Controls
             }
         }
 
+        public void ApplyScale(float scale)
+        {
+            CurrentScaleValue = scale;
+            ((ImageCoreBox.RenderTransform as TransformGroup).Children[0] as ScaleTransform).ScaleX = scale;
+            ((ImageCoreBox.RenderTransform as TransformGroup).Children[0] as ScaleTransform).ScaleY = scale;
+
+            ReboundImageBox();
+        }
+
         public void ApplyScale(ScaleState scale, Point? scale_center_point)
         {
             CurrentScale = scale;
+            CurrentScaleValue = (int)scale;
             var point = scale_center_point ?? new Point(ImageCoreBox.ActualWidth / 2, ImageCoreBox.ActualHeight / 2);
 
             ((ImageCoreBox.RenderTransform as TransformGroup).Children[0] as ScaleTransform).CenterX = point.X;
@@ -264,7 +279,7 @@ namespace Wbooru.UI.Controls
 
             double p = width / height;
 
-            double scale = (int)CurrentScale;
+            double scale = CurrentScaleValue;
 
             if (scale!=0)
             {
@@ -327,6 +342,18 @@ namespace Wbooru.UI.Controls
         private void WrapPanel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             ReboundImageBox();
+        }
+
+        private void WrapPanel_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            const float offset_c= 0.1f;
+            var offset = e.Delta > 0 ? offset_c : (e.Delta < 0 ? -offset_c : 0);
+
+            var calc_scale = Math.Min(4, Math.Max(1, offset + CurrentScaleValue));
+
+            Log.Debug(calc_scale.ToString());
+
+            ApplyScale(calc_scale);
         }
     }
 }

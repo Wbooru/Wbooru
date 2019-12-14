@@ -280,13 +280,13 @@
                         X1="0"
                         X2="{Binding ActualWidth, ElementName=ViewPage}" />
 
-                    <ListBox HorizontalContentAlignment="Stretch" ItemsSource="{Binding DownloadableImageLinks}">
-                        <ListBox.Template>
+                    <ItemsControl HorizontalContentAlignment="Stretch" ItemsSource="{Binding DownloadableImageLinks}">
+                        <ItemsControl.Template>
                             <ControlTemplate>
                                 <ItemsPresenter />
                             </ControlTemplate>
-                        </ListBox.Template>
-                        <ListBox.ItemTemplate>
+                        </ItemsControl.Template>
+                        <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <Button
@@ -317,8 +317,8 @@
                                         Foreground="White" />
                                 </StackPanel>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
                     <!--#endregion-->
                 </StackPanel>
@@ -339,16 +339,16 @@
                 </controls:MenuButton>
             </StackPanel>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
-                <ListBox
+                <ItemsControl
                     HorizontalContentAlignment="Stretch"
                     DataContext="{Binding PictureDetailInfo}"
                     ItemsSource="{Binding Tags}">
-                    <ListBox.Template>
+                    <ItemsControl.Template>
                         <ControlTemplate>
                             <ItemsPresenter />
                         </ControlTemplate>
-                    </ListBox.Template>
-                    <ListBox.ItemTemplate>
+                    </ItemsControl.Template>
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <Button
@@ -382,8 +382,8 @@
                                     Text="{Binding}" />
                             </StackPanel>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
         </Grid>
     </Grid>
