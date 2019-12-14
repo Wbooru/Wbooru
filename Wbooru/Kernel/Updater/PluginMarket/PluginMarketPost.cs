@@ -13,7 +13,7 @@ namespace Wbooru.Kernel.Updater.PluginMarket
         public string Description { get; set; }
 
         public string ReleaseType { get; set; }
-        public string GithubRepoUrl { get; set; }
+        public string ReleaseUrl { get; set; }
 
         public IEnumerable<PluginMarketRelease> ReleaseInfos { get; set; }
     }

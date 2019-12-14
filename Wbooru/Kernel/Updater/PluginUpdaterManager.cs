@@ -96,7 +96,7 @@ namespace Wbooru.Kernel.Updater
             App.UnusualSafeExit();
         }
 
-        internal static void DownloadPluginRelease(PluginMarketRelease release)
+        internal static void InstallPluginRelease(PluginMarketRelease release,Action<string> reporter)
         {
             var file_save_path = Path.GetTempFileName();
 
@@ -118,6 +118,20 @@ namespace Wbooru.Kernel.Updater
                     } while (read != 0);
                 }
             }
+
+            var command_line = $"-update_plugin -update_plugin_zip_file=\"{file_save_path}\" ";
+            reporter?.Invoke($"Finished all download update files");
+
+            var exe_path = Process.GetCurrentProcess().MainModule.FileName;
+
+            reporter?.Invoke($"command line = {command_line}");
+            reporter?.Invoke($"exe path = {command_line}");
+            Process.Start(exe_path, command_line);
+
+            reporter?.Invoke("Started another Wbooru program. Now wait 3 seconds , and then exit.");
+            Thread.Sleep(3000);
+
+            App.UnusualSafeExit();
         }
 
         internal static void ApplyPluginUpdate()

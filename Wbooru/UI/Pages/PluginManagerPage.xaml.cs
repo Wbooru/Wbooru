@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -20,6 +21,7 @@ using Wbooru.Kernel;
 using Wbooru.Kernel.Updater;
 using Wbooru.Kernel.Updater.PluginMarket;
 using Wbooru.PluginExt;
+using Wbooru.Settings;
 using Wbooru.Utils;
 
 namespace Wbooru.UI.Pages
@@ -94,6 +96,8 @@ namespace Wbooru.UI.Pages
             PluginMarketList.ItemsSource = plugin_markets;
 
             MainPanel.DataContext = this;
+
+            MessageList.ItemsSource = new ObservableCollection<string>();
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -139,16 +143,44 @@ namespace Wbooru.UI.Pages
             }
             else
             {
-                UpdatingPanel.Visibility = Visibility.Visible;
-                var list =new ObservableCollection<string>();
-                MessageList.ItemsSource = list;
+                StartProgress(LayoutState.One);
 
                 Task.Run(()=>
                 PluginUpdaterManager.BeginPluginUpdate(new[] { wrapper.PluginInfo as IPluginUpdatable },msg=> {
-                    Dispatcher.Invoke(() =>list.Add(msg));
+                    AppendProgressMessage(msg);
                     Log.Info("BeginPluginUpdate Message:" + msg);
                 }));
             }
+        }
+
+        private void StartProgress(LayoutState state)
+        {
+            MarketPanelPart.Children.Remove(UpdatingPanel);
+            UpdatePanelPart.Children.Remove(UpdatingPanel);
+
+            switch (state)
+            {
+                case LayoutState.One:
+                    ProgressHeader.Text = "正在更新...";
+                    UpdatePanelPart.Children.Add(UpdatingPanel);
+                    break;
+                case LayoutState.Two:
+                    ProgressHeader.Text = "正在下载...";
+                    MarketPanelPart.Children.Add(UpdatingPanel);
+                    break;
+                default:
+                    break;
+            }
+
+            (MessageList.ItemsSource as ObservableCollection<string>).Clear();
+            UpdatingPanel.Visibility = Visibility.Visible;
+        }
+
+        private void AppendProgressMessage(string message) => Dispatcher.Invoke(() => (MessageList.ItemsSource as ObservableCollection<string>).Add(message));
+
+        private void EndProgress()
+        {
+            UpdatingPanel.Visibility = Visibility.Hidden;
         }
 
         public void OnNavigationBackAction()
@@ -283,6 +315,32 @@ namespace Wbooru.UI.Pages
                     }
                 });
             }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            var post = (sender as FrameworkElement).DataContext as PluginMarketPost;
+            StartProgress(LayoutState.Two);
+
+            var releases = (post.ReleaseInfos ?? Enumerable.Empty<PluginMarketRelease>()).OrderBy(x=>x.Version);
+
+            var pick = SettingManager.LoadSetting<GlobalSetting>().UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ?
+                releases.FirstOrDefault() : releases.Where(x => x.ReleaseType != ReleaseType.Preview).FirstOrDefault();
+
+            if (pick==null)
+            {
+                AppendProgressMessage("没发现任何可以下载的版本,三秒后自动关闭此页面...");
+                Task.Delay(3000).ContinueWith(_ => Dispatcher.Invoke(() => EndProgress()));
+                return;
+            }
+
+            AppendProgressMessage($"选择 : {pick.Version} {pick.ReleaseType} {pick.ReleaseDate} {pick.DownloadURL} {pick.ReleaseURL}");
+            AppendProgressMessage($"开始下载 : {pick.DownloadURL}");
+
+            Task.Run(() =>
+            {
+                PluginUpdaterManager.InstallPluginRelease(pick, msg => AppendProgressMessage(msg));
+            });
         }
     }
 }

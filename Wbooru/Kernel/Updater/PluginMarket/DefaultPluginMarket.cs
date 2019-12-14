@@ -53,11 +53,12 @@ namespace Wbooru.Kernel.Updater.PluginMarket
 
             if ("GithubRelease".Equals(post.ReleaseType,StringComparison.InvariantCultureIgnoreCase))
             {
-                post.ReleaseInfos = GetPostReleaseInfosFromGithubRelease(post.GithubRepoUrl).ToArray();
+                post.ReleaseInfos = GetPostReleaseInfosFromGithubRelease(post.ReleaseUrl).ToArray();
             }
             else
             {
                 post.ReleaseInfos = GetPostReleaseInfos(post_json["comments_url"].ToString()).ToArray();
+                post.ReleaseUrl = string.IsNullOrWhiteSpace(post.ReleaseUrl) ? post_json["html_url"].ToString() : post.ReleaseUrl;
             }
 
             return post;

@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel.Updater.PluginMarket;
+using Wbooru.PluginExt;
 
 namespace Wbooru.UI.ValueConverters
 {
@@ -33,6 +34,10 @@ namespace Wbooru.UI.ValueConverters
             {
                 return default;
             }
-        }); 
+        });
+        public static IValueConverter ReverseCheckIfPluginInstalled => ValueConverter.Create<PluginMarketPost, Visibility>(
+            x => !Container.Default.GetExportedValues<PluginInfo>().Any(y => y.PluginName.Equals(x.Value?.PluginName ?? string.Empty, StringComparison.InvariantCultureIgnoreCase)) ? Visibility.Visible : Visibility.Collapsed);
+        public static IValueConverter CheckIfPluginInstalled => ValueConverter.Create<PluginMarketPost, Visibility>(
+            x => Container.Default.GetExportedValues<PluginInfo>().Any(y => y.PluginName.Equals(x.Value?.PluginName ?? string.Empty, StringComparison.InvariantCultureIgnoreCase)) ? Visibility.Visible : Visibility.Collapsed);
     }
 }
