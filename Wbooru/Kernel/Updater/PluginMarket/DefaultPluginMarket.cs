@@ -17,11 +17,6 @@ namespace Wbooru.Kernel.Updater.PluginMarket
     [Export(typeof(PluginMarket))]
     public class DefaultPluginMarket : PluginMarket
     {
-        static DefaultPluginMarket()
-        {
-            TypeDescriptor.AddAttributes(typeof(Version), new TypeConverterAttribute(typeof(VersionSimpleTypeConverter)));
-        }
-
         public override string MarketName => "Offical Default Plugin Market";
 
         public override IEnumerable<PluginMarketPost> GetPluginPosts()

@@ -15,6 +15,11 @@ namespace Wbooru.Utils
 {
     public static class UpdaterHelper
     {
+        static UpdaterHelper()
+        {
+            TypeDescriptor.AddAttributes(typeof(Version), new TypeConverterAttribute(typeof(VersionSimpleTypeConverter)));
+        }
+
         public static IEnumerable<ReleaseInfo> GetGithubAllReleaseInfoList(string owner, string repo) => GetGithubAllReleaseInfoList(BuildGithubReleaseApiUrl(owner, repo));
 
         public static IEnumerable<ReleaseInfo> GetGithubAllReleaseInfoList(string github_releases_url)
