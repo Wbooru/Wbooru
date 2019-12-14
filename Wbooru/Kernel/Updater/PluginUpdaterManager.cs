@@ -138,7 +138,7 @@ namespace Wbooru.Kernel.Updater
         {
             var zip_files = CommandLine.ValueOptions
                 .Where(x => x.Name == "update_plugin_zip_file")
-                .Select(x => x.Value);
+                .Select(x => x.Value.Trim());
 
             var exe_path = Directory.GetParent(Process.GetCurrentProcess().MainModule.FileName).FullName;
 

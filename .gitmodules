@@ -4,3 +4,6 @@
 [submodule "Plugins/WbooruPlugin.Yandere"]
 	path = Plugins/WbooruPlugin.Yandere
 	url = https://github.com/MikiraSora/WbooruPlugin.Yandere
+[submodule "Plugins/WbooruPlugin.Saucenao"]
+	path = Plugins/WbooruPlugin.Saucenao
+	url = https://github.com/MikiraSora/WbooruPlugin.Saucenao
