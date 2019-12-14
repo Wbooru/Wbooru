@@ -92,6 +92,8 @@ namespace Wbooru.UI.Pages
 
                 if (gallery != null)
                     ApplyGallery(gallery, keywords);
+                else
+                    EmptyImageSourceNotify.Visibility = Visibility.Visible;
             }
             catch (Exception e)
             {
@@ -387,6 +389,13 @@ namespace Wbooru.UI.Pages
         private void MenuButton_Click_2(object sender, RoutedEventArgs e)
         {
             var page = new PluginManagerPage();
+
+            NavigationHelper.NavigationPush(page);
+        }
+
+        private void JumpMarketButton_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new PluginManagerPage(PluginManagerPage.LayoutState.MarketPart);
 
             NavigationHelper.NavigationPush(page);
         }

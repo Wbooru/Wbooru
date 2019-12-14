@@ -298,6 +298,25 @@
                 OnRequestMoreItemFinished="GridViewer_OnRequestMoreItemFinished"
                 OnRequestMoreItemStarted="GridViewer_OnRequestMoreItemStarted" />
 
+
+            <StackPanel
+                Name="EmptyImageSourceNotify"
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Visibility="Collapsed">
+                <TextBlock FontSize="16" Foreground="Gray">没有任何的图源来加载主页面图片，请去下载对应插件.</TextBlock>
+                <Button
+                    Name="JumpMarketButton"
+                    Margin="0,10,0,0"
+                    Padding="10,5,10,5"
+                    HorizontalAlignment="Center"
+                    BorderBrush="White"
+                    Click="JumpMarketButton_Click">
+                    插件市场
+                </Button>
+            </StackPanel>
             <!--#endregion-->
         </Grid>
 

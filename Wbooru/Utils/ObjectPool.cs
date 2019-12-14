@@ -51,6 +51,9 @@ namespace Wbooru.Utils
 
         public void RegisterNewObjectPool(ObjectPoolBase pool)
         {
+            if (pool == null)
+                return;
+
             object_pools.Add(pool);
             Log.Debug($"Register new object pool :{pool.GetType().Name}");
         }

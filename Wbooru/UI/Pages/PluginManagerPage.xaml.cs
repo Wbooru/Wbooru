@@ -72,7 +72,7 @@ namespace Wbooru.UI.Pages
             public event PropertyChangedEventHandler PropertyChanged;
         }
 
-        public PluginManagerPage()
+        public PluginManagerPage(LayoutState state = LayoutState.UpdatablePart)
         {
             InitializeComponent();
 
@@ -98,6 +98,9 @@ namespace Wbooru.UI.Pages
             MainPanel.DataContext = this;
 
             MessageList.ItemsSource = new ObservableCollection<string>();
+
+            current_layout = state;
+            ApplyTranslate();
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -143,7 +146,7 @@ namespace Wbooru.UI.Pages
             }
             else
             {
-                StartProgress(LayoutState.One);
+                StartProgress(LayoutState.UpdatablePart);
 
                 Task.Run(()=>
                 PluginUpdaterManager.BeginPluginUpdate(new[] { wrapper.PluginInfo as IPluginUpdatable },msg=> {
@@ -160,11 +163,11 @@ namespace Wbooru.UI.Pages
 
             switch (state)
             {
-                case LayoutState.One:
+                case LayoutState.UpdatablePart:
                     ProgressHeader.Text = "正在更新...";
                     UpdatePanelPart.Children.Add(UpdatingPanel);
                     break;
-                case LayoutState.Two:
+                case LayoutState.MarketPart:
                     ProgressHeader.Text = "正在下载...";
                     MarketPanelPart.Children.Add(UpdatingPanel);
                     break;
@@ -190,10 +193,10 @@ namespace Wbooru.UI.Pages
 
             switch (current_layout)
             {
-                case LayoutState.One:
+                case LayoutState.UpdatablePart:
                     NavigationHelper.NavigationPop();
                     break;
-                case LayoutState.Two:
+                case LayoutState.MarketPart:
                     MenuButton_Click_2(null, null);
                     break;
                 default:
@@ -208,7 +211,7 @@ namespace Wbooru.UI.Pages
 
             switch (current_layout)
             {
-                case LayoutState.One:
+                case LayoutState.UpdatablePart:
                     MenuButton_Click_1(null, null);
                     break;
                 default:
@@ -216,23 +219,23 @@ namespace Wbooru.UI.Pages
             }
         }
 
-        enum LayoutState
+        public enum LayoutState
         {
-            One, Two
+            UpdatablePart, MarketPart
         }
 
-        LayoutState current_layout = LayoutState.One;
+        LayoutState current_layout = LayoutState.UpdatablePart;
         private Storyboard layout_translate_storyboard;
 
         private void MenuButton_Click_1(object sender, RoutedEventArgs e)
         {
-            current_layout = LayoutState.Two;
+            current_layout = LayoutState.MarketPart;
             ApplyTranslate();
         }
 
         private void MenuButton_Click_2(object sender, RoutedEventArgs e)
         {
-            current_layout = LayoutState.One;
+            current_layout = LayoutState.UpdatablePart;
             ApplyTranslate();
         }
 
@@ -242,10 +245,10 @@ namespace Wbooru.UI.Pages
 
             switch (current_layout)
             {
-                case LayoutState.One:
+                case LayoutState.UpdatablePart:
                     margin_left = 0;
                     break;
-                case LayoutState.Two:
+                case LayoutState.MarketPart:
                     margin_left = 1;
                     break;
                 default:
@@ -320,7 +323,7 @@ namespace Wbooru.UI.Pages
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             var post = (sender as FrameworkElement).DataContext as PluginMarketPost;
-            StartProgress(LayoutState.Two);
+            StartProgress(LayoutState.MarketPart);
 
             var releases = (post.ReleaseInfos ?? Enumerable.Empty<PluginMarketRelease>()).OrderBy(x=>x.Version);
 
