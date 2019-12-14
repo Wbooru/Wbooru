@@ -1,11 +1,14 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Wbooru.Kernel.Updater;
+using Wbooru.Kernel.Updater.PluginMarket;
 using Wbooru.Network;
 
 namespace Wbooru.Utils
@@ -63,5 +66,106 @@ namespace Wbooru.Utils
         }
 
         public static string BuildGithubReleaseApiUrl(string owner, string repo) => $"https://api.github.com/repos/{owner}/{repo}/releases";
+
+        public static IEnumerable<PluginMarketRelease> GetPostReleaseInfosFromGithubRelease(string githubRepoUrl)
+        {
+            var (owner, repo) = ParseOwnerAndRepoFromUrl(githubRepoUrl);
+
+            var github_release_api = BuildGithubReleaseApiUrl(owner, repo);
+
+            Log.Debug($"{githubRepoUrl} -> {github_release_api}");
+
+            var raw_release_infos = GetGithubAllReleaseInfoList(github_release_api).Select(x => new PluginMarketRelease()
+            {
+                DownloadURL = x.DownloadURL,
+                ReleaseDate = x.ReleaseDate,
+                ReleaseDescription = x.ReleaseDescription,
+                ReleaseType = x.ReleaseType,
+                Version = x.Version,
+                ReleaseURL = x.ReleaseURL
+            });
+
+            return raw_release_infos;
+        }
+
+        public static T BuildInstance<T>(JToken post_json) where T : new()
+        {
+            var body = post_json["body"].ToString();
+
+            var props = Regex.Matches(body, @"^(\w*)\|(.*)$", RegexOptions.Multiline)
+                .OfType<Match>()
+                .Select(x => (x.Groups[1].Value.Trim(), x.Groups[2].Value.Trim()))
+                .Where(x => !x.Item1.Equals("Property", StringComparison.InvariantCultureIgnoreCase));
+
+            var prop_info = typeof(T).GetProperties();
+
+            var post = new T();
+
+            foreach (var prop in props)
+            {
+                if (prop_info.FirstOrDefault(x => x.Name.Equals(prop.Item1, StringComparison.InvariantCultureIgnoreCase)) is PropertyInfo pi &&
+                    TypeDescriptor.GetConverter(pi.PropertyType) is TypeConverter converter)
+                {
+                    var value = converter.ConvertFromString(prop.Item2);
+                    pi.SetValue(post, value);
+                }
+            }
+
+            return post;
+        }
+
+        public static IEnumerable<PluginMarketRelease> GetPostReleaseInfosFromIssue(string url)
+        {
+            try
+            {
+                var api_url = url.Contains("api.github.com") ? url : url.Replace("github.com", "api.github.com/repos");
+                Log.Debug($"{url} -> {api_url}");
+
+                var issue_json = RequestHelper.GetJsonContainer<JObject>(RequestHelper.CreateDeafult(api_url, req => req.UserAgent = "WbooruPluginMarket"));
+                return GetPostReleaseInfosFromIssueCommentsAPI(issue_json["comments_url"].ToString());
+            }
+            catch (Exception e)
+            {
+                ExceptionHelper.DebugThrow(e);
+                return Enumerable.Empty<PluginMarketRelease>();
+            }
+        }
+
+        public static IEnumerable<PluginMarketRelease> GetPostReleaseInfosFromIssueCommentsAPI(string url)
+        {
+            JArray release_infos;
+
+            try
+            {
+                release_infos = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(url, req => req.UserAgent = "WbooruPluginMarket"));
+            }
+            catch (Exception e)
+            {
+                ExceptionHelper.DebugThrow(e);
+                yield break;
+            }
+
+            if (release_infos != null)
+            {
+                foreach (var post in release_infos.Where(x => x["author_association"].ToString() == "OWNER"))
+                {
+                    var info = BuildInstance<PluginMarketRelease>(post);
+
+                    info.ReleaseDate = post["created_at"].ToObject<DateTime>();
+                    info.ReleaseURL = post["html_url"].ToString();
+
+                    if (CheckReleaseInfoVailed(info))
+                    {
+                        yield return info;
+                    }
+                }
+            }
+
+            bool CheckReleaseInfoVailed(PluginMarketRelease info)
+            {
+                return (!string.IsNullOrWhiteSpace(info.DownloadURL)) &&
+                    info.Version != null;
+            }
+        }
     }
 }
