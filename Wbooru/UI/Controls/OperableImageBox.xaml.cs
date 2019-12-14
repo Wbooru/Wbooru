@@ -49,13 +49,12 @@ namespace Wbooru.UI.Controls
         }
 
         private DragActionState drag_action_state = DragActionState.Idle;
-        private ScaleState CurrentScale { get; set; }
+
         private float CurrentScaleValue { get; set; }
         private Vector CurrentTranslateOffset { get; set; }
         private Dictionary<ScaleState, Storyboard> TransformScaleMap { get; set; }
 
         private readonly static ScaleState[] SWITCH_ROLL = { ScaleState.NoScale, ScaleState.Scale2x, ScaleState.Scale4x/*, ScaleState.ScaleRawPixel*/ };
-        private int current_switch_index = 0;
 
         private double ImageBoxTranslateTransformX
         {
@@ -128,8 +127,8 @@ namespace Wbooru.UI.Controls
         {
             if (e.ClickCount == 2)
             {
-                current_switch_index = (++current_switch_index) % SWITCH_ROLL.Length;
-                var next_scale = SWITCH_ROLL[current_switch_index];
+                var next_scale = SWITCH_ROLL.FirstOrDefault(x => ((int)x) > CurrentScaleValue);
+                next_scale = next_scale == 0 ? ScaleState.NoScale : next_scale;
 
                 ApplyScale(next_scale, /*point*/null);
             }
@@ -146,14 +145,13 @@ namespace Wbooru.UI.Controls
 
         public void ApplyScale(ScaleState scale, Point? scale_center_point)
         {
-            CurrentScale = scale;
             CurrentScaleValue = (int)scale;
             var point = scale_center_point ?? new Point(ImageCoreBox.ActualWidth / 2, ImageCoreBox.ActualHeight / 2);
 
             ((ImageCoreBox.RenderTransform as TransformGroup).Children[0] as ScaleTransform).CenterX = point.X;
             ((ImageCoreBox.RenderTransform as TransformGroup).Children[0] as ScaleTransform).CenterY = point.Y;
 
-            var sb = TransformScaleMap[CurrentScale];
+            var sb = TransformScaleMap[scale];
 
             Log.Debug($"scale = {scale} | scale_center_point = {scale_center_point}");
             sb.Begin(ImageCoreBox);
@@ -194,7 +192,7 @@ namespace Wbooru.UI.Controls
             DEBUG_p22.Text = p22.ToString();
             DEBUG_pic_w.Text = (ImageCoreBox.Source as BitmapSource).PixelWidth.ToString();
             DEBUG_pic_h.Text = (ImageCoreBox.Source as BitmapSource).PixelHeight.ToString();
-            DEBUG_scale.Text = CurrentScale.ToString();
+            DEBUG_scale.Text = CurrentScaleValue.ToString();
             DEBUG_scaled_width.Text = scaled_size.Width.ToString();
             DEBUG_scaled_height.Text = scaled_size.Height.ToString();
             DEBUG_wp_height.Text = WrapPanel.ActualHeight.ToString();
