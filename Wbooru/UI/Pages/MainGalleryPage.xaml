@@ -78,7 +78,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel>
+            <StackPanel x:Name="MainMenu">
                 <Border Height="{Binding Source={StaticResource BoardHeaderHeight}}">
                     <Button
                         Name="CloseLeftPanelButton"

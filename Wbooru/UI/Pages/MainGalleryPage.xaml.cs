@@ -27,6 +27,7 @@ using Wbooru.Galleries.SupportFeatures;
 using System.Collections.ObjectModel;
 using Wbooru.Models;
 using Wbooru.Persistence;
+using Wbooru.UI.Controls.PluginExtension;
 
 namespace Wbooru.UI.Pages
 {
@@ -99,6 +100,16 @@ namespace Wbooru.UI.Pages
             {
                 Logger.Warn("Failed to get a gallery.:" + e.Message);
             }
+
+            TryAddExtraContent();
+        }
+
+        private void TryAddExtraContent()
+        {
+            //menu items
+            var menu_items = Container.Default.GetExportedValues<IExtraMainMenuItem>().OfType<UIElement>();
+            foreach (var item in menu_items)
+                MainMenu.Children.Add(item);
         }
 
         public void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
