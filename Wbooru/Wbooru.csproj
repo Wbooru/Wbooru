@@ -208,6 +208,9 @@
     <Compile Include="UI\Controls\GalleryGridView.xaml.cs">
       <DependentUpon>GalleryGridView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\ImageViewer.xaml.cs">
+      <DependentUpon>ImageViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\LoadingStatusDisplayer.xaml.cs">
       <DependentUpon>LoadingStatusDisplayer.xaml</DependentUpon>
     </Compile>
@@ -299,6 +302,10 @@
     <Compile Include="UI\ValueConverters\TagColorConverter.cs" />
     <Compile Include="Utils\UpdaterHelper.cs" />
     <Compile Include="Utils\ViusalTreeHelperEx.cs" />
+    <Page Include="UI\Controls\ImageViewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\Controls\OperableImageBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
