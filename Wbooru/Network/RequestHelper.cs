@@ -54,7 +54,17 @@ namespace Wbooru.Network
 
             Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}]create http(s) async request :{url}", "RequestHelper");
 
-            return req.GetResponseAsync();
+            var task = req.GetResponseAsync();
+            task.ConfigureAwait(false);
+
+            return task;
+        }
+
+        public static string GetString(WebResponse response)
+        {
+            using var reader = new StreamReader(response.GetResponseStream());
+
+            return reader.ReadToEnd();
         }
 
         public static T GetJsonContainer<T>(WebResponse response) where T : JContainer

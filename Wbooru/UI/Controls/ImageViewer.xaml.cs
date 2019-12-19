@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Wbooru.Utils;
 
 namespace Wbooru.UI.Controls
 {
@@ -99,14 +100,13 @@ namespace Wbooru.UI.Controls
 
         private double GetNextScaleRatio(bool add)
         {
-            var quadIn = new Func<double, double>(x => x * x);
             var scaleIndex = add ? _previousScaleIndex + 1 : _previousScaleIndex - 1;
             if (scaleIndex > ScaleCount) scaleIndex = ScaleCount;
             else if (scaleIndex < 0) scaleIndex = 0;
             _previousScaleIndex = scaleIndex;
             var trueMin = Math.Min(1 / FullScaleRatio, MinScale);
-            var scaleRatio = trueMin + (MaxScale - trueMin) * quadIn(scaleIndex / ScaleCount);
-            Console.WriteLine(scaleRatio);
+            var scaleRatio = trueMin + (MaxScale - trueMin) * MathEx.QuadIn(scaleIndex / ScaleCount);
+            Log.Debug(scaleRatio.ToString());
             return scaleRatio;
         }
 
@@ -179,7 +179,7 @@ namespace Wbooru.UI.Controls
             var nowImageRel = Mouse.GetPosition(Image);
             if (nowImageRel == _prevImageRel) return;
 
-            Console.WriteLine(_prevImageRel + ";" + nowImageRel);
+            Log.Debug(_prevImageRel + ";" + nowImageRel);
             SetTranslate(Translate.X + nowImageRel.X - _prevImageRel.X,
                 Translate.Y + nowImageRel.Y - _prevImageRel.Y);
             _prevImageRel = Mouse.GetPosition(Image);

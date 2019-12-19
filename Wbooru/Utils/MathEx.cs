@@ -21,5 +21,7 @@ namespace Wbooru.Utils
         }
 
         public static int Random(int min = int.MinValue, int max = int.MaxValue) => rand.Next(min, max);
+
+        public static double QuadIn(double x) => x * x;
     }
 }

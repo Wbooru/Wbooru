@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbooruPlugin.Yandere", "Plu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbooruPlugin.Saucenao", "Plugins\WbooruPlugin.Saucenao\WbooruPlugin.Saucenao.csproj", "{36C76CA6-73D8-43E7-8AA8-1A8B8FFA7EF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{E84F6EE5-496F-4E33-9ECB-A0BFFFC03389}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,12 @@ Global
 		{36C76CA6-73D8-43E7-8AA8-1A8B8FFA7EF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{36C76CA6-73D8-43E7-8AA8-1A8B8FFA7EF1}.SQLITE_DEBUG|Any CPU.ActiveCfg = Release|Any CPU
 		{36C76CA6-73D8-43E7-8AA8-1A8B8FFA7EF1}.SQLITE_DEBUG|Any CPU.Build.0 = Release|Any CPU
+		{E84F6EE5-496F-4E33-9ECB-A0BFFFC03389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E84F6EE5-496F-4E33-9ECB-A0BFFFC03389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E84F6EE5-496F-4E33-9ECB-A0BFFFC03389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E84F6EE5-496F-4E33-9ECB-A0BFFFC03389}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E84F6EE5-496F-4E33-9ECB-A0BFFFC03389}.SQLITE_DEBUG|Any CPU.ActiveCfg = Release|Any CPU
+		{E84F6EE5-496F-4E33-9ECB-A0BFFFC03389}.SQLITE_DEBUG|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
