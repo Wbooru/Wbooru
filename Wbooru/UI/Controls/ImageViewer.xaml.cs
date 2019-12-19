@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,8 +18,14 @@ namespace Wbooru.UI.Controls
     /// </summary>
     public partial class ImageViewer : UserControl
     {
+        #region delegate / events
+
         public delegate void ScaleChangedHandler(double ratio);
         public event ScaleChangedHandler ScaleChanged;
+
+        #endregion
+
+        #region Dependency properties
 
         public ImageSource ImageSource
         {
@@ -38,28 +45,28 @@ namespace Wbooru.UI.Controls
                 viewer.LoadImage(e.NewValue as ImageSource);
         }
 
-        private static readonly CircleEase CircleEaseOut = new CircleEase { EasingMode = EasingMode.EaseOut };
+        #endregion
 
-        private readonly HashSet<Rectangle> _boundSbList = new HashSet<Rectangle>();
-
-        private double _previousScaleIndex = 0;
-        private double _previewScaleRatio = 0;
-
-        private double ImgRatio => SourceSize.Width / SourceSize.Height;
-        private double CanvasRatio => ActualWidth / ActualHeight;
-        private double FullScaleRatio { get; set; }
-        private bool AutoFitLargeSize { get; } = true;
-
-        public ImageViewer()
-        {
-            InitializeComponent();
-        }
+        #region Public Properties
 
         public Size SourceSize { get; private set; }
         public double MinScale { get; set; } = 1;
         public double MaxScale { get; set; } = 5;
-        public double ScaleCount { get; set; } = 12;
+        public int ScaleCount { get; set; } = 12;
         public TimeSpan AnimationTime { get; set; } = TimeSpan.Zero;
+
+        public string DefaultRatios
+        {
+            get => _defaultRatios;
+            set
+            {
+                _defaultRatios = value;
+                _defaultRatioArray = value?.Split(',')
+                                         .Select(double.Parse)
+                                         .OrderBy(k => k)
+                                         .Distinct().ToArray() ?? Array.Empty<double>();
+            }
+        }
 
         public double CurrentScale
         {
@@ -73,9 +80,55 @@ namespace Wbooru.UI.Controls
             }
         }
 
+        #endregion
+
+        public ImageViewer()
+        {
+            InitializeComponent();
+        }
+
+        #region Static fields
+
+        private static readonly CircleEase CircleEaseOut = new CircleEase { EasingMode = EasingMode.EaseOut };
+        private static readonly Func<double, double> QuadIn = x => x * x;
+
+        #endregion
+
+        #region Readonly fields
+
+        private readonly HashSet<Rectangle> _boundSbList = new HashSet<Rectangle>();
+
+        #endregion
+
+        #region Property fields
+
+        private double _currentScale;
+        private string _defaultRatios;
+        private double[] _defaultRatioArray = Array.Empty<double>();
+
+        #endregion
+
+        #region Control fields
+
+        //private double _previousScaleIndex = 0;
+        private Point _prevImageRel = new Point(double.MinValue, double.MinValue);
+        private bool _isMouseDown;
+        private double _previewScaleRatio = 0;
+
+        #endregion
+
+        #region Private properties
+
+        private double ImgRatio => SourceSize.Width / SourceSize.Height;
+        private double CanvasRatio => ActualWidth / ActualHeight;
+        private double FullScaleRatio { get; set; }
+        private bool AutoFitLargeSize { get; } = true;
+
+        #endregion
+
         public void LoadImage(ImageSource image)
         {
-            SourceSize = image == null ? new Size(0, 0) : new Size(image.Width, image.Height);
+            SourceSize = image == null ? new Size() : new Size(image.Width, image.Height);
             FixFullRatio();
             ResetPosition();
             Image.Source = image;
@@ -90,7 +143,6 @@ namespace Wbooru.UI.Controls
                 bitmap.BeginInit();
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.StreamSource = stream;
-                //bitmap.UriSource = new Uri(path);
                 bitmap.EndInit();
                 bitmap.Freeze();
             }
@@ -98,14 +150,49 @@ namespace Wbooru.UI.Controls
             LoadImage(bitmap);
         }
 
+        private double GetNextDefaultScaleRatio()
+        {
+            List<double> copy;
+            if (_defaultRatioArray[0] == 0)
+            {
+                copy = _defaultRatioArray.Skip(1).ToList();
+                var fullScaleRatio = 1 / FullScaleRatio;
+                if (fullScaleRatio < 1)
+                    copy.Insert(0, fullScaleRatio);
+            }
+            else
+                copy = _defaultRatioArray.ToList();
+
+            var nextRatio = _currentScale >= copy[copy.Count - 1]
+                ? copy[0]
+                : copy.First(k => _currentScale < k);
+            return nextRatio;
+        }
+
         private double GetNextScaleRatio(bool add)
         {
-            var scaleIndex = add ? _previousScaleIndex + 1 : _previousScaleIndex - 1;
+            var prevScaleIndex = GetRoundedScaleIndexByScaleRatio(add);
+            var scaleIndex = add ? prevScaleIndex + 1 : prevScaleIndex - 1;
+            //Console.WriteLine(scaleIndex);
+
+            var scaleRatio = GetScaleRatioIndex(scaleIndex);
+            return scaleRatio;
+        }
+
+        private int GetRoundedScaleIndexByScaleRatio(bool floor)
+        {
+            var trueMin = Math.Min(1 / FullScaleRatio, MinScale);
+            var dblIndex = Math.Round(Math.Pow((_currentScale - trueMin) / (MaxScale - trueMin), 0.5) * ScaleCount, 5);
+            return (int)(floor ? Math.Floor(dblIndex) : Math.Ceiling(dblIndex));
+        }
+
+        private double GetScaleRatioIndex(int scaleIndex)
+        {
             if (scaleIndex > ScaleCount) scaleIndex = ScaleCount;
             else if (scaleIndex < 0) scaleIndex = 0;
-            _previousScaleIndex = scaleIndex;
+
             var trueMin = Math.Min(1 / FullScaleRatio, MinScale);
-            var scaleRatio = trueMin + (MaxScale - trueMin) * MathEx.QuadIn(scaleIndex / ScaleCount);
+            var scaleRatio = trueMin + (MaxScale - trueMin) * MathEx.QuadIn(scaleIndex / (double)ScaleCount);
             Log.Debug(scaleRatio.ToString());
             return scaleRatio;
         }
@@ -152,10 +239,6 @@ namespace Wbooru.UI.Controls
                 TranslateBorder.Y + imageRelAfter.Y - imageRelBefore.Y, true);
         }
 
-        private Point _prevImageRel = new Point(double.MinValue, double.MinValue);
-        private double _currentScale;
-        private bool _mouseDown;
-
         private void MainCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!(sender is Canvas canvas))
@@ -163,10 +246,25 @@ namespace Wbooru.UI.Controls
                 return;
             }
 
+            if (e.ClickCount == 2)
+            {
+                Point imageRelBefore = Mouse.GetPosition(HideBorder);
+                //Console.WriteLine($"Before: {nameof(imageRelBefore)}: {imageRelBefore}");
+
+                var ratio = GetNextDefaultScaleRatio();
+                SetScale(ratio, true);
+
+                Point imageRelAfter = Mouse.GetPosition(HideBorder);
+                //Console.WriteLine($"After: {nameof(imageRelAfter)}: {imageRelAfter}");
+                SetTranslate(TranslateBorder.X + imageRelAfter.X - imageRelBefore.X,
+                    TranslateBorder.Y + imageRelAfter.Y - imageRelBefore.Y, true);
+                return;
+            }
+
             _prevImageRel = Mouse.GetPosition(Image);
             canvas.CaptureMouse();
             canvas.Cursor = Cursors.SizeAll;
-            _mouseDown = true;
+            _isMouseDown = true;
         }
 
         private void MainCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -179,7 +277,7 @@ namespace Wbooru.UI.Controls
             var nowImageRel = Mouse.GetPosition(Image);
             if (nowImageRel == _prevImageRel) return;
 
-            Log.Debug(_prevImageRel + ";" + nowImageRel);
+            //Console.WriteLine(_prevImageRel + ";" + nowImageRel);
             SetTranslate(Translate.X + nowImageRel.X - _prevImageRel.X,
                 Translate.Y + nowImageRel.Y - _prevImageRel.Y);
             _prevImageRel = Mouse.GetPosition(Image);
@@ -195,7 +293,7 @@ namespace Wbooru.UI.Controls
             _prevImageRel = new Point(double.MinValue, double.MinValue);
             canvas.ReleaseMouseCapture();
             canvas.Cursor = Cursors.Arrow;
-            _mouseDown = false;
+            _isMouseDown = false;
             foreach (var boundRec in _boundSbList)
             {
                 ClearBound(boundRec);
@@ -226,7 +324,6 @@ namespace Wbooru.UI.Controls
                 SetScale(1, animation);
             }
 
-            _previousScaleIndex = 0;
             SetTranslate(0, 0, animation);
         }
 
@@ -291,7 +388,7 @@ namespace Wbooru.UI.Controls
                 if (x >= 0)
                 {
                     x = 0;
-                    if (_mouseDown)
+                    if (_isMouseDown)
                     {
                         recLeft = true;
                         ShowBound(RecLeft);
@@ -300,7 +397,7 @@ namespace Wbooru.UI.Controls
                 else if ((x + SourceSize.Width) * CurrentScale <= ActualWidth)
                 {
                     x = ActualWidth / CurrentScale - SourceSize.Width;
-                    if (_mouseDown)
+                    if (_isMouseDown)
                     {
                         recRight = true;
                         ShowBound(RecRight);
@@ -318,7 +415,7 @@ namespace Wbooru.UI.Controls
                 if (y >= 0)
                 {
                     y = 0;
-                    if (_mouseDown)
+                    if (_isMouseDown)
                     {
                         recUp = true;
                         ShowBound(RecUp);
@@ -327,7 +424,7 @@ namespace Wbooru.UI.Controls
                 else if ((y + SourceSize.Height) * CurrentScale <= ActualHeight)
                 {
                     y = ActualHeight / CurrentScale - SourceSize.Height;
-                    if (_mouseDown)
+                    if (_isMouseDown)
                     {
                         recBottom = true;
                         ShowBound(RecBottom);
