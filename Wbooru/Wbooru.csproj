@@ -281,6 +281,7 @@
     <Compile Include="Utils\ConsoleWindow.cs" />
     <Compile Include="Utils\FileNameHelper.cs" />
     <Compile Include="Utils\ICacheCleanable.cs" />
+    <Compile Include="Utils\IEnumerableExtension.cs" />
     <Compile Include="Utils\IEnumerableMultiThreadable.cs" />
     <Compile Include="Utils\ExceptionHelper.cs" />
     <Compile Include="Utils\ImageExtension.cs" />

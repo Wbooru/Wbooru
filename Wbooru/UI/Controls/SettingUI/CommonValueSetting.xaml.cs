@@ -49,7 +49,7 @@ namespace Wbooru.UI.Controls.SettingUI
             binding.Converter = new AutoValueConverter();
             binding.ConverterParameter = Wrapper;
 
-            Input.Text = Wrapper.ProxyValue.ToString();
+            Input.Text = Wrapper.ProxyValue?.ToString()??string.Empty;
             Input.SetBinding(TextBox.TextProperty, binding);
 
             if (wrapper.PropertyInfo.GetCustomAttribute<DescriptionAttribute>() is DescriptionAttribute description)

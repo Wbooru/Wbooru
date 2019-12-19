@@ -14,7 +14,7 @@ namespace Wbooru.UI.ValueConverters.SettingUI
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return TypeDescriptor.GetConverter(targetType).ConvertFrom(value.ToString());
+            return TypeDescriptor.GetConverter(targetType).ConvertFrom(value?.ToString()??string.Empty);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
