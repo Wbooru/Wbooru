@@ -75,13 +75,14 @@
                     VerticalAlignment="Center">
                 </controls:LoadingStatusDisplayer>
 
-                <controls:OperableImageBox
+                <controls:ImageViewer
                     x:Name="DetailImageBox"
-                    Grid.Row="1"
+                    Grid.Row="1" 
+                    AnimationTime="00:00:00.3"
                     Panel.ZIndex="-1"
                     Background="Transparent">
 
-                    <controls:OperableImageBox.ContextMenu>
+                    <controls:ImageViewer.ContextMenu>
                         <ContextMenu>
                             <ContextMenu.Style>
                                 <Style TargetType="{x:Type ContextMenu}">
@@ -117,8 +118,8 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>
-                    </controls:OperableImageBox.ContextMenu>
-                </controls:OperableImageBox>
+                    </controls:ImageViewer.ContextMenu>
+                </controls:ImageViewer>
 
                 <Grid Grid.Row="2" Background="{StaticResource BoardColor}">
                     <Grid.ColumnDefinitions>
