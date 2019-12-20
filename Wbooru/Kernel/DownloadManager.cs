@@ -79,15 +79,23 @@ namespace Wbooru.Kernel
 
             var db = LocalDBContext.Instance;
 
-            foreach (var item in db.Downloads.Select(x => new DownloadWrapper()
+            try
             {
-                DownloadInfo = x,
-                CurrentDownloadedLength = x.DisplayDownloadedLength,
-                Status = x.DisplayDownloadedLength != 0 && x.DisplayDownloadedLength == x.TotalBytes ? DownloadTaskStatus.Finished : DownloadTaskStatus.Paused
-            }))
+                foreach (var item in db.Downloads.Select(x => new DownloadWrapper()
+                {
+                    DownloadInfo = x,
+                    CurrentDownloadedLength = x.DisplayDownloadedLength,
+                    Status = x.DisplayDownloadedLength != 0 && x.DisplayDownloadedLength == x.TotalBytes ? DownloadTaskStatus.Finished : DownloadTaskStatus.Paused
+                }))
+                {
+                    Log.Debug($"Load download record :{item.DownloadInfo.DownloadFullPath}");
+                    DownloadList.Add(item);
+                }
+            }
+            catch (Exception e)
             {
-                Log.Debug($"Load download record :{item.DownloadInfo.DownloadFullPath}");
-                DownloadList.Add(item);
+                ExceptionHelper.DebugThrow(e);
+                Log.Error("Can't get download record from database.", e);
             }
         }
 

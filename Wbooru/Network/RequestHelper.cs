@@ -49,10 +49,11 @@ namespace Wbooru.Network
         {
             var req = HttpWebRequest.Create(url);
             req.Proxy = TryGetAvaliableProxy();
+            req.Method = "GET";
 
             custom?.Invoke(req as HttpWebRequest);
 
-            Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}]create http(s) async request :{url}", "RequestHelper");
+            Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}] create http(s) async {req.Method} request :{url}", "RequestHelper");
 
             var task = req.GetResponseAsync();
             task.ConfigureAwait(false);

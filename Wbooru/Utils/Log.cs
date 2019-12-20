@@ -57,7 +57,7 @@ namespace Wbooru
 
 #if DEBUG
             //Disable log window in designer mode
-            if (App.Current.MainWindow == null || System.ComponentModel.DesignerProperties.GetIsInDesignMode(App.Current.MainWindow))
+            if (App.Current?.MainWindow == null || System.ComponentModel.DesignerProperties.GetIsInDesignMode(App.Current?.MainWindow))
             {
                 console_window_option = LogWindowShowOption.None;
                 Info("Maybe in designer mode , hide console window.");
@@ -159,6 +159,13 @@ namespace Wbooru
 
         public static void Error(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
+            var msg = BuildLogMessage(message, "ERROR", true, true, prefix);
+            ColorizeConsoleOutput(msg, ConsoleColor.Red, ConsoleColor.Yellow);
+        }
+
+        public static void Error(string message, Exception e, [CallerMemberName]string prefix = "<Unknown Method>")
+        {
+            message = $"{message} , Exception : {Environment.NewLine} {e.Message} {Environment.NewLine} {e.StackTrace}";
             var msg = BuildLogMessage(message, "ERROR", true, true, prefix);
             ColorizeConsoleOutput(msg, ConsoleColor.Red, ConsoleColor.Yellow);
         }

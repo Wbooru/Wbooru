@@ -91,11 +91,13 @@ namespace Wbooru
             Log.Info("OK.");
         }
 
-        internal static void Init()
+        public static void Init()
         {
             Log.Info("-----------------Begin Init()-----------------");
+
             AppDomain.CurrentDomain.UnhandledException+= (e, d) => Log.Error($"{(d.ExceptionObject as Exception).Message} {Environment.NewLine} {(d.ExceptionObject as Exception).StackTrace}", "UnhandledException");
-            Current.DispatcherUnhandledException += (e, d) => Log.Error($"{d.Exception.Message} {Environment.NewLine} {d.Exception.StackTrace}", "UnhandledException");
+            if (Current!=null)
+                Current.DispatcherUnhandledException += (e, d) => Log.Error($"{d?.Exception?.Message} {Environment.NewLine} {d?.Exception?.StackTrace}", "UnhandledException");
 
             Log.Info("Program version:" + ProgramUpdater.CurrentProgramVersion.ToString());
 
