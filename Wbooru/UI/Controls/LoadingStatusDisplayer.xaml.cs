@@ -85,7 +85,7 @@ namespace Wbooru.UI.Controls
 
         public LoadingTaskNotify BeginBusy(string description = null)
         {
-            var t = ObjectPool<LoadingTaskNotify>.Get();
+            var t = new LoadingTaskNotify();
 
             t.Description = description ?? string.Empty;
             t.HostDisplayer = this;
@@ -117,9 +117,7 @@ namespace Wbooru.UI.Controls
                 return;
             }
 
-            Log<LoadingStatusDisplayer>.Debug($"removed and will clean notify object[{t.NotifyID}]");
-
-            ObjectPool<LoadingTaskNotify>.Return(t);
+            Log<LoadingStatusDisplayer>.Debug($"removed all clean notify object[{t.NotifyID}]");
 
             Dispatcher.InvokeAsync(() =>
             {
