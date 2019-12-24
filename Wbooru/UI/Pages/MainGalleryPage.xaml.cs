@@ -28,6 +28,7 @@ using System.Collections.ObjectModel;
 using Wbooru.Models;
 using Wbooru.Persistence;
 using Wbooru.UI.Controls.PluginExtension;
+using System.Windows.Markup;
 
 namespace Wbooru.UI.Pages
 {
@@ -101,14 +102,17 @@ namespace Wbooru.UI.Pages
                 Logger.Warn("Failed to get a gallery.:" + e.Message);
             }
 
-            TryAddExtraContent();
+            if (keywords == null)
+                TryAddExtraContent();
         }
 
         private void TryAddExtraContent()
         {
             //menu items
-            var menu_items = Container.Default.GetExportedValues<IExtraMainMenuItem>().OfType<UIElement>();
-            foreach (var item in menu_items)
+            var menu_items = Container.Default.GetExportedValues<IExtraMainMenuItemCreator>().Select(x => x.Create());
+            var current_items = MainMenu.Children.OfType<UIElement>().ToArray();
+
+            foreach (var item in menu_items.Where(x => !current_items.Any(y => y.GetValue(NameProperty) == x.GetValue(NameProperty))))
                 MainMenu.Children.Add(item);
         }
 

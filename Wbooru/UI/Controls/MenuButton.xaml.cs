@@ -21,7 +21,7 @@ namespace Wbooru.UI.Controls
     /// <summary>
     /// MenuButton.xaml 的交互逻辑
     /// </summary>
-    public partial class MenuButton : UserControl , INotifyPropertyChanged, IExtraMainMenuItem
+    public partial class MenuButton : UserControl , INotifyPropertyChanged
     {
         public int IconSize
         {
