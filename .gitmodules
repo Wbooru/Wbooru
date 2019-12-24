@@ -7,3 +7,6 @@
 [submodule "Plugins/WbooruPlugin.Saucenao"]
 	path = Plugins/WbooruPlugin.Saucenao
 	url = https://github.com/MikiraSora/WbooruPlugin.Saucenao
+[submodule "Plugins/WbooruPlugin.Danbooru"]
+	path = Plugins/WbooruPlugin.Danbooru
+	url = https://github.com/MikiraSora/WbooruPlugin.Danbooru
