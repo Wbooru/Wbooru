@@ -9,6 +9,7 @@ using System.Windows.Data;
 using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel.Updater.PluginMarket;
 using Wbooru.PluginExt;
+using Wbooru.Settings;
 
 namespace Wbooru.UI.ValueConverters
 {
@@ -42,5 +43,11 @@ namespace Wbooru.UI.ValueConverters
             x => Container.Default.GetExportedValues<PluginInfo>().Any(y => y.PluginName.Equals(x.Value?.PluginName ?? string.Empty, StringComparison.InvariantCultureIgnoreCase)) ? Visibility.Visible : Visibility.Collapsed);
 
         public static IValueConverter IfStringEmptyOrNullConverter => ValueConverter.Create<string, bool>(x => string.IsNullOrEmpty(x.Value));
+
+        public static IValueConverter VisibilityIFNSFWModeConverter => ValueConverter.Create<object, Visibility>(_ =>
+        {
+            var r = SettingManager.LoadSetting<GlobalSetting>().EnableNSFWFileterMode ? Visibility.Visible : Visibility.Collapsed;
+            return r;
+        });
     }
 }

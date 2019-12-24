@@ -89,7 +89,15 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                var gallery = Container.Default.GetExportedValues<Gallery>().FirstOrDefault();
+                var galleries = Container.Default.GetExportedValues<Gallery>();
+
+                if (Setting.EnableNSFWFileterMode)
+                {
+                    Log.Info("EnableNSFWFileterMode = true , skip galleries which not support NSFWFilter");
+                    galleries = galleries.ToArray().Where(x => x.SupportFeatures.HasFlag(GallerySupportFeature.NSFWFilter));
+                }
+
+                var gallery = galleries.FirstOrDefault();
                 ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
                 if (gallery != null)
@@ -123,14 +131,14 @@ namespace Wbooru.UI.Pages
             if (keywords?.Any() ?? false)
             {
                 GridViewer.ViewType = GalleryViewType.SearchResult;
-                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable());
+                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable()));
                 GalleryTitle = $"{gallery.GalleryName} ({string.Join(" ", keywords)})";
                 ShowReturnButton = true;
             }
             else
             {
                 GridViewer.ViewType = GalleryViewType.Main;
-                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.GetMainPostedImages().MakeMultiThreadable());
+                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.GetMainPostedImages().MakeMultiThreadable()));
                 GalleryTitle = gallery.GalleryName;
                 ShowReturnButton = false;
             }

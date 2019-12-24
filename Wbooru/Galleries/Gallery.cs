@@ -7,6 +7,7 @@ using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.PluginExt;
+using Wbooru.Settings;
 
 namespace Wbooru.Galleries
 {
@@ -58,5 +59,20 @@ namespace Wbooru.Galleries
         public abstract GalleryImageDetail GetImageDetial(GalleryItem item);
 
         public abstract GalleryItem GetImage(string id);
+
+        #region Helper Methods
+
+        internal IEnumerable<GalleryItem> TryFilterIfNSFWEnable(IEnumerable<GalleryItem> item)
+        {
+            if (!SettingManager.LoadSetting<GlobalSetting>().EnableNSFWFileterMode)
+                return item;
+
+            if (Feature<IGalleryNSFWFilter>() is IGalleryNSFWFilter filter)
+                return filter.NSFWFilter(item);
+
+            throw new Exception("Not allow to use if galllery not support NSFW fileter and EnableNSFWFileterMode = true ");
+        }
+
+        #endregion
     }
 }

@@ -185,7 +185,28 @@
                     VerticalContentAlignment="Center"
                     Content="{Binding GalleryTitle}"
                     FontSize="14"
-                    Foreground="White" />
+                    Foreground="White">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Label">
+                                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                            <ContentPresenter>
+                                            </ContentPresenter>
+                                            <TextBlock
+                                                Margin="5,0,0,0"
+                                                Foreground="#33ffffff"
+                                                Visibility="{Binding Converter={x:Static Converter:SimpleExpressionConverters.VisibilityIFNSFWModeConverter}}">
+                                                (Safe Mode)
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Label.Style>
+                </Label>
 
                 <Border Margin="15" />
                 <controls:LoadingStatusDisplayer x:Name="LoadStatusDisplayer" VerticalContentAlignment="Center" />
@@ -306,7 +327,13 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Visibility="Collapsed">
-                <TextBlock FontSize="16" Foreground="Gray">没有任何的图源来加载主页面图片，请去下载对应插件.</TextBlock>
+                <TextBlock
+                    Margin="30"
+                    FontSize="16"
+                    Foreground="Gray"
+                    TextWrapping="Wrap">
+                    没有任何的图源来加载主页面图片,或者已经开启了NSFW过滤功能，但没有合适的图源。请去下载对应插件,或者去设置页关掉NSFW过滤功能.
+                </TextBlock>
                 <Button
                     Name="JumpMarketButton"
                     Margin="0,10,0,0"
