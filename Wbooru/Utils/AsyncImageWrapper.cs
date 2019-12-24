@@ -24,7 +24,7 @@ namespace Wbooru.Utils
             {
                 image = await ImageResourceManager.RequestImageAsync(name, () =>
                 {
-                    return downloader.GetImageAsync(dl).Result;
+                    return downloader.GetImageAsync(dl);
                 });
             } while (image==null);
 

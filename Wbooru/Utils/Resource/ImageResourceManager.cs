@@ -51,7 +51,7 @@ namespace Wbooru.Utils.Resource
             }
         }
 
-        public static Image RequestImage(string resource_name,Func<Image> manual_request)
+        public static async Task<Image> RequestImageAsync(string resource_name,Func<Task<Image>> manual_request)
         {
             if (TryGetImageFromMemoryCache(resource_name, out var res))
             {
@@ -71,9 +71,9 @@ namespace Wbooru.Utils.Resource
                 return res;
             }
 
-            if (manual_request() is Image obj)
+            if (await manual_request() is Image obj)
             {
-                CacheImageResourceAsFile(resource_name,obj);
+                CacheImageResourceAsFile(resource_name, obj);
 
                 CacheImageResourceInMemory(resource_name, obj);
 
@@ -81,11 +81,6 @@ namespace Wbooru.Utils.Resource
             }
 
             return null;
-        }
-
-        public static Task<Image> RequestImageAsync(string resource_name,Func<Image> manual_request)
-        {
-            return Task.Run(()=> RequestImage(resource_name,manual_request));
         }
 
         private static bool TryGetImageFromDownloadFolder(string name, out Image res)

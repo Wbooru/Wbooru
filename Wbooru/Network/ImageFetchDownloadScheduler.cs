@@ -37,7 +37,6 @@ namespace Wbooru.Network
             else
                 task = new Task<Image>(OnDownloadTaskStart, (download_path, reporter), cancel_token.Value);
 
-
             lock (tasks_waiting_queue)
             {
                 tasks_waiting_queue.Insert(0, task);
@@ -87,7 +86,7 @@ namespace Wbooru.Network
 
                 Log<ImageFetchDownloadScheduler>.Info($"Start download image:{download_path}");
 
-                var response = RequestHelper.CreateDeafult(download_path);
+                var response = RequestHelper.CreateDeafultAsync(download_path).ConfigureAwait(false).GetAwaiter().GetResult();
 
                 var content_length = response.ContentLength;
 

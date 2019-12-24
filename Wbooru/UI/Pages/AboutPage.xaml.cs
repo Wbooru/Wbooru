@@ -65,7 +65,7 @@ namespace Wbooru.UI.Pages
             }
         }
 
-        private void StartUpdate()
+        private async void StartUpdate()
         {
             using (var notify = VersionCheckStatusDispalyer.BeginBusy("正在更新..."))
             {

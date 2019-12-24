@@ -118,7 +118,7 @@ namespace Wbooru.UI.Pages
 
             RefreshButton.IsBusy = true;
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 const string notify_content = "加载图片中......";
 
@@ -138,14 +138,14 @@ namespace Wbooru.UI.Pages
 
                     do
                     {
-                        image = ImageResourceManager.RequestImageAsync(pick_download.FullFileName, () =>
+                        image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, async () =>
                         {
-                            return downloader.GetImageAsync(pick_download.DownloadLink, null, d =>
+                            return await downloader.GetImageAsync(pick_download.DownloadLink, null, d =>
                             {
                                 (long cur, long total) = d;
                                 notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
-                            }).Result;
-                        }).Result;
+                            });
+                        });
                     } while (image == null);
 
                     var source = image.ConvertToBitmapImage();

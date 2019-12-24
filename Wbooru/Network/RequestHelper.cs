@@ -15,8 +15,6 @@ namespace Wbooru.Network
 {
     public static class RequestHelper
     {
-        public static WebResponse CreateDeafult(string url, Action<HttpWebRequest> custom = null) => CreateDeafultAsync(url, custom).Result;
-
         private static IWebProxy socks5_proxy;
 
         private static GlobalSetting setting = SettingManager.LoadSetting<GlobalSetting>();
@@ -43,22 +41,22 @@ namespace Wbooru.Network
                 Log.Info($"Create sock5 proxy failed:"+e.Message);
                 return null;
             }
-        } 
+        }
+
+        public static WebResponse CreateDeafult(string url, Action<HttpWebRequest> custom = null) 
+            => CreateDeafultAsync(url, custom).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public static Task<WebResponse> CreateDeafultAsync(string url, Action<HttpWebRequest> custom = null)
         {
-            var req = HttpWebRequest.Create(url);
+            var req = WebRequest.Create(url);
             req.Proxy = TryGetAvaliableProxy();
             req.Method = "GET";
 
             custom?.Invoke(req as HttpWebRequest);
 
-            Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}] create http(s) async {req.Method} request :{url}", "RequestHelper");
+            Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}] create http(s) {req.Method} request :{url}", "RequestHelper");
 
-            var task = req.GetResponseAsync();
-            task.ConfigureAwait(false);
-
-            return task;
+            return req.GetResponseAsync();
         }
 
         public static string GetString(WebResponse response)
