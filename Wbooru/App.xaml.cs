@@ -26,6 +26,8 @@ namespace Wbooru
     {
         public App()
         {
+            Log.Info("Enter App()");
+
             BlockApplicationUntilSingle();
 
             PreprocessCommandLine();
@@ -33,10 +35,13 @@ namespace Wbooru
             Init();
 
             BeginCheckUpdatable();
+
+            Log.Info("Finish App()");
         }
 
         private async void BeginCheckUpdatable()
         {
+            Log.Info("Enter BeginCheckUpdatable()");
             await Task.Run(() =>
             {
                 if (SettingManager.LoadSetting<GlobalSetting>().EnableAutoCheckUpdatable)
@@ -51,6 +56,7 @@ namespace Wbooru
 
         private void PreprocessCommandLine()
         {
+            Log.Info("Enter PreprocessCommandLine()");
             //check if it need finish updating.
             if (CommandLine.ContainSwitchOption("update"))
             {
@@ -65,6 +71,7 @@ namespace Wbooru
 
         private void BlockApplicationUntilSingle()
         {
+            Log.Info("Enter BlockApplicationUntilSingle()");
             var cur_process = Process.GetCurrentProcess();
 
             Log.Info("Check&Block Application single instance.......");

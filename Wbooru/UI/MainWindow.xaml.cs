@@ -16,6 +16,8 @@ namespace Wbooru.UI
 
         public MainWindow()
         {
+            Log.Info("Begin init MainWindow");
+
             InitializeComponent();
 
             setting = SettingManager.LoadSetting<GlobalSetting>();
@@ -62,6 +64,8 @@ namespace Wbooru.UI
             {
                 WindowFrame.CommandBindings.Add(new CommandBinding(vNavigationCommand, (sender, args) => { }));
             }
+
+            Log.Info("Initialized MainWindow");
         }
 
         protected override void OnClosed(EventArgs e)

@@ -99,11 +99,7 @@ namespace Wbooru
             {
                 sb.Clear();
 
-                if (time)
-                {
-                    var t = DateTime.Now;
-                    sb.AppendFormat("[{0} {1} {2}]", t.ToShortDateString(), t.ToShortTimeString(), type);
-                }
+                sb.AppendFormat("[{0} {1}]", (time ? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") : string.Empty), type);
 
                 if (!string.IsNullOrWhiteSpace(prefix))
                     sb.AppendFormat("{0}", prefix);
