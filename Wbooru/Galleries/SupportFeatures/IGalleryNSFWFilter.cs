@@ -7,7 +7,8 @@ using Wbooru.Models.Gallery;
 
 namespace Wbooru.Galleries.SupportFeatures
 {
-    public interface IGalleryFeature
+    public interface IGalleryNSFWFilter : IGalleryFeature
     {
+        IEnumerable<GalleryItem> NSFWFilter(IEnumerable<GalleryItem> items);
     }
 }

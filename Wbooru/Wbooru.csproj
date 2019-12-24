@@ -130,6 +130,7 @@
     <Compile Include="Galleries\SupportFeatures\IGalleryFeature.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryItemIteratorFastSkipable.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryMark.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGalleryNSFWFilter.cs" />
     <Compile Include="Galleries\SupportFeatures\IGallerySearchImage.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryTagDataPredownloadAndCache.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryTagSearch.cs" />

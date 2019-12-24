@@ -41,6 +41,9 @@ namespace Wbooru.Galleries
             if (this is IGalleryItemIteratorFastSkipable)
                 support |= GallerySupportFeature.ImageFastSkipable;
 
+            if (this is IGalleryNSFWFilter)
+                support |= GallerySupportFeature.NSFWFilter;
+
             return support;
         }
 

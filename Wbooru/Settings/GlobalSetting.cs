@@ -60,6 +60,11 @@ namespace Wbooru.Settings
         #region View Options
 
         [Group("View Options")]
+        [Description("(NSFW)安全浏览模式,若开启将会过滤不合适公开浏览的图片,以及不支持NSFW过滤实现的图源,但本地收藏列表和下载列表不受限制.")]
+        [NeedRestart]
+        public bool EnableNSFWFileterMode { get; set; } = false;
+
+        [Group("View Options")]
         [Range(1,5)]
         public int LoadingImageThread { get; set; } = 2;
 

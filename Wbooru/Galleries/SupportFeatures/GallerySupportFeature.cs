@@ -18,6 +18,7 @@ namespace Wbooru.Galleries.SupportFeatures
         TagSearch = 2 << 4,
         TagDataPredownloadAndCache = 2 << 5,
         ImageSearch = 2 << 6,
-        ImageFastSkipable = 2 << 7
+        ImageFastSkipable = 2 << 7,
+        NSFWFilter = 2 << 8
     }
 }
