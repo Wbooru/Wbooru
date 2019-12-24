@@ -108,7 +108,7 @@ namespace Wbooru.UI.Pages
             };
         }
 
-        private void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
+        private async void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
         {
             //clean.
             DetailImageBox.ImageSource = null;
@@ -118,90 +118,90 @@ namespace Wbooru.UI.Pages
 
             RefreshButton.IsBusy = true;
 
-            Task.Run(async () =>
+            const string notify_content = "加载图片中......";
+
+            using (var notify = LoadingStatus.BeginBusy(notify_content))
             {
-                const string notify_content = "加载图片中......";
+                var (pick_download,is_new) = await PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
 
-                using (var notify = LoadingStatus.BeginBusy(notify_content))
+                if (pick_download == null)
                 {
-                    var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
-
-                    if (pick_download == null)
-                    {
-                        //notice error;
-                        return;
-                    }
-
-                    var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
-
-                    System.Drawing.Image image;
-
-                    do
-                    {
-                        image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, async () =>
-                        {
-                            return await downloader.GetImageAsync(pick_download.DownloadLink, null, d =>
-                            {
-                                (long cur, long total) = d;
-                                notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
-                            });
-                        });
-                    } while (image == null);
-
-                    var source = image.ConvertToBitmapImage();
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        RefreshButton.IsBusy = false;
-
-                        if (PictureDetailInfo == galleryImageDetail)
-                        {
-                            DetailImageBox.ImageSource = source;
-                        }
-                        else
-                        {
-                            Log<PictureDetailViewPage>.Debug($"Picture info mismatch.");
-                        }
-                    });
+                    //notice error;
+                    ExceptionHelper.DebugThrow(new Exception("No image."));
+                    Toast.ShowMessage("没图片可显示");
+                    return;
                 }
-            }, cancel_source.Token);
+
+                if (is_new)
+                {
+                    //force update
+                    var d = DownloadList.DataContext;
+                    DownloadList.DataContext = this;
+                    DownloadList.DataContext = d;
+                }
+
+                var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
+
+                System.Drawing.Image image;
+
+                do
+                {
+                    image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, async () =>
+                    {
+                        return await downloader.GetImageAsync(pick_download.DownloadLink, null, d =>
+                        {
+                            (long cur, long total) = d;
+                            notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
+                        });
+                    });
+                } while (image == null);
+
+                var source = image.ConvertToBitmapImage();
+                RefreshButton.IsBusy = false;
+
+                if (PictureDetailInfo == galleryImageDetail)
+                {
+                    DetailImageBox.ImageSource = source;
+                }
+                else
+                {
+                    Log<PictureDetailViewPage>.Debug($"Picture info mismatch.");
+                }
+            };
         }
 
-        private DownloadableImageLink PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
+        private async Task<(DownloadableImageLink,bool)> PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
         {
             var prefer_target = SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget;
+            bool is_new = false;
 
             if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
-                foreach (var i in downloadableImageLinks.AsParallel().Where(x => x.FileLength == 0))
-                    i.FileLength = TryGetVaildDownloadFileSize(i.DownloadLink);
+                foreach (var i in downloadableImageLinks.Where(x => x.FileLength == 0))
+                {
+                    i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
+                    is_new |= i.FileLength != 0;
+                }
 
             var target_list = downloadableImageLinks.OrderByDescending(x => x.FileLength).ToArray();
 
-            if (target_list.Length==0)
-                return null;
-
-            switch (prefer_target)
+            var result = target_list.Length == 0 ? null : (prefer_target switch
             {
-                case GlobalSetting.SelectViewQualityTarget.Lowest:
-                    return target_list.Last();
-                case GlobalSetting.SelectViewQualityTarget.Lower:
-                    return target_list.Length > 1 ? target_list[target_list.Length - 2] : target_list.First();
-                case GlobalSetting.SelectViewQualityTarget.Middle:
-                    return target_list[target_list.Length/2];
-                case GlobalSetting.SelectViewQualityTarget.Higher:
-                    return target_list.Length > 1 ? target_list[1] : target_list.First();
-                case GlobalSetting.SelectViewQualityTarget.Highest:
-                    return target_list.First();
-                default:
-                    return target_list.Last();
-            }
+                GlobalSetting.SelectViewQualityTarget.Lowest => target_list.Last(),
+                GlobalSetting.SelectViewQualityTarget.Lower => (target_list.Length > 1 ? target_list[target_list.Length - 2] : target_list.First()),
+                GlobalSetting.SelectViewQualityTarget.Middle => target_list[target_list.Length / 2],
+                GlobalSetting.SelectViewQualityTarget.Higher => (target_list.Length > 1 ? target_list[1] : target_list.First()),
+                GlobalSetting.SelectViewQualityTarget.Highest => target_list.First(),
+                _ => target_list.Last()
+            });
+
+            return (result, is_new);
         }
 
-        private long TryGetVaildDownloadFileSize(string downloadLink)
+        private async Task<long> TryGetVaildDownloadFileSize(string downloadLink)
         {
             try
             {
-                return RequestHelper.CreateDeafult(downloadLink, req => req.Method = "HEAD").ContentLength;
+                return (await RequestHelper.CreateDeafultAsync(downloadLink, req => req.Method = "HEAD")).ContentLength;
             }
             catch (Exception e)
             {
@@ -212,18 +212,19 @@ namespace Wbooru.UI.Pages
 
         CancellationTokenSource cancel_source = new CancellationTokenSource();
 
-        public void ApplyItem(Gallery gallery, GalleryItem item)
+        public async void ApplyItem(Gallery gallery, GalleryItem item)
         {
-            var notify = LoadingStatus.BeginBusy("正在读取图片详细信息....");
+            using var _ = LoadingStatus.BeginBusy("正在读取图片详细信息....");
 
-            Gallery = gallery ?? Container.Default.GetExportedValues<Gallery>().FirstOrDefault(x => x.GalleryName == item.GalleryName);
             PictureInfo = item;
 
+            Gallery = gallery ?? Container.Default.GetExportedValues<Gallery>().FirstOrDefault(x => x.GalleryName == item.GalleryName);
+            
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
 
             VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = true;
 
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 using (var transaction = DB.Database.BeginTransaction())
                 {
@@ -247,30 +248,26 @@ namespace Wbooru.UI.Pages
                     DB.SaveChanges();
                     transaction.Commit();
                 }
+            });
 
-                var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
-                var detail = gallery.GetImageDetial(item);
+            var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
+            var detail = gallery.GetImageDetial(item);
 
-                bool? is_vote = default;
+            bool? is_vote = default;
 
-                try
-                {
-                    is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e.Message);
-                }
+            try
+            {
+                is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
+            }
 
-                Dispatcher.Invoke(() =>
-                {
-                    IsMark = is_mark;
-                    IsVoted = is_vote ?? false;
-                    VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = false;
-                    PictureDetailInfo = detail;
-                    notify.Dispose();
-                });
-            }, cancel_source.Token);
+            IsMark = is_mark;
+            IsVoted = is_vote ?? false;
+            VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = false;
+            PictureDetailInfo = detail;
         }
 
         public void OnBeforeGetClean()
@@ -316,7 +313,7 @@ namespace Wbooru.UI.Pages
 
         }
 
-        private void MarkButton_Click(object sender, RoutedEventArgs e)
+        private async void MarkButton_Click(object sender, RoutedEventArgs e)
         {
             if (PictureInfo == null || Gallery == null)
                 return;
@@ -331,7 +328,7 @@ namespace Wbooru.UI.Pages
                     Time = DateTime.Now
                 });
 
-                DB.SaveChanges();
+                await DB.SaveChangesAsync();
                 IsMark = true;
             }
             else
@@ -346,7 +343,7 @@ namespace Wbooru.UI.Pages
             Log<PictureDetailViewPage>.Debug($"Now IsMark={IsMark}");
         }
 
-        private void VoteButton_Click(object sender, RoutedEventArgs e)
+        private async void VoteButton_Click(object sender, RoutedEventArgs ee)
         {
             if (PictureInfo == null || Gallery == null)
                 return;
@@ -357,30 +354,24 @@ namespace Wbooru.UI.Pages
 
             VoteButton.IsBusy = true;
 
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    gallery.Feature<IGalleryVote>().SetVote(item, !is_vote);
+                await Task.Run(() => gallery.Feature<IGalleryVote>().SetVote(item, !is_vote));
 
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (item == PictureInfo)
-                        {
-                            IsVoted = !is_vote;
-                            Toast.ShowMessage($"已{(!is_vote ? "投票" : "取消投票")}");
-                        }
-                    });
-                }
-                catch (Exception e)
+                if (item == PictureInfo)
                 {
-                    Toast.ShowMessage($"投票失败,{e.Message}");
+                    IsVoted = !is_vote;
+                    Toast.ShowMessage($"已{(!is_vote ? "投票" : "取消投票")}");
                 }
-                finally
-                {
-                    VoteButton.IsBusy = false;
-                }
-            }, cancel_source.Token);
+            }
+            catch (Exception e)
+            {
+                Toast.ShowMessage($"投票失败,{e.Message}");
+            }
+            finally
+            {
+                VoteButton.IsBusy = false;
+            }
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)

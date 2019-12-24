@@ -77,10 +77,10 @@
 
                 <controls:ImageViewer
                     x:Name="DetailImageBox"
-                    Grid.Row="1" 
+                    Grid.Row="1"
                     Panel.ZIndex="-1"
-                    Background="Transparent"
                     AnimationTime="00:00:00.3"
+                    Background="Transparent"
                     DefaultRatios="0,1,2,4"
                     MaxScale="5"
                     MinScale="1"
@@ -285,7 +285,10 @@
                         X1="0"
                         X2="{Binding ActualWidth, ElementName=ViewPage}" />
 
-                    <ItemsControl HorizontalContentAlignment="Stretch" ItemsSource="{Binding DownloadableImageLinks}">
+                    <ItemsControl
+                        Name="DownloadList"
+                        HorizontalContentAlignment="Stretch"
+                        ItemsSource="{Binding DownloadableImageLinks}">
                         <ItemsControl.Template>
                             <ControlTemplate>
                                 <ItemsPresenter />
