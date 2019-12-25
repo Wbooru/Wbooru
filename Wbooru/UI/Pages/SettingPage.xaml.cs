@@ -65,12 +65,12 @@ namespace Wbooru.UI.Pages
             InitializeComponent();
 
             SupportSettingWrappers = Container.Default.GetExports<SettingBase>()
-                .Select(x=> SettingManager.LoadSetting(x.Value.GetType()))
+                .Select(x => SettingManager.LoadSetting(x.Value.GetType()))
                 .OfType<SettingBase>()
-                .GroupBy(x=>x.GetType().Assembly)
-                .Select(x=>new GroupedSupportSettingWrapper() {
-                    ReferenceAssembly=x.Key,
-                    SupportSettings=x.AsEnumerable().Select(x=>x.GetType()).ToList()
+                .GroupBy(x => x.GetType().Assembly)
+                .Select(x => new GroupedSupportSettingWrapper() {
+                    ReferenceAssembly = x.Key,
+                    SupportSettings = x.AsEnumerable().Select(x => x.GetType()).ToList()
                 });
 
             MainPanel.DataContext = this;
@@ -92,7 +92,7 @@ namespace Wbooru.UI.Pages
                 var props = setting_type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.GetCustomAttribute<IgnoreAttribute>() == null);
 
                 var need_restart_wrapper = props.Where(p => p.GetCustomAttribute<NeedRestartAttribute>() != null).Select(x => new PropertyInfoWrapper()
-                {   
+                {
                     PropertyInfo = x,
                     OwnerObject = SettingManager.LoadSetting(setting_type)
                 }).ToArray();
@@ -110,6 +110,14 @@ namespace Wbooru.UI.Pages
                     .GroupBy(x => x.Item1);
 
                 grouped_controls = group_props.Select(x => GenerateGroupedSettingControls(x)).OfType<FrameworkElement>().ToArray();
+
+                //generate custom UI elements and append to group_controls.
+                var groups = grouped_controls.OfType<GroupBox>().ToDictionary(x => x.Header.ToString(), x => x);
+
+                TryAppendCustomUIElements(groups, setting_type);
+
+                grouped_controls = groups.Values.ToArray();
+
                 cached_controls[setting_type] = grouped_controls;
             }
 
@@ -122,6 +130,55 @@ namespace Wbooru.UI.Pages
                 SettingListPanel.Children.Add(control);
         }
 
+        private void TryAppendCustomUIElements(Dictionary<string, GroupBox> groups, Type setting_type)
+        {
+            var generate_methods = setting_type.GetMethods(BindingFlags.Public | BindingFlags.Instance).Where(p => p.GetCustomAttribute<CustomUIAttribute>() != null);
+
+            var setting = SettingManager.LoadSetting(setting_type);
+
+            foreach (var method in generate_methods)
+            {
+                if (!(method.Invoke(setting, new object[0]) is FrameworkElement ui))
+                {
+                    Log.Warn($"Can't generate custom ui from method : {setting_type.Name}.{method.Name}() , skip.");
+                    continue;
+                }
+
+                var group_name = method.GetCustomAttribute<GroupAttribute>() is GroupAttribute group ? group.GroupName : "Other";
+
+                Panel collection;
+
+                if (groups.TryGetValue(group_name, out var group_control))
+                {
+                    collection = group_control.Content as Panel;
+                }
+                else
+                {
+                    Log.Info($"Generate new group {group_name} for {setting_type.Name}.{method.Name}()");
+
+                    //add new group control
+                    var group_box = new GroupBox();
+                    var stack_panel = new StackPanel();
+
+                    group_box.Content = stack_panel;
+                    group_box.Header = group_name;
+                    stack_panel.Margin = new Thickness(15, 0, 0, 0);
+
+                    groups[group_name] = group_box;
+
+                    collection = stack_panel;
+                }
+
+                if (collection != null)
+                {
+                    ui.Margin = new Thickness(0, 0, 0, 15);
+                    collection?.Children?.Add(ui);
+
+                    Log.Info($"Appended {setting_type.Name}.{method.Name}() custom control into group {group_name}");
+                }
+            }
+        }
+    
         private FrameworkElement GenerateGroupedSettingControls(IGrouping<string, (string, PropertyInfoWrapper)> group_props)
         {
             var generated_setting_controls = group_props.Select(x => (GenerateMiniVisualizableSetting(x.Item2), x.Item2)).Where(x => x.Item1 != null).ToArray();
@@ -207,7 +264,7 @@ namespace Wbooru.UI.Pages
 
             var control_name = $"GEN_{wrapper.OwnerObject.GetType().Name}_{wrapper.PropertyInfo.Name}_{control.GetType().Name}";
             control.Name = control_name;
-            Log.Debug($"Create control:{control_name}", "GenerateMiniVisualizableSetting");
+            Log.Debug($"Create control:{control_name}");
 
             #endregion
 
