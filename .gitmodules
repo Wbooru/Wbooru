@@ -10,3 +10,6 @@
 [submodule "Plugins/WbooruPlugin.Danbooru"]
 	path = Plugins/WbooruPlugin.Danbooru
 	url = https://github.com/MikiraSora/WbooruPlugin.Danbooru
+[submodule "Plugins/WbooruPlugin.BossKey"]
+	path = Plugins/WbooruPlugin.BossKey
+	url = https://github.com/MikiraSora/WbooruPlugin.BossKey
