@@ -15,6 +15,13 @@ namespace Wbooru.Network
 {
     public static class RequestHelper
     {
+        static RequestHelper()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12; 
+        }
+
+        public static WebResponse CreateDeafult(string url, Action<HttpWebRequest> custom = null) => CreateDeafultAsync(url, custom).Result;
+
         private static IWebProxy socks5_proxy;
 
         private static GlobalSetting setting = SettingManager.LoadSetting<GlobalSetting>();

@@ -15,6 +15,34 @@
         <Color x:Key="BoundColor2">#00D5D1F0</Color>
     </UserControl.Resources>
     <Grid>
+        <StackPanel
+            Width="250"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Panel.ZIndex="100"
+            Background="#80000000"
+            Visibility="Collapsed">
+            <TextBlock>
+                <Run Text="SourceWidth: " />
+                <Run x:Name="RunSourceWidth" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="SourceHeight: " />
+                <Run x:Name="RunSourceHeight" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="DisplayWidth: " />
+                <Run Text="{Binding ElementName=Image, Path=ActualWidth, Mode=OneWay}" />
+                <Run Text="x" />
+                <Run Text="{Binding ElementName=Scale, Path=ScaleX, Mode=OneWay}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="DisplayHeight: " />
+                <Run Text="{Binding ElementName=Image, Path=ActualHeight, Mode=OneWay}" />
+                <Run Text="x" />
+                <Run Text="{Binding ElementName=Scale, Path=ScaleY, Mode=OneWay}" />
+            </TextBlock>
+        </StackPanel>
         <Canvas
             x:Name="MainCanvas"
             Background="Transparent"
@@ -27,7 +55,7 @@
             <Image
                 x:Name="Image"
                 RenderOptions.BitmapScalingMode="HighQuality"
-                Stretch="None">
+                Stretch="Fill">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <TranslateTransform x:Name="Translate" X="0" Y="0" />

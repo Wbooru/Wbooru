@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -128,9 +129,25 @@ namespace Wbooru.UI.Controls
 
         public void LoadImage(ImageSource image)
         {
-            SourceSize = image == null ? new Size() : new Size(image.Width, image.Height);
+            double width = 0, height = 0;
+            if (image is BitmapSource bmp)
+            {
+                width = bmp.PixelWidth;
+                height = bmp.PixelHeight;
+            }
+            else if (!(image is null))
+            {
+                width = image.Width;
+                height = image.Height;
+            }
+
+            RunSourceWidth.Text = width.ToString(CultureInfo.InvariantCulture);
+            RunSourceHeight.Text = height.ToString(CultureInfo.InvariantCulture);
+            SourceSize = new Size(width, height);
             FixFullRatio();
             ResetPosition();
+            Image.Width = width;
+            Image.Height = height;
             Image.Source = image;
             _boundSbList.Clear();
         }
