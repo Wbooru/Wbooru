@@ -13,5 +13,12 @@ namespace Wbooru.PluginExt
         public abstract string PluginProjectWebsite { get; }
         public abstract string PluginAuthor { get; }
         public abstract string PluginDescription { get; }
+
+        protected virtual void OnApplicationTerm()
+        {
+
+        }
+
+        internal void CallApplicationTerm() => OnApplicationTerm();
     }
 }

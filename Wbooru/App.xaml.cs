@@ -144,11 +144,23 @@ namespace Wbooru
         internal static void Term()
         {
             Log.Info("-----------------Begin Term()-----------------");
+            PluginsTerm();
             DownloadManager.Close();
             SettingManager.SaveSettingFile();
             SchedulerManager.Term();
             Log.Term();
             Log.Info("-----------------End Term()-----------------");
+        }
+
+        private static void PluginsTerm()
+        {
+            Log.Info("Call PluginsTerm()");
+
+            foreach (var plugin in Container.Default.GetExportedValues<PluginInfo>())
+            {
+                Log.Info($"Call {plugin.PluginName}.OnApplicationTerm()");
+                plugin.CallApplicationTerm();
+            }
         }
 
         internal static void UnusualSafeExit()
