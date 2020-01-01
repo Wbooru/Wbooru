@@ -102,9 +102,18 @@ namespace Wbooru
         {
             Log.Info("-----------------Begin Init()-----------------");
 
-            AppDomain.CurrentDomain.UnhandledException+= (e, d) => Log.Error($"{(d.ExceptionObject as Exception).Message} {Environment.NewLine} {(d.ExceptionObject as Exception).StackTrace}", "UnhandledException");
-            if (Current!=null)
-                Current.DispatcherUnhandledException += (e, d) => Log.Error($"{d?.Exception?.Message} {Environment.NewLine} {d?.Exception?.StackTrace}", "UnhandledException");
+            AppDomain.CurrentDomain.UnhandledException += (e, d) =>
+             {
+                 Log.Error($"{(d.ExceptionObject as Exception).Message} {Environment.NewLine} {(d.ExceptionObject as Exception).StackTrace}", "UnhandledException");
+                 FatalAlert();
+             };
+
+            if (Current != null)
+                Current.DispatcherUnhandledException += (e, d) =>
+                {
+                    Log.Error($"{d?.Exception?.Message} {Environment.NewLine} {d?.Exception?.StackTrace}", "UnhandledException");
+                    FatalAlert();
+                };
 
             Log.Info("Program version:" + ProgramUpdater.CurrentProgramVersion.ToString());
 
@@ -121,6 +130,12 @@ namespace Wbooru
             ImageResourceManager.InitImageResourceManager();
 
             Log.Info("-----------------End Init()-----------------");
+        }
+
+        private static void FatalAlert()
+        {
+            Process.Start(Log.LogFilePath);
+            MessageBox.Show("Wbooru遇到了无法解决的错误，程序即将关闭。请查看日志文件.", "Wbooru", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Stop);
         }
 
         private static void CheckPlugin()
