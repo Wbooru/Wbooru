@@ -21,6 +21,9 @@ namespace Wbooru.Kernel.Updater
 
         public static void CheckPluginUpdatable(IPluginUpdatable plugin)
         {
+            if (plugin is null)
+                return;
+
             var type = plugin.GetType();
             UpdatablePluginsInfo[type] = null;
 

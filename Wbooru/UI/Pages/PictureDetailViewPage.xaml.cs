@@ -122,7 +122,7 @@ namespace Wbooru.UI.Pages
 
             using (var notify = LoadingStatus.BeginBusy(notify_content))
             {
-                var (pick_download,is_new) = await PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
+                var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
 
                 if (pick_download == null)
                 {
@@ -130,14 +130,6 @@ namespace Wbooru.UI.Pages
                     ExceptionHelper.DebugThrow(new Exception("No image."));
                     Toast.ShowMessage("没图片可显示");
                     return;
-                }
-
-                if (is_new)
-                {
-                    //force update
-                    var d = DownloadList.DataContext;
-                    DownloadList.DataContext = this;
-                    DownloadList.DataContext = d;
                 }
 
                 var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
@@ -170,17 +162,9 @@ namespace Wbooru.UI.Pages
             };
         }
 
-        private async Task<(DownloadableImageLink,bool)> PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
+        private DownloadableImageLink PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
         {
             var prefer_target = SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget;
-            bool is_new = false;
-
-            if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
-                foreach (var i in downloadableImageLinks.Where(x => x.FileLength == 0))
-                {
-                    i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
-                    is_new |= i.FileLength != 0;
-                }
 
             var target_list = downloadableImageLinks.OrderByDescending(x => x.FileLength).ToArray();
 
@@ -194,7 +178,7 @@ namespace Wbooru.UI.Pages
                 _ => target_list.Last()
             });
 
-            return (result, is_new);
+            return result;
         }
 
         private async Task<long> TryGetVaildDownloadFileSize(string downloadLink)
@@ -219,39 +203,41 @@ namespace Wbooru.UI.Pages
             PictureInfo = item;
 
             Gallery = gallery ?? Container.Default.GetExportedValues<Gallery>().FirstOrDefault(x => x.GalleryName == item.GalleryName);
-            
+
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
 
             VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = true;
 
-            await Task.Run(() =>
+            using (var transaction = DB.Database.BeginTransaction())
             {
-                using (var transaction = DB.Database.BeginTransaction())
+                var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
+                if (visit_entity == null)
                 {
-                    var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
-                    if (visit_entity == null)
+                    var visit = new VisitRecord()
                     {
-                        var visit = new VisitRecord()
-                        {
-                            GalleryItem = item.ConvertToStorableModel(),
-                            LastVisitTime = DateTime.Now
-                        };
+                        GalleryItem = item.ConvertToStorableModel(),
+                        LastVisitTime = DateTime.Now
+                    };
 
-                        DB.VisitRecords.Add(visit);
-                    }
-                    else
-                    {
-                        visit_entity.LastVisitTime = DateTime.Now;
-                        DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
-                    }
-
-                    DB.SaveChanges();
-                    transaction.Commit();
+                    DB.VisitRecords.Add(visit);
                 }
-            });
+                else
+                {
+                    visit_entity.LastVisitTime = DateTime.Now;
+                    DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
+                }
+
+                await DB.SaveChangesAsync();
+                transaction.Commit();
+            }
 
             var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
             var detail = gallery.GetImageDetial(item);
+
+            if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
+                if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
+                    foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength == 0))
+                        i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
 
             bool? is_vote = default;
 
