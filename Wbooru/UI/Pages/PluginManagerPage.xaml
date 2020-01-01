@@ -280,95 +280,94 @@
                         <TextBox Width="150">
                         </TextBox>
                     </StackPanel>
-                    <ItemsControl Grid.Row="1" ItemsSource="{Binding PluginMarketPosts}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid>
-                                </UniformGrid>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <GroupBox
-                                    Height="250"
-                                    Margin="10"
-                                    Header="{Binding PluginName}">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="*" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-                                        <StackPanel>
-                                            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
-                                                <TextBlock
-                                                    Margin="0,0,10,0"
-                                                    FontSize="16"
-                                                    Foreground="Gray">
-                                                    作者:
-                                                </TextBlock>
-                                                <TextBlock FontSize="16" Text="{Binding PluginAuthor}">
-                                                </TextBlock>
+                    <ScrollViewer Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding PluginMarketPosts}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid>
+                                    </UniformGrid>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <GroupBox Margin="10" Header="{Binding PluginName}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <StackPanel>
+                                                <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                                    <TextBlock
+                                                        Margin="0,0,10,0"
+                                                        FontSize="16"
+                                                        Foreground="Gray">
+                                                        作者:
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="16" Text="{Binding PluginAuthor}">
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                                    <TextBlock
+                                                        Margin="0,0,10,0"
+                                                        VerticalAlignment="Center"
+                                                        FontSize="16"
+                                                        Foreground="Gray">
+                                                        更新日期:
+                                                    </TextBlock>
+                                                    <Label
+                                                        VerticalAlignment="Center"
+                                                        Content="{Binding ReleaseInfos, Converter={x:Static vc:SimpleExpressionConverters.LatestUpdateDateConverter}}"
+                                                        FontSize="16">
+                                                    </Label>
+                                                </StackPanel>
                                             </StackPanel>
-                                            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
-                                                <TextBlock
-                                                    Margin="0,0,10,0"
-                                                    VerticalAlignment="Center"
-                                                    FontSize="16"
-                                                    Foreground="Gray">
-                                                    更新日期:
-                                                </TextBlock>
-                                                <Label
-                                                    VerticalAlignment="Center"
-                                                    Content="{Binding ReleaseInfos, Converter={x:Static vc:SimpleExpressionConverters.LatestUpdateDateConverter}}"
-                                                    FontSize="16">
-                                                </Label>
-                                            </StackPanel>
-                                        </StackPanel>
 
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            FontSize="16"
-                                            Text="{Binding Description}"
-                                            TextTrimming="CharacterEllipsis"
-                                            TextWrapping="WrapWithOverflow"
-                                            ToolTip="{Binding Description}">
-                                        </TextBlock>
-
-                                        <StackPanel Grid.Row="2" Margin="0,10,0,0">
-                                            <TextBlock>
-                                                <Hyperlink
-                                                    Name="ReleaseUrlName"
-                                                    FontSize="15"
-                                                    Foreground="White"
-                                                    NavigateUri="{Binding ReleaseUrl}"
-                                                    RequestNavigate="Hyperlink_RequestNavigate">
-                                                    ReleaseUrl
-                                                </Hyperlink>
+                                            <TextBlock
+                                                Grid.Row="1"
+                                                FontSize="16"
+                                                Text="{Binding Description}"
+                                                TextTrimming="CharacterEllipsis"
+                                                TextWrapping="WrapWithOverflow"
+                                                ToolTip="{Binding Description}">
                                             </TextBlock>
-                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                                <Button
-                                                    Name="DownloadButton"
-                                                    Padding="10,5,10,5"
-                                                    Background="Transparent"
-                                                    BorderBrush="White"
-                                                    Click="Button_Click_1"
-                                                    Visibility="{Binding Converter={x:Static vc:SimpleExpressionConverters.ReverseCheckIfPluginInstalled}}">
-                                                    下载插件
-                                                </Button>
-                                                <TextBlock
-                                                    FontSize="16"
-                                                    Foreground="LightGreen"
-                                                    Visibility="{Binding Converter={x:Static vc:SimpleExpressionConverters.CheckIfPluginInstalled}}">
-                                                    已安装
+
+                                            <StackPanel Grid.Row="2" Margin="0,10,0,0">
+                                                <TextBlock>
+                                                    <Hyperlink
+                                                        Name="ReleaseUrlName"
+                                                        FontSize="15"
+                                                        Foreground="White"
+                                                        NavigateUri="{Binding ReleaseUrl}"
+                                                        RequestNavigate="Hyperlink_RequestNavigate">
+                                                        ReleaseUrl
+                                                    </Hyperlink>
                                                 </TextBlock>
+                                                <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                    <Button
+                                                        Name="DownloadButton"
+                                                        Padding="10,5,10,5"
+                                                        Background="Transparent"
+                                                        BorderBrush="White"
+                                                        Click="Button_Click_1"
+                                                        Visibility="{Binding Converter={x:Static vc:SimpleExpressionConverters.ReverseCheckIfPluginInstalled}}">
+                                                        下载插件
+                                                    </Button>
+                                                    <TextBlock
+                                                        FontSize="16"
+                                                        Foreground="LightGreen"
+                                                        Visibility="{Binding Converter={x:Static vc:SimpleExpressionConverters.CheckIfPluginInstalled}}">
+                                                        已安装
+                                                    </TextBlock>
+                                                </StackPanel>
                                             </StackPanel>
-                                        </StackPanel>
-                                    </Grid>
-                                </GroupBox>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                        </Grid>
+                                    </GroupBox>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
             </Grid>
         </Grid>
