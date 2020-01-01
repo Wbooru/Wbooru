@@ -28,7 +28,7 @@ namespace Wbooru.Kernel.Updater
             UpdatablePluginsInfo[type] = null;
 
             var current_version = plugin.CurrentPluginVersion;
-            var releases_list = plugin.GetReleaseInfoList().Where(x => x.Version > current_version).OrderBy(x => x.ReleaseDate);
+            var releases_list = plugin.GetReleaseInfoList().Where(x => x.Version > current_version).OrderByDescending(x => x.Version);
 
             if (!releases_list.Any())
                 return;

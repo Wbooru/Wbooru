@@ -325,7 +325,7 @@ namespace Wbooru.UI.Pages
             var post = (sender as FrameworkElement).DataContext as PluginMarketPost;
             StartProgress(LayoutState.MarketPart);
 
-            var releases = (post.ReleaseInfos ?? Enumerable.Empty<PluginMarketRelease>()).OrderBy(x=>x.Version);
+            var releases = (post.ReleaseInfos ?? Enumerable.Empty<PluginMarketRelease>()).OrderByDescending(x=>x.Version);
 
             var pick = SettingManager.LoadSetting<GlobalSetting>().UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ?
                 releases.FirstOrDefault() : releases.Where(x => x.ReleaseType != ReleaseType.Preview).FirstOrDefault();
