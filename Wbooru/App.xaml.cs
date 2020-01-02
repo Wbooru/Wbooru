@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Wbooru.PluginExt;
 using MessageBox = System.Windows.Forms.MessageBox;
 using Wbooru.Kernel.Updater.PluginMarket;
+using Wbooru.Persistence;
 
 namespace Wbooru
 {
@@ -24,6 +25,8 @@ namespace Wbooru
     /// </summary>
     public partial class App : Application
     {
+        public static bool IsInDesignMode => System.ComponentModel.DesignerProperties.GetIsInDesignMode(new DependencyObject());
+
         public App()
         {
             Log.Info("Enter App()");
@@ -66,6 +69,24 @@ namespace Wbooru
             if (CommandLine.ContainSwitchOption("update_plugin"))
             {
                 PluginUpdaterManager.ApplyPluginUpdate();
+            }
+
+            if (CommandLine.ContainSwitchOption("database_backup"))
+            {
+                if (CommandLine.TryGetOptionValue("to",out string to))
+                {
+                    LocalDBContext.BackupDatabase(to);
+                    Environment.Exit(0);
+                }
+            }
+
+            if (CommandLine.ContainSwitchOption("database_restore"))
+            {
+                if (CommandLine.TryGetOptionValue("to", out string to) && CommandLine.TryGetOptionValue("from", out string from))
+                {
+                    LocalDBContext.RestoreDatabase(from,to);
+                    Environment.Exit(0);
+                }
             }
         }
 
@@ -134,8 +155,14 @@ namespace Wbooru
 
         private static void FatalAlert()
         {
+            //skip if it's in design mode
+            if (IsInDesignMode)
+                return;
+
             Process.Start(Log.LogFilePath);
             MessageBox.Show("Wbooru遇到了无法解决的错误，程序即将关闭。请查看日志文件.", "Wbooru", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Stop);
+
+            Environment.Exit(0);
         }
 
         private static void CheckPlugin()
@@ -194,6 +221,13 @@ namespace Wbooru
             {
                 Environment.Exit(0);
             }
+        }
+
+        internal static void UnusualSafeRestart()
+        {
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
+
+            UnusualSafeExit();
         }
     }
 }

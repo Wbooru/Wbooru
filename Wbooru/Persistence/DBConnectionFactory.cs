@@ -15,6 +15,12 @@ namespace Wbooru.Persistence
     {
         private static DbConnection _cached_connection;
 
+#if SQLITE_DEBUG || SQLITE
+        public static bool UsingSqlite => true;
+#else
+        public static bool UsingSqlite => false;
+#endif
+
         public static DbConnection GetConnection()
         {
             if (_cached_connection != null)

@@ -189,6 +189,7 @@
     <Compile Include="PluginExt\IPluginUpdatable.cs" />
     <Compile Include="PluginExt\ISchedulable.cs" />
     <Compile Include="PluginExt\PluginInfo.cs" />
+    <Compile Include="Settings\DataOperationPanel.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
     <Compile Include="Settings\SettingBase.cs" />
     <Compile Include="Settings\SettingFileEntity.cs" />
@@ -207,6 +208,9 @@
     <Compile Include="Settings\UIAttributes\NameAliasAttribute.cs" />
     <Compile Include="Settings\UIAttributes\RangeAttribute.cs" />
     <Compile Include="Settings\UIAttributes\SettingUIAttributeBase.cs" />
+    <Compile Include="UI\Controls\EmbeddedDataOperationPanel.xaml.cs">
+      <DependentUpon>EmbeddedDataOperationPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\GalleryGridView.xaml.cs">
       <DependentUpon>GalleryGridView.xaml</DependentUpon>
     </Compile>
@@ -307,6 +311,10 @@
     <Compile Include="UI\ValueConverters\TagColorConverter.cs" />
     <Compile Include="Utils\UpdaterHelper.cs" />
     <Compile Include="Utils\ViusalTreeHelperEx.cs" />
+    <Page Include="UI\Controls\EmbeddedDataOperationPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\ImageViewer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
