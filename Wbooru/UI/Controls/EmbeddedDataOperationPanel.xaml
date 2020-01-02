@@ -38,7 +38,7 @@
             </StackPanel>
         </GroupBox>
 
-        <controls:LoadingStatusDisplayer x:Name="StatusDisplayer" Margin="20,0,0,0">
+        <controls:LoadingStatusDisplayer x:Name="StatusDisplayer" Margin="0,20,0,0">
         </controls:LoadingStatusDisplayer>
     </StackPanel>
 </UserControl>
