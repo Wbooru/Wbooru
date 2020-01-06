@@ -20,5 +20,7 @@
 ### (开发中)部分截图
 ![](https://puu.sh/EBGoi/17f26397e0.png)
 ![](https://puu.sh/EBGoF/4e11a8dc7f.png)
-![](https://puu.sh/EBGqA/76abcdc6ef.png)
-![](https://puu.sh/EBGrO/aeb359efe6.png)
+![](https://puu.sh/EX40l/1769c4544b.jpg)
+![](https://puu.sh/EX41i/738dba9603.jpg)
+![](https://puu.sh/EX41Y/03ba787f29.png)
+![](https://puu.sh/EX43l/75ba69110f.png)
