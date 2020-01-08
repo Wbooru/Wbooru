@@ -216,8 +216,10 @@ namespace Wbooru.Settings
 
         #endregion
 
-        [Ignore]
-        public bool IgnoreSettingChangedComfirm { get; set; } = false;
+        /// <summary>
+        /// 钦定本次运行中需要重启的设置变更了，是否不提醒用户重启。
+        /// </summary>
+        internal bool IgnoreSettingChangedComfirm { get; set; } = false;
 
         /*
          * 用于记录窗口的，下次开启会恢复成上次的大小和位置

@@ -70,7 +70,7 @@
                             Checked="CheckBox_Checked"
                             FontSize="14"
                             Foreground="White">
-                            不再提醒
+                            本次运行不再提醒
                         </CheckBox>
                     </StackPanel>
 
