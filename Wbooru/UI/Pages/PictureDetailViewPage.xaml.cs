@@ -36,7 +36,7 @@ namespace Wbooru.UI.Pages
     /// <summary>
     /// PictureDetailViewPage.xaml 的交互逻辑
     /// </summary>
-    public partial class PictureDetailViewPage : Page, ICacheCleanable, INavigatableAction
+    public partial class PictureDetailViewPage : Page , INavigatableAction
     {
         public Gallery Gallery
         {
@@ -87,6 +87,8 @@ namespace Wbooru.UI.Pages
 
         public LocalDBContext DB { get; }
 
+        public DownloadableImageLink CurrentDisplayImageLink { get; private set; }
+
         static PictureDetailViewPage()
         {
             ObjectPool<ThicknessAnimation>.EnableTrim = false;
@@ -118,48 +120,48 @@ namespace Wbooru.UI.Pages
 
             RefreshButton.IsBusy = true;
 
+            var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
+
+            if (pick_download == null)
+            {
+                //notice error;
+                ExceptionHelper.DebugThrow(new Exception("No image."));
+                Toast.ShowMessage("没图片可显示");
+                return;
+            }
+
+            await DisplayImage(pick_download);
+
+            RefreshButton.IsBusy = false;
+        }
+
+        private async Task DisplayImage(DownloadableImageLink pick_download)
+        {
             const string notify_content = "加载图片中......";
 
-            using (var notify = LoadingStatus.BeginBusy(notify_content))
+            using var notify = LoadingStatus.BeginBusy(notify_content);
+
+            var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
+
+            System.Drawing.Image image;
+
+            do
             {
-                var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
-
-                if (pick_download == null)
+                image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, async () =>
                 {
-                    //notice error;
-                    ExceptionHelper.DebugThrow(new Exception("No image."));
-                    Toast.ShowMessage("没图片可显示");
-                    return;
-                }
-
-                var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
-
-                System.Drawing.Image image;
-
-                do
-                {
-                    image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, async () =>
+                    return await downloader.GetImageAsync(pick_download.DownloadLink, null, d =>
                     {
-                        return await downloader.GetImageAsync(pick_download.DownloadLink, null, d =>
-                        {
-                            (long cur, long total) = d;
-                            notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
-                        });
+                        (long cur, long total) = d;
+                        notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
                     });
-                } while (image == null);
+                });
+            } while (image == null);
 
-                var source = image.ConvertToBitmapImage();
-                RefreshButton.IsBusy = false;
+            CurrentDisplayImageLink = pick_download;
 
-                if (PictureDetailInfo == galleryImageDetail)
-                {
-                    DetailImageBox.ImageSource = source;
-                }
-                else
-                {
-                    Log<PictureDetailViewPage>.Debug($"Picture info mismatch.");
-                }
-            };
+            var source = image.ConvertToBitmapImage();
+
+            DetailImageBox.ImageSource = source;
         }
 
         internal class DownloadableImageLinkComparer : IComparer<DownloadableImageLink>
@@ -268,29 +270,6 @@ namespace Wbooru.UI.Pages
             PictureDetailInfo = detail;
         }
 
-        public void OnBeforeGetClean()
-        {
-
-        }
-
-        public void OnAfterPutClean()
-        {
-            Gallery = null;
-            PictureInfo = null;
-            PictureDetailInfo = null;
-            IsMark = false;
-            IsVoted = false;
-
-            try
-            {
-                cancel_source.Cancel();
-                cancel_source = new CancellationTokenSource();
-            }
-            catch { }
-
-            LoadingStatus.ForceFinishAllStatus();
-        }
-
         private void BrowserOpenButton_Click(object sender, RoutedEventArgs e)
         {
             if (!(((FrameworkElement)sender).DataContext is DownloadableImageLink link))
@@ -301,9 +280,7 @@ namespace Wbooru.UI.Pages
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            var page = NavigationHelper.NavigationPop() as PictureDetailViewPage;
-
-            ObjectPool<PictureDetailViewPage>.Return(page);
+            NavigationHelper.NavigationPop();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -600,6 +577,19 @@ namespace Wbooru.UI.Pages
         private void ViewPage_SizeChanged_1(object sender, SizeChangedEventArgs e)
         {
 
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (RefreshButton.IsBusy)
+            {
+                Toast.ShowMessage("请等图片加载完成");
+                return;
+            }
+
+            var list = PictureDetailInfo.DownloadableImageLinks.OrderBy(x => x, DownloadableImageLinkComparer.Instance).Select((item, index) => (index, item));
+
+            
         }
     }
 }

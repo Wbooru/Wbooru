@@ -111,8 +111,6 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-
-
         <system:Double x:Key="BoardHeaderHeight">40</system:Double>
 
         <Style TargetType="{x:Type Button}">

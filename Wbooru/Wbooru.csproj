@@ -249,6 +249,13 @@
     <Compile Include="UI\Controls\Toast.xaml.cs">
       <DependentUpon>Toast.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\Dialog.cs" />
+    <Compile Include="UI\Dialogs\DialogContentHost.xaml.cs">
+      <DependentUpon>DialogContentHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\SelectableImageList.xaml.cs">
+      <DependentUpon>SelectableImageList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -348,6 +355,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\Toast.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\DialogContentHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\SelectableImageList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -456,9 +471,7 @@
       <Name>LoadingIndicators.WPF</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\Dialogs\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net46\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

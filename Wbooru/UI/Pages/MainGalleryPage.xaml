@@ -131,6 +131,7 @@
                     Button.Click="DownloadPageButton_Click"
                     Icon=""
                     Text="下载" />
+                <controls:MenuButton Button.Click="MenuButton_Click_3" Text="测试" />
             </StackPanel>
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
                 <controls:MenuButton

@@ -121,6 +121,18 @@
                                     </Grid>
                                 </MenuItem.Icon>
                             </MenuItem>
+
+                            <MenuItem
+                                Padding="5,10,5,10"
+                                Background="Transparent"
+                                Click="MenuItem_Click_1"
+                                FontSize="14"
+                                Header="更换图片尺寸大小">
+                                <MenuItem.Icon>
+                                    <Grid Background="Transparent">
+                                    </Grid>
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </ContextMenu>
                     </controls:ImageViewer.ContextMenu>
                 </controls:ImageViewer>

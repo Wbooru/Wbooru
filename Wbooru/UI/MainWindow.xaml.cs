@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using Wbooru.Kernel;
 using Wbooru.Settings;
+using Wbooru.UI.Dialogs;
 using Wbooru.UI.Pages;
 
 namespace Wbooru.UI
@@ -19,6 +20,8 @@ namespace Wbooru.UI
             Log.Info("Begin init MainWindow");
 
             InitializeComponent();
+
+            Dialog.Init(DialogLayer);
 
             setting = SettingManager.LoadSetting<GlobalSetting>();
 

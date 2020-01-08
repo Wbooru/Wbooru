@@ -29,6 +29,7 @@ using Wbooru.Models;
 using Wbooru.Persistence;
 using Wbooru.UI.Controls.PluginExtension;
 using System.Windows.Markup;
+using Wbooru.UI.Dialogs;
 
 namespace Wbooru.UI.Pages
 {
@@ -203,7 +204,7 @@ namespace Wbooru.UI.Pages
 
         private void GridViewer_ClickItemEvent(GalleryItem item)
         {
-            var page = ObjectPool<PictureDetailViewPage>.Get();
+            var page = new PictureDetailViewPage();
             page.ApplyItem(CurrentGallery, item);
 
             NavigationHelper.NavigationPush(page);
@@ -444,6 +445,11 @@ namespace Wbooru.UI.Pages
             GridViewer.LoadableSourceFactory = source;
 
             CloseLeftPanel();
+        }
+
+        private async void MenuButton_Click_3(object sender, RoutedEventArgs e)
+        {
+            await Dialog.ShowDialog<SelectableImageList>();
         }
     }
 }
