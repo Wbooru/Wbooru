@@ -162,11 +162,23 @@ namespace Wbooru.UI.Pages
             };
         }
 
+        internal class DownloadableImageLinkComparer : IComparer<DownloadableImageLink>
+        {
+            public int Compare(DownloadableImageLink x, DownloadableImageLink y)
+            {
+                //先比较图片尺寸，其次图片文件大小
+                var r = (x.Size.Height * x.Size.Width).CompareTo(y.Size.Height * y.Size.Width);
+                return r != 0 ? r : x.FileLength.CompareTo(y.FileLength);
+            }
+        }
+
+        DownloadableImageLinkComparer comparer = new DownloadableImageLinkComparer();
+
         private DownloadableImageLink PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
         {
             var prefer_target = SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget;
 
-            var target_list = downloadableImageLinks.OrderByDescending(x => x.FileLength).ToArray();
+            var target_list = downloadableImageLinks.OrderByDescending(x => x, comparer).ToArray();
 
             var result = target_list.Length == 0 ? null : (prefer_target switch
             {
