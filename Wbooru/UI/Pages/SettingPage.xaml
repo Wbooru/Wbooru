@@ -94,8 +94,7 @@
                         BorderBrush="White"
                         Click="RestartComfirmButton_Click">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Foreground="LightGray" Opacity="0.1">立即重启</TextBlock>
-                            <TextBlock>立即关闭</TextBlock>
+                            <TextBlock FontWeight="Bold">立即重启</TextBlock>
                         </StackPanel>
                     </Button>
                 </Grid>

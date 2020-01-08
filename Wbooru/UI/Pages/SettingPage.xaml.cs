@@ -22,6 +22,7 @@ using Wbooru.Settings.UIAttributes;
 using Wbooru.UI.Controls.SettingUI;
 using Wbooru.UI.ValueConverters.SettingUI;
 using Wbooru.UI.Controls;
+using System.Diagnostics;
 
 namespace Wbooru.UI.Pages
 {
@@ -349,8 +350,8 @@ namespace Wbooru.UI.Pages
 
         private void RestartComfirmButton_Click(object sender, RoutedEventArgs e)
         {
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
             App.UnusualSafeExit();
-            //todo
         }
 
         private void NotRestartComfirmButton_Click(object sender, RoutedEventArgs e)
