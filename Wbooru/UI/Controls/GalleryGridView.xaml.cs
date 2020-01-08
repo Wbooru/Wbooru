@@ -209,6 +209,7 @@ namespace Wbooru.UI.Controls
                     if (!option.EnableTagFilter)
                         return true;
 
+                    //todo: optimze them
                     switch (ViewType)
                     {
                         case GalleryViewType.Marked:
@@ -225,6 +226,10 @@ namespace Wbooru.UI.Controls
                             break;
                         case GalleryViewType.SearchResult:
                             if (!option.FilterTarget.HasFlag(TagFilterTarget.SearchResultWindow))
+                                return true;
+                            break;
+                        case GalleryViewType.History:
+                            if (!option.FilterTarget.HasFlag(TagFilterTarget.HistoryWindow))
                                 return true;
                             break;
                         default:

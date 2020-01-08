@@ -114,6 +114,13 @@
                     ButtonBase.Click="ShowMarkPicturesButton_Click"
                     Icon=""
                     Text="收藏" />
+
+                <controls:MenuButton
+                    x:Name="ShowHistoryButton"
+                    ButtonBase.Click="ShowHistoryButton_Click"
+                    Icon=""
+                    Text="历史" />
+
                 <controls:MenuButton
                     x:Name="ShowTagManagePageButton"
                     ButtonBase.Click="ShowTagManagePageButton_Click"

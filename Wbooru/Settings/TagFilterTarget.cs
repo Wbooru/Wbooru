@@ -9,5 +9,6 @@ namespace Wbooru.Settings
         SearchResultWindow = 2 << 2,
         MarkedWindow = 2 << 3,
         VotedWindow = 2 << 4,
+        HistoryWindow = 2 << 5,
     }
 }

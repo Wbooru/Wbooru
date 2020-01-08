@@ -41,7 +41,7 @@ namespace Wbooru.UI.Pages
     {
         public enum GalleryViewType
         {
-            Marked, Voted, Main, SearchResult
+            Marked, Voted, Main, SearchResult , History
         }
 
         public Gallery CurrentGallery
@@ -421,6 +421,29 @@ namespace Wbooru.UI.Pages
             var page = new PluginManagerPage(PluginManagerPage.LayoutState.MarketPart);
 
             NavigationHelper.NavigationPush(page);
+        }
+
+        private void ShowHistoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (GridViewer.ViewType == GalleryViewType.History)
+                return;
+
+            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
+
+            var source = new Func<IEnumerable<GalleryItem>>(() => LocalDBContext.Instance.VisitRecords.OrderByDescending(x=>x.LastVisitTime).Select(x => x.GalleryItem)
+                .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.GalleryName), gallery_item = x })
+                .Where(x => x.gallery != null)
+                .ToArray()//avoid SQL.
+                .Select(x => x.gallery_item.ConvertToNormalModel()));
+
+
+            GalleryTitle = "历史浏览记录";
+            GridViewer.ViewType = GalleryViewType.History;
+            GridViewer.ClearGallery();
+            GridViewer.Gallery = null;
+            GridViewer.LoadableSourceFactory = source;
+
+            CloseLeftPanel();
         }
     }
 }
