@@ -164,6 +164,8 @@ namespace Wbooru.UI.Pages
 
         internal class DownloadableImageLinkComparer : IComparer<DownloadableImageLink>
         {
+            public static DownloadableImageLinkComparer Instance { get; } = new DownloadableImageLinkComparer();
+
             public int Compare(DownloadableImageLink x, DownloadableImageLink y)
             {
                 //先比较图片尺寸，其次图片文件大小
@@ -172,13 +174,11 @@ namespace Wbooru.UI.Pages
             }
         }
 
-        DownloadableImageLinkComparer comparer = new DownloadableImageLinkComparer();
-
         private DownloadableImageLink PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
         {
             var prefer_target = SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget;
 
-            var target_list = downloadableImageLinks.OrderByDescending(x => x, comparer).ToArray();
+            var target_list = downloadableImageLinks.OrderByDescending(x => x, DownloadableImageLinkComparer.Instance).ToArray();
 
             var result = target_list.Length == 0 ? null : (prefer_target switch
             {
