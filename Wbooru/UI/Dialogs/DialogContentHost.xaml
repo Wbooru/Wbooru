@@ -10,8 +10,8 @@
     mc:Ignorable="d">
     <UserControl.Template>
         <ControlTemplate TargetType="UserControl">
-            <Grid Background="#AAFFFFFF" MouseDown="Grid_MouseDown">
-                <Grid Margin="30">
+            <Grid Background="#66FFFFFF" MouseDown="Grid_MouseDown">
+                <Grid Margin="30" Background="{StaticResource ContentBackgroundColor}">
                     <ContentPresenter MouseDown="ContentPresenter_MouseDown">
                     </ContentPresenter>
                 </Grid>
