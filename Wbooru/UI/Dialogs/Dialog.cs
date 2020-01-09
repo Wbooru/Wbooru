@@ -101,7 +101,7 @@ namespace Wbooru.UI.Dialogs
             return task;
         }
 
-        public static Task ShowDialog<T>() where T : FrameworkElement, new() => return ShowDialog(new T());
+        public static Task ShowDialog<T>() where T : FrameworkElement, new() => ShowDialog(new T());
         
         public static void CloseDialog<T>(T dialog) where T : DialogContentHost
         {

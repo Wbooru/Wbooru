@@ -3,25 +3,81 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:gallery="clr-namespace:Wbooru.Models.Gallery"
     xmlns:local="clr-namespace:Wbooru.UI.Dialogs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:valueconverters="clr-namespace:Wbooru.UI.ValueConverters"
+    Height="450"
     Background="{StaticResource ContentBackgroundColor}"
     mc:Ignorable="d">
+
+    <UserControl.DataContext>
+        <Binding RelativeSource="{RelativeSource Self}">
+        </Binding>
+    </UserControl.DataContext>
+
+
+    <UserControl.Resources>
+        <valueconverters:FormatBytesLengthConverter x:Key="FormatBytesLengthConverter" />
+    </UserControl.Resources>
+
     <StackPanel Margin="30" Background="{StaticResource ContentBackgroundColor}">
+        <ScrollViewer>
+            <ListView
+                Name="SelectList"
+                Height="300"
+                Margin="0,0,0,20"
+                Background="Transparent"
+                ItemsSource="{Binding List}"
+                SelectedItem="{Binding CurrentDisplayImageLink, Mode=OneTime}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="5">
+                            <TextBlock Foreground="White" Text="{Binding Description}">
+                            </TextBlock>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Foreground="Gray">
+                                        大小:
+                                    </TextBlock>
+                                    <TextBlock Foreground="White" Text="{Binding FileLength, Converter={StaticResource FormatBytesLengthConverter}}">
+                                    </TextBlock>
+                                </StackPanel>
+                            </Label>
+                            <Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Foreground="Gray">
+                                        尺寸:
+                                    </TextBlock>
+                                    <TextBlock Foreground="White" Text="{Binding Size}">
+                                    </TextBlock>
+                                </StackPanel>
+                            </Label>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </ScrollViewer>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
 
-            <Button Padding="10,5,10,5" BorderBrush="White">
+            <Button
+                Width="120"
+                Padding="20,10,20,10"
+                BorderBrush="White"
+                Click="Button_Click_1">
                 确定
             </Button>
             <Button
                 Grid.Column="1"
+                Width="120"
                 Margin="10,0,0,0"
-                Padding="10,5,10,5"
-                BorderBrush="White">
+                Padding="20,10,20,10"
+                BorderBrush="White"
+                Click="Button_Click">
                 取消
             </Button>
         </Grid>

@@ -26,6 +26,7 @@ using Wbooru.Network;
 using Wbooru.Persistence;
 using Wbooru.Settings;
 using Wbooru.UI.Controls;
+using Wbooru.UI.Dialogs;
 using Wbooru.Utils;
 using Wbooru.Utils.Resource;
 using static Wbooru.Models.TagRecord;
@@ -112,13 +113,8 @@ namespace Wbooru.UI.Pages
 
         private async void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
         {
-            //clean.
-            DetailImageBox.ImageSource = null;
-
             if (galleryImageDetail == null)
                 return;
-
-            RefreshButton.IsBusy = true;
 
             var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
 
@@ -132,11 +128,13 @@ namespace Wbooru.UI.Pages
 
             await DisplayImage(pick_download);
 
-            RefreshButton.IsBusy = false;
         }
 
         private async Task DisplayImage(DownloadableImageLink pick_download)
         {
+            DetailImageBox.ImageSource = null;
+            RefreshButton.IsBusy = true;
+
             const string notify_content = "加载图片中......";
 
             using var notify = LoadingStatus.BeginBusy(notify_content);
@@ -162,6 +160,7 @@ namespace Wbooru.UI.Pages
             var source = image.ConvertToBitmapImage();
 
             DetailImageBox.ImageSource = source;
+            RefreshButton.IsBusy = false;
         }
 
         internal class DownloadableImageLinkComparer : IComparer<DownloadableImageLink>
@@ -579,7 +578,7 @@ namespace Wbooru.UI.Pages
 
         }
 
-        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        private async void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
             if (RefreshButton.IsBusy)
             {
@@ -589,7 +588,13 @@ namespace Wbooru.UI.Pages
 
             var list = PictureDetailInfo.DownloadableImageLinks.OrderBy(x => x, DownloadableImageLinkComparer.Instance).Select((item, index) => (index, item));
 
-            
+            var content = new SelectableImageList(list, CurrentDisplayImageLink);
+            await Dialog.ShowDialog(content);
+
+            if (content.CurrentDisplayImageLink == CurrentDisplayImageLink || content.CurrentDisplayImageLink is null)
+                return;
+
+            await DisplayImage(content.CurrentDisplayImageLink);
         }
     }
 }

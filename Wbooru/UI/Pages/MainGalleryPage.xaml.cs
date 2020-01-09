@@ -446,10 +446,5 @@ namespace Wbooru.UI.Pages
 
             CloseLeftPanel();
         }
-
-        private async void MenuButton_Click_3(object sender, RoutedEventArgs e)
-        {
-            await Dialog.ShowDialog<SelectableImageList>();
-        }
     }
 }
