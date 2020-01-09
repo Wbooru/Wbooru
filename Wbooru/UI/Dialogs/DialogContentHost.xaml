@@ -11,7 +11,7 @@
     <UserControl.Template>
         <ControlTemplate TargetType="UserControl">
             <Grid Background="#66FFFFFF" MouseDown="Grid_MouseDown">
-                <Grid Margin="30" Background="{StaticResource ContentBackgroundColor}">
+                <Grid Margin="30">
                     <ContentPresenter MouseDown="ContentPresenter_MouseDown">
                     </ContentPresenter>
                 </Grid>

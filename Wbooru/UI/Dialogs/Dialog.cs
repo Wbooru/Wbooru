@@ -82,10 +82,8 @@ namespace Wbooru.UI.Dialogs
             end_blur_sb.Begin(BackgroundElement);
         }
 
-        public static Task ShowDialog<T>() where T : FrameworkElement, new()
+        public static Task ShowDialog(FrameworkElement panel)
         {
-            var panel = new T();
-
             Log.Debug($"Start new dialog with content : {panel.Name}({panel.GetType().Name})");
 
             var dialog = new DialogContentHost();
@@ -103,6 +101,8 @@ namespace Wbooru.UI.Dialogs
             return task;
         }
 
+        public static Task ShowDialog<T>() where T : FrameworkElement, new() => return ShowDialog(new T());
+        
         public static void CloseDialog<T>(T dialog) where T : DialogContentHost
         {
             Log.Debug($"Try close dialog : {dialog.Name}");
