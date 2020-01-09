@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using Wbooru.Kernel;
 using Wbooru.Utils;
 
@@ -15,8 +17,70 @@ namespace Wbooru.UI.Dialogs
         private static Dictionary<DialogContentHost, Task> await_tokens = new Dictionary<DialogContentHost, Task>();
 
         private static Grid DialogLayer { get; set; }
+        private static FrameworkElement BackgroundElement { get; set; }
 
-        internal static void Init(Grid layer) => DialogLayer = layer;
+        private static Storyboard begin_blur_sb, end_blur_sb;
+
+        internal static void Init(Grid layer, FrameworkElement background)
+        {
+            DialogLayer = layer;
+            BackgroundElement = background;
+
+            //Add blur effect and wait for storyboard.
+            BlurEffect blur_effect = new BlurEffect()
+            {
+                Radius = 0
+            };
+
+            begin_blur_sb = new Storyboard();
+
+            var animation = new DoubleAnimation()
+            {
+                Duration = TimeSpan.FromMilliseconds(250),
+                To = 7,
+                From = 0,
+            };
+
+            begin_blur_sb.Children.Add(animation);
+
+            Storyboard.SetTargetProperty(animation, new PropertyPath(BlurEffect.RadiusProperty));
+            Storyboard.SetTargetName(animation, nameof(blur_effect));
+
+
+            end_blur_sb = new Storyboard();
+
+
+            var animation2 = new DoubleAnimation()
+            {
+                Duration = TimeSpan.FromMilliseconds(250),
+                To = 0,
+                From = 7,
+            };
+
+            end_blur_sb.Children.Add(animation2);
+
+            Storyboard.SetTargetProperty(animation2, new PropertyPath(BlurEffect.RadiusProperty));
+            Storyboard.SetTargetName(animation2, nameof(blur_effect));
+
+
+            if (background.Effect != null)
+                ExceptionHelper.DebugThrow(new Exception("background exists effect"));
+
+            background.Effect = blur_effect;
+            background.RegisterName(nameof(blur_effect), blur_effect);
+        }
+
+        private static void BeginDialogEffect()
+        {
+            Log.Debug($"add blur effect");
+            begin_blur_sb.Begin(BackgroundElement);
+        }
+
+        private static void EndDialogEffect()
+        {
+            Log.Debug($"remove blur effect");
+            end_blur_sb.Begin(BackgroundElement);
+        }
 
         public static Task ShowDialog<T>() where T : FrameworkElement, new()
         {
@@ -33,6 +97,9 @@ namespace Wbooru.UI.Dialogs
 
             DialogLayer.Children.Add(dialog);
 
+            if (DialogLayer.Children.Count == 1)
+                BeginDialogEffect();
+
             return task;
         }
 
@@ -45,6 +112,9 @@ namespace Wbooru.UI.Dialogs
             DialogLayer.Children.Remove(dialog);
 
             task.Start();
+
+            if (DialogLayer.Children.Count == 0)
+                EndDialogEffect();
         }
 
         public static void CloseDialog(FrameworkElement content)

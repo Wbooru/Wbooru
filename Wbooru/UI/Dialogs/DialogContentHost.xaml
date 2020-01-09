@@ -11,13 +11,6 @@
     <UserControl.Template>
         <ControlTemplate TargetType="UserControl">
             <Grid Background="#AAFFFFFF" MouseDown="Grid_MouseDown">
-                <Grid>
-                    <Grid.Effect>
-                        <BlurEffect Radius="5">
-                        </BlurEffect>
-                    </Grid.Effect>
-                </Grid>
-
                 <Grid Margin="30">
                     <ContentPresenter MouseDown="ContentPresenter_MouseDown">
                     </ContentPresenter>

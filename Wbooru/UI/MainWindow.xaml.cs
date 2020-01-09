@@ -21,7 +21,7 @@ namespace Wbooru.UI
 
             InitializeComponent();
 
-            Dialog.Init(DialogLayer);
+            Dialog.Init(DialogLayer, WindowFrame);
 
             setting = SettingManager.LoadSetting<GlobalSetting>();
 
