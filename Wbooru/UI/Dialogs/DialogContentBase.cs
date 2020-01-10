@@ -23,6 +23,15 @@ namespace Wbooru.UI.Dialogs
             set { SetValue(DialogTitleProperty, value); }
         }
 
+        public bool AllowImplictClose
+        {
+            get { return (bool)GetValue(AllowImplictCloseProperty); }
+            set { SetValue(AllowImplictCloseProperty, value); }
+        }
+
+        public static readonly DependencyProperty AllowImplictCloseProperty =
+            DependencyProperty.Register("AllowImplictClose", typeof(bool), typeof(DialogContentBase), new PropertyMetadata(true));
+
         public static readonly DependencyProperty DialogTitleProperty =
             DependencyProperty.Register("DialogTitle", typeof(string), typeof(DialogContentBase), new PropertyMetadata(null));
 

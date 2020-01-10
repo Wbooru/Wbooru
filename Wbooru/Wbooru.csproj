@@ -257,6 +257,9 @@
     <Compile Include="UI\Dialogs\SelectableImageList.xaml.cs">
       <DependentUpon>SelectableImageList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\SettingRestartComfirmDialog.xaml.cs">
+      <DependentUpon>SettingRestartComfirmDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -364,6 +367,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\SelectableImageList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\SettingRestartComfirmDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

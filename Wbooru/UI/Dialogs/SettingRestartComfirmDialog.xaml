@@ -1,0 +1,69 @@
+﻿<local:DialogContentBase
+    x:Class="Wbooru.UI.Dialogs.SettingRestartComfirmDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Wbooru.UI.Dialogs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="500"
+    AllowImplictClose="False"
+    DialogTitle="设置变更提醒"
+    mc:Ignorable="d">
+
+    <Border Background="{StaticResource ContentBackgroundColor}">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*">
+                </RowDefinition>
+                <RowDefinition Height="Auto">
+                </RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition>
+                </ColumnDefinition>
+                <ColumnDefinition>
+                </ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.ColumnSpan="2">
+                <TextBlock
+                    Padding="30,10,30,10"
+                    HorizontalAlignment="Center"
+                    FontSize="14">
+                    选项保存成功!但有一些选项变更需要重启软件才生效,是否立即重启？
+                </TextBlock>
+
+                <CheckBox
+                    Margin="30,0,0,0"
+                    Checked="CheckBox_Checked"
+                    FontSize="14"
+                    Foreground="White">
+                    本次运行不再提醒
+                </CheckBox>
+            </StackPanel>
+
+            <Button
+                Name="NotRestartComfirmButton"
+                Grid.Row="1"
+                Margin="20,20,20,0"
+                Padding="20,10,20,10"
+                Background="Transparent"
+                BorderBrush="White"
+                Click="NotRestartComfirmButton_Click">
+                稍后再说
+            </Button>
+            <Button
+                Name="RestartComfirmButton"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="20,20,20,0"
+                Padding="20,10,20,10"
+                Background="Transparent"
+                BorderBrush="White"
+                Click="RestartComfirmButton_Click">
+                <TextBlock FontWeight="Bold">立即重启</TextBlock>
+            </Button>
+        </Grid>
+    </Border>
+</local:DialogContentBase>

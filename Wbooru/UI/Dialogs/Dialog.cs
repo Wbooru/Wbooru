@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,12 +94,14 @@ namespace Wbooru.UI.Dialogs
             end_blur_sb.Begin(BackgroundElement);
         }
 
-        public static Task ShowDialog(FrameworkElement panel)
+        public static Task ShowDialog(DialogContentBase panel)
         {
             Log.Debug($"Start new dialog with content : {panel.Name}({panel.GetType().Name})");
 
-            var dialog = new DialogContentHost();
-            dialog.Content = panel;
+            var dialog = new DialogContentHost()
+            {
+                Content = panel
+            };
 
             var task = new Task(() => { });
 
@@ -114,7 +117,7 @@ namespace Wbooru.UI.Dialogs
             return task;
         }
 
-        public static Task ShowDialog<T>() where T : FrameworkElement, new() => ShowDialog(new T());
+        public static Task ShowDialog<T>() where T : DialogContentBase, new() => ShowDialog(new T());
         
         public static void CloseDialog<T>(T dialog) where T : DialogContentHost
         {
@@ -130,7 +133,7 @@ namespace Wbooru.UI.Dialogs
                 EndDialogEffect();
         }
 
-        public static void CloseDialog(FrameworkElement content)
+        public static void CloseDialog(DialogContentBase content)
         {
             Log.Debug($"Try close dialog via framework element content : {content.Name}({content.GetType().Name})");
 

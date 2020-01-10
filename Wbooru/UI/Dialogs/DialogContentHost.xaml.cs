@@ -20,6 +20,8 @@ namespace Wbooru.UI.Dialogs
     /// </summary>
     public partial class DialogContentHost : UserControl
     {
+        public DialogContentBase DialogContent => Content as DialogContentBase;
+
         public DialogContentHost()
         {
             InitializeComponent();
@@ -27,12 +29,14 @@ namespace Wbooru.UI.Dialogs
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Dialog.CloseDialog(this);
+            if (DialogContent.AllowImplictClose)
+                Dialog.CloseDialog(this);
         }
 
         private void ContentPresenter_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            e.Handled = true;
+            if (DialogContent.AllowImplictClose)
+                e.Handled = true;
         }
     }
 }

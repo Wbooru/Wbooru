@@ -23,13 +23,14 @@ using Wbooru.UI.Controls.SettingUI;
 using Wbooru.UI.ValueConverters.SettingUI;
 using Wbooru.UI.Controls;
 using System.Diagnostics;
+using Wbooru.UI.Dialogs;
 
 namespace Wbooru.UI.Pages
 {
     /// <summary>
     /// SettingPanel.xaml 的交互逻辑
     /// </summary>
-    public partial class SettingPage : Page
+    public partial class SettingPage : Page , INavigatableAction
     {
         public Type CurrentSettingType
         {
@@ -59,7 +60,6 @@ namespace Wbooru.UI.Pages
 
         private Dictionary<PropertyInfoWrapper, int> record_hash = new Dictionary<PropertyInfoWrapper, int>();
         private Dictionary<Type, IEnumerable<PropertyInfoWrapper>> cached_records = new Dictionary<Type, IEnumerable<PropertyInfoWrapper>>();
-        private Action comfirm_later_action;
 
         public SettingPage()
         {
@@ -78,7 +78,7 @@ namespace Wbooru.UI.Pages
 
             ApplySetting(SupportSettingWrappers.First().SupportSettings.FirstOrDefault());
         }
-
+        
         private void ApplySetting(Type setting_type)
         {
             if (setting_type == null)
@@ -320,48 +320,22 @@ namespace Wbooru.UI.Pages
             return control;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            CheckNeedRestartPropsAndNotify(sender as UIElement, () => NavigationHelper.NavigationPop());
+            OnNavigationBackAction();
         }
 
-        public void CheckNeedRestartPropsAndNotify(UIElement bind_control, Action action)
+        public async Task CheckNeedRestartPropsAndNotify()
         {
             var changed_records = record_hash.Where(x => x.Key.ProxyValue.GetHashCode() != x.Value);
 
             Log.Debug($"record_hash=({record_hash.Count}) , there are {changed_records.Count()} props had been changed.");
 
             if (changed_records.Any() && !SettingManager.LoadSetting<GlobalSetting>().IgnoreSettingChangedComfirm)
-            {
-                //notify user need to restart
-                ComfirmPopup.PlacementTarget = bind_control;
-                ComfirmPopup.IsOpen = true;
-
-                comfirm_later_action = action;
-            }
-            else
-                action?.Invoke();
+                await Dialog.ShowDialog<SettingRestartComfirmDialog>();
         }
 
-        private void RestartComfirmButton_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
-            App.UnusualSafeExit();
-        }
-
-        private void NotRestartComfirmButton_Click(object sender, RoutedEventArgs e)
-        {
-            ComfirmPopup.IsOpen = false;
-            comfirm_later_action?.Invoke();
-            comfirm_later_action = null;
-        }
-
-        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        private async void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var control = sender as FrameworkElement;
             var setting = control.DataContext as Type;
@@ -369,12 +343,8 @@ namespace Wbooru.UI.Pages
             if (setting.GetType() == CurrentSettingType)
                 return;
 
-            CheckNeedRestartPropsAndNotify(control, () => ApplySetting(setting));
-        }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            SettingManager.LoadSetting<GlobalSetting>().IgnoreSettingChangedComfirm = true;
+            await CheckNeedRestartPropsAndNotify();
+            ApplySetting(setting);
         }
 
         private void DefaultSettingButton_Click(object sender, RoutedEventArgs e)
@@ -383,15 +353,22 @@ namespace Wbooru.UI.Pages
 
             SettingManager.ResetSetting(setting_type);
 
-            Toast.ShowMessage("重置成功!");
-
-            /*
-            var list = SupportSettingWrappers.FirstOrDefault(x => x.ReferenceAssembly == setting_type.Assembly).SupportSettings;
-            list.Remove(setting_type);
-            */
             cached_controls.Remove(setting_type);
             
             ApplySetting(setting_type);
+
+            Toast.ShowMessage("重置成功!");
+        }
+
+        public async void OnNavigationBackAction()
+        {
+            await CheckNeedRestartPropsAndNotify();
+            NavigationHelper.NavigationPop();
+        }
+
+        public void OnNavigationForwardAction()
+        {
+
         }
     }
 }
