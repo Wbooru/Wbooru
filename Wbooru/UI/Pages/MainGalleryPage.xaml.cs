@@ -161,14 +161,15 @@ namespace Wbooru.UI.Pages
             AccountButton.IsBusy = true;
             AccountButton.BusyStatusDescription = "正在自动登陆中...";
 
-            if (!(AccountInfoDataContainer.Instance.TryGetAccountInfoData(gallery) is AccountInfo account_info))
-                return;
+            if (AccountInfoDataContainer.Instance.TryGetAccountInfoData(gallery) is AccountInfo account_info)
+            {
 
-            var login = gallery.Feature<IGalleryAccount>();
+                var login = gallery.Feature<IGalleryAccount>();
 
-            await Task.Run(() => login.AccountLogin(account_info));
+                await Task.Run(() => login.AccountLogin(account_info));
 
-            Log.Info($"Auto login gallery {gallery.GalleryName} -> {login.IsLoggined}");
+                Log.Info($"Auto login gallery {gallery.GalleryName} -> {login.IsLoggined}");
+            }
 
             AccountButton.IsBusy = false;
             AccountButton.BusyStatusDescription = string.Empty;
@@ -334,26 +335,29 @@ namespace Wbooru.UI.Pages
 
         private async void AccountButton_Click(object sender, RoutedEventArgs e)
         {
+            AccountButton.IsBusy = true;
+
             var feature = CurrentGallery.Feature<IGalleryAccount>();
 
-            await Task.Run(() =>
+            if (feature.IsLoggined)
             {
-                if (feature.IsLoggined)
-                {
-                    feature.AccountLogout();
-                    Dispatcher.Invoke(() =>
-                    {
-                        UpdateAccountButtonText();
-                        AccountInfoDataContainer.Instance.CleanAccountInfo(CurrentGallery);
-                        Toast.ShowMessage("登出成功");
-                        CloseLeftPanel();
-                    });
-                }
-                else
-                {
-                    DoLogin();
-                }
-            });
+                AccountButton.BusyStatusDescription = "正在登出中...";
+
+                await Task.Run(() => feature.AccountLogout());
+                
+                UpdateAccountButtonText();
+                AccountInfoDataContainer.Instance.CleanAccountInfo(CurrentGallery);
+                Toast.ShowMessage("登出成功");
+                CloseLeftPanel();
+            }
+            else
+            {
+                AccountButton.BusyStatusDescription = "正在登入中...";
+                await Task.Run(() => DoLogin());
+            }
+
+            AccountButton.IsBusy = true;
+            AccountButton.BusyStatusDescription = string.Empty;
         }
 
         private void UpdateAccountButtonText()
