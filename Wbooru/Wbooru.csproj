@@ -250,6 +250,7 @@
       <DependentUpon>Toast.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Dialogs\Dialog.cs" />
+    <Compile Include="UI\Dialogs\DialogContentBase.cs" />
     <Compile Include="UI\Dialogs\DialogContentHost.xaml.cs">
       <DependentUpon>DialogContentHost.xaml</DependentUpon>
     </Compile>

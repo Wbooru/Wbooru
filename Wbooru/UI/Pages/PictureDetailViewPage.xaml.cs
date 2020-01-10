@@ -595,6 +595,8 @@ namespace Wbooru.UI.Pages
                 return;
 
             await DisplayImage(content.CurrentDisplayImageLink);
+
+            Toast.ShowMessage("已切换");
         }
     }
 }

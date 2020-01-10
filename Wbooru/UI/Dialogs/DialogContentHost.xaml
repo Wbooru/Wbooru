@@ -11,8 +11,31 @@
     <UserControl.Template>
         <ControlTemplate TargetType="UserControl">
             <Grid Background="#66FFFFFF" MouseDown="Grid_MouseDown">
-                <Grid Margin="30">
-                    <ContentPresenter MouseDown="ContentPresenter_MouseDown">
+                <Grid
+                    Width="{Binding ElementName=TContent, Path=Content.ActualWidth}"
+                    Margin="30"
+                    VerticalAlignment="Center"
+                    MouseDown="ContentPresenter_MouseDown">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Border Background="{StaticResource BoardColor}">
+                        <TextBlock
+                            Padding="5,10,5,10"
+                            HorizontalAlignment="Left"
+                            FontSize="25"
+                            Foreground="White"
+                            Text="{Binding ElementName=TContent, Path=Content.DialogTitle}">
+                        </TextBlock>
+                    </Border>
+                    <Border
+                        Height="2"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom"
+                        Background="White">
+                    </Border>
+                    <ContentPresenter Name="TContent" Grid.Row="1">
                     </ContentPresenter>
                 </Grid>
             </Grid>

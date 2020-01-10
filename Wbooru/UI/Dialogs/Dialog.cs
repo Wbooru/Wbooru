@@ -19,7 +19,7 @@ namespace Wbooru.UI.Dialogs
         private static Grid DialogLayer { get; set; }
         private static FrameworkElement BackgroundElement { get; set; }
 
-        private static Storyboard begin_blur_sb, end_blur_sb;
+        private static Storyboard begin_blur_sb, end_blur_sb,fade_in_sb;
 
         internal static void Init(Grid layer, FrameworkElement background)
         {
@@ -46,9 +46,7 @@ namespace Wbooru.UI.Dialogs
             Storyboard.SetTargetProperty(animation, new PropertyPath(BlurEffect.RadiusProperty));
             Storyboard.SetTargetName(animation, nameof(blur_effect));
 
-
             end_blur_sb = new Storyboard();
-
 
             var animation2 = new DoubleAnimation()
             {
@@ -68,6 +66,19 @@ namespace Wbooru.UI.Dialogs
 
             background.Effect = blur_effect;
             background.RegisterName(nameof(blur_effect), blur_effect);
+
+            fade_in_sb = new Storyboard();
+
+            var animation3 = new DoubleAnimation()
+            {
+                Duration = TimeSpan.FromMilliseconds(250),
+                To = 1,
+                From = 0,
+            };
+
+            fade_in_sb.Children.Add(animation3);
+
+            Storyboard.SetTargetProperty(animation3, new PropertyPath(FrameworkElement.OpacityProperty));
         }
 
         private static void BeginDialogEffect()
@@ -97,6 +108,8 @@ namespace Wbooru.UI.Dialogs
 
             if (DialogLayer.Children.Count == 1)
                 BeginDialogEffect();
+
+            fade_in_sb.Begin(dialog);
 
             return task;
         }

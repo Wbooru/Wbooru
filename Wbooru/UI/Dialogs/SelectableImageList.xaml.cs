@@ -19,7 +19,7 @@ namespace Wbooru.UI.Dialogs
     /// <summary>
     /// SelectableImageList.xaml 的交互逻辑
     /// </summary>
-    public partial class SelectableImageList : UserControl
+    public partial class SelectableImageList : DialogContentBase
     {
         public IEnumerable<DownloadableImageLink> List { get; set; }
         public DownloadableImageLink CurrentDisplayImageLink { get; set; }
