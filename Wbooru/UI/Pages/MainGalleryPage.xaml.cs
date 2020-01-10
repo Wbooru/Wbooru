@@ -125,7 +125,7 @@ namespace Wbooru.UI.Pages
                 MainMenu.Children.Add(item);
         }
 
-        public void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
+        public async void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
         {
             Func<IEnumerable<GalleryItem>> items_source_creator;
 
@@ -150,7 +150,28 @@ namespace Wbooru.UI.Pages
             GridViewer.Gallery = gallery;
             GridViewer.LoadableSourceFactory = items_source_creator;
 
+            if (gallery.SupportFeatures.HasFlag(GallerySupportFeature.Account))
+                await TryAutoLogin(gallery);
+
             UpdateAccountButtonText();
+        }
+
+        private async Task TryAutoLogin(Gallery gallery)
+        {
+            AccountButton.IsBusy = true;
+            AccountButton.BusyStatusDescription = "正在自动登陆中...";
+
+            if (!(AccountInfoDataContainer.Instance.TryGetAccountInfoData(gallery) is AccountInfo account_info))
+                return;
+
+            var login = gallery.Feature<IGalleryAccount>();
+
+            await Task.Run(() => login.AccountLogin(account_info));
+
+            Log.Info($"Auto login gallery {gallery.GalleryName} -> {login.IsLoggined}");
+
+            AccountButton.IsBusy = false;
+            AccountButton.BusyStatusDescription = string.Empty;
         }
 
         #region Left Menu Show/Hide
@@ -323,6 +344,7 @@ namespace Wbooru.UI.Pages
                     Dispatcher.Invoke(() =>
                     {
                         UpdateAccountButtonText();
+                        AccountInfoDataContainer.Instance.CleanAccountInfo(CurrentGallery);
                         Toast.ShowMessage("登出成功");
                         CloseLeftPanel();
                     });

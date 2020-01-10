@@ -189,6 +189,7 @@
     <Compile Include="PluginExt\IPluginUpdatable.cs" />
     <Compile Include="PluginExt\ISchedulable.cs" />
     <Compile Include="PluginExt\PluginInfo.cs" />
+    <Compile Include="Settings\AccountInfoDataContainer.cs" />
     <Compile Include="Settings\DataOperationPanel.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
     <Compile Include="Settings\SettingBase.cs" />

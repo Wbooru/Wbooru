@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Wbooru.Galleries;
 using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel;
+using Wbooru.Settings;
 using Wbooru.UI.Controls;
 
 namespace Wbooru.UI.Pages
@@ -49,35 +50,40 @@ namespace Wbooru.UI.Pages
             NavigationHelper.NavigationPop();
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             AccountInfo.Password = PasswordInput.Password;
             IsLoginRequesting = true;
 
-            Task.Run(() =>
+            var feature = Gallery.Feature<IGalleryAccount>();
+
+            using var status = LoadingStatus.BeginBusy("正在登录...");
+
+            await Task.Run(() =>
             {
-                using (LoadingStatus.BeginBusy("正在登录..."))
+                try
                 {
-                    try
-                    {
-                        var feature = Gallery.Feature<IGalleryAccount>();
-
-                        feature.AccountLogin(AccountInfo);
-
-                        if (feature.IsLoggined)
-                        {
-                            Toast.ShowMessage($"登录成功");
-
-                            Dispatcher.Invoke(() => NavigationHelper.NavigationPop());
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Toast.ShowMessage($"登录失败!原因:{e.Message}");
-                    }
-                    Dispatcher.Invoke(() => IsLoginRequesting = false);
+                    feature.AccountLogin(AccountInfo);
+                }
+                catch (Exception e)
+                {
+                    Toast.ShowMessage($"登录失败!原因:{e.Message}");
                 }
             });
+
+            IsLoginRequesting = false;
+
+            if (feature.IsLoggined)
+            {
+                Toast.ShowMessage($"登录成功");
+                NavigationHelper.NavigationPop();
+
+                if (AutoLogin.IsChecked??false)
+                {
+                    var container = SettingManager.LoadSetting<AccountInfoDataContainer>();
+                    container.SaveAccountInfoData(Gallery, AccountInfo);
+                }
+            }
         }
     }
 }

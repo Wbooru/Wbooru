@@ -105,6 +105,14 @@
                     </PasswordBox>
                 </StackPanel>
 
+                <CheckBox
+                    Name="AutoLogin"
+                    Margin="10"
+                    VerticalContentAlignment="Center"
+                    FontSize="18"
+                    Foreground="White">
+                    自动登陆 (不安全)
+                </CheckBox>
                 <Button
                     Name="LoginButton"
                     Margin="40,20,40,0"
