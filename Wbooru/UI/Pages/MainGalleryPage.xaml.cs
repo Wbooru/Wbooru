@@ -163,12 +163,18 @@ namespace Wbooru.UI.Pages
 
             if (AccountInfoDataContainer.Instance.TryGetAccountInfoData(gallery) is AccountInfo account_info)
             {
-
                 var login = gallery.Feature<IGalleryAccount>();
 
-                await Task.Run(() => login.AccountLogin(account_info));
+                try
+                {
+                    await Task.Run(() => login.AccountLogin(account_info));
 
-                Log.Info($"Auto login gallery {gallery.GalleryName} -> {login.IsLoggined}");
+                    Log.Info($"Auto login gallery {gallery.GalleryName} -> {login.IsLoggined}");
+                }
+                catch (Exception e)
+                {
+                    Log.Info($"Auto login gallery failed:{e.Message}");
+                }
             }
 
             AccountButton.IsBusy = false;

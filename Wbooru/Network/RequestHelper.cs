@@ -57,6 +57,10 @@ namespace Wbooru.Network
             req.Proxy = TryGetAvaliableProxy();
             req.Method = "GET";
 
+            var timeout = SettingManager.LoadSetting<GlobalSetting>().RequestTimeout;
+            if (timeout != 0)
+                req.Timeout = timeout;
+
             custom?.Invoke(req as HttpWebRequest);
 
             Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}] create http(s) {req.Method} request :{url}", "RequestHelper");

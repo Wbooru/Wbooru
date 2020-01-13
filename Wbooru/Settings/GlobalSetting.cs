@@ -177,6 +177,10 @@ namespace Wbooru.Settings
 
         #region Network Options
 
+        [Group("Network Option")]
+        [Description("网络请求的超时限制,0为不限制")]
+        public int RequestTimeout { get; set; } = 15000;
+
         [Description("是否开启Socks5代理功能")]
         [Group("Network Option")]
         [NeedRestart]
