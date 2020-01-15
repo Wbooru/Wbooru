@@ -163,12 +163,14 @@ namespace Wbooru.UI.Controls
             is_requesting = true;
 
             Gallery gallery = Gallery;
-            IEnumerable<GalleryItem> source = loadable_items; 
+            IEnumerable<GalleryItem> source = loadable_items;
+            var counter = new SkipCounterWrapper();
 
-            (GalleryItem[] list, bool success ) = await Task.Run(() => {
+            (GalleryItem[] list, bool success) = await Task.Run(() =>
+            {
                 try
                 {
-                    var l = FilterTag(source.Skip(current_index), gallery).Take(option.GetPictureCountPerLoad).ToArray();
+                    var l = FilterTag(source.Skip(current_index), counter, gallery).Take(option.GetPictureCountPerLoad).ToArray();
                     return (l, true);
                 }
                 catch (Exception e)
@@ -178,26 +180,28 @@ namespace Wbooru.UI.Controls
                 }
             });
 
-            Log.Debug($"Skip({current_index}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Length})", "GridViewer_RequestMoreItems");
+            Log.Debug($"Skip({current_index}) Filter({counter.Count}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Length})", "GridViewer_RequestMoreItems");
 
-            Dispatcher.Invoke(new Action(() =>
-            {
-                if (source != loadable_items)
-                    return;
+            if (source != loadable_items)
+                return;
 
-                foreach (var item in list)
-                    Items.Add(item);
+            foreach (var item in list)
+                Items.Add(item);
 
-                if (success && list.Count() < option.GetPictureCountPerLoad)
-                    Toast.ShowMessage("已到达图片队列末尾");
-                current_index += list.Length;
-            }));
+            if (success && list.Count() < option.GetPictureCountPerLoad)
+                Toast.ShowMessage("已到达图片队列末尾");
+            current_index += list.Length + counter.Count;
 
             OnRequestMoreItemFinished?.Invoke(this);
             is_requesting = false;
         }
 
-        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, Gallery gallery=null)
+        public class SkipCounterWrapper
+        {
+            public int Count { get; set; } = 0;
+        }
+
+        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery=null)
         {
             var option = SettingManager.LoadSetting<GlobalSetting>();
             IEnumerable<Gallery> galleries = gallery == null ? Container.Default.GetExportedValues<Gallery>() : new[] { gallery };
@@ -243,6 +247,7 @@ namespace Wbooru.UI.Controls
                         if (detail.Tags.FirstOrDefault(x => x == filter_tag.Tag.Name) is string captured_filter_tag)
                         {
                             Log.Debug($"Skip this item because of filter:{captured_filter_tag} -> {string.Join(" ", detail.Tags)}");
+                            counter.Count++;
                             return false;
                         }
                     }

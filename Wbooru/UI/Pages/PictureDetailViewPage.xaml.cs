@@ -252,7 +252,8 @@ namespace Wbooru.UI.Pages
             }
 
             var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
-            var detail = gallery.GetImageDetial(item);
+
+            var detail = await Task.Run(() => gallery.GetImageDetial(item));
 
             if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
                 foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength <= 0))
