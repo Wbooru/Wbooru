@@ -216,8 +216,6 @@ namespace Wbooru.UI.Pages
             }
         }
 
-        CancellationTokenSource cancel_source = new CancellationTokenSource();
-
         public async void ApplyItem(Gallery gallery, GalleryItem item)
         {
             using var _ = LoadingStatus.BeginBusy("正在读取图片详细信息....");
@@ -264,7 +262,10 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
+                await Task.Run(() =>
+                {
+                    is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
+                });
             }
             catch (Exception e)
             {

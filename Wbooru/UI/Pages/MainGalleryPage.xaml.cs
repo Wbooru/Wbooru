@@ -98,7 +98,7 @@ namespace Wbooru.UI.Pages
 
                 if (Setting.EnableNSFWFileterMode)
                 {
-                    Log.Info("EnableNSFWFileterMode = true , skip galleries which not support NSFWFilter");
+                    Log.Info("EnableNSFWFileterMode = true , skip galleries which not support NSFWFilter in main gallery page.");
                     galleries = galleries.ToArray().Where(x => x.SupportFeatures.HasFlag(GallerySupportFeature.NSFWFilter));
                 }
 
