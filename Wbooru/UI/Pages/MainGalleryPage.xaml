@@ -79,18 +79,35 @@
             </Grid.RowDefinitions>
 
             <StackPanel x:Name="MainMenu">
-                <Border Height="{Binding Source={StaticResource BoardHeaderHeight}}">
+                <Grid Height="{Binding Source={StaticResource BoardHeaderHeight}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox
+                        Name="GalleriesSelector"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        BorderBrush="Transparent"
+                        DisplayMemberPath="GalleryName"
+                        FontSize="16"
+                        Foreground="White"
+                        SelectedIndex="0"
+                        SelectionChanged="GalleriesSelector_SelectionChanged"
+                        Template="{StaticResource NormalControlBoxTemplate}">
+                    </ComboBox>
                     <Button
                         Name="CloseLeftPanelButton"
+                        Grid.Column="1"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                        HorizontalAlignment="Right"
                         BorderBrush="Transparent"
                         Click="CloseLeftPanelButton_Click"
                         FontFamily="Segoe UI Symbol"
                         FontSize="20">
                         
                     </Button>
-                </Border>
+                </Grid>
 
                 <controls:MenuButton
                     x:Name="AccountButton"

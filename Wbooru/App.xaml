@@ -21,6 +21,7 @@
                     x:Name="ToggleButton"
                     Grid.Column="2"
                     HorizontalContentAlignment="Left"
+                    BorderBrush="{TemplateBinding BorderBrush}"
                     ClickMode="Press"
                     Focusable="false"
                     IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
@@ -34,14 +35,14 @@
                                 <Border
                                     x:Name="Border"
                                     Grid.ColumnSpan="2"
-                                    BorderBrush="White"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="1,1,1,1"
                                     CornerRadius="2" />
                                 <Border
                                     x:Name="BorderComp"
                                     Grid.Column="0"
                                     Margin="1"
-                                    BorderBrush="White"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="0,0,0,0"
                                     CornerRadius="2">
                                     <TextBox

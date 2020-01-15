@@ -73,12 +73,16 @@ namespace Wbooru.UI.Pages
             set { SetValue(ShowReturnButtonProperty, value); }
         }
 
+        public IEnumerable<string> Keywords { get; }
+
         // Using a DependencyProperty as the backing store for ShowReturnButton.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ShowReturnButtonProperty =
             DependencyProperty.Register("ShowReturnButton", typeof(bool), typeof(MainGalleryPage), new PropertyMetadata(false));
 
         public MainGalleryPage(IEnumerable<string> keywords=null)
         {
+            Keywords = keywords;
+
             InitializeComponent();
 
             Setting = SettingManager.LoadSetting<GlobalSetting>();
@@ -101,9 +105,13 @@ namespace Wbooru.UI.Pages
                 var gallery = galleries.FirstOrDefault();
                 ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
-                if (gallery != null)
-                    ApplyGallery(gallery, keywords);
-                else
+                GalleriesSelector.ItemsSource = galleries.ToList();
+                GalleriesSelector.SelectedIndex = 0;
+
+                if (galleries.Count() <= 1)
+                    GalleriesSelector.Visibility = Visibility.Hidden;
+
+                if (gallery == null)
                     EmptyImageSourceNotify.Visibility = Visibility.Visible;
             }
             catch (Exception e)
@@ -477,6 +485,14 @@ namespace Wbooru.UI.Pages
             GridViewer.LoadableSourceFactory = source;
 
             CloseLeftPanel();
+        }
+
+        private void GalleriesSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!(GalleriesSelector.SelectedItem is Gallery gallery))
+                return;
+
+            ApplyGallery(gallery, Keywords);
         }
     }
 }

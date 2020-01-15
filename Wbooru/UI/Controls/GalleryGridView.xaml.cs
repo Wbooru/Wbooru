@@ -204,7 +204,7 @@ namespace Wbooru.UI.Controls
 
             return items.Where(x =>
             {
-                if (galleries.Select(g=>(g.GetImageDetial(x),g)).FirstOrDefault() is (GalleryImageDetail detail,Gallery gallery))
+                if (galleries.FirstOrDefault(g => g.GalleryName == x.GalleryName) is Gallery gallery && gallery.GetImageDetial(x) is GalleryImageDetail detail)
                 {
                     if (!option.EnableTagFilter)
                         return true;

@@ -43,6 +43,7 @@
                         Name="GalleriesSelector"
                         Width="150"
                         Margin="0,0,10,0"
+                        BorderBrush="White"
                         FontSize="16"
                         Foreground="White"
                         SelectedIndex="0"
