@@ -440,11 +440,6 @@ namespace Wbooru.UI.Pages
             NavigationHelper.NavigationPush(page);
         }
 
-        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-        }
-
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             GridViewer.RefreshItem();

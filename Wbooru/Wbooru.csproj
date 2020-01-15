@@ -228,6 +228,7 @@
     <Compile Include="UI\Controls\OperableImageBox.xaml.cs">
       <DependentUpon>OperableImageBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\PluginExtension\IExtraDetailImageMenuItem.cs" />
     <Compile Include="UI\Controls\PluginExtension\IExtraMainMenuItem.cs" />
     <Compile Include="UI\Controls\PluginExtension\IExtraUICreator.cs" />
     <Compile Include="UI\Controls\SearchInput.xaml.cs">

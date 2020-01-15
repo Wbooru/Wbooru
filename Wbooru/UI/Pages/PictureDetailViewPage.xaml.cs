@@ -26,6 +26,7 @@ using Wbooru.Network;
 using Wbooru.Persistence;
 using Wbooru.Settings;
 using Wbooru.UI.Controls;
+using Wbooru.UI.Controls.PluginExtension;
 using Wbooru.UI.Dialogs;
 using Wbooru.Utils;
 using Wbooru.Utils.Resource;
@@ -103,12 +104,20 @@ namespace Wbooru.UI.Pages
 
             MainGrid.DataContext = this;
 
+            SetupExtraUI();
+
             layout_translate_storyboard = new Storyboard();
             layout_translate_storyboard.Completed += (e, d) =>
             {
                 ViewPage_SizeChanged(null, null);
                 ObjectPool<ThicknessAnimation>.Return(e as ThicknessAnimation);
             };
+        }
+
+        private void SetupExtraUI()
+        {
+            foreach (var control in Container.Default.GetExportedValues<IExtraDetailImageMenuItem>().Select(x=>x.Create()))
+                DetailImageBox.ContextMenu.Items.Add(control);
         }
 
         private async void ChangeDetailPicture(GalleryImageDetail galleryImageDetail)
