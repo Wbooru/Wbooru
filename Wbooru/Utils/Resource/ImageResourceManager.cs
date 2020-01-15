@@ -18,7 +18,6 @@ namespace Wbooru.Utils.Resource
     {
         private static ObjectCache cache;
         private static GlobalSetting option;
-
         private static string temporary_folder_path;
         private static long current_record_capacity;
 
@@ -33,8 +32,7 @@ namespace Wbooru.Utils.Resource
             {
                 try
                 {
-                    temporary_folder_path = option.CacheFolderPath.Replace("%Temp%", Path.GetTempPath());
-                    Directory.CreateDirectory(temporary_folder_path);
+                    temporary_folder_path = CacheFolderHelper.CacheFolderPath;
 
                     current_record_capacity = Directory.EnumerateFiles(temporary_folder_path, "*.cache").Select(x =>
                     {

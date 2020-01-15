@@ -299,6 +299,7 @@
     <Compile Include="UI\ValueConverters\SimpleExpressionConverters.cs" />
     <Compile Include="UI\ValueConverters\VisiableIfFeatureSupportConverter.cs" />
     <Compile Include="Utils\AsyncImageWrapper.cs" />
+    <Compile Include="Utils\CacheFolderHelper.cs" />
     <Compile Include="Utils\CalculatableFormatter.cs" />
     <Compile Include="Utils\CommandLineParser.cs" />
     <Compile Include="Utils\ConsoleWindow.cs" />
