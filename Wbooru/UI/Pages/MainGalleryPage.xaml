@@ -79,80 +79,76 @@
             </Grid.RowDefinitions>
 
 
-            <ScrollViewer VerticalScrollBarVisibility="Hidden">
-                <StackPanel x:Name="MainMenu">
-                    <Grid Height="{Binding Source={StaticResource BoardHeaderHeight}}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ComboBox
-                            Name="GalleriesSelector"
-                            Margin="0,0,10,0"
-                            VerticalAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            BorderBrush="Transparent"
-                            DisplayMemberPath="GalleryName"
-                            FontSize="16"
-                            Foreground="White"
-                            SelectedIndex="0"
-                            SelectionChanged="GalleriesSelector_SelectionChanged"
-                            Template="{StaticResource NormalControlBoxTemplate}">
-                        </ComboBox>
-                        <Button
-                            Name="CloseLeftPanelButton"
-                            Grid.Column="1"
-                            Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                            BorderBrush="Transparent"
-                            Click="CloseLeftPanelButton_Click"
-                            FontFamily="Segoe UI Symbol"
-                            FontSize="20">
-                            
-                        </Button>
-                    </Grid>
-                    <StackPanel>
-                        <controls:MenuButton
-                            x:Name="AccountButton"
-                            ButtonBase.Click="AccountButton_Click"
-                            Icon=""
-                            Text="登录"
-                            Visibility="{Binding CurrentGallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Account}" />
-                        <controls:MenuButton
-                            x:Name="ShowPicturePoolButton"
-                            ButtonBase.Click="ShowPicturePoolButton_Click"
-                            Icon=""
-                            Text="图池" />
-                        <controls:MenuButton
-                            Icon=""
-                            IconSize="15"
-                            IsEnabled="False"
-                            Text="订阅"
-                            Visibility="Collapsed" />
-                        <controls:MenuButton
-                            x:Name="ShowMarkPicturesButton"
-                            ButtonBase.Click="ShowMarkPicturesButton_Click"
-                            Icon=""
-                            Text="收藏" />
+            <StackPanel x:Name="MainMenu">
+                <Grid Height="{Binding Source={StaticResource BoardHeaderHeight}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox
+                        Name="GalleriesSelector"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        BorderBrush="Transparent"
+                        DisplayMemberPath="GalleryName"
+                        FontSize="16"
+                        Foreground="White"
+                        SelectedIndex="0"
+                        SelectionChanged="GalleriesSelector_SelectionChanged"
+                        Template="{StaticResource NormalControlBoxTemplate}">
+                    </ComboBox>
+                    <Button
+                        Name="CloseLeftPanelButton"
+                        Grid.Column="1"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                        BorderBrush="Transparent"
+                        Click="CloseLeftPanelButton_Click"
+                        FontFamily="Segoe UI Symbol"
+                        FontSize="20">
+                        
+                    </Button>
+                </Grid>
+                <controls:MenuButton
+                    x:Name="AccountButton"
+                    ButtonBase.Click="AccountButton_Click"
+                    Icon=""
+                    Text="登录"
+                    Visibility="{Binding CurrentGallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Account}" />
+                <controls:MenuButton
+                    x:Name="ShowPicturePoolButton"
+                    ButtonBase.Click="ShowPicturePoolButton_Click"
+                    Icon=""
+                    Text="图池" />
+                <controls:MenuButton
+                    Icon=""
+                    IconSize="15"
+                    IsEnabled="False"
+                    Text="订阅"
+                    Visibility="Collapsed" />
+                <controls:MenuButton
+                    x:Name="ShowMarkPicturesButton"
+                    ButtonBase.Click="ShowMarkPicturesButton_Click"
+                    Icon=""
+                    Text="收藏" />
 
-                        <controls:MenuButton
-                            x:Name="ShowHistoryButton"
-                            ButtonBase.Click="ShowHistoryButton_Click"
-                            Icon=""
-                            Text="历史" />
+                <controls:MenuButton
+                    x:Name="ShowHistoryButton"
+                    ButtonBase.Click="ShowHistoryButton_Click"
+                    Icon=""
+                    Text="历史" />
 
-                        <controls:MenuButton
-                            x:Name="ShowTagManagePageButton"
-                            ButtonBase.Click="ShowTagManagePageButton_Click"
-                            Icon=""
-                            Text="标签" />
-                        <controls:MenuButton
-                            x:Name="DownloadPageButton"
-                            Button.Click="DownloadPageButton_Click"
-                            Icon=""
-                            Text="下载" />
-                    </StackPanel>
-                </StackPanel>
-            </ScrollViewer>
+                <controls:MenuButton
+                    x:Name="ShowTagManagePageButton"
+                    ButtonBase.Click="ShowTagManagePageButton_Click"
+                    Icon=""
+                    Text="标签" />
+                <controls:MenuButton
+                    x:Name="DownloadPageButton"
+                    Button.Click="DownloadPageButton_Click"
+                    Icon=""
+                    Text="下载" />
+            </StackPanel>
             <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
                 <controls:MenuButton
                     x:Name="AboutButton"
@@ -380,7 +376,8 @@
             Grid.Column="2"
             Width="170"
             Background="#EE1D2031"
-            CloseTagPanelEvent="TagListViewer_CloseTagPanelEvent">
+            CloseTagPanelEvent="TagListViewer_CloseTagPanelEvent"
+            RequestSearchEvent="TagListViewerPanel_RequestSearchEvent">
             <controls:TagListViewer.RenderTransform>
                 <TranslateTransform>
                 </TranslateTransform>

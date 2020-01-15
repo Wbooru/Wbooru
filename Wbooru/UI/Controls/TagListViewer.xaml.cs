@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wbooru.Galleries;
 using Wbooru.Kernel;
 using Wbooru.Models;
 using Wbooru.UI.Pages;
@@ -26,6 +27,7 @@ namespace Wbooru.UI.Controls
     public partial class TagListViewer : UserControl
     {
         public event Action<TagListViewer> CloseTagPanelEvent;
+        public event Action<IEnumerable<Tag>> RequestSearchEvent;
 
         public bool TagsListType
         {
@@ -66,7 +68,7 @@ namespace Wbooru.UI.Controls
                 .Where(x => x.IsChecked ?? false)
                 .Select(x => x.DataContext)
                 .OfType<TagRecord>()
-                .Select(x => x.Tag.Name).ToArray();
+                .Select(x=>x.Tag).ToArray();
 
             if (!tags.Any())
             {
@@ -74,7 +76,7 @@ namespace Wbooru.UI.Controls
                 return;
             }
 
-            NavigationHelper.NavigationPush(new MainGalleryPage(tags));
+            RequestSearchEvent?.Invoke(tags);
         }
 
         private void CloseTagPanelButton_Click(object sender, RoutedEventArgs e)

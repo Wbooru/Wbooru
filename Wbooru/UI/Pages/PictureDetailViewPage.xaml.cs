@@ -437,7 +437,7 @@ namespace Wbooru.UI.Pages
             if (!((sender as FrameworkElement).DataContext is string tag_name))
                 return;
 
-            NavigationHelper.NavigationPush(new MainGalleryPage(new[] { tag_name }));
+            NavigationHelper.NavigationPush(new MainGalleryPage(new[] { tag_name },Gallery));
         }
 
         enum LayoutState

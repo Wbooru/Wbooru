@@ -79,7 +79,7 @@ namespace Wbooru.UI.Pages
         public static readonly DependencyProperty ShowReturnButtonProperty =
             DependencyProperty.Register("ShowReturnButton", typeof(bool), typeof(MainGalleryPage), new PropertyMetadata(false));
 
-        public MainGalleryPage(IEnumerable<string> keywords=null)
+        public MainGalleryPage(IEnumerable<string> keywords=null,Gallery lock_gallery = null)
         {
             Keywords = keywords;
 
@@ -105,11 +105,19 @@ namespace Wbooru.UI.Pages
                 var gallery = galleries.FirstOrDefault();
                 ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
-                GalleriesSelector.ItemsSource = galleries.ToList();
-                GalleriesSelector.SelectedIndex = 0;
+                if (lock_gallery == null)
+                {
+                    GalleriesSelector.ItemsSource = galleries.ToList();
+                    GalleriesSelector.SelectedIndex = 0;
 
-                if (galleries.Count() <= 1)
+                    if (galleries.Count() <= 1)
+                        GalleriesSelector.Visibility = Visibility.Hidden;
+                }
+                else
+                {
                     GalleriesSelector.Visibility = Visibility.Hidden;
+                    ApplyGallery(lock_gallery, Keywords);
+                }
 
                 if (gallery == null)
                     EmptyImageSourceNotify.Visibility = Visibility.Visible;
@@ -255,7 +263,7 @@ namespace Wbooru.UI.Pages
         {
             var keywords = obj.Split(' ');
 
-            NavigationHelper.NavigationPush(new MainGalleryPage(keywords));
+            NavigationHelper.NavigationPush(new MainGalleryPage(keywords, CurrentGallery));
         }
 
         private void MenuButton_Click_1(object sender, RoutedEventArgs e)
@@ -489,5 +497,7 @@ namespace Wbooru.UI.Pages
 
             ApplyGallery(gallery, Keywords);
         }
+
+        private void TagListViewerPanel_RequestSearchEvent(IEnumerable<Tag> tags) => NavigationHelper.NavigationPush(new MainGalleryPage(tags.Select(x => x.Name), CurrentGallery));
     }
 }

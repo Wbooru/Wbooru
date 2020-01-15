@@ -138,7 +138,15 @@ namespace Wbooru.UI.Pages
                 return;
             }
 
-            NavigationHelper.NavigationPush(new MainGalleryPage(tags));
+            var gallery = Container.Default.GetExportedValues<Gallery>().Where(x => GalleriesSelector.SelectedItem.ToString() == x.GalleryName).FirstOrDefault();
+
+            if (gallery == null)
+            {
+                Toast.ShowMessage("请选择有效的画廊");
+                return;
+            }
+
+            NavigationHelper.NavigationPush(new MainGalleryPage(tags, gallery));
         }
 
         private void SubscribeButton_Click(object sender, RoutedEventArgs e)
