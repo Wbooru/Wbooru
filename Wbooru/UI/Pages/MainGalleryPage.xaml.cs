@@ -370,7 +370,7 @@ namespace Wbooru.UI.Pages
                 await Task.Run(() => DoLogin());
             }
 
-            AccountButton.IsBusy = true;
+            AccountButton.IsBusy = false;
             AccountButton.BusyStatusDescription = string.Empty;
         }
 
