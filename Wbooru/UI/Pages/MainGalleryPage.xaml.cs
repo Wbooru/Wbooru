@@ -167,7 +167,7 @@ namespace Wbooru.UI.Pages
         private async Task TryAutoLogin(Gallery gallery)
         {
             AccountButton.IsBusy = true;
-            AccountButton.BusyStatusDescription = "正在自动登陆中...";
+            AccountButton.Text = "登录中...";
 
             if (AccountInfoDataContainer.Instance.TryGetAccountInfoData(gallery) is AccountInfo account_info)
             {
@@ -182,11 +182,11 @@ namespace Wbooru.UI.Pages
                 catch (Exception e)
                 {
                     Log.Info($"Auto login gallery failed:{e.Message}");
+                    Toast.ShowMessage($"自动登录{gallery.GalleryName}失败，原因:{e.Message}");
                 }
             }
 
             AccountButton.IsBusy = false;
-            AccountButton.BusyStatusDescription = string.Empty;
         }
 
         #region Left Menu Show/Hide
