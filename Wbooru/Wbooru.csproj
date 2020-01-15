@@ -192,6 +192,7 @@
     <Compile Include="Settings\AccountInfoDataContainer.cs" />
     <Compile Include="Settings\DataOperationPanel.cs" />
     <Compile Include="Settings\GlobalSetting.cs" />
+    <Compile Include="Settings\Setting.cs" />
     <Compile Include="Settings\SettingBase.cs" />
     <Compile Include="Settings\SettingFileEntity.cs" />
     <Compile Include="Settings\SettingManager.cs" />

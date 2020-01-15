@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbooruPlugin.Danbooru", "Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbooruPlugin.BossKey", "Plugins\WbooruPlugin.BossKey\WbooruPlugin.BossKey.csproj", "{E8208EE8-34AF-40F7-969F-8BA2DD8177AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbooruPlugin.CommonMoebooruGallery", "Plugins\WbooruPlugin.CommonMoebooruGallery\WbooruPlugin.CommonMoebooruGallery\WbooruPlugin.CommonMoebooruGallery.csproj", "{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,12 @@ Global
 		{E8208EE8-34AF-40F7-969F-8BA2DD8177AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E8208EE8-34AF-40F7-969F-8BA2DD8177AE}.SQLITE_DEBUG|Any CPU.ActiveCfg = Release|Any CPU
 		{E8208EE8-34AF-40F7-969F-8BA2DD8177AE}.SQLITE_DEBUG|Any CPU.Build.0 = Release|Any CPU
+		{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F}.SQLITE_DEBUG|Any CPU.ActiveCfg = Release|Any CPU
+		{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F}.SQLITE_DEBUG|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +88,7 @@ Global
 		{36C76CA6-73D8-43E7-8AA8-1A8B8FFA7EF1} = {3FD0B528-7492-4FC6-A51D-8412234F9BD8}
 		{4E84E4E3-00FE-4CC2-84EA-2B9362930DFF} = {3FD0B528-7492-4FC6-A51D-8412234F9BD8}
 		{E8208EE8-34AF-40F7-969F-8BA2DD8177AE} = {3FD0B528-7492-4FC6-A51D-8412234F9BD8}
+		{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F} = {3FD0B528-7492-4FC6-A51D-8412234F9BD8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {085640C6-0CAB-4295-B65D-86AA4622F986}

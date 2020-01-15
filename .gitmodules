@@ -13,3 +13,6 @@
 [submodule "Plugins/WbooruPlugin.BossKey"]
 	path = Plugins/WbooruPlugin.BossKey
 	url = https://github.com/MikiraSora/WbooruPlugin.BossKey
+[submodule "Plugins/WbooruPlugin.CommonMoebooruGallery"]
+	path = Plugins/WbooruPlugin.CommonMoebooruGallery
+	url = https://github.com/MikiraSora/WbooruPlugin.CommonMoebooruGallery

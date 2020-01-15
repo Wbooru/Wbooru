@@ -248,9 +248,8 @@ namespace Wbooru.UI.Pages
             var detail = gallery.GetImageDetial(item);
 
             if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
-                if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
-                    foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength == 0))
-                        i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
+                foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength <= 0))
+                    i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
 
             bool? is_vote = default;
 
