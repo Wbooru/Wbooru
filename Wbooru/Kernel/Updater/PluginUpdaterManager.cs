@@ -27,15 +27,22 @@ namespace Wbooru.Kernel.Updater
             var type = plugin.GetType();
             UpdatablePluginsInfo[type] = null;
 
-            var current_version = plugin.CurrentPluginVersion;
-            var releases_list = plugin.GetReleaseInfoList().Where(x => x.Version > current_version).OrderByDescending(x => x.Version);
+            try
+            {
+                var current_version = plugin.CurrentPluginVersion;
+                var releases_list = plugin.GetReleaseInfoList().Where(x => x.Version > current_version).OrderByDescending(x => x.Version);
 
-            if (!releases_list.Any())
-                return;
+                if (!releases_list.Any())
+                    return;
 
-            var release_info = (SettingManager.LoadSetting<GlobalSetting>().UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Preview) : null) ?? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Stable);
+                var release_info = (SettingManager.LoadSetting<GlobalSetting>().UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Preview) : null) ?? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Stable);
 
-            UpdatablePluginsInfo[type] = release_info;
+                UpdatablePluginsInfo[type] = release_info;
+            }
+            catch (Exception e)
+            {
+                ExceptionHelper.DebugThrow(e);
+            }
         }
 
         internal static void BeginPluginUpdate(IEnumerable<IPluginUpdatable> updatables,Action<string> reporter = null)
