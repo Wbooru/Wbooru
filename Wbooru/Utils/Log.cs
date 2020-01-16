@@ -135,7 +135,7 @@ namespace Wbooru
         public static void Info(string message, [CallerMemberName]string prefix = "<Unknown Method>")
         {
             var msg = BuildLogMessage(message, "INFO", true, true, prefix);
-            Output(msg);
+            ColorizeConsoleOutput(msg, ConsoleColor.Green, DefaultBackgroundColor);
         }
 
         public static void Debug(string message, [CallerMemberName]string prefix = "<Unknown Method>")

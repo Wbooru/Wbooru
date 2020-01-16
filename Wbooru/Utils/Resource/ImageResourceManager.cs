@@ -40,7 +40,7 @@ namespace Wbooru.Utils.Resource
                         return stream.Length;
                     }).Sum();
 
-                    Log.Error($"Check&Create tempoary cache folder({current_record_capacity}):{temporary_folder_path}");
+                    Log.Info($"Check&Create tempoary cache folder({current_record_capacity}):{temporary_folder_path}");
                 }
                 catch (Exception e)
                 {
