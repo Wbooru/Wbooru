@@ -20,6 +20,25 @@
                 <Setter Property="Padding" Value="10,5,10,5" />
             </Style>
         </StackPanel.Resources>
+        <StackPanel
+            Name="CacheFolderPanel"
+            Margin="0,0,0,20"
+            Orientation="Horizontal">
+            <Button Name="CleanCacheFolderButton" Click="CleanCacheFolder">清空缓存文件夹</Button>
+            <TextBlock
+                Margin="10,0,0,0"
+                VerticalAlignment="Center"
+                FontSize="14">
+                缓存文件夹状态(已用/总共):
+            </TextBlock>
+            <TextBlock
+                Name="CacheFolderUsageText"
+                Margin="10,0,0,0"
+                VerticalAlignment="Center"
+                FontSize="14">
+            </TextBlock>
+        </StackPanel>
+
         <Button Click="BackupDatabase" IsEnabled="{Binding ElementName=StatusDisplayer, Path=IsBusy, Converter={x:Static cv:SimpleExpressionConverters.ReverseBooleanConverter}}">备份数据库</Button>
 
         <GroupBox Margin="0,20,0,0">

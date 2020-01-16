@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using Wbooru.Kernel;
 using Wbooru.Persistence;
 using Wbooru.Settings;
+using Wbooru.Utils;
 
 namespace Wbooru.UI.Controls
 {
@@ -30,6 +31,41 @@ namespace Wbooru.UI.Controls
         public EmbeddedDataOperationPanel()
         {
             InitializeComponent();
+
+            if (!Setting<GlobalSetting>.Current.EnableFileCache)
+                CacheFolderPanel.Visibility = Visibility.Collapsed;
+
+            CalcCacheFolder();
+        }
+
+        private async void CalcCacheFolder()
+        {
+            CleanCacheFolderButton.IsEnabled = false;
+            CacheFolderUsageText.Text = "正在计算中...";
+
+            var len = await Task.Run(() => new DirectoryInfo(CacheFolderHelper.CacheFolderPath).EnumerateFileSystemInfos("*.*", SearchOption.AllDirectories).Select(x =>
+              {
+                  try
+                  {
+                      var file = new FileInfo(x.FullName);
+                      return file.Length;
+                  }
+                  catch
+                  {
+                      return 0;
+                  }
+              }).Sum());
+
+            CleanCacheFolderButton.IsEnabled = true;
+            CacheFolderUsageText.Text = $"{FormatFileSize(len)} / {FormatFileSize(Setting<GlobalSetting>.Current.CacheFolderMaxSize * 1024 * 1024)}";
+        }
+
+        private static string FormatFileSize(long bytes)
+        {
+            if (bytes <= 0) return "0B";
+            var units = new[] { "B", "kB", "MB", "GB", "TB" };
+            int digitGroups = (int)(Math.Log10(bytes) / Math.Log10(1024));
+            return $"{(int)(bytes / Math.Pow(1024, digitGroups))}  {units[digitGroups]}";
         }
 
         private void BackupDatabase(object sender, RoutedEventArgs e)
@@ -100,6 +136,30 @@ namespace Wbooru.UI.Controls
 
             Process.Start(Process.GetCurrentProcess().MainModule.FileName,command);
             App.UnusualSafeExit();
+        }
+
+        private async void CleanCacheFolder(object sender, RoutedEventArgs e)
+        {
+            CleanCacheFolderButton.IsEnabled = false;
+
+            await Task.Run(() => 
+            {
+                foreach (var item in Directory.EnumerateFileSystemEntries(CacheFolderHelper.CacheFolderPath))
+                {
+                    if (File.Exists(item))
+                    {
+                        File.Delete(item);
+                    }
+                    else
+                    {
+                        Directory.Delete(item,true);
+                    }
+                }
+            });
+
+            CleanCacheFolderButton.IsEnabled = true;
+            CalcCacheFolder();
+            Toast.ShowMessage("清理完成");
         }
     }
 }
