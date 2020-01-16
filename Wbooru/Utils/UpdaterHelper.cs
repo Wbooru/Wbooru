@@ -26,7 +26,7 @@ namespace Wbooru.Utils
         {
             var array = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(github_releases_url, req =>
             {
-                req.UserAgent = "WbooruProgramUpdater";
+                req.UserAgent = "Wbooru";
             }));
 
             return array
@@ -126,8 +126,8 @@ namespace Wbooru.Utils
                 var api_url = url.Contains("api.github.com") ? url : url.Replace("github.com", "api.github.com/repos");
                 Log.Debug($"{url} -> {api_url}");
 
-                var issue_json = RequestHelper.GetJsonContainer<JObject>(RequestHelper.CreateDeafult(api_url, req => req.UserAgent = "WbooruPluginMarket"));
-                return GetPostReleaseInfosFromIssueCommentsAPI(issue_json["comments_url"].ToString());
+                var issue_json = RequestHelper.GetJsonContainer<JObject>(RequestHelper.CreateDeafult(api_url, req => req.UserAgent = "Wbooru"));
+                return GetPostReleaseInfosFromIssueCommentsAPI(issue_json["comments_url"].ToString(), issue_json["user"]["id"].ToString());
             }
             catch (Exception e)
             {
@@ -136,13 +136,13 @@ namespace Wbooru.Utils
             }
         }
 
-        public static IEnumerable<PluginMarketRelease> GetPostReleaseInfosFromIssueCommentsAPI(string url)
+        public static IEnumerable<PluginMarketRelease> GetPostReleaseInfosFromIssueCommentsAPI(string url,string issue_author)
         {
             JArray release_infos;
 
             try
             {
-                release_infos = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(url, req => req.UserAgent = "WbooruPluginMarket"));
+                release_infos = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(url, req => req.UserAgent = "Wbooru"));
             }
             catch (Exception e)
             {
@@ -152,17 +152,18 @@ namespace Wbooru.Utils
 
             if (release_infos != null)
             {
-                foreach (var post in release_infos.Where(x => x["author_association"].ToString() == "OWNER"))
+                Log.Info($"url = {url} , issue_author id = {issue_author}");
+                foreach (var post in release_infos.Where(x => x["user"]["id"].ToString() == issue_author))
                 {
+                    Log.Debug($"pick : {release_infos.ToArray()}");
+
                     var info = BuildInstance<PluginMarketRelease>(post);
 
                     info.ReleaseDate = post["created_at"].ToObject<DateTime>();
                     info.ReleaseURL = post["html_url"].ToString();
 
                     if (CheckReleaseInfoVailed(info))
-                    {
                         yield return info;
-                    }
                 }
             }
 

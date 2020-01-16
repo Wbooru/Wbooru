@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Wbooru.Network;
+using Wbooru.UI.Controls;
 using Wbooru.Utils;
 
 namespace Wbooru.Kernel.Updater.PluginMarket
@@ -25,7 +26,7 @@ namespace Wbooru.Kernel.Updater.PluginMarket
 
             try
             {
-                plugin_issues = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult("https://api.github.com/repos/MikiraSora/Wbooru.PluginsMarket/issues?labels=Plugin-Release",req=>req.UserAgent="WbooruPluginMarket"));
+                plugin_issues = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult("https://api.github.com/repos/Wbooru/Wbooru.PluginsMarket/issues?labels=Plugin-Release",req=>req.UserAgent="Wbooru"));
             }
             catch (Exception e)
             {
@@ -52,7 +53,7 @@ namespace Wbooru.Kernel.Updater.PluginMarket
             }
             else
             {
-                post.ReleaseInfos = UpdaterHelper.GetPostReleaseInfosFromIssueCommentsAPI(post_json["comments_url"].ToString()).ToArray();
+                post.ReleaseInfos = UpdaterHelper.GetPostReleaseInfosFromIssueCommentsAPI(post_json["comments_url"].ToString(), post_json["user"]["id"].ToString()).ToArray();
                 post.ReleaseUrl = string.IsNullOrWhiteSpace(post.ReleaseUrl) ? post_json["html_url"].ToString() : post.ReleaseUrl;
             }
 
