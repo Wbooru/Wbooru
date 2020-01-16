@@ -13,3 +13,6 @@
 [submodule "Plugins/WbooruPlugin.CommonMoebooruGallery"]
 	path = Plugins/WbooruPlugin.CommonMoebooruGallery
 	url = https://github.com/MikiraSora/WbooruPlugin.CommonMoebooruGallery
+[submodule "Plugins/WbooruPlugin.WindowsStyleCustomizerPluginInfo"]
+	path = Plugins/WbooruPlugin.WindowsStyleCustomizerPluginInfo
+	url = https://github.com/MikiraSora/WbooruPlugin.WindowsStyleCustomizerPluginInfo
