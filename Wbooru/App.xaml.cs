@@ -207,7 +207,7 @@ namespace Wbooru
 
         internal static void UnusualSafeExit()
         {
-            Log.Info("Call UnusualSafeExit()");
+            Log.Info("Begin save&clean program data/resources");
 
             try
             {
@@ -227,7 +227,14 @@ namespace Wbooru
         {
             Process.Start(Process.GetCurrentProcess().MainModule.FileName);
 
-            UnusualSafeExit();
+            try
+            {
+                UnusualSafeExit();
+            }
+            catch (Exception e)
+            {
+                ExceptionHelper.DebugThrow(e);
+            }
         }
     }
 }

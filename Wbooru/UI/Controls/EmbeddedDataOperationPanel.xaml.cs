@@ -161,5 +161,29 @@ namespace Wbooru.UI.Controls
             CalcCacheFolder();
             Toast.ShowMessage("清理完成");
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(CacheFolderHelper.CacheFolderPath);
+            }
+            catch (Exception e)
+            {
+                ExceptionHelper.DebugThrow(e);
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(System.IO.Path.GetFullPath(Setting<GlobalSetting>.Current.DownloadPath));
+            }
+            catch (Exception e)
+            {
+                ExceptionHelper.DebugThrow(e);
+            }
+        }
     }
 }
