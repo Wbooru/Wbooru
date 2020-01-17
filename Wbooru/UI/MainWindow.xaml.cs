@@ -31,15 +31,15 @@ namespace Wbooru.UI
                 //restore size
                 if (setting.WindowSize != null)
                 {
-                    Width = setting.WindowSize.Value.Width;
-                    Height = setting.WindowSize.Value.Height;
+                    Width = Math.Max(0, setting.WindowSize.Value.Width);
+                    Height = Math.Max(0, setting.WindowSize.Value.Height);
                 }
 
                 //restore location
                 if (setting.WindowLocation != null)
                 {
-                    Left = setting.WindowLocation.Value.X;
-                    Top = setting.WindowLocation.Value.Y;
+                    Left = Math.Max(0,setting.WindowLocation.Value.X);
+                    Top = Math.Max(0, setting.WindowLocation.Value.Y);
                 }
             }
 
