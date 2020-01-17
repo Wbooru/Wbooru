@@ -156,17 +156,16 @@ namespace Wbooru.Kernel.Updater
             {
                 try
                 {
-                    using (ZipArchive archive = ZipFile.Open(file, ZipArchiveMode.Read))
-                    {
-                        archive.ExtractToDirectory(exe_path);
-                    }
+                    using var archive = ZipFile.OpenRead(file);
+                    archive.ExtractToDirectory(exe_path, true);
                 }
                 catch (Exception e)
                 {
                     Log.Error($"Applied zip file {file} failed : "+e.Message);
+                    continue;
                 }
 
-                Log.Info("Applied zip file extract:" + file);
+                Log.Info("Applied zip file extract successfully:" + file);
             }
 
             Process.Start(Process.GetCurrentProcess().MainModule.FileName);

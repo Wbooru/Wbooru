@@ -326,6 +326,7 @@
     <Compile Include="UI\ValueConverters\TagColorConverter.cs" />
     <Compile Include="Utils\UpdaterHelper.cs" />
     <Compile Include="Utils\ViusalTreeHelperEx.cs" />
+    <Compile Include="Utils\ZipArchiveExtension.cs" />
     <Page Include="UI\Controls\EmbeddedDataOperationPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
