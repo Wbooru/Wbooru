@@ -162,28 +162,37 @@ namespace Wbooru.UI.Controls
             Toast.ShowMessage("清理完成");
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs _)
+        {
+            OpenWithPath(CacheFolderHelper.CacheFolderPath);
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs _)
+        {
+            OpenWithPath(System.IO.Path.GetFullPath(Setting<GlobalSetting>.Current.DownloadPath));
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            OpenWithPath(System.IO.Path.GetFullPath(Setting<GlobalSetting>.Current.LogOutputDirectory));
+        }
+
+        private static void OpenWithPath(string path)
         {
             try
             {
-                Process.Start(CacheFolderHelper.CacheFolderPath);
+                Process.Start(System.IO.Path.GetFullPath(path));
             }
             catch (Exception e)
             {
                 ExceptionHelper.DebugThrow(e);
+                Toast.ShowMessage("打开失败");
             }
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Process.Start(System.IO.Path.GetFullPath(Setting<GlobalSetting>.Current.DownloadPath));
-            }
-            catch (Exception e)
-            {
-                ExceptionHelper.DebugThrow(e);
-            }
+            OpenWithPath(System.IO.Path.GetFullPath("Plugins"));
         }
     }
 }

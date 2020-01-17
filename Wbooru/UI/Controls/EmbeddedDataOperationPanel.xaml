@@ -20,7 +20,12 @@
                 <Setter Property="Padding" Value="10,5,10,5" />
             </Style>
         </StackPanel.Resources>
-        <Button Margin="0,0,0,20" Click="Button_Click_1">打开下载文件夹</Button>
+        <StackPanel Orientation="Horizontal">
+            <Button Margin="0,0,20,20" Click="Button_Click_2">打开日志文件夹</Button>
+            <Button Margin="0,0,0,20" Click="Button_Click_1">打开下载文件夹</Button>
+        </StackPanel>
+
+        <Button Margin="0,0,0,20" Click="Button_Click_3">打开插件文件夹</Button>
         <StackPanel
             Name="CacheFolderPanel"
             Margin="0,0,0,20"
