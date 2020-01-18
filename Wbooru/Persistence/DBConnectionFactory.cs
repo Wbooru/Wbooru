@@ -15,18 +15,13 @@ namespace Wbooru.Persistence
     {
         private static DbConnection _cached_connection;
 
-#if SQLITE_DEBUG || SQLITE
         public static bool UsingSqlite => true;
-#else
-        public static bool UsingSqlite => false;
-#endif
 
         public static DbConnection GetConnection()
         {
             if (_cached_connection != null)
                 return _cached_connection;
 
-#if SQLITE_DEBUG || SQLITE
             PreApplyDBFileIfNotExist();
 
             var db_file_path = Path.GetFullPath(SettingManager.LoadSetting<GlobalSetting>().DBFilePath);
@@ -40,10 +35,11 @@ namespace Wbooru.Persistence
                     ForeignKeys = true
                 }.ConnectionString
             };
-#else
+
+            /*
             Log.Info($"Use localdb");
             return _cached_connection = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-#endif
+            */
         }
 
         private static void PreApplyDBFileIfNotExist()
