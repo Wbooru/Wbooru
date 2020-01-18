@@ -166,31 +166,27 @@ namespace Wbooru.UI.Controls
             IEnumerable<GalleryItem> source = loadable_items;
             var counter = new SkipCounterWrapper();
 
-            (GalleryItem[] list, bool success) = await Task.Run(() =>
+            int count = 0;
+
+            try
             {
-                try
+                await foreach (var item in FilterTag(source.Skip(current_index), counter, gallery).Take(option.GetPictureCountPerLoad))
                 {
-                    var l = FilterTag(source.Skip(current_index), counter, gallery).Take(option.GetPictureCountPerLoad).ToArray();
-                    return (l, true);
+                    Items.Add(item);//将图片放到列表
+                    count++;
                 }
-                catch (Exception e)
-                {
-                    Toast.ShowMessage($"无法获取图片列表数据:{e.Message}");
-                    return (new GalleryItem[0], false);
-                }
-            });
 
-            Log.Debug($"Skip({current_index}) Filter({counter.Count}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Length})", "GridViewer_RequestMoreItems");
+                if (count < option.GetPictureCountPerLoad)
+                    Toast.ShowMessage("已到达图片队列末尾");
+            }
+            catch (Exception e)
+            {
+                Toast.ShowMessage($"无法获取图片列表数据:{e.Message}");
+            }
 
-            if (source != loadable_items)
-                return;
+            Log.Debug($"Skip({current_index}) Filter({counter.Count}) Take({option.GetPictureCountPerLoad}) ActualTake({count})", "GridViewer_RequestMoreItems");
 
-            foreach (var item in list)
-                Items.Add(item);
-
-            if (success && list.Count() < option.GetPictureCountPerLoad)
-                Toast.ShowMessage("已到达图片队列末尾");
-            current_index += list.Length + counter.Count;
+            current_index += count + counter.Count;
 
             OnRequestMoreItemFinished?.Invoke(this);
             is_requesting = false;
@@ -201,14 +197,14 @@ namespace Wbooru.UI.Controls
             public int Count { get; set; } = 0;
         }
 
-        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery=null)
+        public IAsyncEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery=null)
         {
             var option = SettingManager.LoadSetting<GlobalSetting>();
             IEnumerable<Gallery> galleries = gallery == null ? Container.Default.GetExportedValues<Gallery>() : new[] { gallery };
 
-            return items.Where(x =>
+            return items.ToAsyncEnumerable().WhereAwait(async x =>
             {
-                if (galleries.FirstOrDefault(g => g.GalleryName == x.GalleryName) is Gallery gallery && gallery.GetImageDetial(x) is GalleryImageDetail detail)
+            if (galleries.FirstOrDefault(g => g.GalleryName == x.GalleryName) is Gallery gallery && await Task.Run(() => gallery.GetImageDetial(x)).ConfigureAwait(false) is GalleryImageDetail detail)
                 {
                     if (!option.EnableTagFilter)
                         return true;
