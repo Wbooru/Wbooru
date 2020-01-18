@@ -17,7 +17,7 @@ namespace Wbooru.Network
     {
         static RequestHelper()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12; 
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
         private static IWebProxy socks5_proxy;
@@ -43,13 +43,13 @@ namespace Wbooru.Network
             }
             catch (Exception e)
             {
-                Log.Info($"Create sock5 proxy failed:"+e.Message);
+                Log.Info($"Create sock5 proxy failed:" + e.Message);
                 return null;
             }
         }
 
-        public static WebResponse CreateDeafult(string url, Action<HttpWebRequest> custom = null) 
-            => CreateDeafultAsync(url, custom).ConfigureAwait(false).GetAwaiter().GetResult();
+        public static WebResponse CreateDeafult(string url, Action<HttpWebRequest> custom = null)
+            => CreateDeafultAsync(url, custom).Result;
 
         public static Task<WebResponse> CreateDeafultAsync(string url, Action<HttpWebRequest> custom = null)
         {
@@ -63,7 +63,7 @@ namespace Wbooru.Network
 
             custom?.Invoke(req as HttpWebRequest);
 
-            Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}] create http(s) {req.Method} request :{url}", "RequestHelper");
+            Log.Debug($"create http(s) {req.Method} request :{url}", "RequestHelper");
 
             return req.GetResponseAsync();
         }

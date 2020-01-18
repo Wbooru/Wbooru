@@ -249,9 +249,8 @@ namespace Wbooru.UI.Pages
         private void GridViewer_ClickItemEvent(GalleryItem item)
         {
             var page = new PictureDetailViewPage();
-            page.ApplyItem(CurrentGallery, item);
-
             NavigationHelper.NavigationPush(page);
+            page.ApplyItem(CurrentGallery, item);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

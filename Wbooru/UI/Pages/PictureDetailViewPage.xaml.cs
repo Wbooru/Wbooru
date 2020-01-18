@@ -263,10 +263,7 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                await Task.Run(() =>
-                {
-                    is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
-                });
+                is_vote = await Task.Run(() => gallery.Feature<IGalleryVote>()?.IsVoted(item));
             }
             catch (Exception e)
             {

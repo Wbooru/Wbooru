@@ -10,6 +10,7 @@ using Wbooru.Settings;
 using System.IO;
 using Wbooru.Utils;
 using static Wbooru.Settings.GlobalSetting;
+using System.Threading;
 
 namespace Wbooru
 {
@@ -99,7 +100,7 @@ namespace Wbooru
             {
                 sb.Clear();
 
-                sb.AppendFormat("[{0} {1}]", (time ? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") : string.Empty), type);
+                sb.AppendFormat("[{0} {1}:{2}]", (time ? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") : string.Empty), type, Thread.CurrentThread.ManagedThreadId);
 
                 if (!string.IsNullOrWhiteSpace(prefix))
                     sb.AppendFormat("{0}", prefix);
