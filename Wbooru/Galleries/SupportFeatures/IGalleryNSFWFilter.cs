@@ -16,6 +16,6 @@ namespace Wbooru.Galleries.SupportFeatures
 
     public interface IGalleryNSFWFilter : IGalleryFeature
     {
-        IEnumerable<GalleryItem> NSFWFilter(IEnumerable<GalleryItem> items);
+        IAsyncEnumerable<GalleryItem> NSFWFilter(IAsyncEnumerable<GalleryItem> items);
     }
 }

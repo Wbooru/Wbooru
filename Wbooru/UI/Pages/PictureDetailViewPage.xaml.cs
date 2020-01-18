@@ -253,7 +253,7 @@ namespace Wbooru.UI.Pages
 
             var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
 
-            var detail = await Task.Run(() => gallery.GetImageDetial(item));
+            var detail = await gallery.GetImageDetialAsync(item);
 
             if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
                 foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength <= 0))
@@ -263,10 +263,7 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                await Task.Run(() =>
-                {
-                    is_vote = gallery.Feature<IGalleryVote>()?.IsVoted(item);
-                });
+                is_vote = await Task.Run(() => gallery.Feature<IGalleryVote>()?.IsVotedAsync(item));
             }
             catch (Exception e)
             {
@@ -340,7 +337,7 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                await Task.Run(() => gallery.Feature<IGalleryVote>().SetVote(item, !is_vote));
+                await gallery.Feature<IGalleryVote>().SetVoteAsync(item, !is_vote);
 
                 if (item == PictureInfo)
                 {

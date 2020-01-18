@@ -50,7 +50,7 @@ namespace Wbooru.UI.Pages
             NavigationHelper.NavigationPop();
         }
 
-        private async void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs _)
         {
             AccountInfo.Password = PasswordInput.Password;
             IsLoginRequesting = true;
@@ -59,17 +59,14 @@ namespace Wbooru.UI.Pages
 
             using var status = LoadingStatus.BeginBusy("正在登录...");
 
-            await Task.Run(() =>
+            try
             {
-                try
-                {
-                    feature.AccountLogin(AccountInfo);
-                }
-                catch (Exception e)
-                {
-                    Toast.ShowMessage($"登录失败!原因:{e.Message}");
-                }
-            });
+                await feature.AccountLoginAsync(AccountInfo);
+            }
+            catch (Exception e)
+            {
+                Toast.ShowMessage($"登录失败!原因:{e.Message}");
+            }
 
             IsLoginRequesting = false;
 
@@ -78,7 +75,7 @@ namespace Wbooru.UI.Pages
                 Toast.ShowMessage($"登录成功");
                 NavigationHelper.NavigationPop();
 
-                if (AutoLogin.IsChecked??false)
+                if (AutoLogin.IsChecked ?? false)
                 {
                     var container = SettingManager.LoadSetting<AccountInfoDataContainer>();
                     container.SaveAccountInfoData(Gallery, AccountInfo);

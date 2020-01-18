@@ -9,6 +9,6 @@ namespace Wbooru.Galleries.SupportFeatures
 {
     public interface IGalleryTagDataPredownloadAndCache : IGalleryFeature
     {
-        IEnumerable<(Tag TagInfo,DateTime TagCreateTime)> EnumerateTagsOrderByNewer(DateTime from,int need_count);
+        IAsyncEnumerable<(Tag TagInfo,DateTime TagCreateTime)> EnumerateTagsOrderByNewer(DateTime from,int need_count);
     }
 }

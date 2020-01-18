@@ -253,7 +253,7 @@ namespace Wbooru.UI.Controls
             ComfirmTag(tag_name);
         }
 
-        public void InputChanged(string input_imcomplete_words)
+        public async void InputChanged(string input_imcomplete_words)
         {
             Logger.Debug($"input_imcomplete_words={input_imcomplete_words}");
 
@@ -271,55 +271,48 @@ namespace Wbooru.UI.Controls
             {
                 if (suggest_query_task == null)
                 {
-                    suggest_query_task = Task.Run(() =>
+                    while (true)
                     {
-                        while (true)
-                        {
-                            var time_past = DateTime.Now - update_input_time;
+                        var time_past = DateTime.Now - update_input_time;
 
-                            if (time_past.TotalMilliseconds >= 1000)
-                                break;
-                            Thread.Sleep(500);
+                        if (time_past.TotalMilliseconds >= 1000)
+                            break;
+                        Thread.Sleep(500);
+                    }
+
+                    input_imcomplete_words = picking_imcomplete_string_frag;
+
+                    Logger.Debug($"Start search tag. input_imcomplete_words={input_imcomplete_words}");
+
+                    if (!string.IsNullOrWhiteSpace(input_imcomplete_words))
+                    {
+                        Suggests.Clear();
+                        SuggestBox.IsOpen = true;
+
+                        var lock_string = query_string = input_imcomplete_words;
+
+                        using (LoadingStatus.BeginBusy("Tag searching..."))
+                        {
+                            var list = cur_gallery
+                            .Feature<IGalleryTagSearch>()
+                            .SearchTagAsync(input_imcomplete_words)
+                            .OrderBy(tag => tag.Name.IndexOf(input_imcomplete_words));
+
+                            var take_count = SettingManager.LoadSetting<GlobalSetting>().MaxSearchSuggestsCount;
+                            cached_suggests = await (take_count == 0 ? list : list.Take(take_count)).ToArrayAsync();
+
+                            Logger.Debug($"Got {cached_suggests.Length} tags.");
                         }
 
-                        input_imcomplete_words = picking_imcomplete_string_frag;
-
-                        Logger.Debug($"Start search tag. input_imcomplete_words={input_imcomplete_words}");
-
-                        if (!string.IsNullOrWhiteSpace(input_imcomplete_words))
+                        if (lock_string == query_string)
                         {
                             Dispatcher.Invoke(() =>
                             {
-                                SuggestBox.IsOpen = true;
-                                Suggests.Clear();
+                                foreach (var item in cached_suggests)
+                                    Suggests.Add(item);
                             });
-
-                            var lock_string = query_string = input_imcomplete_words;
-
-                            using (LoadingStatus.BeginBusy("Tag searching..."))
-                            {
-                                var list = cur_gallery
-                                .Feature<IGalleryTagSearch>()
-                                .SearchTag(input_imcomplete_words)
-                                .OrderBy(tag => tag.Name.IndexOf(input_imcomplete_words));
-
-                                var take_count = SettingManager.LoadSetting<GlobalSetting>().MaxSearchSuggestsCount;
-                                cached_suggests = (take_count == 0 ? list : list.Take(take_count)).ToArray();
-
-                                Logger.Debug($"Got {cached_suggests.Length} tags.");
-                            }
-
-                            if (lock_string == query_string)
-                            {
-                                Dispatcher.Invoke(() =>
-                                {
-                                    foreach (var item in cached_suggests)
-                                        Suggests.Add(item);
-                                });
-                            }
                         }
-                        suggest_query_task = null;
-                    });
+                    }
                 }
             }
             else

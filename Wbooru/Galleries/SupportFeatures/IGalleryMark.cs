@@ -9,8 +9,8 @@ namespace Wbooru.Galleries.SupportFeatures
 {
     public interface IGalleryMark : IGalleryFeature
     {
-        void SetMark(GalleryItem item,bool is_mark);
-        bool IsMarked(GalleryItem item);
-        IEnumerable<GalleryItem> GetMarkedGalleryItem();
+        Task SetMarkAsync(GalleryItem item,bool is_mark);
+        Task<bool> IsMarkedAsync(GalleryItem item);
+        IAsyncEnumerable<GalleryItem> GetMarkedGalleryItemAsync();
     }
 }

@@ -13,6 +13,6 @@ namespace Wbooru.Galleries.SupportFeatures
     /// </summary>
     public interface IGalleryItemIteratorFastSkipable : IGalleryFeature
     {
-        IEnumerable<GalleryItem> IteratorSkip(int skip_count);
+        IAsyncEnumerable<GalleryItem> IteratorSkip(int skip_count);
     }
 }

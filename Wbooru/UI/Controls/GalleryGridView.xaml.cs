@@ -19,6 +19,7 @@ using Wbooru.Kernel;
 using Wbooru.Galleries;
 using static Wbooru.UI.Pages.MainGalleryPage;
 using Wbooru.Galleries.SupportFeatures;
+using System.Threading;
 
 namespace Wbooru.UI.Controls
 {
@@ -68,14 +69,14 @@ namespace Wbooru.UI.Controls
         /// <summary>
         /// 表示可以加载的列表源，一般View会自动遍历此集合来拿更多的图片数据.
         /// </summary>
-        public Func<IEnumerable<GalleryItem>> LoadableSourceFactory
+        public Func<IAsyncEnumerable<GalleryItem>> LoadableSourceFactory
         {
-            get { return (Func<IEnumerable<GalleryItem>>)GetValue(LoadableSourceProperty); }
+            get { return (Func<IAsyncEnumerable<GalleryItem>>)GetValue(LoadableSourceProperty); }
             set { SetValue(LoadableSourceProperty, value); }
         }
 
         public static readonly DependencyProperty LoadableSourceProperty =
-            DependencyProperty.Register("LoadableSource", typeof(Func<IEnumerable<GalleryItem>>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).OnLoadableSourceChanged()));
+            DependencyProperty.Register("LoadableSource", typeof(Func<IAsyncEnumerable<GalleryItem>>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).OnLoadableSourceChanged()));
 
         /// <summary>
         /// 设置此控件的用处，一般用于过滤指定标签的图片列表
@@ -99,7 +100,7 @@ namespace Wbooru.UI.Controls
             UpdateSettingForScroller();
         }
 
-        private IEnumerable<GalleryItem> loadable_items;
+        private IAsyncEnumerable<GalleryItem> loadable_items;
 
         private void OnLoadableSourceChanged()
         {
@@ -163,7 +164,7 @@ namespace Wbooru.UI.Controls
             is_requesting = true;
 
             Gallery gallery = Gallery;
-            IEnumerable<GalleryItem> source = loadable_items;
+            var source = loadable_items;
             var counter = new SkipCounterWrapper();
 
             int count = 0;
@@ -197,14 +198,14 @@ namespace Wbooru.UI.Controls
             public int Count { get; set; } = 0;
         }
 
-        public IAsyncEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery=null)
+        public IAsyncEnumerable<GalleryItem> FilterTag(IAsyncEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery=null)
         {
             var option = SettingManager.LoadSetting<GlobalSetting>();
             IEnumerable<Gallery> galleries = gallery == null ? Container.Default.GetExportedValues<Gallery>() : new[] { gallery };
 
-            return items.ToAsyncEnumerable().WhereAwait(async x =>
+            return items.WhereAwait(async x =>
             {
-            if (galleries.FirstOrDefault(g => g.GalleryName == x.GalleryName) is Gallery gallery && await Task.Run(() => gallery.GetImageDetial(x)).ConfigureAwait(false) is GalleryImageDetail detail)
+            if (galleries.FirstOrDefault(g => g.GalleryName == x.GalleryName) is Gallery gallery && await gallery.GetImageDetialAsync(x) is GalleryImageDetail detail)
                 {
                     if (!option.EnableTagFilter)
                         return true;
@@ -298,7 +299,7 @@ namespace Wbooru.UI.Controls
              */
             if (ViewType != GalleryViewType.Main || !(Gallery is IGalleryItemIteratorFastSkipable feature))
             {
-                Log.Info($"Use default method to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
+                Log.Info($"Use default method to skip items.({ViewType} - {Gallery?.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
                 Items.Clear();
                 current_index = page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
                 TryRequestMoreItemFromLoadableSource();
@@ -309,7 +310,7 @@ namespace Wbooru.UI.Controls
                
                 //这里不会根据因刷新而开头会有不同的变化
                 var list = feature.IteratorSkip(page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad);
-                LoadableSourceFactory = new Func<IEnumerable<GalleryItem>>(() => list);
+                LoadableSourceFactory = new Func<IAsyncEnumerable<GalleryItem>>(() => list);
             }
         }
 

@@ -9,6 +9,6 @@ namespace Wbooru.Galleries.SupportFeatures
 {
     public interface IGalleryTagSearch : IGalleryFeature
     {
-        IEnumerable<Tag> SearchTag(string keywords);
+        IAsyncEnumerable<Tag> SearchTagAsync(string keywords);
     }
 }

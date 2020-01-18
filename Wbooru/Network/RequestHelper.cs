@@ -51,7 +51,7 @@ namespace Wbooru.Network
         public static WebResponse CreateDeafult(string url, Action<HttpWebRequest> custom = null) 
             => CreateDeafultAsync(url, custom).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public static Task<WebResponse> CreateDeafultAsync(string url, Action<HttpWebRequest> custom = null)
+        public static async Task<WebResponse> CreateDeafultAsync(string url, Func<HttpWebRequest,Task> custom)
         {
             var req = WebRequest.Create(url);
             req.Proxy = TryGetAvaliableProxy();
@@ -61,12 +61,19 @@ namespace Wbooru.Network
             if (timeout != 0)
                 req.Timeout = timeout;
 
-            custom?.Invoke(req as HttpWebRequest);
+            if (custom?.Invoke(req as HttpWebRequest) is Task task)
+                await task;
 
             Log.Debug($"[thread:{Thread.CurrentThread.ManagedThreadId}] create http(s) {req.Method} request :{url}", "RequestHelper");
 
-            return req.GetResponseAsync();
+            return await req.GetResponseAsync().ConfigureAwait(false);
         }
+
+        public static Task<WebResponse> CreateDeafultAsync(string url, Action<HttpWebRequest> custom = null) => CreateDeafultAsync(url, req =>
+           {
+               custom?.Invoke(req);
+               return Task.CompletedTask;
+           });
 
         public static string GetString(WebResponse response)
         {

@@ -143,19 +143,19 @@ namespace Wbooru.UI.Pages
 
         public async void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
         {
-            Func<IEnumerable<GalleryItem>> items_source_creator;
+            Func<IAsyncEnumerable<GalleryItem>> items_source_creator;
 
             if (keywords?.Any() ?? false)
             {
                 GridViewer.ViewType = GalleryViewType.SearchResult;
-                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable()));
+                items_source_creator = new Func<IAsyncEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.Feature<IGallerySearchImage>().SearchImagesAsync(keywords)));
                 GalleryTitle = $"{gallery.GalleryName} ({string.Join(" ", keywords)})";
                 ShowReturnButton = true;
             }
             else
             {
                 GridViewer.ViewType = GalleryViewType.Main;
-                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.GetMainPostedImages().MakeMultiThreadable()));
+                items_source_creator = new Func<IAsyncEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.GetMainPostedImagesAsync()));
                 GalleryTitle = gallery.GalleryName;
                 ShowReturnButton = false;
             }
@@ -183,7 +183,7 @@ namespace Wbooru.UI.Pages
 
                 try
                 {
-                    await Task.Run(() => login.AccountLogin(account_info));
+                    await login.AccountLoginAsync(account_info);
 
                     Log.Info($"Auto login gallery {gallery.GalleryName} -> {login.IsLoggined}");
                 }
@@ -322,11 +322,11 @@ namespace Wbooru.UI.Pages
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
 
-            var source = new Func<IEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks
+            var source = new Func<IAsyncEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItemAsync()) ?? LocalDBContext.Instance.ItemMarks
                 .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.Item.GalleryName), gallery_item = x })
                 .Where(x => x.gallery != null)
                 .ToArray()//avoid SQL.
-                .Select(x => x.gallery_item.Item.ConvertToNormalModel()));
+                .Select(x => x.gallery_item.Item.ConvertToNormalModel()).ToAsyncEnumerable());
                  
 
             GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature!=null?"在线":"本地") + "收藏列表";
@@ -365,7 +365,7 @@ namespace Wbooru.UI.Pages
             {
                 AccountButton.BusyStatusDescription = "正在登出中...";
 
-                await Task.Run(() => feature.AccountLogout());
+                await feature.AccountLogoutAsync();
                 
                 UpdateAccountButtonText();
                 AccountInfoDataContainer.Instance.CleanAccountInfo(CurrentGallery);
@@ -474,11 +474,12 @@ namespace Wbooru.UI.Pages
 
             var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
 
-            var source = new Func<IEnumerable<GalleryItem>>(() => LocalDBContext.Instance.VisitRecords.OrderByDescending(x=>x.LastVisitTime).Select(x => x.GalleryItem)
+            var source = new Func<IAsyncEnumerable<GalleryItem>>(() => LocalDBContext.Instance.VisitRecords.OrderByDescending(x=>x.LastVisitTime).Select(x => x.GalleryItem)
                 .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.GalleryName), gallery_item = x })
                 .Where(x => x.gallery != null)
                 .ToArray()//avoid SQL.
-                .Select(x => x.gallery_item.ConvertToNormalModel()));
+                .Select(x => x.gallery_item.ConvertToNormalModel())
+                .ToAsyncEnumerable());
 
 
             GalleryTitle = "历史浏览记录";
