@@ -118,7 +118,14 @@ namespace Wbooru.UI.Dialogs
         }
 
         public static Task ShowDialog<T>() where T : DialogContentBase, new() => ShowDialog(new T());
-        
+
+        public static async Task<bool> ShowDialog(string message, string title = null, string yes = "是", string no = "否")
+        {
+            var b = new MessageBox(title, message, yes, no);
+            await Dialog.ShowDialog(b);
+            return b.Result;
+        }
+
         public static void CloseDialog<T>(T dialog) where T : DialogContentHost
         {
             Log.Debug($"Try close dialog : {dialog.Name}");

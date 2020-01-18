@@ -347,8 +347,11 @@ namespace Wbooru.UI.Pages
             ApplySetting(setting);
         }
 
-        private void DefaultSettingButton_Click(object sender, RoutedEventArgs e)
+        private async void DefaultSettingButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!await Dialog.ShowDialog("是否要将此配置列表全部重置成默认值?"))
+                return;
+
             var setting_type = CurrentSettingType;
 
             SettingManager.ResetSetting(setting_type);

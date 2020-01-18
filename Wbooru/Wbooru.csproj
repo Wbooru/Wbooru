@@ -270,6 +270,9 @@
     <Compile Include="UI\Dialogs\DialogContentHost.xaml.cs">
       <DependentUpon>DialogContentHost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\MessageBox.xaml.cs">
+      <DependentUpon>MessageBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\SelectableImageList.xaml.cs">
       <DependentUpon>SelectableImageList.xaml</DependentUpon>
     </Compile>
@@ -381,6 +384,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\DialogContentHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\MessageBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
