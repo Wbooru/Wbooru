@@ -14,11 +14,9 @@ namespace Wbooru.Persistence
     {
         public SQLiteConfiguration()
         {
-#if SQLITE_DEBUG || SQLITE
             SetProviderFactory("System.Data.SQLite", SQLiteFactory.Instance);
             SetProviderFactory("System.Data.SQLite.EF6", SQLiteProviderFactory.Instance);
             SetProviderServices("System.Data.SQLite", (DbProviderServices)SQLiteProviderFactory.Instance.GetService(typeof(DbProviderServices)));
-#endif
         }
     }
 }

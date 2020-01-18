@@ -63,7 +63,7 @@ namespace Wbooru.UI.Panels
 
                 if (containers == null)
                 {
-                    int col = (int)((double.IsNaN(Width) ? 0 : Width) / child.DesiredSize.Width);
+                    int col = Math.Max(0, (int)((double.IsNaN(Width) ? 0 : Width) / child.DesiredSize.Width));
 
                     containers = new ItemLinearContainerCalcStack[col];
 
