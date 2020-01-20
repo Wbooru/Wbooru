@@ -234,6 +234,9 @@ namespace Wbooru.Settings
         [Ignore]
         public Point? WindowLocation { get; set; } = null;
 
+        [Ignore]
+        public string RememberLastViewedGalleryName { get; set; } = string.Empty;
+
         #endregion
     }
 }

@@ -107,8 +107,11 @@ namespace Wbooru.UI.Pages
 
                 if (lock_gallery == null)
                 {
-                    GalleriesSelector.ItemsSource = galleries.ToList();
-                    GalleriesSelector.SelectedIndex = 0;
+                    var list = galleries.ToList();
+                    var i = list.IndexOf(list.FirstOrDefault(x => x.GalleryName == SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName));
+                    GalleriesSelector.ItemsSource = list;
+                    GalleriesSelector.SelectionChanged += GalleriesSelector_SelectionChanged;
+                    GalleriesSelector.SelectedIndex = Math.Max(i, 0);
 
                     if (galleries.Count() <= 1)
                         GalleriesSelector.Visibility = Visibility.Hidden;
@@ -161,6 +164,7 @@ namespace Wbooru.UI.Pages
             }
 
             CurrentGallery = gallery;
+            SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName = gallery.GalleryName;
 
             GridViewer.ClearGallery();
             GridViewer.Gallery = gallery;

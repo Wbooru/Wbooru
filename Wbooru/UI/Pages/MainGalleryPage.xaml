@@ -95,7 +95,6 @@
                         FontSize="16"
                         Foreground="White"
                         SelectedIndex="0"
-                        SelectionChanged="GalleriesSelector_SelectionChanged"
                         Template="{StaticResource NormalControlBoxTemplate}">
                     </ComboBox>
                     <Button
