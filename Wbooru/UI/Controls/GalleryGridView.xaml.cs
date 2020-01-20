@@ -108,6 +108,7 @@ namespace Wbooru.UI.Controls
             ListScrollViewer.ScrollToVerticalOffset(0);
 
             loadable_items = LoadableSourceFactory?.Invoke();
+            Log.Debug($"generate new loadable_items({loadable_items?.GetHashCode()})");
 
             TryRequestMoreItemFromLoadableSource();
         }
@@ -166,6 +167,8 @@ namespace Wbooru.UI.Controls
             IEnumerable<GalleryItem> source = loadable_items;
             var counter = new SkipCounterWrapper();
 
+            Log.Debug($"开始尝试获取列表({source.GetHashCode()})");
+
             (GalleryItem[] list, bool success) = await Task.Run(() =>
             {
                 try
@@ -180,20 +183,25 @@ namespace Wbooru.UI.Controls
                 }
             });
 
-            Log.Debug($"Skip({current_index}) Filter({counter.Count}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Length})", "GridViewer_RequestMoreItems");
+            Log.Debug($"尝试获取列表结束({source.GetHashCode()} - {loadable_items?.GetHashCode()})");
 
-            if (source != loadable_items)
-                return;
+            if (source == loadable_items)
+            {
+                Log.Debug($"Skip({current_index}) Filter({counter.Count}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Length})", "GridViewer_RequestMoreItems");
 
-            foreach (var item in list)
-                Items.Add(item);
+                foreach (var item in list)
+                    Items.Add(item);
 
-            if (success && list.Count() < option.GetPictureCountPerLoad)
-                Toast.ShowMessage("已到达图片队列末尾");
-            current_index += list.Length + counter.Count;
+                if (success && list.Count() < option.GetPictureCountPerLoad)
+                    Toast.ShowMessage("已到达图片队列末尾");
+                current_index += list.Length + counter.Count;
+            }
 
             OnRequestMoreItemFinished?.Invoke(this);
             is_requesting = false;
+
+            if (source != loadable_items && loadable_items != null)
+                TryRequestMoreItemFromLoadableSource();
         }
 
         public class SkipCounterWrapper

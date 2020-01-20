@@ -14,8 +14,13 @@ namespace Wbooru.Utils
 {
     public class AsyncImageWrapper : DependencyObject
     {
+#if DEBUG
+        string name;
+        string download_link;
+#endif
+
         public AsyncImageWrapper(string name,string dl) :this(async () =>
-        { 
+        {
             var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
             Image image;
@@ -31,6 +36,10 @@ namespace Wbooru.Utils
             return image.ConvertToBitmapImage();
         })
         {
+#if DEBUG
+            this.name = name;
+            download_link = dl;
+#endif
             //momo moe~
         }
 

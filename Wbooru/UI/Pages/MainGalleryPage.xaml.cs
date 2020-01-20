@@ -108,10 +108,11 @@ namespace Wbooru.UI.Pages
                 if (lock_gallery == null)
                 {
                     var list = galleries.ToList();
-                    var i = list.IndexOf(list.FirstOrDefault(x => x.GalleryName == SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName));
+                    var i = Math.Max(0, list.IndexOf(list.FirstOrDefault(x => x.GalleryName == SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName)));
                     GalleriesSelector.ItemsSource = list;
                     GalleriesSelector.SelectionChanged += GalleriesSelector_SelectionChanged;
-                    GalleriesSelector.SelectedIndex = Math.Max(i, 0);
+                    GalleriesSelector.SelectedIndex = i;
+                    ApplyGallery(list[i], Keywords);
 
                     if (galleries.Count() <= 1)
                         GalleriesSelector.Visibility = Visibility.Hidden;
@@ -174,6 +175,8 @@ namespace Wbooru.UI.Pages
                 await TryAutoLogin(gallery);
 
             UpdateAccountButtonText();
+
+            Log.Info($"Switch main page gallery:{gallery.GalleryName}");
         }
 
         private async Task TryAutoLogin(Gallery gallery)

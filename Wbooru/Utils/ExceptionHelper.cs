@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,13 @@ namespace Wbooru.Utils
         public static void DebugThrow(Exception e)
         {
 #if DEBUG
+            if (e.InnerException is WebException ne && ne.Status ==  (WebExceptionStatus)403 && ne.Response.ResponseUri.AbsoluteUri.Contains("api.github.com"))
+            {
+                //fuck github api limit 
+                Log.Error($"Can't access github api ({ne.Response.ResponseUri.AbsoluteUri}) because of api request limit.");
+                return;
+            }
+
             throw new AggregateException("DebugThrow", e);
 #endif
 
