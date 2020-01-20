@@ -1,18 +1,18 @@
 [submodule "Dependencies/LoadingIndicators.WPF"]
 	path = Dependencies/LoadingIndicators.WPF
-	url = https://github.com/MikiraSora/LoadingIndicators.WPF
+	url = https://github.com/Wbooru/LoadingIndicators.WPF
 [submodule "Plugins/WbooruPlugin.Saucenao"]
 	path = Plugins/WbooruPlugin.Saucenao
-	url = https://github.com/MikiraSora/WbooruPlugin.Saucenao
+	url = https://github.com/Wbooru/WbooruPlugin.Saucenao
 [submodule "Plugins/WbooruPlugin.Danbooru"]
 	path = Plugins/WbooruPlugin.Danbooru
-	url = https://github.com/MikiraSora/WbooruPlugin.Danbooru
+	url = https://github.com/Wbooru/WbooruPlugin.Danbooru
 [submodule "Plugins/WbooruPlugin.BossKey"]
 	path = Plugins/WbooruPlugin.BossKey
-	url = https://github.com/MikiraSora/WbooruPlugin.BossKey
+	url = https://github.com/Wbooru/WbooruPlugin.BossKey
 [submodule "Plugins/WbooruPlugin.CommonMoebooruGallery"]
 	path = Plugins/WbooruPlugin.CommonMoebooruGallery
-	url = https://github.com/MikiraSora/WbooruPlugin.CommonMoebooruGallery
+	url = https://github.com/Wbooru/WbooruPlugin.CommonMoebooruGallery
 [submodule "Plugins/WbooruPlugin.WindowsStyleCustomizerPluginInfo"]
 	path = Plugins/WbooruPlugin.WindowsStyleCustomizerPluginInfo
-	url = https://github.com/MikiraSora/WbooruPlugin.WindowsStyleCustomizerPluginInfo
+	url = https://github.com/Wbooru/WbooruPlugin.WindowsStyleCustomizer

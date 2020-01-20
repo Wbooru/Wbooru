@@ -228,28 +228,31 @@ namespace Wbooru.UI.Pages
 
             VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = true;
 
-            using (var transaction = DB.Database.BeginTransaction())
+            await Task.Run(async () =>
             {
-                var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
-                if (visit_entity == null)
+                using (var transaction = DB.Database.BeginTransaction())
                 {
-                    var visit = new VisitRecord()
+                    var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
+                    if (visit_entity == null)
                     {
-                        GalleryItem = item.ConvertToStorableModel(),
-                        LastVisitTime = DateTime.Now
-                    };
+                        var visit = new VisitRecord()
+                        {
+                            GalleryItem = item.ConvertToStorableModel(),
+                            LastVisitTime = DateTime.Now
+                        };
 
-                    DB.VisitRecords.Add(visit);
-                }
-                else
-                {
-                    visit_entity.LastVisitTime = DateTime.Now;
-                    DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
-                }
+                        DB.VisitRecords.Add(visit);
+                    }
+                    else
+                    {
+                        visit_entity.LastVisitTime = DateTime.Now;
+                        DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
+                    }
 
-                await DB.SaveChangesAsync();
-                transaction.Commit();
-            }
+                    await DB.SaveChangesAsync();
+                    transaction.Commit();
+                }
+            });
 
             var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
 
@@ -301,24 +304,37 @@ namespace Wbooru.UI.Pages
 
             MarkButton.IsBusy = true;
 
-            if (!IsMark)
+            var is_mark = IsMark;
+            var gallery = Gallery;
+            var info = PictureInfo;
+
+            await Task.Run(() =>
             {
-                DB.ItemMarks.Add(new GalleryItemMark()
+                using (var transaction = DB.Database.BeginTransaction())
                 {
-                    Item = PictureInfo.ConvertToStorableModel(),
-                    Time = DateTime.Now
-                });
+                    if (!is_mark)
+                    {
+                        DB.ItemMarks.Add(new GalleryItemMark()
+                        {
+                            Item = info.ConvertToStorableModel(),
+                            Time = DateTime.Now
+                        });
 
-                await DB.SaveChangesAsync();
-                IsMark = true;
-            }
-            else
-            {
-                var x = DB.ItemMarks.FirstOrDefault(x => x.Item.GalleryName == Gallery.GalleryName && x.Item.GalleryItemID == PictureInfo.GalleryItemID);
-                DB.ItemMarks.Remove(x);
-                IsMark = false;
-            }
+                        is_mark = true;
+                    }
+                    else
+                    {
+                        var x = DB.ItemMarks.FirstOrDefault(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == info.GalleryItemID);
+                        DB.ItemMarks.Remove(x);
+                        is_mark = false;
+                    }
 
+                    DB.SaveChanges();
+                    transaction.Commit();
+                }
+            });
+
+            IsMark = is_mark;
             MarkButton.IsBusy = false;
 
             Log<PictureDetailViewPage>.Debug($"Now IsMark={IsMark}");
