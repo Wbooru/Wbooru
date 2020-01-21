@@ -112,7 +112,9 @@ namespace Wbooru.UI.Pages
                     GalleriesSelector.ItemsSource = list;
                     GalleriesSelector.SelectionChanged += GalleriesSelector_SelectionChanged;
                     GalleriesSelector.SelectedIndex = i;
-                    ApplyGallery(list[i], Keywords);
+
+                    if (list.Count>i)
+                        ApplyGallery(list[i], Keywords);
 
                     if (galleries.Count() <= 1)
                         GalleriesSelector.Visibility = Visibility.Hidden;
