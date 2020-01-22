@@ -17,7 +17,6 @@
     <Page.Resources>
         <valueconverters:VisiableIfFeatureSupportConverter x:Key="VisiableIfFeatureSupportConverter">
         </valueconverters:VisiableIfFeatureSupportConverter>
-        <valueconverters:AutoPickImageConverter x:Key="AutoPickImageConverter" />
         <valueconverters:CustomBindableMarginConverter x:Key="CustomBindableMarginConverter" />
         <valueconverters:GalleryFeatureContainConverter x:Key="GalleryFeatureContainConverter" />
         <valueconverters:FormatDownloadDescriptionConverter x:Key="FormatDownloadDescriptionConverter" />

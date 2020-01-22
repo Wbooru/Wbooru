@@ -332,7 +332,6 @@
     <Compile Include="Utils\ObjectPool.cs" />
     <Compile Include="Utils\Resource\ImageResourceManager.cs" />
     <Compile Include="UI\ValueConverters\AutoFitHeightConverter.cs" />
-    <Compile Include="UI\ValueConverters\AutoPickImageConverter.cs" />
     <Compile Include="UI\ValueConverters\CustomBindableMarginConverter.cs" />
     <Compile Include="UI\ValueConverters\DefaultBorderHeightConverter.cs" />
     <Compile Include="UI\ValueConverters\FormatDownloadDescriptionConverter.cs" />
