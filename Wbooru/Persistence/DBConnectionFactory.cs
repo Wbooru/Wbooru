@@ -26,6 +26,11 @@ namespace Wbooru.Persistence
             PreApplyDBFileIfNotExist();
 
             var db_file_path = Path.GetFullPath(SettingManager.LoadSetting<GlobalSetting>().DBFilePath);
+
+#if DEBUG
+            db_file_path = File.Exists(db_file_path) ? db_file_path : @"F:\Wbooru\data.db";
+#endif
+
             Log.Info($"Use sqlite db , db file :{db_file_path}");
 
             return _cached_connection = new SQLiteConnection()

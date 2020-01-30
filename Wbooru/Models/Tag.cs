@@ -17,3 +17,4 @@ namespace Wbooru.Models
         public TagType Type { get; set; }
     }
 }
+    

@@ -23,6 +23,7 @@ namespace Wbooru.Models
         [Flags]
         public enum TagRecordType
         {
+            None = 0,//for tag type cache
             Filter = 2 << 1,
             Marked = 2 << 2,
             Subscribed = Marked | 2 << 3
