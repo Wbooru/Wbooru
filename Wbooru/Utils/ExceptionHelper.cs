@@ -22,18 +22,12 @@ namespace Wbooru.Utils
                 return;
             }
 
-            throw new AggregateException("DebugThrow", e);
+            throw new AggregateException($"DebugThrow :{e.Message}", e);
 #endif
 
 #pragma warning disable CS0162
             Log.Error("Caught a exception but program needn't exit:" + e.Message + Environment.NewLine + e.StackTrace);
 #pragma warning restore CS0162
-        }
-
-        public static void ToastNotice(Exception e)
-        {
-            DebugThrow(e);
-            Toast.ShowMessage(e.Message);
         }
     }
 }

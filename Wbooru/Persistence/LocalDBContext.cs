@@ -20,8 +20,10 @@ namespace Wbooru.Persistence
 
         public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
 
-        public LocalDBContext() : base(DBConnectionFactory.GetConnection(), true)
+        public LocalDBContext() : base(DBConnectionFactory.GetConnection(), false)
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<LocalDBContext, Migrations.Configuration>());
+
             Database.Log = msg => Log.Debug(msg, "DatabaseLog");
         }
 

@@ -6,6 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C707353F-3E50-49B7-A2E1-1DF669305470}</ProjectGuid>
+    <DisableFody Condition="'$(Configuration)' == 'Debug'">true</DisableFody>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Wbooru</RootNamespace>
     <AssemblyName>Wbooru</AssemblyName>
@@ -93,6 +94,9 @@
     <Reference Include="System.Data.SQLite.EF6, Version=1.0.110.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.EF6.1.0.110.0\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
     </Reference>
+    <Reference Include="System.Data.SQLite.EF6.Migrations, Version=1.0.106.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.Migrations.1.0.106\lib\System.Data.SQLite.EF6.Migrations.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.SQLite.Linq, Version=1.0.110.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.110.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
@@ -162,25 +166,9 @@
     <Compile Include="Kernel\SchedulerManager.cs" />
     <Compile Include="Kernel\TagManager.cs" />
     <Compile Include="Kernel\Updater\ReleaseType.cs" />
-    <Compile Include="Migrations\201911090504417_ModifyShadowModel.cs" />
-    <Compile Include="Migrations\201911090504417_ModifyShadowModel.Designer.cs">
-      <DependentUpon>201911090504417_ModifyShadowModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201911090600353_ModifyRef.cs" />
-    <Compile Include="Migrations\201911090600353_ModifyRef.Designer.cs">
-      <DependentUpon>201911090600353_ModifyRef.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201911090746080_ModifyItems.cs" />
-    <Compile Include="Migrations\201911090746080_ModifyItems.Designer.cs">
-      <DependentUpon>201911090746080_ModifyItems.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201911091423430_AddSize.cs" />
-    <Compile Include="Migrations\201911091423430_AddSize.Designer.cs">
-      <DependentUpon>201911091423430_AddSize.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201911101658207_ModifyTagRecord.cs" />
-    <Compile Include="Migrations\201911101658207_ModifyTagRecord.Designer.cs">
-      <DependentUpon>201911101658207_ModifyTagRecord.cs</DependentUpon>
+    <Compile Include="Migrations\202001301252010_Init.cs" />
+    <Compile Include="Migrations\202001301252010_Init.Designer.cs">
+      <DependentUpon>202001301252010_Init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Download.cs" />
@@ -469,20 +457,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Migrations\201911090504417_ModifyShadowModel.resx">
-      <DependentUpon>201911090504417_ModifyShadowModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201911090600353_ModifyRef.resx">
-      <DependentUpon>201911090600353_ModifyRef.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201911090746080_ModifyItems.resx">
-      <DependentUpon>201911090746080_ModifyItems.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201911091423430_AddSize.resx">
-      <DependentUpon>201911091423430_AddSize.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201911101658207_ModifyTagRecord.resx">
-      <DependentUpon>201911101658207_ModifyTagRecord.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202001301252010_Init.resx">
+      <DependentUpon>202001301252010_Init.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

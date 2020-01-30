@@ -7,13 +7,13 @@ namespace Wbooru.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.3.0-preview5-19254-05")]
-    public sealed partial class ModifyItems : IMigrationMetadata
+    public sealed partial class Init : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ModifyItems));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Init));
         
         string IMigrationMetadata.Id
         {
-            get { return "201911090746080_ModifyItems"; }
+            get { return "202001301252010_Init"; }
         }
         
         string IMigrationMetadata.Source
