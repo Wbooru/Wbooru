@@ -20,9 +20,9 @@ namespace Wbooru.Persistence
 
         public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
 
-        public LocalDBContext() : base(DBConnectionFactory.GetConnection(),true)
+        public LocalDBContext() : base(DBConnectionFactory.GetConnection(), true)
         {
-
+            Database.Log = msg => Log.Debug(msg, "DatabaseLog");
         }
 
         public DbSet<Download> Downloads { get; set; }

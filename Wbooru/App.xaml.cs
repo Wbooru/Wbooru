@@ -153,16 +153,20 @@ namespace Wbooru
             Log.Info("-----------------End Init()-----------------");
         }
 
+        static object fatal_locker = new object();
         private static void FatalAlert()
         {
-            //skip if it's in design mode
-            if (IsInDesignMode)
-                return;
+            lock (fatal_locker)
+            {
+                //skip if it's in design mode
+                if (IsInDesignMode)
+                    return;
 
-            Process.Start(Log.LogFilePath);
-            MessageBox.Show("Wbooru遇到了无法解决的错误，程序即将关闭。请查看日志文件.", "Wbooru", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Stop);
+                Process.Start(Log.LogFilePath);
+                MessageBox.Show("Wbooru遇到了无法解决的错误，程序即将关闭。请查看日志文件.", "Wbooru", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Stop);
 
-            Environment.Exit(0);
+                Environment.Exit(0);
+            }
         }
 
         private static void CheckPlugin()
