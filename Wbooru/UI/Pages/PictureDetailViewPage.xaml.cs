@@ -572,6 +572,12 @@ namespace Wbooru.UI.Pages
 
         private void MenuButton_Click_5(object sender, RoutedEventArgs e)
         {
+            if (MarkButton.IsBusy)
+            {
+                Toast.ShowMessage("请等图片收藏操作完成");
+                return;
+            }
+
             ApplyItem(Gallery, PictureInfo);
             ChangeDetailPicture(PictureDetailInfo);
         }
