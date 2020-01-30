@@ -19,6 +19,7 @@ using Wbooru.Kernel;
 using Wbooru.Galleries;
 using static Wbooru.UI.Pages.MainGalleryPage;
 using Wbooru.Galleries.SupportFeatures;
+using Wbooru.Utils;
 
 namespace Wbooru.UI.Controls
 {
@@ -320,7 +321,7 @@ namespace Wbooru.UI.Controls
                 Log.Info($"Use IGalleryItemIteratorFastSkipable.IteratorSkip() to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
                
                 //这里不会根据因刷新而开头会有不同的变化
-                var list = feature.IteratorSkip(page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad);
+                var list = feature.IteratorSkip(page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad).MakeMultiThreadable();
                 LoadableSourceFactory = new Func<IEnumerable<GalleryItem>>(() => list);
             }
         }
