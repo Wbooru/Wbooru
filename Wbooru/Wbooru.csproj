@@ -149,7 +149,7 @@
     <Compile Include="Galleries\SupportFeatures\IGalleryMark.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryNSFWFilter.cs" />
     <Compile Include="Galleries\SupportFeatures\IGallerySearchImage.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryTagDataPredownloadAndCache.cs" />
+    <Compile Include="Galleries\SupportFeatures\IGalleryTagMetaSearch.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryTagSearch.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryVote.cs" />
     <Compile Include="Kernel\Container.cs" />
@@ -171,7 +171,6 @@
       <DependentUpon>202001301252010_Init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\CachedTags.cs" />
     <Compile Include="Models\Download.cs" />
     <Compile Include="Models\DownloadTaskStatus.cs" />
     <Compile Include="Models\DownloadWrapper.cs" />

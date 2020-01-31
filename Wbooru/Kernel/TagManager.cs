@@ -4,8 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Galleries;
+using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Models;
 using Wbooru.Persistence;
+using Wbooru.Settings;
 using Wbooru.Utils;
 using static Wbooru.Models.TagRecord;
 
@@ -24,6 +27,9 @@ namespace Wbooru.Kernel
                 MarkedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Marked)));
                 FiltedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Filter)));
                 SubscribedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed)));
+
+                if (Setting<GlobalSetting>.Current.PredownloadAndCacheTagData)
+                    Task.Factory.StartNew(StartCacheTagMeta,TaskCreationOptions.LongRunning);
             }
             catch (Exception e)
             {
@@ -121,6 +127,62 @@ namespace Wbooru.Kernel
                     SubscribedTags.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
                 }
             }
+        }
+
+        private static void StartCacheTagMeta()
+        {
+            foreach (var searcher in Container.Default.GetExportedValues<Gallery>().OfType<IGalleryTagMetaSearch>())
+            {
+                var list = searcher.StartPreCacheTags().MakeMultiThreadable();
+                int taked = 0;
+                const int need = 20;
+
+                var tags = list.Skip(taked).Take(need).ToArray();
+
+                while (tags.Any())
+                {
+                    //process tags group
+                    ProcessTags(tags, searcher);
+
+                    taked += tags.Count();
+                    tags = list.Skip(taked).Take(need).ToArray();
+                    Log.Debug($"skiped({taked}) taked({need}) actual_taked{tags.Length}");
+                }
+            }
+        }
+
+        private static void ProcessTags(Tag[] tags, IGalleryTagMetaSearch searcher)
+        {
+            var ctx = LocalDBContext.Instance;
+            var gallery_name = (searcher as Gallery)?.GalleryName;
+            using var u = ctx.Database.BeginTransaction();
+
+            foreach (var tag in tags)
+            {
+                if (ctx.Tags.FirstOrDefault(x => x.Tag.Name == tag.Name && x.FromGallery == gallery_name) is TagRecord record)
+                {
+                    record.Tag.Type = tag.Type;
+                    Log.Debug($"Modify tag record ({record.TagID}){record.Tag.Name} type = {record.Tag.Type}");
+                }
+                else
+                {
+                    record = new TagRecord()
+                    {
+                        TagID = MathEx.Random(max: -1),
+                        Tag = tag,
+                        RecordType = TagRecordType.None,
+                        FromGallery = gallery_name,
+                        AddTime = DateTime.Now
+                    };
+                    ctx.Tags.Add(record);
+
+                    Log.Debug($"Add new tag record {record.Tag.Name} type = {record.Tag.Type}");
+                }
+
+                ctx.SaveChanges();
+            }
+
+            u.Commit();
         }
     }
 }

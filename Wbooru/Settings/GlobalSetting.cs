@@ -218,6 +218,11 @@ namespace Wbooru.Settings
         [Description("Sqlite数据库文件的路径")]
         public string DBFilePath { get; set; } = "data.db";
 
+        [Group("Advanced Option")]
+        [EnableBy(nameof(ShowAdvancedOptions), true)]
+        [Description("是否输出数据库日志到调试日志里")]
+        public bool EnableDatabaseLog { get; set; } = false;
+
         #endregion
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Wbooru.Galleries.SupportFeatures
         Mark = 2 << 2,
         Account = 2 << 3,
         TagSearch = 2 << 4,
-        TagDataPredownloadAndCache = 2 << 5,
+        TagMetaSearch = 2 << 5,
         ImageSearch = 2 << 6,
         ImageFastSkipable = 2 << 7,
         NSFWFilter = 2 << 8

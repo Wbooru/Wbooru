@@ -33,8 +33,8 @@ namespace Wbooru.Galleries
             if (this is IGalleryTagSearch)
                 support |= GallerySupportFeature.TagSearch;
 
-            if (this is IGalleryTagDataPredownloadAndCache)
-                support |= GallerySupportFeature.TagDataPredownloadAndCache;
+            if (this is IGalleryTagMetaSearch)
+                support |= GallerySupportFeature.TagMetaSearch;
 
             if (this is IGallerySearchImage)
                 support |= GallerySupportFeature.ImageSearch;

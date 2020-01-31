@@ -7,8 +7,9 @@ using Wbooru.Models;
 
 namespace Wbooru.Galleries.SupportFeatures
 {
-    public interface IGalleryTagDataPredownloadAndCache : IGalleryFeature
+    public interface IGalleryTagMetaSearch : IGalleryFeature
     {
-        IEnumerable<(Tag TagInfo,DateTime TagCreateTime)> EnumerateTagsOrderByNewer(DateTime from,int need_count);
+        public IEnumerable<Tag> StartPreCacheTags();
+        public IEnumerable<Tag> SearchTagMeta(params string[] tags);
     }
 }

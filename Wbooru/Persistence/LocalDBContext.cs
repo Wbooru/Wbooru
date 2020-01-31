@@ -24,7 +24,8 @@ namespace Wbooru.Persistence
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<LocalDBContext, Migrations.Configuration>());
 
-            Database.Log = msg => Log.Debug(msg, "DatabaseLog");
+            if (Setting<GlobalSetting>.Current.EnableDatabaseLog)
+                Database.Log = msg => Log.Debug(msg, "DatabaseLog");
         }
 
         public DbSet<Download> Downloads { get; set; }
