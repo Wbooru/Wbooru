@@ -38,7 +38,6 @@ namespace Wbooru.UI.Controls
         DoubleAnimation animation;
 
         public ObservableCollection<Tag> Suggests { get; set; } = new ObservableCollection<Tag>();
-        LocalDBContext localDB;
 
         public Gallery SearchTagGallery
         {
@@ -58,8 +57,6 @@ namespace Wbooru.UI.Controls
             ShowInputAction = Resources["ShowInputAction"] as Storyboard;
             HideInputAction = Resources["HideInputAction"] as Storyboard;
             animation = ShowInputAction.Children.OfType<DoubleAnimation>().First();
-
-            localDB = LocalDBContext.Instance;
         }
 
         public bool _mouse_enter = false;

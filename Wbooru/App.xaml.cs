@@ -123,6 +123,8 @@ namespace Wbooru
         {
             Log.Info("-----------------Begin Init()-----------------");
 
+#if !DEBUG
+
             AppDomain.CurrentDomain.UnhandledException += (e, d) =>
              {
                  Log.Error($"{(d.ExceptionObject as Exception).Message} {Environment.NewLine} {(d.ExceptionObject as Exception).StackTrace}", "UnhandledException");
@@ -135,7 +137,8 @@ namespace Wbooru
                     Log.Error($"{d?.Exception?.Message} {Environment.NewLine} {d?.Exception?.StackTrace}", "UnhandledException");
                     FatalAlert();
                 };
-
+            
+#endif
             Log.Info("Program version:" + ProgramUpdater.CurrentProgramVersion.ToString());
 
             Container.BuildDefault();

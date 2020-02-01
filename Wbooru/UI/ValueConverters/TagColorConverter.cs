@@ -25,10 +25,13 @@ namespace Wbooru.UI.ValueConverters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is TagType tag_type))
-                return cached_brush[TagType.Unknown];
+            var tag_type = (TagType)(int)value;
+            if (cached_brush.TryGetValue(tag_type, out var brush))
+                return brush;
 
-            return cached_brush[tag_type];
+            Log.Warn($"Unknown tag type ({tag_type})");
+
+            return cached_brush[tag_type] = cached_brush[TagType.Unknown];
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

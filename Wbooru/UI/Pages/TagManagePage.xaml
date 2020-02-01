@@ -5,10 +5,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Wbooru.UI.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:valueconverters="clr-namespace:Wbooru.UI.ValueConverters"
     Title="TagManagePage"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <valueconverters:TagColorConverter x:Key="TagColorConverter">
+        </valueconverters:TagColorConverter>
+    </Page.Resources>
 
     <Grid Name="MainContent" Background="{StaticResource ContentBackgroundColor}">
         <Grid.RowDefinitions>
@@ -121,6 +127,7 @@
                                     </CheckBox.Resources>
                                     <TextBlock
                                         FontSize="16"
+                                        Foreground="{Binding Tag.Type, Converter={StaticResource TagColorConverter}}"
                                         Text="{Binding Tag.Name}"
                                         TextTrimming="CharacterEllipsis"
                                         ToolTip="{Binding Tag.Name}">
@@ -194,6 +201,7 @@
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="16"
+                                    Foreground="{Binding Tag.Type, Converter={StaticResource TagColorConverter}}"
                                     Text="{Binding Tag.Name}">
                                 </TextBlock>
 
@@ -253,6 +261,7 @@
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="16"
+                                    Foreground="{Binding Tag.Type, Converter={StaticResource TagColorConverter}}"
                                     Text="{Binding Tag.Name}">
 
                                 </TextBlock>
