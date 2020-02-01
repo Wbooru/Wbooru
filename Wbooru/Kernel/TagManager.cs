@@ -206,7 +206,7 @@ namespace Wbooru.Kernel
                     {
                         try
                         {
-                            var rid = !string.IsNullOrWhiteSpace(id) ? searcher.SearchTagMetaById(id) : Enumerable.Empty<Tag>();
+                            var rid = !string.IsNullOrWhiteSpace(id) ? searcher.SearchTagMetaById(id).ToArray() : Enumerable.Empty<Tag>();
                             var sid = rid.Count() == tag_names.Length ? Enumerable.Empty<Tag>() : searcher.SearchTagMeta(tag_names.Except(rid.Select(x => x.Name)).ToArray());
 
                             return rid.Concat(sid).ToDictionary(x => x.Name, x => x);
@@ -245,13 +245,13 @@ namespace Wbooru.Kernel
 
             var tag_names = tags.Select(x => x.Name).ToArray();
 
-            var exist_record = from record in
+            var exist_record = (from record in
                              (from record in LocalDBContext.Instance.Tags
                               where tag_names.Contains(record.Tag.Name)
                               where record.Tag.Type != TagType.Unknown
                               select record)
                          where gallery_name == record.FromGallery
-                         select record;
+                         select record).ToArray();
 
             foreach (var r in exist_record)
             {
@@ -296,7 +296,7 @@ namespace Wbooru.Kernel
                          where strict_check || gallery_name == record.FromGallery
                          select record;
 
-            var r = result.ToDictionary(x => x.Tag.Name, x => x.Tag);
+            var r = result.ToArray().ToDictionary(x => x.Tag.Name, x => x.Tag);
             Log.Debug($"-- End search from database({r.Count}): {string.Join(" , ", r.Keys)}");
             return r;
         }
