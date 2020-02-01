@@ -93,7 +93,7 @@
                                 Background="Transparent"
                                 Click="Button_Click_1"
                                 Content="{Binding Name}"
-                                Foreground="{Binding Type, Converter={StaticResource TagColorConverter}}">
+                                Foreground="{Binding ., Mode=OneTime, Converter={StaticResource TagColorConverter}}">
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

@@ -165,6 +165,7 @@ namespace Wbooru.UI.Controls
         {
             ID = (++ID) % uint.MaxValue;
             NotifyID = ID;
+            StartTime = DateTime.Now;
         }
 
         public LoadingStatusDisplayer HostDisplayer { get; set; }
@@ -180,13 +181,14 @@ namespace Wbooru.UI.Controls
         }
 
         public uint NotifyID { get; private set; }
+        public DateTime StartTime { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void Dispose()
         {
             HostDisplayer.TaskFinishNotify(this);
-            Log<LoadingTaskNotify>.Info($"Finish loading task:{Description}");
+            Log<LoadingTaskNotify>.Info($"Finish loading task({(DateTime.Now - StartTime).TotalMilliseconds} ms):{Description}");
         }
     }
 }

@@ -15,6 +15,8 @@ namespace Wbooru.Models
     {
         public string Name { get; set; }
         public TagType Type { get; set; }
+
+        public override string ToString() => $"{Name} :({Type})";
     }
 }
     

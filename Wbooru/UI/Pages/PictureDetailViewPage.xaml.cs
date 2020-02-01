@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Drawing;
@@ -90,6 +91,8 @@ namespace Wbooru.UI.Pages
         public LocalDBContext DB { get; }
 
         public DownloadableImageLink CurrentDisplayImageLink { get; private set; }
+
+        public ObservableCollection<Tag> Tags { get; set; } = new ObservableCollection<Tag>();
 
         static PictureDetailViewPage()
         {
@@ -273,6 +276,26 @@ namespace Wbooru.UI.Pages
                 Log.Error(e.Message);
             }
 
+            Tags.Clear();
+
+            try
+            {
+                using var d = LoadingStatus.BeginBusy("正在获取标签信息");
+
+                var dir = await Task.Run(() =>
+                {
+                    var tags = detail.Tags.ToArray();
+                    return TagManager.SearchTagMeta(gallery, item.GalleryItemID, tags);
+                });
+                
+                foreach (var tag in detail.Tags.Select(x => dir.TryGetValue(x, out var t) ? t : new Models.Tag() { Name = x, Type = TagType.Unknown }))
+                    Tags.Add(tag);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
+            }
+
             IsMark = is_mark;
             IsVoted = is_vote ?? false;
             VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = false;
@@ -417,42 +440,42 @@ namespace Wbooru.UI.Pages
 
         private void AddTagCollectionButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!((sender as FrameworkElement).DataContext is string tag_name))
+            if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            if (TagManager.Contain(tag_name, TagRecordType.Marked))
+            if (TagManager.Contain(tag.Name,Gallery.GalleryName, TagRecordType.Marked))
             {
                 Toast.ShowMessage($"已收藏此标签了");
                 return;
             }
 
-            TagManager.AddTag(tag_name, Gallery.GalleryName, TagType.Unknown, TagRecordType.Marked);
+            TagManager.AddTag(tag, Gallery.GalleryName, TagRecordType.Marked);
 
             Toast.ShowMessage($"添加成功");
         }
 
         private void AddTagFilterButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!((sender as FrameworkElement).DataContext is string tag_name))
+            if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            if (TagManager.Contain(tag_name, TagRecordType.Filter))
+            if (TagManager.Contain(tag.Name, Gallery.GalleryName, TagRecordType.Filter))
             {
                 Toast.ShowMessage($"已过滤此标签了");
                 return;
             }
 
-            TagManager.AddTag(tag_name, Gallery.GalleryName, TagType.Unknown, TagRecordType.Filter);
+            TagManager.AddTag(tag, Gallery.GalleryName, TagRecordType.Filter);
 
             Toast.ShowMessage($"过滤标签添加成功");
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!((sender as FrameworkElement).DataContext is string tag_name))
+            if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            NavigationHelper.NavigationPush(new MainGalleryPage(new[] { tag_name },Gallery));
+            NavigationHelper.NavigationPush(new MainGalleryPage(new[] { tag.Name },Gallery));
         }
 
         enum LayoutState

@@ -9,7 +9,8 @@ namespace Wbooru.Galleries.SupportFeatures
 {
     public interface IGalleryTagMetaSearch : IGalleryFeature
     {
-        public IEnumerable<Tag> StartPreCacheTags();
-        public IEnumerable<Tag> SearchTagMeta(params string[] tags);
+        IEnumerable<Tag> StartPreCacheTags();
+        IEnumerable<Tag> SearchTagMetaById(string id);
+        IEnumerable<Tag> SearchTagMeta(params string[] tags);
     }
 }

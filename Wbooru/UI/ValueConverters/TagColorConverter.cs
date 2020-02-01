@@ -25,7 +25,7 @@ namespace Wbooru.UI.ValueConverters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var tag_type = (TagType)(int)value;
+            var tag_type = ((Tag)value).Type;
             if (cached_brush.TryGetValue(tag_type, out var brush))
                 return brush;
 

@@ -137,7 +137,7 @@
                             </CheckBox.Resources>
                             <TextBlock
                                 FontSize="16"
-                                Foreground="{Binding Tag.Type, Converter={StaticResource TagColorConverter}}"
+                                Foreground="{Binding Tag, Converter={StaticResource TagColorConverter}}"
                                 Text="{Binding Tag.Name}"
                                 TextTrimming="CharacterEllipsis"
                                 ToolTip="{Binding Tag.Name}">

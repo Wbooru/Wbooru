@@ -18,6 +18,7 @@
         <valueconverters:VisiableIfFeatureSupportConverter x:Key="VisiableIfFeatureSupportConverter">
         </valueconverters:VisiableIfFeatureSupportConverter>
         <valueconverters:CustomBindableMarginConverter x:Key="CustomBindableMarginConverter" />
+        <valueconverters:TagColorConverter x:Key="TagColorConverter" />
         <valueconverters:GalleryFeatureContainConverter x:Key="GalleryFeatureContainConverter" />
         <valueconverters:FormatDownloadDescriptionConverter x:Key="FormatDownloadDescriptionConverter" />
     </Page.Resources>
@@ -353,10 +354,7 @@
                 </controls:MenuButton>
             </StackPanel>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
-                <ItemsControl
-                    HorizontalContentAlignment="Stretch"
-                    DataContext="{Binding PictureDetailInfo}"
-                    ItemsSource="{Binding Tags}">
+                <ItemsControl HorizontalContentAlignment="Stretch" ItemsSource="{Binding Tags}">
                     <ItemsControl.Template>
                         <ControlTemplate>
                             <ItemsPresenter />
@@ -392,8 +390,8 @@
                                 <TextBlock
                                     Margin="10,0,0,0"
                                     FontSize="18"
-                                    Foreground="White"
-                                    Text="{Binding}" />
+                                    Foreground="{Binding ., Converter={StaticResource TagColorConverter}}"
+                                    Text="{Binding Name}" />
                             </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

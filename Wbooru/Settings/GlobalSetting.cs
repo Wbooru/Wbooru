@@ -34,7 +34,7 @@ namespace Wbooru.Settings
         #region Tags Options
 
         [Group("Tags Options")]
-        [Description("是否预先下载且缓存标签数据集,此操作将会占用大量空间和网络带宽")]
+        [Description("是否缓存标签数据集,此操作将会占用大量空间和网络带宽")]
         public bool PredownloadAndCacheTagData { get; set; } = false;
 
 
@@ -42,6 +42,10 @@ namespace Wbooru.Settings
         [Description("搜索图片标签时，标签建议最大数量,0代表不限制")]
         [Range(0,1000)]
         public int MaxSearchSuggestsCount { get; set; } = 100;
+
+        [Group("Tags Options")]
+        [Description("是否严格搜索标签元数据")]
+        public bool SearchTagMetaStrict { get; set; } = false;
 
         #endregion
 
@@ -216,10 +220,12 @@ namespace Wbooru.Settings
         [Group("Advanced Option")]
         [EnableBy(nameof(ShowAdvancedOptions), true)]
         [Description("Sqlite数据库文件的路径")]
+        [NeedRestart]
         public string DBFilePath { get; set; } = "data.db";
 
         [Group("Advanced Option")]
         [EnableBy(nameof(ShowAdvancedOptions), true)]
+        [NeedRestart]
         [Description("是否输出数据库日志到调试日志里")]
         public bool EnableDatabaseLog { get; set; } = false;
 

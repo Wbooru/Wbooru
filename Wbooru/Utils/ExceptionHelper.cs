@@ -15,7 +15,7 @@ namespace Wbooru.Utils
         public static void DebugThrow(Exception e)
         {
 #if DEBUG
-            if (e.InnerException is WebException ne && ne.Status ==  (WebExceptionStatus)403 && ne.Response.ResponseUri.AbsoluteUri.Contains("api.github.com"))
+            if (e.InnerException is WebException ne && (ne.Status == (WebExceptionStatus)403|| ne.Status == WebExceptionStatus.ProtocolError) && ne.Response.ResponseUri.AbsoluteUri.Contains("api.github.com"))
             {
                 //fuck github api limit 
                 Log.Error($"Can't access github api ({ne.Response.ResponseUri.AbsoluteUri}) because of api request limit.");
