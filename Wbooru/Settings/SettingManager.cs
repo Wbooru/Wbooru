@@ -21,7 +21,9 @@ namespace Wbooru.Settings
 
         private static object save_file_locker = new object();
 
-        private static SettingFileEntity entity = new SettingFileEntity();
+        private static SettingFileEntity setting_object_cache = new SettingFileEntity();
+
+        private static JToken SettingObject => load_object["Settings"];
 
         private static JObject load_object;
 
@@ -34,12 +36,12 @@ namespace Wbooru.Settings
 
             var name = setting_type.Name;
 
-            if (!entity.Settings.TryGetValue(name, out var setting))
+            if (!setting_object_cache.Settings.TryGetValue(name, out var setting))
             {
                 //if load_object contain type we need.
                 try
                 {
-                    setting = load_object[name]?.ToObject(setting_type) as SettingBase;
+                    setting = SettingObject[name]?.ToObject(setting_type) as SettingBase;
                     Log.Info($"{name} created from cached config file content.");
                 }
                 catch { }
@@ -61,7 +63,7 @@ namespace Wbooru.Settings
                     ExceptionHelper.DebugThrow(e);
                 }
 
-                entity.Settings[name] = setting;
+                setting_object_cache.Settings[name] = setting;
             }
 
             return setting;
@@ -93,15 +95,15 @@ namespace Wbooru.Settings
                     {
                         using var reader = File.OpenText(config_path);
 
-                        load_object = (JObject)(((JObject)JsonConvert.DeserializeObject(reader.ReadToEnd()))["Settings"]) ?? new JObject();
+                        load_object = JsonConvert.DeserializeObject(reader.ReadToEnd()) as JObject ?? new JObject();
 
                         Log.Info($"Loaded config file from {config_path}");
                     }
                     catch (Exception e)
                     {
                         Directory.CreateDirectory(BACKUP_CONFIG_FILES_PATH);
-                        var backup_file_path = Path.Combine(BACKUP_CONFIG_FILES_PATH, $"{Path.GetFileNameWithoutExtension(config_path)}.{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}.backup.json");
-                        Log.Error($"loading settings failed:{e},backup current setting file for protecting.");
+                        var backup_file_path = Path.Combine(BACKUP_CONFIG_FILES_PATH, $"{Path.GetFileNameWithoutExtension(config_path)}.{FileNameHelper.FilterFileName(DateTime.Now.ToString("yyyy_MM_dd HH_mm_ss_fff"))}.backup.json");
+                        Log.Error($"loading settings failed:{e},backup current setting file for protecting.copy file from {config_path} to {backup_file_path}");
                         File.Copy(config_path, backup_file_path, true);
 
                         throw e;
@@ -121,15 +123,29 @@ namespace Wbooru.Settings
             {
                 try
                 {
-                    foreach (var item in entity.Settings.Values)
+                    foreach (var pair in setting_object_cache.Settings)
                     {
+                        var item = pair.Value;
+                        var name = pair.Key;
+
                         try
                         {
                             item.OnBeforeSave();
                         }
                         catch (Exception e)
                         {
-                            Log.Error($"Call {item.GetType().Name}.OnBeforeSave() failed :{e.Message}");
+                            Log.Error($"Call {name}.OnBeforeSave() failed :{e.Message}");
+                            ExceptionHelper.DebugThrow(e);
+                        }
+                        
+                        //apply updated cache setting object into entity file object.
+                        try
+                        {
+                            SettingObject[name] = JObject.FromObject(item);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($"Replace {name} failed :{e.Message}");
                             ExceptionHelper.DebugThrow(e);
                         }
                     }
@@ -148,7 +164,7 @@ namespace Wbooru.Settings
         private static void SaveSettingFileInternal()
         {
             using var writer = new StreamWriter(File.Open(CONFIG_FILE_PATH, FileMode.Create));
-            var str = JsonConvert.SerializeObject(entity, Formatting.Indented);
+            var str = JsonConvert.SerializeObject(load_object, Formatting.Indented);
             writer.Write(str);
         }
 
@@ -159,7 +175,7 @@ namespace Wbooru.Settings
             try
             {
                 var setting = setting_type.Assembly.CreateInstance(setting_type.FullName) as SettingBase;
-                entity.Settings[name] = setting;
+                setting_object_cache.Settings[name] = setting;
 
                 Log.Info($"Reset(reflect-create) config {name} object successfully.");
             }

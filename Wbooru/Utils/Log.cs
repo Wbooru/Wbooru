@@ -90,8 +90,8 @@ namespace Wbooru
         {
             var s = file_writer;
             file_writer = null;
-            s.Flush();
-            s.Close();
+            s?.Flush();
+            s?.Close();
         }
 
         public static string BuildLogMessage(string message, string type, bool new_line, bool time, string prefix)
