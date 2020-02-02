@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using Wbooru.Kernel;
 using Wbooru.Persistence;
 using Wbooru.Settings;
+using Wbooru.UI.Dialogs;
 using Wbooru.Utils;
 
 namespace Wbooru.UI.Controls
@@ -193,6 +194,16 @@ namespace Wbooru.UI.Controls
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             OpenWithPath(System.IO.Path.GetFullPath("Plugins"));
+        }
+
+        private async void PredownloadTagMetaButtonClick(object sender, RoutedEventArgs e)
+        {
+            var result = await Dialog.ShowComfirmDialog((sender as System.Windows.Controls.Button).ToolTip?.ToString(), "是否下载标签元数据?");
+
+            if (!result)
+                return;
+
+            await Dialog.ShowDialog<TagMetaPredownloadProgressDisplayer>();
         }
     }
 }

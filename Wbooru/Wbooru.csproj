@@ -152,6 +152,7 @@
     <Compile Include="Galleries\SupportFeatures\IGalleryTagMetaSearch.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryTagSearch.cs" />
     <Compile Include="Galleries\SupportFeatures\IGalleryVote.cs" />
+    <Compile Include="Kernel\CacheTagMetaProgressStatus.cs" />
     <Compile Include="Kernel\Container.cs" />
     <Compile Include="Kernel\DownloadManager.cs" />
     <Compile Include="Kernel\INavigatableAction.cs" />
@@ -266,6 +267,9 @@
     </Compile>
     <Compile Include="UI\Dialogs\SettingRestartComfirmDialog.xaml.cs">
       <DependentUpon>SettingRestartComfirmDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Dialogs\TagMetaPredownloadProgressDisplayer.xaml.cs">
+      <DependentUpon>TagMetaPredownloadProgressDisplayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -383,6 +387,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialogs\SettingRestartComfirmDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\TagMetaPredownloadProgressDisplayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

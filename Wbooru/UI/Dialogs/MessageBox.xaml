@@ -52,6 +52,18 @@
                 IsDefault="True">
                 否
             </Button>
+            <Button
+                Name="ConfirmButton"
+                Grid.ColumnSpan="2"
+                Margin="5"
+                Padding="10,7,10,7"
+                BorderBrush="White"
+                Click="NoButton_Click"
+                FontSize="16"
+                IsDefault="False"
+                Visibility="Hidden">
+                关闭
+            </Button>
         </Grid>
     </Grid>
 </local:DialogContentBase>

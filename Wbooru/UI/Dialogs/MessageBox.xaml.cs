@@ -22,6 +22,14 @@ namespace Wbooru.UI.Dialogs
     {
         public bool Result { get; set; }
 
+        public bool ComfirmMessage { get; set; }
+
+        public MessageBox(string title, string content) : this(title, content,"","")
+        {
+            YesButton.Visibility = NoButton.Visibility = Visibility.Hidden;
+            ConfirmButton.Visibility = Visibility.Visible;
+        }
+
         public MessageBox(string title,string content,string yes,string no)
         {
             InitializeComponent();
@@ -40,7 +48,7 @@ namespace Wbooru.UI.Dialogs
 
         private void NoButton_Click(object sender, RoutedEventArgs e)
         {
-            Result = true;
+            Result = false;
             Dialog.CloseDialog(this);
         }
     }

@@ -48,6 +48,14 @@
 
         <Button Click="BackupDatabase" IsEnabled="{Binding ElementName=StatusDisplayer, Path=IsBusy, Converter={x:Static cv:SimpleExpressionConverters.ReverseBooleanConverter}}">备份数据库</Button>
 
+        <Button
+            Margin="0,20,0,0"
+            Click="PredownloadTagMetaButtonClick"
+            IsEnabled="{Binding ElementName=StatusDisplayer, Path=IsBusy, Converter={x:Static cv:SimpleExpressionConverters.ReverseBooleanConverter}}"
+            ToolTip="一次性地将一些画廊的标签元数据全部下载并缓存，能在一些页面或者控件上将标签名染色，方便识别标签类型。">
+            预缓存标签元数据
+        </Button>
+
         <GroupBox Margin="0,20,0,0">
             <GroupBox.Header>
                 <TextBlock FontSize="16" Foreground="OrangeRed">危险操作</TextBlock>

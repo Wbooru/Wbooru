@@ -1,0 +1,60 @@
+﻿<local:DialogContentBase
+    x:Class="Wbooru.UI.Dialogs.TagMetaPredownloadProgressDisplayer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Wbooru.UI.Dialogs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="400"
+    Height="200"
+    AllowImplictClose="False"
+    DialogTitle="标签元数据预下载进度"
+    mc:Ignorable="d">
+
+    <local:DialogContentBase.DataContext>
+        <Binding RelativeSource="{RelativeSource Self}">
+        </Binding>
+    </local:DialogContentBase.DataContext>
+
+    <Grid Background="{StaticResource ContentBackgroundColor}">
+        <StackPanel>
+            <Label
+                Margin="10,10,10,0"
+                Content="{Binding Status.CurrentSearchingName}"
+                ContentStringFormat="当前抓取 {0} 的标签数据"
+                FontSize="16"
+                Foreground="White">
+
+            </Label>
+            <ProgressBar
+                Height="30"
+                Margin="10,5,10,10"
+                Maximum="{Binding Status.SearchCount}"
+                Value="{Binding Status.FinishedCount}">
+            </ProgressBar>
+
+            <Label
+                Margin="10,0,10,0"
+                Content="{Binding Status.AddedCount}"
+                ContentStringFormat="已完成: {0} 个"
+                FontSize="16"
+                Foreground="White">
+            </Label>
+            <Label
+                Margin="10,0,10,0"
+                Content="{Binding Speed}"
+                ContentStringFormat="处理速度: {0} 个/分"
+                FontSize="16"
+                Foreground="White">
+            </Label>
+        </StackPanel>
+        <Button
+            Margin="10"
+            Padding="20,10,20,10"
+            VerticalAlignment="Bottom"
+            BorderBrush="White"
+            Click="Button_Click">
+            保存进度并退出
+        </Button>
+    </Grid>
+</local:DialogContentBase>

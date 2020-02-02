@@ -8,14 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Wbooru.Utils;
 
 namespace Wbooru.Settings
 {
     public static class SettingManager
-    {
+    { 
+        const string BACKUP_CONFIG_FILES_PATH = "./setting_backup";
         const string CONFIG_FILE_PATH = "./setting.json";
 
         private static bool load = false;
+
+        private static object save_file_locker = new object();
 
         private static SettingFileEntity entity = new SettingFileEntity();
 
@@ -43,7 +47,18 @@ namespace Wbooru.Settings
                 if (setting == null)
                 {
                     setting = setting_type.Assembly.CreateInstance(setting_type.FullName) as SettingBase;
+
                     Log.Info($"{name} setting object not found , created default.");
+                }
+
+                try
+                {
+                    setting.OnAfterLoad();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Call {setting.GetType().Name}.OnAfterLoad() failed :{e.Message}");
+                    ExceptionHelper.DebugThrow(e);
                 }
 
                 entity.Settings[name] = setting;
@@ -63,38 +78,78 @@ namespace Wbooru.Settings
             {
                 load = true;
 
-                Log.Info($"Load config file from {Path.GetFullPath(CONFIG_FILE_PATH)}");
+                var config_path = Path.GetFullPath(CONFIG_FILE_PATH);
 
-                using var reader = File.OpenText(CONFIG_FILE_PATH);
+                if (!File.Exists(config_path))
+                {
+                    SaveSettingFileInternal();//create new deafult file
+                    Log.Info($"Created new deafult config file to {config_path}");
 
-                load_object = (JObject)(((JObject)JsonConvert.DeserializeObject(reader.ReadToEnd()))["Settings"]) ?? new JObject();
+                    load_object = new JObject();
+                }
+                else
+                {
+                    try
+                    {
+                        using var reader = File.OpenText(config_path);
 
-                foreach (var item in entity.Settings.Values)
-                    item.OnAfterLoad();
+                        load_object = (JObject)(((JObject)JsonConvert.DeserializeObject(reader.ReadToEnd()))["Settings"]) ?? new JObject();
+
+                        Log.Info($"Loaded config file from {config_path}");
+                    }
+                    catch (Exception e)
+                    {
+                        Directory.CreateDirectory(BACKUP_CONFIG_FILES_PATH);
+                        var backup_file_path = Path.Combine(BACKUP_CONFIG_FILES_PATH, $"{Path.GetFileNameWithoutExtension(config_path)}.{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}.backup.json");
+                        Log.Error($"loading settings failed:{e},backup current setting file for protecting.");
+                        File.Copy(config_path, backup_file_path, true);
+
+                        throw e;
+                    }
+                }
             }
             catch (Exception e)
             {
-                Log.Error($"load settings failed:{e}");
+                ExceptionHelper.DebugThrow(e);
                 load_object = new JObject();
             }
         }
 
         internal static void SaveSettingFile()
         {
-            try
+            lock (save_file_locker)
             {
-                foreach (var item in entity.Settings.Values)
-                    item.OnBeforeSave();
+                try
+                {
+                    foreach (var item in entity.Settings.Values)
+                    {
+                        try
+                        {
+                            item.OnBeforeSave();
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($"Call {item.GetType().Name}.OnBeforeSave() failed :{e.Message}");
+                            ExceptionHelper.DebugThrow(e);
+                        }
+                    }
 
-                using var writer = new StreamWriter(File.Open(CONFIG_FILE_PATH,FileMode.Create));
+                    SaveSettingFileInternal();
 
-                var str = JsonConvert.SerializeObject(entity, Formatting.Indented);
-                writer.Write(str);
-
-            }catch(Exception e)
-            {
-                Log.Error($"save settings failed:{e}");
+                    Log.Info($"Saved config content to file:{Path.GetFullPath(CONFIG_FILE_PATH)}");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"save settings failed:{e}");
+                }
             }
+        }
+
+        private static void SaveSettingFileInternal()
+        {
+            using var writer = new StreamWriter(File.Open(CONFIG_FILE_PATH, FileMode.Create));
+            var str = JsonConvert.SerializeObject(entity, Formatting.Indented);
+            writer.Write(str);
         }
 
         public static void ResetSetting(Type setting_type)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Wbooru.Galleries;
 using Wbooru.Galleries.SupportFeatures;
@@ -27,9 +28,6 @@ namespace Wbooru.Kernel
                 MarkedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Marked)));
                 FiltedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Filter)));
                 SubscribedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed)));
-
-                if (Setting<GlobalSetting>.Current.PredownloadAndCacheTagData)
-                    Task.Factory.StartNew(StartCacheTagMeta,TaskCreationOptions.LongRunning);
             }
             catch (Exception e)
             {
@@ -136,26 +134,44 @@ namespace Wbooru.Kernel
             LocalDBContext.Instance.SaveChanges();
         }
 
-        private static void StartCacheTagMeta()
+        public static CacheTagMetaProgressStatus StartCacheTagMeta()
         {
-            foreach (var searcher in Container.Default.GetExportedValues<Gallery>().OfType<IGalleryTagMetaSearch>())
+            CacheTagMetaProgressStatus status = new CacheTagMetaProgressStatus();
+
+            status.Task = Task.Run(() =>
             {
-                var list = searcher.StartPreCacheTags().MakeMultiThreadable();
-                int taked = 0;
-                const int need = 20;
+                var search_list = Container.Default.GetExportedValues<Gallery>().OfType<IGalleryTagMetaSearch>().ToArray();
+                status.SearchCount = search_list.Length + 1;
 
-                var tags = list.Skip(taked).Take(need).ToArray();
-
-                while (tags.Any())
+                foreach (var searcher in search_list)
                 {
-                    //process tags group
-                    ProcessTags(tags, searcher);
+                    status.CurrentSearchingName = (searcher as Gallery)?.GalleryName;
 
-                    taked += tags.Count();
-                    tags = list.Skip(taked).Take(need).ToArray();
-                    Log.Debug($"skiped({taked}) taked({need}) actual_taked{tags.Length}");
+                    var list = searcher.StartPreCacheTags().MakeMultiThreadable();
+                    int taked = 0;
+                    const int need = 20;
+
+                    var tags = list.Skip(taked).Take(need).ToArray();
+
+                    while (tags.Any())
+                    {
+                        if (status.RequestCancel)
+                            return;
+
+                        //process tags group
+                        ProcessTags(tags, searcher);
+
+                        taked += tags.Count();
+                        status.AddedCount = taked;
+                        tags = list.Skip(taked).Take(need).ToArray();
+                        Log.Debug($"skiped({taked}) taked({need}) actual_taked{tags.Length}");
+                    }
+
+                    status.FinishedCount++;
                 }
-            }
+            });
+
+            return status;
         }
 
         private static void ProcessTags(Tag[] tags, IGalleryTagMetaSearch searcher)

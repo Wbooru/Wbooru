@@ -119,10 +119,15 @@ namespace Wbooru.UI.Dialogs
 
         public static Task ShowDialog<T>() where T : DialogContentBase, new() => ShowDialog(new T());
 
-        public static async Task<bool> ShowDialog(string message, string title = null, string yes = "是", string no = "否")
+        public static Task ShowDialog(string message, string title = null)
+        {
+            return ShowDialog(new MessageBox(title, message));
+        }
+
+        public static async Task<bool> ShowComfirmDialog(string message, string title = null, string yes = "是", string no = "否")
         {
             var b = new MessageBox(title, message, yes, no);
-            await Dialog.ShowDialog(b);
+            await ShowDialog(b);
             return b.Result;
         }
 
@@ -138,6 +143,8 @@ namespace Wbooru.UI.Dialogs
 
             if (DialogLayer.Children.Count == 0)
                 EndDialogEffect();
+
+            await_tokens.Remove(dialog);
         }
 
         public static void CloseDialog(DialogContentBase content)
