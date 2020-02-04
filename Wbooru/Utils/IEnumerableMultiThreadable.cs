@@ -9,14 +9,17 @@ namespace Wbooru.Utils
 {
     public static class IEnumerableMultiThreadableExtention
     {
-        public static IEnumerable<T> MakeMultiThreadable<T>(this IEnumerable<T> source)
+        public static CacheEnumerator<T> MakeMultiThreadable<T>(this IEnumerable<T> source)
         {
             return new CacheEnumerator<T>(source);
         }
 
-        private class CacheEnumerator<T> : IEnumerable<T>
+        public class CacheEnumerator<T> : IEnumerable<T>
         {
             private CacheEntry<T> cacheEntry;
+
+            public bool FullyPopulated => cacheEntry.FullyPopulated;
+
             public CacheEnumerator(IEnumerable<T> sequence)
             {
                 cacheEntry = new CacheEntry<T>();
