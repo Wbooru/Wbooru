@@ -16,8 +16,6 @@ namespace Wbooru.Persistence
     {
         private static DbConnection _cached_connection;
 
-        public static bool UsingSqlite => true;
-
         public static DbConnection GetConnection()
         {
             if (_cached_connection != null)
@@ -41,11 +39,6 @@ namespace Wbooru.Persistence
                     ForeignKeys = true
                 }.ConnectionString
             };
-
-            /*
-            Log.Info($"Use localdb");
-            return _cached_connection = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-            */
         }
 
         private static void PreApplyDBFileIfNotExist()

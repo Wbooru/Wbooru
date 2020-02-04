@@ -36,12 +36,6 @@ namespace Wbooru.Persistence
 
         internal static void BackupDatabase(string to)
         {
-            if (!DBConnectionFactory.UsingSqlite)
-            {
-                Log.Info("Support sqlite only.");
-                return;
-            }
-
             var from = SettingManager.LoadSetting<GlobalSetting>().DBFilePath;
             Log.Info($"Copy sqlite db file from {from} to {to}");
 
@@ -50,12 +44,6 @@ namespace Wbooru.Persistence
 
         internal static void RestoreDatabase(string from, string to)
         {
-            if (!DBConnectionFactory.UsingSqlite)
-            {
-                Log.Info("Support sqlite only.");
-                return;
-            }
-
             Log.Info($"Copy sqlite db file from {from} to {to}");
 
             File.Copy(from, to, true);
