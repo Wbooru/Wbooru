@@ -93,93 +93,97 @@
             </Button>
         </StackPanel>
 
-        <ItemsControl
-            Name="TagViewList"
+        <ScrollViewer
             Grid.Row="1"
-            Background="Transparent"
-            BorderBrush="Transparent"
-            ItemsSource="{Binding TagsList}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <!--  硬编码，秋后算账  -->
-                    <Grid Width="160">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*">
-                            </ColumnDefinition>
-                            <ColumnDefinition Width="{Binding ElementName=DeleteTagButton, Path=ActualHeight}">
-                            </ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <CheckBox
-                            Name="SelectCheckBox"
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Center"
-                            Background="Transparent">
-                            <CheckBox.Style>
-                                <Style TargetType="CheckBox">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RecordType}" Value="Marked">
-                                            <Setter Property="Visibility" Value="Visible">
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RecordType}" Value="Filter">
-                                            <Setter Property="Visibility" Value="Hidden">
-                                            </Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </CheckBox.Style>
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Hidden">
+            <ItemsControl
+                Name="TagViewList"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ItemsSource="{Binding TagsList}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <!--  硬编码，秋后算账  -->
+                        <Grid Width="160">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*">
+                                </ColumnDefinition>
+                                <ColumnDefinition Width="{Binding ElementName=DeleteTagButton, Path=ActualHeight}">
+                                </ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox
+                                Name="SelectCheckBox"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Center"
+                                Background="Transparent">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RecordType}" Value="Marked">
+                                                <Setter Property="Visibility" Value="Visible">
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding RecordType}" Value="Filter">
+                                                <Setter Property="Visibility" Value="Hidden">
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
 
-                            <CheckBox.Resources>
-                                <Style TargetType="Path">
-                                    <Setter Property="Stroke" Value="White">
-                                    </Setter>
-                                </Style>
-                            </CheckBox.Resources>
+                                <CheckBox.Resources>
+                                    <Style TargetType="Path">
+                                        <Setter Property="Stroke" Value="White">
+                                        </Setter>
+                                    </Style>
+                                </CheckBox.Resources>
+                                <TextBlock
+                                    FontSize="16"
+                                    Foreground="{Binding Tag, Converter={StaticResource TagColorConverter}}"
+                                    Text="{Binding Tag.Name}"
+                                    TextTrimming="CharacterEllipsis"
+                                    ToolTip="{Binding Tag.Name}">
+                                </TextBlock>
+                            </CheckBox>
                             <TextBlock
                                 FontSize="16"
-                                Foreground="{Binding Tag, Converter={StaticResource TagColorConverter}}"
+                                Foreground="White"
                                 Text="{Binding Tag.Name}"
                                 TextTrimming="CharacterEllipsis"
                                 ToolTip="{Binding Tag.Name}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RecordType}" Value="Marked">
+                                                <Setter Property="Visibility" Value="Hidden">
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding RecordType}" Value="Subscribed">
+                                                <Setter Property="Visibility" Value="Hidden">
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding RecordType}" Value="Filter">
+                                                <Setter Property="Visibility" Value="Visible">
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
                             </TextBlock>
-                        </CheckBox>
-                        <TextBlock
-                            FontSize="16"
-                            Foreground="White"
-                            Text="{Binding Tag.Name}"
-                            TextTrimming="CharacterEllipsis"
-                            ToolTip="{Binding Tag.Name}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RecordType}" Value="Marked">
-                                            <Setter Property="Visibility" Value="Hidden">
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RecordType}" Value="Subscribed">
-                                            <Setter Property="Visibility" Value="Hidden">
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding RecordType}" Value="Filter">
-                                            <Setter Property="Visibility" Value="Visible">
-                                            </Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <Button
-                            Name="DeleteTagButton"
-                            Grid.Column="1"
-                            Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                            Click="DeleteTagButton_Click"
-                            FontFamily="Segoe UI Symbol"
-                            ToolTip="删除此标签">
-                            
-                        </Button>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                            <Button
+                                Name="DeleteTagButton"
+                                Grid.Column="1"
+                                Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                Click="DeleteTagButton_Click"
+                                FontFamily="Segoe UI Symbol"
+                                ToolTip="删除此标签">
+                                
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>
