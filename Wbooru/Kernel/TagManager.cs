@@ -294,16 +294,7 @@ namespace Wbooru.Kernel
 
             var gallery_name = gallery?.GalleryName;
             var strict_check = (!Setting<GlobalSetting>.Current.SearchTagMetaStrict) || gallery_name == null;
-            /*
-            var result = from record in 
-                             (from record in LocalDBContext.Instance.Tags 
-                              join tag_name in tag_names 
-                              on record.Tag.Name equals tag_name
-                              where record.Tag.Type != TagType.Unknown
-                              select record)
-                         where strict_check || gallery_name == record.FromGallery
-                         select record;
-            */
+        
             var result = from record in
                              (from record in LocalDBContext.Instance.Tags
                               where tag_names.Contains(record.Tag.Name)
@@ -312,7 +303,20 @@ namespace Wbooru.Kernel
                          where strict_check || gallery_name == record.FromGallery
                          select record;
 
-            var r = result.ToArray().ToDictionary(x => x.Tag.Name, x => x.Tag);
+            Dictionary<string, Tag> r = new Dictionary<string, Tag>();
+
+            foreach (var record in result)
+            {
+                var name = record.Tag.Name;
+                var tag = record.Tag;
+
+                if (!r.ContainsKey(name) || /*优先替换同画廊定义的标签数据*/(gallery?.GalleryName) == name)
+                {
+                    r[name] = tag;
+                    continue;
+                }
+            }
+
             Log.Debug($"-- End search from database({r.Count}): {string.Join(" , ", r.Keys)}");
             return r;
         }
