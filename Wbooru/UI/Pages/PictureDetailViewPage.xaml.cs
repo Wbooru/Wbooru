@@ -137,7 +137,6 @@ namespace Wbooru.UI.Pages
             }
 
             await DisplayImage(pick_download);
-
         }
 
         private async Task DisplayImage(DownloadableImageLink pick_download)
@@ -170,7 +169,6 @@ namespace Wbooru.UI.Pages
             var source = image.ConvertToBitmapImage();
             DetailImageBox.ImageSource = source;
 
-            image.Dispose();
             RefreshButton.IsBusy = false;
         }
 

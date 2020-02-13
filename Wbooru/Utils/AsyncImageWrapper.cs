@@ -34,7 +34,6 @@ namespace Wbooru.Utils
             } while (image==null);
 
             var r = image.ConvertToBitmapImage();
-            image.Dispose();
             return r;
         })
         {
