@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using Wbooru.Galleries;
 using Wbooru.Kernel;
 using Wbooru.Models;
+using Wbooru.Settings;
 using Wbooru.UI.Pages;
 using Wbooru.Utils;
 
@@ -37,7 +38,8 @@ namespace Wbooru.UI.Controls
 
         public static readonly DependencyProperty TagsListTypeProperty =
             DependencyProperty.Register("TagsListType", typeof(bool), typeof(TagListViewer), new PropertyMetadata(false,(e,d) => {
-                ((TagListViewer)(e)).TagsList = (bool)d.NewValue ? TagManager.FiltedTags : TagManager.MarkedTags;
+                var list = (bool)d.NewValue ? TagManager.FiltedTags : TagManager.MarkedTags;
+                ((TagListViewer)(e)).TagsList = list;
             }
         ));
 

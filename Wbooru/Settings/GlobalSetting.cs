@@ -177,6 +177,17 @@ namespace Wbooru.Settings
         [Description("是否记住当前窗口的大小和位置，下次打开会按照上次布局来恢复大小和位置")]
         public bool RememberWindowSizeAndLocation { get; set; } = true;
 
+        public enum TagListOrder
+        {
+            Name,
+            AddedDateTime
+        }
+
+        [Description("主页面的标签浏览控件里，标签列表的排序方式")]
+        [List(typeof(TagListOrder))]
+        [NeedRestart]
+        public TagListOrder TagListViewerListOrder { get; set; } = TagListOrder.AddedDateTime;
+
         #endregion
 
         #region Network Options

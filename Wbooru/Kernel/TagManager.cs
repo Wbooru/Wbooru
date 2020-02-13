@@ -25,9 +25,17 @@ namespace Wbooru.Kernel
         {
             try
             {
-                MarkedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Marked)));
-                FiltedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Filter)));
-                SubscribedTags = new ObservableCollection<TagRecord>(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed)));
+                MarkedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Marked))));
+                FiltedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Filter))));
+                SubscribedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))));
+
+                IEnumerable<TagRecord> order(IEnumerable<TagRecord> source)
+                {
+                    if (Setting<GlobalSetting>.Current.TagListViewerListOrder == GlobalSetting.TagListOrder.AddedDateTime)
+                        return source.OrderBy(x => x.AddTime);
+                    else
+                        return source.OrderBy(x => x.Tag.Name);
+                }
             }
             catch (Exception e)
             {
