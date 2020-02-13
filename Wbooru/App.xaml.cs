@@ -156,7 +156,7 @@ namespace Wbooru
             Log.Info("-----------------End Init()-----------------");
         }
 
-        static object fatal_locker = new object();
+        static volatile object fatal_locker = new object();
         private static void FatalAlert()
         {
             lock (fatal_locker)
