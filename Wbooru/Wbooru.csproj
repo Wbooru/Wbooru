@@ -167,6 +167,7 @@
     <Compile Include="Kernel\SchedulerManager.cs" />
     <Compile Include="Kernel\TagManager.cs" />
     <Compile Include="Kernel\Updater\ReleaseType.cs" />
+    <Compile Include="Kernel\VoteManager.cs" />
     <Compile Include="Migrations\202001301252010_Init.cs" />
     <Compile Include="Migrations\202001301252010_Init.Designer.cs">
       <DependentUpon>202001301252010_Init.cs</DependentUpon>

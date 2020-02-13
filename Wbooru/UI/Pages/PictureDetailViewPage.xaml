@@ -56,6 +56,13 @@
                         FontSize="18"
                         Foreground="White"
                         Text="{Binding PictureDetailInfo.ID, StringFormat=#{0}}" />
+
+                    <controls:LoadingStatusDisplayer
+                        Margin="30,0,0,0"
+                        VerticalAlignment="Center"
+                        CurrentTaskNotify="{Binding ElementName=LoadingStatus, Path=CurrentTaskNotify}"
+                        TaskCount="{Binding ElementName=LoadingStatus, Path=TaskCount}">
+                    </controls:LoadingStatusDisplayer>
                 </StackPanel>
 
 
@@ -72,7 +79,8 @@
                     x:Name="LoadingStatus"
                     Grid.Row="1"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
+                    VerticalAlignment="Center"
+                    Visibility="{Binding ElementName=DetailImageBox, Path=ImageSource, Converter={x:Static valueconverters:SimpleExpressionConverters.ReverseToVisibilityConverter}}">
                 </controls:LoadingStatusDisplayer>
 
                 <controls:ImageViewer

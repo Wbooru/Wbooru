@@ -231,6 +231,26 @@ namespace Wbooru.UI.Pages
 
             VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = true;
 
+            PictureDetailInfo = await Task.Run(() => gallery.GetImageDetial(item));
+
+            Tags.Clear();
+
+            try
+            {
+                using var d = LoadingStatus.BeginBusy("正在获取标签信息");
+
+                var tags = PictureDetailInfo.Tags.ToArray();
+
+                var dir = await Task.Run(() =>TagManager.SearchTagMeta(gallery, item.GalleryItemID, tags));
+
+                foreach (var tag in PictureDetailInfo.Tags.Select(x => dir.TryGetValue(x, out var t) ? t : new Tag() { Name = x, Type = TagType.Unknown }))
+                    Tags.Add(tag);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
+            }
+
             await Task.Run(async () =>
             {
                 using (var transaction = DB.Database.BeginTransaction())
@@ -259,47 +279,16 @@ namespace Wbooru.UI.Pages
 
             var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
 
-            var detail = await Task.Run(() => gallery.GetImageDetial(item));
-
             if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
-                foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength <= 0))
+                foreach (var i in PictureDetailInfo.DownloadableImageLinks.Where(x => x.FileLength <= 0))
                     i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
 
-            bool? is_vote = default;
+            var (is_vote, _) = await VoteManager.GetVote(Gallery, PictureInfo);
 
-            try
-            {
-                is_vote = await Task.Run(() => gallery.Feature<IGalleryVote>()?.IsVoted(item));
-            }
-            catch (Exception e)
-            {
-                Log.Error(e.Message);
-            }
-
-            Tags.Clear();
-
-            try
-            {
-                using var d = LoadingStatus.BeginBusy("正在获取标签信息");
-
-                var dir = await Task.Run(() =>
-                {
-                    var tags = detail.Tags.ToArray();
-                    return TagManager.SearchTagMeta(gallery, item.GalleryItemID, tags);
-                });
-                
-                foreach (var tag in detail.Tags.Select(x => dir.TryGetValue(x, out var t) ? t : new Models.Tag() { Name = x, Type = TagType.Unknown }))
-                    Tags.Add(tag);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e.Message);
-            }
 
             IsMark = is_mark;
-            IsVoted = is_vote ?? false;
+            IsVoted = is_vote;
             VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = false;
-            PictureDetailInfo = detail;
         }
 
         private void BrowserOpenButton_Click(object sender, RoutedEventArgs e)
@@ -368,30 +357,19 @@ namespace Wbooru.UI.Pages
             if (PictureInfo == null || Gallery == null)
                 return;
 
-            var item = PictureInfo;
-            var is_vote = IsVoted;
-            var gallery = Gallery;
+            using var _ = VoteButton.BeginBusy();
 
-            VoteButton.IsBusy = true;
+            var new_vote = !IsVoted;
 
-            try
-            {
-                await Task.Run(() => gallery.Feature<IGalleryVote>().SetVote(item, !is_vote));
+            var (success, message) = await VoteManager.SetVote(Gallery, PictureInfo, new_vote);
 
-                if (item == PictureInfo)
-                {
-                    IsVoted = !is_vote;
-                    Toast.ShowMessage($"已{(!is_vote ? "投票" : "取消投票")}");
-                }
-            }
-            catch (Exception e)
+            if (success)
             {
-                Toast.ShowMessage($"投票失败,{e.Message}");
+                IsVoted = new_vote;
+                Toast.ShowMessage($"已{(new_vote ? "投票" : "取消投票")}");
             }
-            finally
-            {
-                VoteButton.IsBusy = false;
-            }
+            else
+                Toast.ShowMessage($"投票失败,{message}");
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)

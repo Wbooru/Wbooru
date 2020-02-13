@@ -29,6 +29,7 @@ namespace Wbooru.UI.Controls
             {
                 has_task_running = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasTaskRunning)));
+                OnHasTaskRunningChanged();
             }
         }
 
@@ -69,9 +70,6 @@ namespace Wbooru.UI.Controls
         public static readonly DependencyProperty TaskCountProperty =
             DependencyProperty.Register("TaskCount", typeof(string), typeof(LoadingStatusDisplayer), new PropertyMetadata(""));
 
-        public static readonly DependencyProperty DescriptionProperty =
-            DependencyProperty.Register("Description", typeof(string), typeof(LoadingStatusDisplayer), new PropertyMetadata(""));
-
         public Brush ContentForeground
         {
             get { return (Brush)GetValue(ContentForegroundProperty); }
@@ -92,20 +90,29 @@ namespace Wbooru.UI.Controls
 
             reg_notifies.Add(t);
 
-            Dispatcher.InvokeAsync(() =>
-            {
-                CurrentTaskNotify = reg_notifies.LastOrDefault();
-
-                show_action.Begin();
-                UpdateCountString();
-            });
+            UpdateTopTaskNotify();
 
             return t;
+        }
+
+        private void OnHasTaskRunningChanged()
+        {
+            if (HasTaskRunning)
+                show_action.Begin();
+            else
+                hide_action.Begin();
+
+            UpdateCountString();
         }
 
         private void UpdateCountString()
         {
             TaskCount = reg_notifies.Count <= 1 ? "" : (reg_notifies.Count - 1).ToString();
+        }
+
+        private void UpdateTopTaskNotify()
+        {
+            Dispatcher.InvokeAsync(() => CurrentTaskNotify = reg_notifies.LastOrDefault());
         }
 
         internal void TaskFinishNotify(LoadingTaskNotify t)
@@ -119,16 +126,7 @@ namespace Wbooru.UI.Controls
 
             Log<LoadingStatusDisplayer>.Debug($"removed all clean notify object[{t.NotifyID}]");
 
-            Dispatcher.InvokeAsync(() =>
-            {
-                if (reg_notifies.Count == 0)
-                {
-                    hide_action.Begin();
-                }
-
-                CurrentTaskNotify = reg_notifies.LastOrDefault();
-                UpdateCountString();
-            });
+            UpdateTopTaskNotify();
         }
 
         private async void Active()

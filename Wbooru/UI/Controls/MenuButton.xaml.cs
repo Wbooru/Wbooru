@@ -116,5 +116,23 @@ namespace Wbooru.UI.Controls
         {
             e.Handled = IsBusy;
         }
+
+        public ButtonBusyStatusDisposer BeginBusy() => new ButtonBusyStatusDisposer(this);
+
+        public class ButtonBusyStatusDisposer:IDisposable
+        {
+            public MenuButton Button { get; }
+
+            public void Dispose()
+            {
+                Button.IsBusy = false;
+            }
+
+            public ButtonBusyStatusDisposer(MenuButton button) 
+            {
+                Button = button;
+                Button.IsBusy = true;
+            }
+        }
     }
 }
