@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Wbooru.Utils;
 
 namespace Wbooru.Kernel
 {
@@ -41,26 +42,34 @@ namespace Wbooru.Kernel
 
         private static void ClearJournalEnties()
         {
-            const BindingFlags flag = BindingFlags.Instance | BindingFlags.NonPublic;
-            var journal_scope_type = service.GetType().GetProperty("JournalScope", flag);
-            var journal_scope = journal_scope_type.GetValue(service);
-
-            if (journal_scope != null)
+            try
             {
-                var journal_type = journal_scope_type.PropertyType.GetProperty("Journal", flag);
-                var journal = journal_type.GetValue(journal_scope);
+                const BindingFlags flag = BindingFlags.Instance | BindingFlags.NonPublic;
+                var journal_scope_type = service.GetType().GetProperty("JournalScope", flag);
+                var journal_scope = journal_scope_type.GetValue(service);
 
-                var remove_method = journal.GetType().GetMethod("RemoveEntryInternal", flag);
+                if (journal_scope != null)
+                {
+                    var journal_type = journal_scope_type.PropertyType.GetProperty("Journal", flag);
+                    var journal = journal_type.GetValue(journal_scope);
 
-                var journal_entries_count = (journal.GetType().GetProperty("BackStack", flag).GetValue(journal) as IEnumerable)
-                    .OfType<object>()
-                    .Count();
+                    var remove_method = journal.GetType().GetMethod("RemoveEntryInternal", flag);
 
-                for (int i = 0; i < journal_entries_count; i++)
-                    remove_method.Invoke(journal, new object[] { 0 });
+                    var journal_entries_count = (journal.GetType().GetProperty("BackStack", flag).GetValue(journal) as IEnumerable)
+                        .OfType<object>()
+                        .Count();
 
-                if (journal_entries_count!=0)
-                    Log.Debug($"Removed {journal_entries_count} journal entries");
+                    for (int i = 0; i < journal_entries_count; i++)
+                        remove_method.Invoke(journal, new object[] { 0 });
+
+                    if (journal_entries_count != 0)
+                        Log.Debug($"Removed {journal_entries_count} journal entries");
+                }
+            }
+            catch (Exception e)
+            {
+                ExceptionHelper.DebugThrow(e);
+                Log.Error("Can't not clean journal entries cache");
             }
         }
 
