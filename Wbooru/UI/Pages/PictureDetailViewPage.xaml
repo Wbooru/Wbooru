@@ -13,6 +13,10 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <Page.DataContext>
+        <Binding RelativeSource="{RelativeSource Self}">
+        </Binding>
+    </Page.DataContext>
 
     <Page.Resources>
         <valueconverters:VisiableIfFeatureSupportConverter x:Key="VisiableIfFeatureSupportConverter">

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -31,7 +33,35 @@ namespace Wbooru.Kernel
         {
             Log.Debug($"Push page : {page.ToString()}");
             page_stack.Push(page);
+
+            ClearJournalEnties();
+
             service.Navigate(page_stack.Peek());
+        }
+
+        private static void ClearJournalEnties()
+        {
+            const BindingFlags flag = BindingFlags.Instance | BindingFlags.NonPublic;
+            var journal_scope_type = service.GetType().GetProperty("JournalScope", flag);
+            var journal_scope = journal_scope_type.GetValue(service);
+
+            if (journal_scope != null)
+            {
+                var journal_type = journal_scope_type.PropertyType.GetProperty("Journal", flag);
+                var journal = journal_type.GetValue(journal_scope);
+
+                var remove_method = journal.GetType().GetMethod("RemoveEntryInternal", flag);
+
+                var journal_entries_count = (journal.GetType().GetProperty("BackStack", flag).GetValue(journal) as IEnumerable)
+                    .OfType<object>()
+                    .Count();
+
+                for (int i = 0; i < journal_entries_count; i++)
+                    remove_method.Invoke(journal, new object[] { 0 });
+
+                if (journal_entries_count!=0)
+                    Log.Debug($"Removed {journal_entries_count} journal entries");
+            }
         }
 
         public static Page NavigationPop()
@@ -47,6 +77,8 @@ namespace Wbooru.Kernel
 
             service.Navigate(page_stack.Peek());
             Log.Debug($"Current page : {page_stack.Peek().ToString()}");
+
+            ClearJournalEnties();
 
             return page;
         }

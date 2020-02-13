@@ -105,8 +105,6 @@ namespace Wbooru.UI.Pages
 
             DB = LocalDBContext.Instance;
 
-            MainGrid.DataContext = this;
-
             SetupExtraUI();
 
             layout_translate_storyboard = new Storyboard();
@@ -170,8 +168,9 @@ namespace Wbooru.UI.Pages
             CurrentDisplayImageLink = pick_download;
 
             var source = image.ConvertToBitmapImage();
-
             DetailImageBox.ImageSource = source;
+
+            image.Dispose();
             RefreshButton.IsBusy = false;
         }
 
