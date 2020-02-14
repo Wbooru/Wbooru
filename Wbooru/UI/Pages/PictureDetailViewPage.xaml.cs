@@ -160,7 +160,7 @@ namespace Wbooru.UI.Pages
                     {
                         (long cur, long total) = d;
                         notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
-                    });
+                    }, true);
                 });
             } while (image == null);
 

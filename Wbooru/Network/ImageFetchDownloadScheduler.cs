@@ -28,7 +28,7 @@ namespace Wbooru.Network
         private List<Task<Image>> tasks_waiting_queue=new List<Task<Image>>();
         private HashSet<Task<Image>> tasks_running_queue=new HashSet<Task<Image>>();
 
-        public Task<Image> GetImageAsync(string download_path, CancellationToken? cancel_token = null, Action<(long downloaded_bytes, long content_bytes)> reporter = null)
+        public Task<Image> GetImageAsync(string download_path, CancellationToken? cancel_token = null, Action<(long downloaded_bytes, long content_bytes)> reporter = null, bool front_insert = false)
         {
             Task<Image> task;
 
@@ -39,7 +39,10 @@ namespace Wbooru.Network
 
             lock (tasks_waiting_queue)
             {
-                tasks_waiting_queue.Add(task);
+                if (front_insert)
+                    tasks_waiting_queue.Prepend(task);
+                else
+                    tasks_waiting_queue.Append(task);
             }
 
             return task;
