@@ -252,41 +252,8 @@
                         StrokeThickness="2"
                         X1="0"
                         X2="{Binding ActualWidth, ElementName=ViewPage}" />
-                    <Grid d:DataContext="{Binding}">
-                        <Grid.Resources>
-                            <Style TargetType="Label">
-                                <Setter Property="Foreground" Value="White" />
-                                <Setter Property="FontSize" Value="15" />
-                                <Setter Property="Margin" Value="0,2,0,2" />
-                            </Style>
-                        </Grid.Resources>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
+                    <Grid Name="DetailContentGrid">
 
-                        <StackPanel HorizontalAlignment="Left">
-                            <Label Content="ID" />
-                            <Label Content="作者" />
-                            <Label Content="上传者" />
-                            <Label Content="分辨率" />
-                            <Label Content="出处" />
-                            <Label Content="级别" />
-                            <Label Content="分数" />
-                        </StackPanel>
-
-                        <StackPanel
-                            Grid.Column="1"
-                            HorizontalAlignment="Right"
-                            FlowDirection="RightToLeft">
-                            <Label Content="{Binding ID}" />
-                            <Label Content="{Binding Author}" />
-                            <Label Content="{Binding Updater}" />
-                            <Label Content="{Binding Resolution}" />
-                            <Label Content="{Binding Source}" />
-                            <Label Content="{Binding Rate}" />
-                            <Label Content="{Binding Score}" />
-                        </StackPanel>
                     </Grid>
                     <!--#endregion-->
 

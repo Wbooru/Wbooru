@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +25,7 @@ using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
+using Wbooru.Models.Gallery.Annotation;
 using Wbooru.Network;
 using Wbooru.Persistence;
 using Wbooru.Settings;
@@ -126,6 +129,8 @@ namespace Wbooru.UI.Pages
             if (galleryImageDetail == null)
                 return;
 
+            DisplayDetail(galleryImageDetail);
+
             var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
 
             if (pick_download == null)
@@ -170,6 +175,104 @@ namespace Wbooru.UI.Pages
             DetailImageBox.ImageSource = source;
 
             RefreshButton.IsBusy = false;
+        }
+
+        private void DisplayDetail(GalleryImageDetail detail)
+        {
+            var type = detail.GetType();
+
+            var displayable_props = type.GetProperties()
+                .Select(x=>new { PropertyInfo = x , x.GetCustomAttribute<Models.Gallery.Annotation.DisplayNameAttribute>()?.Name, Order = x.GetCustomAttribute<DisplayOrderAttribute>()?.Order??0, Value = x.GetValue(detail) })
+                .Where(x=>!string.IsNullOrWhiteSpace(x.Name))
+                .OrderBy(x=>x.Order)
+                .ToArray();
+
+            var grid = new Grid();
+
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            grid.RowDefinitions.Clear();
+
+            foreach (var _ in displayable_props)
+                grid.RowDefinitions.Add(new RowDefinition()
+                {
+                    Height = GridLength.Auto
+                });
+
+            var generated_controls = displayable_props.Select(x => (x.Name, GenerateDisplayControl(x.PropertyInfo, x.Value))).ToList();
+
+            for (int i = 0; i < generated_controls.Count; i++)
+            {
+                var (name,control) = generated_controls[i];
+
+                Grid.SetRow(control, i);
+                Grid.SetColumn(control, 1);
+
+                TextBlock text = new TextBlock()
+                {
+                    FontSize = 16,
+                    Text = name,
+                    Foreground = Brushes.Gray,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Right
+                };
+
+                Grid.SetRow(text, i);
+
+                grid.Children.Add(text);
+                grid.Children.Add(control);
+            }
+
+            DetailContentGrid.Children.Add(grid);
+        }
+
+        private UIElement GenerateDisplayControl(PropertyInfo propertyInfo, object value)
+        {
+            var string_value = (value?.ToString() ?? string.Empty).Trim();
+
+            Label block = new Label();
+            block.Margin = new Thickness(10, 5, 0, 5);
+            block.FontSize = 16;
+            block.Foreground = Brushes.White;
+
+            if (string_value.StartsWith("https://") || string_value.StartsWith("http://"))
+            {
+                var hyper = new Hyperlink()
+                {
+                    NavigateUri = new Uri(string_value),
+                };
+
+                hyper.RequestNavigate += (_, e) =>
+                {
+                    e.Handled = true;
+                    Process.Start(string_value);
+                };
+
+                hyper.Foreground = block.Foreground;
+                hyper.Inlines.Add(string_value);
+                block.Content = hyper;
+            }
+            else
+            {
+                block.Content = string_value;
+
+                if (!string.IsNullOrWhiteSpace(string_value))
+                {
+                    block.MouseDown += (_, __) =>
+                    {
+                        Clipboard.SetText(string_value);
+                        Toast.ShowMessage("已复制");
+                    };
+                }
+            }
+
+            return block;
+        }
+
+        private void Hyper_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         internal class DownloadableImageLinkComparer : IComparer<DownloadableImageLink>
