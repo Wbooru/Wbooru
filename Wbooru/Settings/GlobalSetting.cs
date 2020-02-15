@@ -16,17 +16,18 @@ namespace Wbooru.Settings
 
         [Group("Tag Filter Options")]
         [Description("是否启用标签过滤，此功能会过滤指定的标签")]
+        [NameAlias("开启标签过滤功能")]
         public bool EnableTagFilter { get; set; } = false;
 
         [Group("Tag Filter Options")]
         [List(typeof(TagFilterTarget), true)]
         [EnableBy(nameof(EnableTagFilter),true)]
-        [Description("需要标签过滤的目标")]
+        [NameAlias("需要标签过滤的目标")]
         public TagFilterTarget FilterTarget { get; set; } = TagFilterTarget.MainWindow | TagFilterTarget.SearchResultWindow;
 
         [Group("Tag Filter Options")]
         [EnableBy(nameof(EnableTagFilter), true)]
-        [Description("过滤列表是否共用")]
+        [NameAlias("过滤列表是否共用")]
         public bool UseAllGalleryFilterList { get; set; } = false;
 
         #endregion
@@ -34,18 +35,19 @@ namespace Wbooru.Settings
         #region Tags Options
 
         [Group("Tags Options")]
-        [Description("是否缓存标签数据集,此操作将会占用大量空间和网络带宽")]
+        [Description("在查看图片详细内容时尝试获取标签数据(染色)，此操作将会占用大量空间和网络带宽")]
+        [NameAlias("获取并缓存标签数据")]
         public bool PredownloadAndCacheTagData { get; set; } = false;
 
+        [Group("Tags Options")]
+        [NameAlias("严格搜索标签元数据")]
+        public bool SearchTagMetaStrict { get; set; } = false;
 
         [Group("Tags Options")]
         [Description("搜索图片标签时，标签建议最大数量,0代表不限制")]
         [Range(0,1000)]
+        [NameAlias("标签搜索候选列表最大呈现数量")]
         public int MaxSearchSuggestsCount { get; set; } = 100;
-
-        [Group("Tags Options")]
-        [Description("是否严格搜索标签元数据")]
-        public bool SearchTagMetaStrict { get; set; } = false;
 
         #endregion
 
@@ -53,10 +55,12 @@ namespace Wbooru.Settings
 
         [Group("Download Options")]
         [Path(false,false)]
-        public string DownloadPath { get; set; } = "./Download";
+        [NameAlias("图片下载保存路径")]
+        public string DownloadPath { get; set; } = "./Downloads";
 
         [Group("Download Options")]
-        [Description("分别按照来源子文件夹来下载图片")]
+        [Description("将会按照\"...Downloads\\Yande\\xxx.png\"形式存放")]
+        [NameAlias("将下载的图片分别按照画廊名字文件夹存放")]
         public bool SeparateGallerySubDirectories { get; set; } = true;
 
         #endregion
@@ -64,36 +68,43 @@ namespace Wbooru.Settings
         #region View Options
 
         [Group("View Options")]
-        [Description("(NSFW)安全浏览模式,若开启将会过滤不合适公开浏览的图片,以及不支持NSFW过滤实现的图源,但本地收藏列表和下载列表不受限制.")]
+        [Description("若开启将会过滤不合适公开浏览的图片,以及不支持NSFW过滤实现的图源,但本地收藏列表和下载列表不受限制.")]
         [NeedRestart]
+        [NameAlias("开启NSFW模式")]
         public bool EnableNSFWFileterMode { get; set; } = false;
 
         [Group("View Options")]
         [Range(1,5)]
+        [NameAlias("图片加载线程数")]
         public int LoadingImageThread { get; set; } = 2;
 
         [Group("View Options")]
         [Description("每次加载更多图片时所需要图片最低数量(多了的话可能会被ban?)")]
         [Range(1,100)]
+        [NameAlias("每批图片加载数量")]
         public int GetPictureCountPerLoad { get; set; } = 20;
 
         [Group("View Options")]
-        [Description("是否使用滚轮或者拖曳滚动图片列表")]
+        [Description("如果开启则显示右边页面滑条,但不能滑动页面")]
         [NeedRestart]
+        [NameAlias("画廊列表显示滑条")]
         public bool GalleryListScrollBarVisiable { get; set; } = true;
 
         [Group("View Options")]
-        [Description("强制使用图片页面跳转功能，但这可能会花费很长时间和出现大量的网络请求")]
+        [Description("这可能会花费很长时间和出现大量的网络请求")]
+        [NameAlias("强制使用图片页面跳转功能")]
         public bool ForceEnablePageJumpFeature { get; set; } = false;
 
         [Group("View Options")]
         [NeedRestart]
-        [Description("设置画廊浏览列表每个缩略图的宽度(px)")]
+        [Description("单位是像素(px)")]
+        [NameAlias("画廊浏览列表每个缩略图的宽度")]
         public uint PictureGridItemWidth { get; set; } = 150;
 
         [Group("View Options")]
         [NeedRestart]
-        [Description("设置画廊浏览列表每个缩略图之间的间距(px)")]
+        [Description("单位是像素(px)")]
+        [NameAlias("画廊浏览列表每个缩略图之间的间距")]
         public uint PictureGridItemMarginWidth { get; set; } = 10;
 
         public enum SelectViewQualityTarget
@@ -107,11 +118,13 @@ namespace Wbooru.Settings
 
         [Group("View Options")]
         [List(typeof(SelectViewQualityTarget), true)]
-        [Description("详细页面图片质量选择，即会按照文件大小排序并根据值来选择合适的图片来加载，越低文件越小，画质可能越差")]
+        [Description("即会按照文件大小排序并根据值来选择合适的图片来加载，越低文件越小，画质可能越差")]
+        [NameAlias("详细页面图片质量")]
         public SelectViewQualityTarget SelectPreferViewQualityTarget { get; set; } = SelectViewQualityTarget.Middle;
 
         [Group("Other Options")]
-        [Description("尝试获取一些可下载图片的文件大小值(开启此项可能会有大量的网络请求)")]
+        [Description("解决一些图片\"unknown file size\"问题，但开启此项可能会有大量的网络请求")]
+        [NameAlias("尝试获取一些可下载图片的文件大小值")]
         public bool TryGetVaildDownloadFileSize { get; set; } = false;
         #endregion
 
@@ -120,30 +133,35 @@ namespace Wbooru.Settings
         [Group("Cache Option")]
         [NeedRestart]
         [Description("是否使用内存缓存机制，这将会缓存图片文件等其他资源")]
-        public bool EnableMemoryCache { get; set; } = false;
+        ///即将废弃,文件缓存已经给力了,没必要了
+        internal bool EnableMemoryCache { get; set; } = false;
 
         [Group("Cache Option")]
-        [Description("是否使用文件缓存机制，这将会缓存图片文件等其他资源")]
-        public bool EnableFileCache { get; set; } = false;
+        [Description("将一些缓存资源存放在指定的缓存文件夹中，用户可以随便删除(但不建议修改其中文件)")]
+        [NameAlias("启用文件缓存")]
+        public bool EnableFileCache { get; set; } = true;
 
         [Group("Cache Option")]
         [NeedRestart]
-        [Description("钦定缓存文件夹的大小,以MB为单位，若空间不足则会删除较旧的资源缓存文件")]
+        [Description("钦定缓存文件夹的大小,以MB为单位，若空间不足则自动删除较旧的资源缓存文件(不建议调小)")]
         [EnableBy(nameof(EnableFileCache), true)]
+        [NameAlias("缓存文件夹空间占用最大值")]
         public uint CacheFolderMaxSize { get; set; } = 100;
 
         [Group("Cache Option")]
         [NeedRestart]
-        [Description("钦定缓存文件夹的存放位置,%Temp%表示系统临时文件夹路径")]
+        [Description("%Temp%表示系统临时文件夹路径")]
         [EnableBy(nameof(EnableFileCache), true)]
+        [NameAlias("缓存文件夹的存放路径")]
         public string CacheFolderPath { get; set; } = @"%Temp%WbooruCache";
 
         #endregion
 
         #region Other Options
 
-        [Description("是否自动检查程序和插件是否有更新，通常会在程序启动时自动开始检查")]
+        [Description("通常会在程序启动时自动开始检查")]
         [NeedRestart]
+        [NameAlias("自动检查程序和插件是否有更新")]
         public bool EnableAutoCheckUpdatable { get; set; } = true;
 
         public enum UpdatableTarget
@@ -153,13 +171,17 @@ namespace Wbooru.Settings
 
         [List(typeof(UpdatableTarget), true)]
         [NeedRestart]
+        [Description("Stable为稳定正式版，Preview为预览版")]
+        [NameAlias("可更新版本类型")]
         public UpdatableTarget UpdatableTargetVersion { get; set; } = UpdatableTarget.Stable;
 
         [Path(false, false)]
         [NeedRestart]
+        [NameAlias("日志输出文件夹路径")]
         public string LogOutputDirectory { get; set; } = "./Logs";
 
         [NeedRestart]
+        [NameAlias("输出调试类日志信息")]
         public bool EnableOutputDebugMessage { get; set; } = false;
 
         public enum LogWindowShowOption
@@ -171,10 +193,11 @@ namespace Wbooru.Settings
 
         [NeedRestart]
         [List(typeof(LogWindowShowOption), true)]
-        [Description("是否显示一个控制台窗口来显示日志内容")]
+        [NameAlias("显示控制台窗口来显示日志内容")]
         public LogWindowShowOption ShowOutputWindow { get; set; } = LogWindowShowOption.OnlyDebugEnable;
 
-        [Description("是否记住当前窗口的大小和位置，下次打开会按照上次布局来恢复大小和位置")]
+        [Description("下次打开会按照上次布局来恢复大小和位置")]
+        [NameAlias("记住当前窗口的大小和位置")]
         public bool RememberWindowSizeAndLocation { get; set; } = true;
 
         public enum TagListOrder
@@ -186,6 +209,7 @@ namespace Wbooru.Settings
         [Description("主页面的标签浏览控件里，标签列表的排序方式")]
         [List(typeof(TagListOrder))]
         [NeedRestart]
+        [NameAlias("初始标签列表排列顺序")]
         public TagListOrder TagListViewerListOrder { get; set; } = TagListOrder.AddedDateTime;
 
         #endregion
@@ -193,20 +217,22 @@ namespace Wbooru.Settings
         #region Network Options
 
         [Group("Network Option")]
-        [Description("网络请求的超时限制,0为不限制")]
+        [Description("0为不限制，单位为毫秒ms")]
+        [NameAlias("网络请求的超时限")]
         public int RequestTimeout { get; set; } = 15000;
 
-        [Description("是否开启Socks5代理功能")]
+        [NameAlias("开启Socks5代理功能")]
         [Group("Network Option")]
         [NeedRestart]
+        [Description("不懂的好孩子可以不用管~")]
         public bool EnableSocks5Proxy { get; set; } = false;
 
-        [Description("Socks5代理地址")]
+        [NameAlias("Socks5代理地址")]
         [Group("Network Option")]
         [EnableBy(nameof(EnableSocks5Proxy),true)]
         public string Socks5ProxyAddress { get; set; } = "localhost";
 
-        [Description("Socks5代理地址的端口号")]
+        [NameAlias("Socks5代理地址的端口号")]
         [Group("Network Option")]
         [EnableBy(nameof(EnableSocks5Proxy), true)]
         public int Socks5ProxyPort { get; set; } = 1080;
@@ -218,7 +244,7 @@ namespace Wbooru.Settings
         #region Special Options
 
         [Group("Advanced Option")]
-        [Description("是否显示高级选项(不建议修改其选项值)")]
+        [NameAlias("显示高级选项(不建议修改其选项值)")]
         public bool ShowAdvancedOptions { get; set; } = false;
 
         /*
@@ -230,14 +256,14 @@ namespace Wbooru.Settings
 
         [Group("Advanced Option")]
         [EnableBy(nameof(ShowAdvancedOptions), true)]
-        [Description("Sqlite数据库文件的路径")]
+        [NameAlias("Sqlite数据库文件的路径")]
         [NeedRestart]
         public string DBFilePath { get; set; } = "data.db";
 
         [Group("Advanced Option")]
         [EnableBy(nameof(ShowAdvancedOptions), true)]
         [NeedRestart]
-        [Description("是否输出数据库日志到调试日志里")]
+        [NameAlias("输出数据库日志到调试日志里")]
         public bool EnableDatabaseLog { get; set; } = false;
 
         #endregion
