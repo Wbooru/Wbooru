@@ -40,9 +40,9 @@ namespace Wbooru.Network
             lock (tasks_waiting_queue)
             {
                 if (front_insert)
-                    tasks_waiting_queue.Prepend(task);
+                    tasks_waiting_queue.Insert(0,task);
                 else
-                    tasks_waiting_queue.Append(task);
+                    tasks_waiting_queue.Insert(tasks_waiting_queue.Count,task);
             }
 
             return task;
