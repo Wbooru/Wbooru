@@ -129,7 +129,7 @@ namespace Wbooru.UI.Pages
             if (galleryImageDetail == null)
                 return;
 
-            DisplayDetail(galleryImageDetail);
+            DisplayDetailInfo(galleryImageDetail);
 
             var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
 
@@ -177,7 +177,7 @@ namespace Wbooru.UI.Pages
             RefreshButton.IsBusy = false;
         }
 
-        private void DisplayDetail(GalleryImageDetail detail)
+        private void DisplayDetailInfo(GalleryImageDetail detail)
         {
             var type = detail.GetType();
 
@@ -331,7 +331,13 @@ namespace Wbooru.UI.Pages
 
             VoteButton.IsBusy = RefreshButton.IsBusy = MarkButton.IsBusy = true;
 
-            PictureDetailInfo = await Task.Run(() => gallery.GetImageDetial(item));
+            var detail = await Task.Run(() => gallery.GetImageDetial(item));
+
+            if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
+                foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength <= 0))
+                    i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
+
+            PictureDetailInfo = detail;
 
             Tags.Clear();
 
@@ -378,10 +384,6 @@ namespace Wbooru.UI.Pages
             });
 
             var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
-
-            if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
-                foreach (var i in PictureDetailInfo.DownloadableImageLinks.Where(x => x.FileLength <= 0))
-                    i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
 
             var (is_vote, _) = await VoteManager.GetVote(Gallery, PictureInfo);
 
