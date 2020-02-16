@@ -182,9 +182,10 @@ namespace Wbooru.UI.Pages
             var type = detail.GetType();
 
             var displayable_props = type.GetProperties()
-                .Select(x=>new { PropertyInfo = x , x.GetCustomAttribute<Models.Gallery.Annotation.DisplayNameAttribute>()?.Name, Order = x.GetCustomAttribute<DisplayOrderAttribute>()?.Order??0, Value = x.GetValue(detail) })
-                .Where(x=>!string.IsNullOrWhiteSpace(x.Name))
-                .OrderBy(x=>x.Order)
+                .Select(x => new { PropertyInfo = x, x.GetCustomAttribute<Models.Gallery.Annotation.DisplayNameAttribute>()?.Name, Order = x.GetCustomAttribute<DisplayOrderAttribute>()?.Order ?? 0, Value = x.GetValue(detail) })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Name))
+                .Where(x => x.PropertyInfo.GetCustomAttribute<DisplayAutoIgnoreAttribute>() == null || !string.IsNullOrWhiteSpace(x.Value?.ToString()))
+                .OrderBy(x => x.Order)
                 .ToArray();
 
             var grid = new Grid();
@@ -200,7 +201,7 @@ namespace Wbooru.UI.Pages
                     Height = GridLength.Auto
                 });
 
-            var generated_controls = displayable_props.Select(x => (x.Name, GenerateDisplayControl(x.PropertyInfo, x.Value))).ToList();
+            var generated_controls = displayable_props.Select(x => (x.Name, GenerateDisplayControl(detail,x.PropertyInfo, x.Value))).ToList();
 
             for (int i = 0; i < generated_controls.Count; i++)
             {
@@ -227,26 +228,29 @@ namespace Wbooru.UI.Pages
             DetailContentGrid.Children.Add(grid);
         }
 
-        private UIElement GenerateDisplayControl(PropertyInfo propertyInfo, object value)
+        private UIElement GenerateDisplayControl(GalleryImageDetail detail,PropertyInfo propertyInfo, object value)
         {
             var string_value = (value?.ToString() ?? string.Empty).Trim();
+            var custom_action = propertyInfo.GetCustomAttribute<DisplayClickActionAttribute>();
 
             Label block = new Label();
             block.Margin = new Thickness(10, 5, 0, 5);
             block.FontSize = 16;
             block.Foreground = Brushes.White;
 
-            if (string_value.StartsWith("https://") || string_value.StartsWith("http://"))
+            if (string_value.StartsWith("https://") || string_value.StartsWith("http://") || custom_action!=null)
             {
                 var hyper = new Hyperlink()
                 {
-                    NavigateUri = new Uri(string_value),
+                    NavigateUri = new Uri("https://github.com/Wbooru/Wbooru")//nothing
                 };
 
                 hyper.RequestNavigate += (_, e) =>
                 {
                     e.Handled = true;
-                    Process.Start(string_value);
+
+                    if (!(custom_action?.RemoteCallBack(detail, value)??false))
+                        Process.Start(string_value);
                 };
 
                 hyper.Foreground = block.Foreground;

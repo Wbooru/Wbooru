@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Wbooru.Models.Gallery.Annotation
 {
-    public class DisplayIgnoreAttribute : Attribute
+    /// <summary>
+    /// it will not show if property value is null or empty string
+    /// </summary>
+    public class DisplayAutoIgnoreAttribute : Attribute
     {
     }
 }

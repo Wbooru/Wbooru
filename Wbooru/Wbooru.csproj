@@ -176,7 +176,8 @@
     <Compile Include="Models\Download.cs" />
     <Compile Include="Models\DownloadTaskStatus.cs" />
     <Compile Include="Models\DownloadWrapper.cs" />
-    <Compile Include="Models\Gallery\Annotation\DisplayIgnoreAttribute.cs" />
+    <Compile Include="Models\Gallery\Annotation\DisplayAutoIgnoreAttribute.cs" />
+    <Compile Include="Models\Gallery\Annotation\DisplayClickActionAttribute.cs" />
     <Compile Include="Models\Gallery\Annotation\DisplayNameAttribute.cs" />
     <Compile Include="Models\Gallery\Annotation\DisplayOrderAttribute.cs" />
     <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
