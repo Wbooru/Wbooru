@@ -131,12 +131,6 @@ namespace Wbooru.Settings
         #region Cache Options
 
         [Group("Cache Option")]
-        [NeedRestart]
-        [Description("是否使用内存缓存机制，这将会缓存图片文件等其他资源")]
-        ///即将废弃,文件缓存已经给力了,没必要了
-        internal bool EnableMemoryCache { get; set; } = false;
-
-        [Group("Cache Option")]
         [Description("将一些缓存资源存放在指定的缓存文件夹中，用户可以随便删除(但不建议修改其中文件)")]
         [NameAlias("启用文件缓存")]
         public bool EnableFileCache { get; set; } = true;

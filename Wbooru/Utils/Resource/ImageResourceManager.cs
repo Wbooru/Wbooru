@@ -16,7 +16,6 @@ namespace Wbooru.Utils.Resource
 {
     public static class ImageResourceManager
     {
-        private static ObjectCache cache;
         private static GlobalSetting option;
         private static string temporary_folder_path;
         private static long current_record_capacity;
@@ -24,9 +23,6 @@ namespace Wbooru.Utils.Resource
         public static void InitImageResourceManager()
         {
             option = SettingManager.LoadSetting<GlobalSetting>();
-
-            if (option.EnableMemoryCache)
-                cache = MemoryCache.Default;
 
             if (option.EnableFileCache)
             {
@@ -51,13 +47,7 @@ namespace Wbooru.Utils.Resource
 
         public static async Task<Image> RequestImageAsync(string resource_name,Func<Task<Image>> manual_request)
         {
-            if (TryGetImageFromMemoryCache(resource_name, out var res))
-            {
-                Log.Debug("Get cache image resoure from memory cache : " + resource_name);
-                return res;
-            }
-
-            if (TryGetImageFromTempFolder(resource_name, out res))
+            if (TryGetImageFromTempFolder(resource_name, out var res))
             {
                 Log.Debug("Get cache image resoure from temporary folder : " + resource_name);
                 return res;
@@ -72,8 +62,6 @@ namespace Wbooru.Utils.Resource
             if (await manual_request() is Image obj)
             {
                 CacheImageResourceAsFile(resource_name, obj);
-
-                CacheImageResourceInMemory(resource_name, obj);
 
                 return obj;
             }
@@ -208,28 +196,6 @@ namespace Wbooru.Utils.Resource
                 stream?.Dispose();
                 throw e;
             }
-        }
-
-        #endregion
-
-        #region Memory Cache
-
-        private static bool TryGetImageFromMemoryCache(string name, out Image res)
-        {
-            res = null;
-
-            if (cache?.Contains(name)??false)
-                return (res=cache[name] as Image) !=null;
-
-            return false;
-        }
-
-        private static void CacheImageResourceInMemory(string resource_name, Image obj)
-        {
-            if (cache == null)
-                return;
-
-            cache[resource_name] = obj;
         }
 
         #endregion
