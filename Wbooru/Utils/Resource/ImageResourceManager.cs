@@ -77,8 +77,6 @@ namespace Wbooru.Utils.Resource
         {
             res = null;
 
-            //name = FileNameHelper.FilterFileName(name);
-
             var file_path = Path.Combine(SettingManager.LoadSetting<GlobalSetting>().DownloadPath, name);
 
             if (!File.Exists(file_path))
@@ -99,7 +97,6 @@ namespace Wbooru.Utils.Resource
             if (!option.EnableFileCache || temporary_folder_path == null)
                 return false;
 
-            //resource_name = FileNameHelper.FilterFileName(resource_name);
             resource_name = resource_name.EndsWith(".cache") ? resource_name : (resource_name + ".cache");
             var file_path = Path.Combine(temporary_folder_path, resource_name);
 
@@ -127,7 +124,6 @@ namespace Wbooru.Utils.Resource
 
             Stream stream = null;
 
-            //resource_name = FileNameHelper.FilterFileName(resource_name);
             resource_name = resource_name.EndsWith(".cache") ? resource_name : (resource_name + ".cache");
             var file_path = Path.Combine(temporary_folder_path, resource_name);
 
