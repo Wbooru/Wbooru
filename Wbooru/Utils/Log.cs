@@ -33,6 +33,36 @@ namespace Wbooru
 
         static Log()
         {
+            if (!App.IsInDesignMode)
+                InitLogFile();
+
+#if !DEBUG
+            enable_debug_output = SettingManager.LoadSetting<GlobalSetting>().EnableOutputDebugMessage;
+#else
+            enable_debug_output = true;
+#endif
+
+            var console_window_option = SettingManager.LoadSetting<GlobalSetting>().ShowOutputWindow;
+
+#if DEBUG
+            //Disable log window in designer mode
+            if (App.IsInDesignMode)
+            {
+                console_window_option = LogWindowShowOption.None;
+                Info("Maybe in designer mode , hide console window.");
+            }
+#endif
+
+            var enable_show_console_window = console_window_option == LogWindowShowOption.None ? false : (console_window_option == LogWindowShowOption.Always ? true : enable_debug_output);
+
+            if (enable_show_console_window)
+                ConsoleWindow.Show();
+
+            Info($"log_file_path = {LogFilePath}");
+        }
+
+        private static void InitLogFile()
+        {
             try
             {
                 var log_dir = SettingManager.LoadSetting<GlobalSetting>().LogOutputDirectory;
@@ -47,30 +77,6 @@ namespace Wbooru
                 Log.Error($"Can't create log file {LogFilePath} : {e.Message}");
                 LogFilePath = null;
             }
-
-#if !DEBUG
-            enable_debug_output = SettingManager.LoadSetting<GlobalSetting>().EnableOutputDebugMessage;
-#else
-            enable_debug_output = true;
-#endif
-
-            var console_window_option = SettingManager.LoadSetting<GlobalSetting>().ShowOutputWindow;
-
-#if DEBUG
-            //Disable log window in designer mode
-            if (App.Current?.MainWindow == null || System.ComponentModel.DesignerProperties.GetIsInDesignMode(App.Current?.MainWindow))
-            {
-                console_window_option = LogWindowShowOption.None;
-                Info("Maybe in designer mode , hide console window.");
-            }
-#endif
-
-            var enable_show_console_window = console_window_option == LogWindowShowOption.None ? false : (console_window_option == LogWindowShowOption.Always ? true : enable_debug_output);
-
-            if (enable_show_console_window)
-                ConsoleWindow.Show();
-
-            Info($"log_file_path = {LogFilePath}");
         }
 
         private static void FileWrite(string content)
@@ -117,6 +123,9 @@ namespace Wbooru
         internal static void Output(string message)
         {
 #if DEBUG
+            if (App.IsInDesignMode)
+                return;
+
             OutputDebugString(message);
 #endif
             Console.Write(message);

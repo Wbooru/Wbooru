@@ -25,7 +25,8 @@ namespace Wbooru
     /// </summary>
     public partial class App : Application
     {
-        public static bool IsInDesignMode => System.ComponentModel.DesignerProperties.GetIsInDesignMode(new DependencyObject());
+        private static bool? _cache_design_mode = null;
+        public static bool IsInDesignMode => (_cache_design_mode ?? (_cache_design_mode = System.ComponentModel.DesignerProperties.GetIsInDesignMode(new DependencyObject()))) ?? false;
 
         public App()
         {

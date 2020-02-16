@@ -238,7 +238,10 @@
                 Grid.Row="0"
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
-                <controls:SearchInput SearchRequest="SearchInput_SearchRequest" SearchTagGallery="{Binding CurrentGallery}">
+                <controls:SearchInput
+                    SearchRequest="SearchInput_SearchRequest"
+                    SearchTagGallery="{Binding CurrentGallery}"
+                    Visibility="{Binding CurrentGallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=ImageSearch}">
                 </controls:SearchInput>
                 <Button
                     Name="RefreshButton"
@@ -285,7 +288,8 @@
                     Click="TagPanelButton_Click"
                     FontFamily="Segoe UI Symbol"
                     FontSize="15"
-                    Foreground="White">
+                    Foreground="White"
+                    Visibility="{Binding CurrentGallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=ImageSearch}">
                     
                 </Button>
             </StackPanel>
