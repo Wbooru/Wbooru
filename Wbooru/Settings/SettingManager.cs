@@ -23,7 +23,7 @@ namespace Wbooru.Settings
 
         private static SettingFileEntity setting_object_cache = new SettingFileEntity();
 
-        private static JToken SettingObject => load_object["Settings"];
+        private static JToken SettingObject => load_object["Settings"] ?? (load_object["Settings"] = new JObject());
 
         private static JObject load_object;
 

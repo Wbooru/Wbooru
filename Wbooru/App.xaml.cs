@@ -194,12 +194,24 @@ namespace Wbooru
         internal static void Term()
         {
             Log.Info("-----------------Begin Term()-----------------");
-            PluginsTerm();
-            DownloadManager.Close();
-            SettingManager.SaveSettingFile();
-            SchedulerManager.Term();
-            Log.Term();
+            SafeTermSubModule(PluginsTerm);
+            SafeTermSubModule(DownloadManager.Close);
+            SafeTermSubModule(SettingManager.SaveSettingFile);
+            SafeTermSubModule(SchedulerManager.Term);
+            SafeTermSubModule(Log.Term);
             Log.Info("-----------------End Term()-----------------");
+
+            void SafeTermSubModule(Action action)
+            {
+                try
+                {
+                    action?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    ExceptionHelper.DebugThrow(e);
+                }
+            }
         }
 
         private static void PluginsTerm()
@@ -233,15 +245,18 @@ namespace Wbooru
 
         internal static void UnusualSafeRestart()
         {
-            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
-
             try
             {
-                UnusualSafeExit();
+                Term();
             }
             catch (Exception e)
             {
                 ExceptionHelper.DebugThrow(e);
+            }
+            finally
+            {
+                Process.Start(Process.GetCurrentProcess().MainModule.FileName);
+                Environment.Exit(0);
             }
         }
     }

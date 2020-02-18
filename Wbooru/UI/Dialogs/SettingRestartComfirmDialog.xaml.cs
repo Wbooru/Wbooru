@@ -34,8 +34,7 @@ namespace Wbooru.UI.Dialogs
 
         private void RestartComfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
-            App.UnusualSafeExit();
+            App.UnusualSafeRestart();
         }
 
         private void NotRestartComfirmButton_Click(object sender, RoutedEventArgs e)
