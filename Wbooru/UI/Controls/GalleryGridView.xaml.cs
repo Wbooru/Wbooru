@@ -104,7 +104,7 @@ namespace Wbooru.UI.Controls
 
         private void OnLoadableSourceChanged()
         {
-            Items.Clear(); 
+            CleanCurrentItems();
             current_index = 0;
             ListScrollViewer.ScrollToVerticalOffset(0);
 
@@ -142,7 +142,7 @@ namespace Wbooru.UI.Controls
 
         public void ClearGallery()
         {
-            Items.Clear();
+            CleanCurrentItems();
             Gallery = null;
             LoadableSourceFactory = null;
         }
@@ -174,7 +174,13 @@ namespace Wbooru.UI.Controls
             {
                 try
                 {
-                    var l = FilterTag(source.Skip(current_index), counter, gallery).Take(option.GetPictureCountPerLoad).ToArray();
+                    var l = FilterTag(source.Skip(current_index), counter, gallery).Where(x=> 
+                    {
+                        if (unique_items.Contains(x.GalleryItemID))
+                            return false;
+                        unique_items.Add(x.GalleryItemID);
+                        return true;
+                    }).Take(option.GetPictureCountPerLoad).ToArray();
                     return (l, true);
                 }
                 catch (Exception e)
@@ -304,6 +310,14 @@ namespace Wbooru.UI.Controls
         double prev_y = 0;
         private bool is_requesting;
 
+        HashSet<string> unique_items = new HashSet<string>();
+
+        private void CleanCurrentItems()
+        {
+            Items.Clear();
+            unique_items.Clear();
+        }
+
         public void ChangePage(int page)
         {
             /*
@@ -312,7 +326,7 @@ namespace Wbooru.UI.Controls
             if (ViewType != GalleryViewType.Main || !(Gallery is IGalleryItemIteratorFastSkipable feature))
             {
                 Log.Info($"Use default method to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
-                Items.Clear();
+                CleanCurrentItems();
                 current_index = page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
                 TryRequestMoreItemFromLoadableSource();
             }
