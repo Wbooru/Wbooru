@@ -9,8 +9,10 @@ using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Wbooru.Network;
 using Wbooru.PluginExt;
 using Wbooru.Settings;
+using Wbooru.UI.Controls;
 
 namespace Wbooru.Utils.Resource
 {
@@ -43,6 +45,17 @@ namespace Wbooru.Utils.Resource
                     Log.Error("Failed to check&create tempoary cache folder:" + e.Message);
                 }
             }
+        }
+
+        public static async Task<Image> RequestImageFromNetworkAsync(string resource_name,string url, Action<(long downloaded_bytes, long content_bytes)> reporter = default)
+        {
+            const int retry = 3;
+
+            for (int i = 0; i < retry; i++)
+                if(await RequestImageAsync(resource_name, async () =>await Container.Default.GetExportedValue<ImageFetchDownloadScheduler>().GetImageAsync(url, null, reporter, true)) is Image image)
+                    return image;
+
+            return default;
         }
 
         public static async Task<Image> RequestImageAsync(string resource_name,Func<Task<Image>> manual_request)

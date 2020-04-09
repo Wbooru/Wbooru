@@ -21,20 +21,7 @@ namespace Wbooru.Utils
 
         public AsyncImageWrapper(string name,string dl) :this(async () =>
         {
-            var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
-
-            Image image;
-
-            do
-            {
-                image = await ImageResourceManager.RequestImageAsync(name, () =>
-                {
-                    return downloader.GetImageAsync(dl);
-                });
-            } while (image==null);
-
-            var r = image.ConvertToBitmapImage();
-            return r;
+            return (await ImageResourceManager.RequestImageFromNetworkAsync(name, dl))?.ConvertToBitmapImage();
         })
         {
 #if DEBUG

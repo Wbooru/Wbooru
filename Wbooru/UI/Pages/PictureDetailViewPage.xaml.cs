@@ -148,31 +148,24 @@ namespace Wbooru.UI.Pages
         {
             DetailImageBox.ImageSource = null;
             RefreshButton.IsBusy = true;
-
             const string notify_content = "加载图片中......";
 
             using var notify = LoadingStatus.BeginBusy(notify_content);
 
             var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
-            System.Drawing.Image image;
-
-            do
+            var image = await ImageResourceManager.RequestImageFromNetworkAsync(pick_download.FullFileName, pick_download.DownloadLink, d =>
             {
-                image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, async () =>
-                {
-                    return await downloader.GetImageAsync(pick_download.DownloadLink, null, d =>
-                    {
-                        (long cur, long total) = d;
-                        notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
-                    }, true);
-                });
-            } while (image == null);
+                var (cur,total) = d;
+                notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
+            });
 
-            CurrentDisplayImageLink = pick_download;
+            if (image is null)
+                Toast.ShowMessage("加载图片失败");
 
-            var source = image.ConvertToBitmapImage();
-            DetailImageBox.ImageSource = source;
+            CurrentDisplayImageLink = image is null ? null : pick_download;
+
+            DetailImageBox.ImageSource = image?.ConvertToBitmapImage();
 
             RefreshButton.IsBusy = false;
         }

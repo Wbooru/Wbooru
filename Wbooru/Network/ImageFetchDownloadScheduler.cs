@@ -109,7 +109,7 @@ namespace Wbooru.Network
             catch (Exception e)
             {
                 Log<ImageFetchDownloadScheduler>.Error($"Can't download image ({e.Message}):{state}");
-                Toast.ShowMessage($"无法下载图片({e.Message})");
+                //Toast.ShowMessage($"无法下载图片({e.Message})");
                 return null;
             }
         }
