@@ -28,7 +28,7 @@ namespace Wbooru.Network
         private List<Task<Image>> tasks_waiting_queue=new List<Task<Image>>();
         private HashSet<Task<Image>> tasks_running_queue=new HashSet<Task<Image>>();
 
-        public Task<Image> GetImageAsync(string download_path, CancellationToken? cancel_token = null, Action<(long downloaded_bytes, long content_bytes)> reporter = null, bool front_insert = false)
+        public Task<Image> DownloadImageAsync(string download_path, CancellationToken? cancel_token = null, Action<(long downloaded_bytes, long content_bytes)> reporter = null, bool front_insert = false)
         {
             Task<Image> task;
 

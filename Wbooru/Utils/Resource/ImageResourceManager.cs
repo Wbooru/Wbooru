@@ -52,7 +52,7 @@ namespace Wbooru.Utils.Resource
             const int retry = 3;
 
             for (int i = 0; i < retry; i++)
-                if(await RequestImageAsync(resource_name, async () =>await Container.Default.GetExportedValue<ImageFetchDownloadScheduler>().GetImageAsync(url, null, reporter, true)) is Image image)
+                if(await RequestImageAsync(resource_name, async () =>await Container.Default.GetExportedValue<ImageFetchDownloadScheduler>().DownloadImageAsync(url, null, reporter, true)) is Image image)
                     return image;
 
             return default;
