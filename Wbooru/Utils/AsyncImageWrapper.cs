@@ -21,7 +21,7 @@ namespace Wbooru.Utils
 
         public AsyncImageWrapper(string name,string dl) :this(async () =>
         {
-            return (await ImageResourceManager.RequestImageFromNetworkAsync(name, dl))?.ConvertToBitmapImage();
+            return (await ImageResourceManager.RequestImageFromNetworkAsync(name, dl,false))?.ConvertToBitmapImage();
         })
         {
 #if DEBUG

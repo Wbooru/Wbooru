@@ -47,12 +47,12 @@ namespace Wbooru.Utils.Resource
             }
         }
 
-        public static async Task<Image> RequestImageFromNetworkAsync(string resource_name,string url, Action<(long downloaded_bytes, long content_bytes)> reporter = default)
+        public static async Task<Image> RequestImageFromNetworkAsync(string resource_name,string url,bool load_first, Action<(long downloaded_bytes, long content_bytes)> reporter = default)
         {
             const int retry = 3;
 
             for (int i = 0; i < retry; i++)
-                if(await RequestImageAsync(resource_name, async () =>await Container.Default.GetExportedValue<ImageFetchDownloadScheduler>().DownloadImageAsync(url, null, reporter, true)) is Image image)
+                if(await RequestImageAsync(resource_name, async () =>await Container.Default.GetExportedValue<ImageFetchDownloadScheduler>().DownloadImageAsync(url, null, reporter, load_first)) is Image image)
                     return image;
 
             return default;

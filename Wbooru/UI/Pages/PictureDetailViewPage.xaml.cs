@@ -154,7 +154,7 @@ namespace Wbooru.UI.Pages
 
             var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
 
-            var image = await ImageResourceManager.RequestImageFromNetworkAsync(pick_download.FullFileName, pick_download.DownloadLink, d =>
+            var image = await ImageResourceManager.RequestImageFromNetworkAsync(pick_download.FullFileName, pick_download.DownloadLink , true , d =>
             {
                 var (cur,total) = d;
                 notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
