@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbooruPlugin.CommonMoebooru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbooruPlugin.WindowsStyleCustomizer", "Plugins\WbooruPlugin.WindowsStyleCustomizer\WbooruPlugin.WindowsStyleCustomizer.csproj", "{80B63919-3E69-46C7-8642-FE85FDA85084}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WbooruPlugin.YourSeihekiStatistics", "Plugins\WbooruPlugin.YourSeihekiStatistics\WbooruPlugin.YourSeihekiStatistics.csproj", "{687C824C-2FA5-496B-B7DD-177B82914E49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,12 @@ Global
 		{80B63919-3E69-46C7-8642-FE85FDA85084}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80B63919-3E69-46C7-8642-FE85FDA85084}.SQLITE_DEBUG|Any CPU.ActiveCfg = Release|Any CPU
 		{80B63919-3E69-46C7-8642-FE85FDA85084}.SQLITE_DEBUG|Any CPU.Build.0 = Release|Any CPU
+		{687C824C-2FA5-496B-B7DD-177B82914E49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{687C824C-2FA5-496B-B7DD-177B82914E49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{687C824C-2FA5-496B-B7DD-177B82914E49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{687C824C-2FA5-496B-B7DD-177B82914E49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{687C824C-2FA5-496B-B7DD-177B82914E49}.SQLITE_DEBUG|Any CPU.ActiveCfg = Release|Any CPU
+		{687C824C-2FA5-496B-B7DD-177B82914E49}.SQLITE_DEBUG|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +89,7 @@ Global
 		{E8208EE8-34AF-40F7-969F-8BA2DD8177AE} = {3FD0B528-7492-4FC6-A51D-8412234F9BD8}
 		{A7B4E73C-EF0B-4F42-A80D-0C3CCFFA734F} = {3FD0B528-7492-4FC6-A51D-8412234F9BD8}
 		{80B63919-3E69-46C7-8642-FE85FDA85084} = {3FD0B528-7492-4FC6-A51D-8412234F9BD8}
+		{687C824C-2FA5-496B-B7DD-177B82914E49} = {3FD0B528-7492-4FC6-A51D-8412234F9BD8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {085640C6-0CAB-4295-B65D-86AA4622F986}
