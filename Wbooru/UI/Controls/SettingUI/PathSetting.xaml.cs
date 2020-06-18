@@ -37,7 +37,8 @@ namespace Wbooru.UI.Controls.SettingUI
         public IntPtr Handle => new WindowInteropHelper(Window.GetWindow(this)).Handle;
 
         public static readonly DependencyProperty ProxyValueProperty =
-            DependencyProperty.Register("ProxyValue", typeof(string), typeof(PathSetting), new PropertyMetadata(default, (d, e) => {
+            DependencyProperty.Register("ProxyValue", typeof(string), typeof(PathSetting), new PropertyMetadata(default(string), (d, e) =>
+            {
                 (d as PathSetting).Wrapper.ProxyValue = e.NewValue;
             }));
 

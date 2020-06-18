@@ -146,7 +146,7 @@ namespace Wbooru.Kernel.Updater
 
         internal static void ApplyPluginUpdate()
         {
-            var zip_files = CommandLine.ValueOptions
+            var zip_files = CommandLineHelper.ValueOptions
                 .Where(x => x.Name == "update_plugin_zip_file")
                 .Select(x => x.Value.Trim());
 

@@ -148,8 +148,8 @@ namespace Wbooru.Kernel.Updater
             Log.Info($"current_exe_name = {current_exe_name}");
             var current_path = AppDomain.CurrentDomain.BaseDirectory;
             Log.Info($"current_path = {current_path}");
-            CommandLine.TryGetOptionValue("UpdateTargetPath", out string target_path);
-            CommandLine.TryGetOptionValue("ReleaseReadmeURL", out string readme_url);
+            CommandLineHelper.TryGetOptionValue("UpdateTargetPath", out string target_path);
+            CommandLineHelper.TryGetOptionValue("ReleaseReadmeURL", out string readme_url);
             Log.Info($"target_path = {target_path}");
 
             var files = Directory.EnumerateFiles(current_path, "*", SearchOption.AllDirectories).Where(x => {

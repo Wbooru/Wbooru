@@ -237,7 +237,7 @@ namespace Wbooru.Kernel
                         }
                         catch (Exception e)
                         {
-                            Log.Error($"Cant seaarch tags ({string.Join(",", tag_names)}) from gallery {(searcher as Gallery).GalleryName}");
+                            Log.Error($"Cant seaarch tags ({string.Join(",", tag_names)}) from gallery {(searcher as Gallery).GalleryName} : {e.Message}");
                             return new Dictionary<string, Tag>();
                         }
                     })).ToArray();

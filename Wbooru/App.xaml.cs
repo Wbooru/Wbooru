@@ -62,28 +62,28 @@ namespace Wbooru
         {
             Log.Info("Enter PreprocessCommandLine()");
             //check if it need finish updating.
-            if (CommandLine.ContainSwitchOption("update"))
+            if (CommandLineHelper.ContainSwitchOption("update"))
             {
                 ProgramUpdater.ApplyUpdate();
             }
 
-            if (CommandLine.ContainSwitchOption("update_plugin"))
+            if (CommandLineHelper.ContainSwitchOption("update_plugin"))
             {
                 PluginUpdaterManager.ApplyPluginUpdate();
             }
 
-            if (CommandLine.ContainSwitchOption("database_backup"))
+            if (CommandLineHelper.ContainSwitchOption("database_backup"))
             {
-                if (CommandLine.TryGetOptionValue("to",out string to))
+                if (CommandLineHelper.TryGetOptionValue("to",out string to))
                 {
                     LocalDBContext.BackupDatabase(to);
                     Environment.Exit(0);
                 }
             }
 
-            if (CommandLine.ContainSwitchOption("database_restore"))
+            if (CommandLineHelper.ContainSwitchOption("database_restore"))
             {
-                if (CommandLine.TryGetOptionValue("to", out string to) && CommandLine.TryGetOptionValue("from", out string from))
+                if (CommandLineHelper.TryGetOptionValue("to", out string to) && CommandLineHelper.TryGetOptionValue("from", out string from))
                 {
                     LocalDBContext.RestoreDatabase(from,to);
                     Environment.Exit(0);

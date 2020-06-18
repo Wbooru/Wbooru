@@ -25,11 +25,11 @@ namespace Wbooru.Utils
 
 
     //xx.exe -f=123 -o = "name" -o = "56467" -p 
-    public static class CommandLine
+    public static class CommandLineHelper
     {
         static IEnumerable<Option> cached_options;
 
-        static CommandLine()
+        static CommandLineHelper()
         {
             cached_options = Environment.GetCommandLineArgs().Select(x => Regex.Match(x, @"-([a-zA-Z0-9_]\w*)(=(.+))?"))
                 .Where(x => x.Success)
