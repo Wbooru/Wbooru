@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Data.Entity;
 using System.Data.SQLite;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,17 +21,16 @@ namespace Wbooru.Persistence
 
         public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
 
-        public LocalDBContext() : base(DBConnectionFactory.GetConnection(), false)
+        public LocalDBContext() : base(new DbContextOptionsBuilder().UseSqlite(DBConnectionFactory.GetConnection()).Options)
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<LocalDBContext, Migrations.Configuration>());
-
-            if (Setting<GlobalSetting>.Current.EnableDatabaseLog)
-                Database.Log = msg => Log.Debug(msg, "DatabaseLog");
+            Database.Migrate();
+            //if (Setting<GlobalSetting>.Current.EnableDatabaseLog)
+            //    Database.Log = msg => Log.Debug(msg, "DatabaseLog");
         }
 
         public DbSet<Download> Downloads { get; set; }
         public DbSet<TagRecord> Tags { get; set; }
-        public DbSet<ShadowGalleryItem> ShadowGalleryItems { get; set; }
+        public DbSet<GalleryItem> GalleryItems { get; set; }
         public DbSet<VisitRecord> VisitRecords { get; set; }
         public DbSet<GalleryItemMark> ItemMarks { get; set; }
 
@@ -47,6 +47,11 @@ namespace Wbooru.Persistence
             Log.Info($"Copy sqlite db file from {from} to {to}");
 
             File.Copy(from, to, true);
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
         }
     }
 }

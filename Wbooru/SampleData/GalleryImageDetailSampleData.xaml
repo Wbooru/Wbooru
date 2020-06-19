@@ -1,5 +1,0 @@
-﻿<Gallery:GalleryImageDetail xmlns:Gallery="clr-namespace:Wbooru.Models.Gallery" xmlns:Drawing="clr-namespace:System.Drawing;assembly=System.Drawing" Author="Phasellus class praesent cras" CreateDate="05/22/2019 18:33:01" ID="Vestibulum maecenas curabitur aenean nam" Rate="Convallis dignissim elementum" Source="Integer accumsan bibendum dictumst adipiscing" Score="Eleifend quisque dis est parturient" Updater="Sed consequat aliquam duis mauris">
-	<Gallery:GalleryImageDetail.Resolution>
-		<Drawing:Size Height="71" Width="91"/>
-	</Gallery:GalleryImageDetail.Resolution>
-</Gallery:GalleryImageDetail>

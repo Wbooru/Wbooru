@@ -35,7 +35,7 @@ namespace Wbooru.Models
 
         public string DownloadUrl { get; set; }
 
-        public virtual ShadowGalleryItem GalleryItem { get; set; }
+        public virtual GalleryItem GalleryItem { get; set; }
 
         /// <summary>
         /// 文件名

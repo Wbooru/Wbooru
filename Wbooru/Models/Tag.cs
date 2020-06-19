@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace Wbooru.Models
         General=0, Artist=1, Character=4, Copyright=3,/* Ambiguous,*/Unknown=-2857, Circle=5, Faults=6
     }
 
+    [Owned]
     public class Tag
     {
         public string Name { get; set; }

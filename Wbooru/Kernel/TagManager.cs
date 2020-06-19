@@ -25,9 +25,9 @@ namespace Wbooru.Kernel
         {
             try
             {
-                MarkedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Marked))));
-                FiltedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Filter))));
-                SubscribedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))));
+                MarkedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsEnumerable().Where(x => x.RecordType.HasFlag(TagRecordType.Marked))));
+                FiltedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsEnumerable().Where(x => x.RecordType.HasFlag(TagRecordType.Filter))));
+                SubscribedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsEnumerable().Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))));
 
                 IEnumerable<TagRecord> order(IEnumerable<TagRecord> source)
                 {
@@ -270,7 +270,7 @@ namespace Wbooru.Kernel
             var tag_names = tags.Select(x => x.Name).ToArray();
 
             var exist_record = (from record in
-                             (from record in LocalDBContext.Instance.Tags
+                             (from record in LocalDBContext.Instance.Tags.AsEnumerable()
                               where tag_names.Contains(record.Tag.Name)
                               where record.Tag.Type != TagType.Unknown
                               select record)
@@ -304,7 +304,7 @@ namespace Wbooru.Kernel
             var strict_check = (!Setting<GlobalSetting>.Current.SearchTagMetaStrict) || gallery_name == null;
         
             var result = from record in
-                             (from record in LocalDBContext.Instance.Tags
+                             (from record in LocalDBContext.Instance.Tags.AsEnumerable()
                               where tag_names.Contains(record.Tag.Name)
                               where record.Tag.Type != TagType.Unknown
                               select record)

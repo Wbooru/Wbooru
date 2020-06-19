@@ -1,35 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Drawing;
 using Wbooru.Models.Gallery;
 using Wbooru.Galleries;
 using Wbooru.Settings;
-using Wbooru.Utils.Resource;
 using Wbooru.Network;
 using System.Windows.Media.Animation;
 using Wbooru.UI.Controls;
 using Wbooru.Utils;
 using Wbooru.Kernel;
 using Wbooru.Galleries.SupportFeatures;
-using System.Collections.ObjectModel;
 using Wbooru.Models;
 using Wbooru.Persistence;
 using Wbooru.UI.Controls.PluginExtension;
-using System.Windows.Markup;
-using Wbooru.UI.Dialogs;
 
 namespace Wbooru.UI.Pages
 {
@@ -321,7 +308,7 @@ namespace Wbooru.UI.Pages
             item_loading_notify = null;
         }
 
-        private void ShowMarkPicturesButton_Click(object sender, RoutedEventArgs e)
+        private async void ShowMarkPicturesButton_Click(object sender, RoutedEventArgs e)
         {
             if (GridViewer.ViewType == GalleryViewType.Marked)
                 return;
@@ -330,11 +317,10 @@ namespace Wbooru.UI.Pages
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
 
-            var source = new Func<IEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks
-                .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.Item.GalleryName), gallery_item = x })
-                .Where(x => x.gallery != null)
-                .ToArray()//avoid SQL.
-                .Select(x => x.gallery_item.Item.ConvertToNormalModel()));
+            var source = new Func<IEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks.AsEnumerable()
+                .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.Item.GalleryName)))
+                .Select(x=>x.Item)
+                .ToArray());//avoid SQL.
                  
 
             GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature!=null?"在线":"本地") + "收藏列表";
@@ -482,11 +468,12 @@ namespace Wbooru.UI.Pages
 
             var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
 
-            var source = new Func<IEnumerable<GalleryItem>>(() => LocalDBContext.Instance.VisitRecords.OrderByDescending(x=>x.LastVisitTime).Select(x => x.GalleryItem)
-                .Select(x => new { gallery = galleries.FirstOrDefault(y => y == x.GalleryName), gallery_item = x })
-                .Where(x => x.gallery != null)
-                .ToArray()//avoid SQL.
-                .Select(x => x.gallery_item.ConvertToNormalModel()));
+            var source = new Func<IEnumerable<GalleryItem>>(() => LocalDBContext.Instance.VisitRecords.AsEnumerable()
+            .OrderByDescending(x => x.LastVisitTime)
+            .Select(x => x.GalleryItem)
+            .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)))
+            .ToArray()
+            );//avoid SQL.
 
 
             GalleryTitle = "历史浏览记录";

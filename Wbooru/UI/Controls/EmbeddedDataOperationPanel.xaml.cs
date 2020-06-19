@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -102,7 +102,7 @@ namespace Wbooru.UI.Controls
                     CleanTable(LocalDBContext.Instance.Tags, "正在清理标签数据");
                     CleanTable(LocalDBContext.Instance.ItemMarks, "正在清理收藏记录");
                     CleanTable(LocalDBContext.Instance.VisitRecords, "正在清理浏览记录");
-                    CleanTable(LocalDBContext.Instance.ShadowGalleryItems, "正在清理图片数据缓存记录");
+                    CleanTable(LocalDBContext.Instance.GalleryItems, "正在清理图片数据缓存记录");
 
                     await LocalDBContext.Instance.SaveChangesAsync();
                     transaction.Commit();

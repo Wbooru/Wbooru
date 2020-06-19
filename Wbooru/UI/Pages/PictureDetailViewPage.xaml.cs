@@ -363,7 +363,7 @@ namespace Wbooru.UI.Pages
                     {
                         var visit = new VisitRecord()
                         {
-                            GalleryItem = item.ConvertToStorableModel(),
+                            GalleryItem = item,
                             LastVisitTime = DateTime.Now
                         };
 
@@ -380,7 +380,7 @@ namespace Wbooru.UI.Pages
                 }
             });
 
-            var is_mark = DB.ItemMarks.Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
+            var is_mark = DB.ItemMarks.AsEnumerable().Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
 
             var (is_vote, _) = await VoteManager.GetVote(Gallery, PictureInfo);
 
@@ -427,7 +427,7 @@ namespace Wbooru.UI.Pages
                     {
                         DB.ItemMarks.Add(new GalleryItemMark()
                         {
-                            Item = info.ConvertToStorableModel(),
+                            Item = info,
                             Time = DateTime.Now
                         });
 
@@ -492,7 +492,7 @@ namespace Wbooru.UI.Pages
                 {
                     DownloadUrl = download_link.DownloadLink,
                     TotalBytes = download_link.FileLength,
-                    GalleryItem = PictureInfo.ConvertToStorableModel(),
+                    GalleryItem = PictureInfo,
                     FileName = file_name,
                     DownloadFullPath = full_file_path,
                     DisplayDownloadedLength = 0,

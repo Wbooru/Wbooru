@@ -36,7 +36,7 @@ namespace Wbooru.Persistence
                 ConnectionString = new SQLiteConnectionStringBuilder()
                 {
                     DataSource = db_file_path,
-                    ForeignKeys = true
+                    ForeignKeys = false
                 }.ConnectionString
             };
         }

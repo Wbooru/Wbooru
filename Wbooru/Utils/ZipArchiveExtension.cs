@@ -10,7 +10,7 @@ namespace Wbooru.Utils
 {
     public static class ZipArchiveExtension
     {
-        public static void ExtractToDirectory(this ZipArchive archive, string destinationDirPath , bool overwrite)
+        public static void ExtractToDirectoryEx(this ZipArchive archive, string destinationDirPath , bool overwrite)
         {
             if (!overwrite)
             {

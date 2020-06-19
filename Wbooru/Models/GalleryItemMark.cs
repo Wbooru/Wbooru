@@ -15,6 +15,6 @@ namespace Wbooru.Models
 
         public DateTime Time { get; set; }
 
-        public virtual ShadowGalleryItem Item { get; set; }
+        public virtual GalleryItem Item { get; set; }
     }
 }

@@ -81,7 +81,7 @@ namespace Wbooru.Kernel
 
             try
             {
-                foreach (var item in db.Downloads.Select(x => new DownloadWrapper()
+                foreach (var item in db.Downloads.AsEnumerable().Select(x => new DownloadWrapper()
                 {
                     DownloadInfo = x,
                     CurrentDownloadedLength = x.DisplayDownloadedLength,
@@ -109,7 +109,7 @@ namespace Wbooru.Kernel
 
             var db = LocalDBContext.Instance;
 
-            if (download.IsSaveInDB && db.Downloads.Remove(download.DownloadInfo) is Download)
+            if (download.IsSaveInDB && db.Downloads.Remove(download.DownloadInfo).Entity is Download)
             {
                 Log.Info("Deleted entity record in DB");
                 db.SaveChanges();

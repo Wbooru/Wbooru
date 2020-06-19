@@ -157,7 +157,7 @@ namespace Wbooru.Kernel.Updater
                 try
                 {
                     using var archive = ZipFile.OpenRead(file);
-                    archive.ExtractToDirectory(exe_path, true);
+                    archive.ExtractToDirectoryEx(exe_path, true);
                 }
                 catch (Exception e)
                 {

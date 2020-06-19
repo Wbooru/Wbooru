@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,25 +13,17 @@ namespace Wbooru.Models.Gallery
 {
     public class GalleryItem
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
+
+        public ImageSize PreviewImageSize { get; set; }
         public string PreviewImageDownloadLink { get; set; }
-        public string DownloadFileName { get; set; }
-        public Size PreviewImageSize { get; set; }
+        public string DownloadFileName { get; set; }    
         public string GalleryName { get; set; }
+
         public string GalleryItemID { get; set; }
 
         public override string ToString() => $"{GalleryItemID} {DownloadFileName}";
-
-        public ShadowGalleryItem ConvertToStorableModel()
-        {
-            return new ShadowGalleryItem()
-            {
-                PreviewImageDownloadLink = this.PreviewImageDownloadLink,
-                DownloadFileName = this.DownloadFileName,
-                PreviewImageHeight = this.PreviewImageSize.Height,
-                PreviewImageWidth = this.PreviewImageSize.Width,
-                GalleryName = this.GalleryName,
-                GalleryItemID = this.GalleryItemID,
-            };
-        }
     }
 }

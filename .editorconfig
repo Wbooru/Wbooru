@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# WPF0041: Set mutable dependency properties using SetCurrentValue.
+dotnet_diagnostic.WPF0041.severity = none

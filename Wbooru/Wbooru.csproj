@@ -1,438 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C707353F-3E50-49B7-A2E1-1DF669305470}</ProjectGuid>
     <DisableFody Condition="'$(Configuration)' == 'Debug'">true</DisableFody>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Wbooru</RootNamespace>
-    <AssemblyName>Wbooru</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <LangVersion>preview</LangVersion>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;SQLITE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SQLITE_DEBUG|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\SQLITE_DEBUG\</OutputPath>
     <DefineConstants>TRACE;DEBUG;SQLITE_DEBUG</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>preview</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Galleries\Gallery.cs" />
-    <Compile Include="Galleries\SupportFeatures\AccountInfo.cs" />
-    <Compile Include="Galleries\SupportFeatures\GallerySupportFeature.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryAccount.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryFeature.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryItemIteratorFastSkipable.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryMark.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryNSFWFilter.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGallerySearchImage.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryTagMetaSearch.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryTagSearch.cs" />
-    <Compile Include="Galleries\SupportFeatures\IGalleryVote.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Kernel\CacheTagMetaProgressStatus.cs" />
-    <Compile Include="Kernel\Container.cs" />
-    <Compile Include="Kernel\DownloadManager.cs" />
-    <Compile Include="Kernel\INavigatableAction.cs" />
-    <Compile Include="Kernel\NavigationHelper.cs" />
-    <Compile Include="Kernel\Updater\PluginMarket\DefaultPluginMarket.cs" />
-    <Compile Include="Kernel\Updater\PluginMarket\PluginMarket.cs" />
-    <Compile Include="Kernel\Updater\PluginMarket\PluginMarketPost.cs" />
-    <Compile Include="Kernel\Updater\PluginMarket\PluginMarketRelease.cs" />
-    <Compile Include="Kernel\Updater\PluginUpdaterManager.cs" />
-    <Compile Include="Kernel\Updater\ProgramUpdater.cs" />
-    <Compile Include="Kernel\Updater\ReleaseInfo.cs" />
-    <Compile Include="Kernel\SchedulerManager.cs" />
-    <Compile Include="Kernel\TagManager.cs" />
-    <Compile Include="Kernel\Updater\ReleaseType.cs" />
-    <Compile Include="Kernel\VoteManager.cs" />
-    <Compile Include="Migrations\202001301252010_Init.cs" />
-    <Compile Include="Migrations\202001301252010_Init.Designer.cs">
-      <DependentUpon>202001301252010_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Download.cs" />
-    <Compile Include="Models\DownloadTaskStatus.cs" />
-    <Compile Include="Models\DownloadWrapper.cs" />
-    <Compile Include="Models\Gallery\Annotation\DisplayAutoIgnoreAttribute.cs" />
-    <Compile Include="Models\Gallery\Annotation\DisplayClickActionAttribute.cs" />
-    <Compile Include="Models\Gallery\Annotation\DisplayNameAttribute.cs" />
-    <Compile Include="Models\Gallery\Annotation\DisplayOrderAttribute.cs" />
-    <Compile Include="Models\Gallery\DownloadableImageLink.cs" />
-    <Compile Include="Models\Gallery\GalleryImageDetail.cs" />
-    <Compile Include="Models\Gallery\ShadowGalleryItem.cs" />
-    <Compile Include="Models\SettingUI\PropertyInfoWrapper.cs" />
-    <Compile Include="Models\Tag.cs" />
-    <Compile Include="Network\ImageFetchDownloadScheduler.cs" />
-    <Compile Include="Network\RequestHelper.cs" />
-    <Compile Include="Persistence\DBConnectionFactory.cs" />
-    <Compile Include="Persistence\LocalDBContext.cs" />
-    <Compile Include="Models\GalleryItemMark.cs" />
-    <Compile Include="Models\TagRecord.cs" />
-    <Compile Include="Models\VisitRecord.cs" />
-    <Compile Include="Persistence\SQLiteConfiguration.cs" />
-    <Compile Include="PluginExt\IPluginUpdatable.cs" />
-    <Compile Include="PluginExt\ISchedulable.cs" />
-    <Compile Include="PluginExt\PluginInfo.cs" />
-    <Compile Include="Settings\AccountInfoDataContainer.cs" />
-    <Compile Include="Settings\DataOperationPanel.cs" />
-    <Compile Include="Settings\GlobalSetting.cs" />
-    <Compile Include="Settings\Setting.cs" />
-    <Compile Include="Settings\SettingBase.cs" />
-    <Compile Include="Settings\SettingFileEntity.cs" />
-    <Compile Include="Settings\SettingManager.cs" />
-    <Compile Include="Models\Gallery\GalleryItem.cs" />
-    <Compile Include="Models\Gallery\GalleryItemUIElementWrapper.cs" />
-    <Compile Include="Settings\TagFilterTarget.cs" />
-    <Compile Include="Settings\UIAttributes\CustomUIAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\IgnoreAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\NeedRestartAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\EnableByAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\PathAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\DescriptionAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\GroupAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\ListAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\NameAliasAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\RangeAttribute.cs" />
-    <Compile Include="Settings\UIAttributes\SettingUIAttributeBase.cs" />
-    <Compile Include="UI\Controls\EmbeddedDataOperationPanel.xaml.cs">
-      <DependentUpon>EmbeddedDataOperationPanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\GalleryGridView.xaml.cs">
-      <DependentUpon>GalleryGridView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\ImageViewer.xaml.cs">
-      <DependentUpon>ImageViewer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\LoadingStatusDisplayer.xaml.cs">
-      <DependentUpon>LoadingStatusDisplayer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\MenuButton.xaml.cs">
-      <DependentUpon>MenuButton.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\OperableImageBox.xaml.cs">
-      <DependentUpon>OperableImageBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\PluginExtension\IExtraDetailImageMenuItem.cs" />
-    <Compile Include="UI\Controls\PluginExtension\IExtraMainMenuItem.cs" />
-    <Compile Include="UI\Controls\PluginExtension\IExtraUICreator.cs" />
-    <Compile Include="UI\Controls\SearchInput.xaml.cs">
-      <DependentUpon>SearchInput.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\SettingUI\CommonValueSetting.xaml.cs">
-      <DependentUpon>CommonValueSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\SettingUI\ListSetting.xaml.cs">
-      <DependentUpon>ListSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\SettingUI\PathSetting.xaml.cs">
-      <DependentUpon>PathSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\SettingUI\RangeValueSetting.xaml.cs">
-      <DependentUpon>RangeValueSetting.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\TagListViewer.xaml.cs">
-      <DependentUpon>TagListViewer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\Toast.xaml.cs">
-      <DependentUpon>Toast.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\Dialog.cs" />
-    <Compile Include="UI\Dialogs\DialogContentBase.cs" />
-    <Compile Include="UI\Dialogs\DialogContentHost.xaml.cs">
-      <DependentUpon>DialogContentHost.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\MessageBox.xaml.cs">
-      <DependentUpon>MessageBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\SelectableImageList.xaml.cs">
-      <DependentUpon>SelectableImageList.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\SettingRestartComfirmDialog.xaml.cs">
-      <DependentUpon>SettingRestartComfirmDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Dialogs\TagMetaPredownloadProgressDisplayer.xaml.cs">
-      <DependentUpon>TagMetaPredownloadProgressDisplayer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Pages\AboutPage.xaml.cs">
-      <DependentUpon>AboutPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Pages\CustomLoginPage.cs" />
-    <Compile Include="UI\Pages\DefaultLoginPage.xaml.cs">
-      <DependentUpon>DefaultLoginPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Pages\DownloadListPage.xaml.cs">
-      <DependentUpon>DownloadListPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Pages\PictureDetailViewPage.xaml.cs">
-      <DependentUpon>PictureDetailViewPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Pages\PluginManagerPage.xaml.cs">
-      <DependentUpon>PluginManagerPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Pages\SettingPage.xaml.cs">
-      <DependentUpon>SettingPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Pages\TagManagePage.xaml.cs">
-      <DependentUpon>TagManagePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Panels\GridFlowPanel.cs" />
-    <Compile Include="UI\Panels\VirtualizingGridFlowPanel.cs" />
-    <Compile Include="UI\ValueConverters\BytesLength2VisibilityConverter.cs" />
-    <Compile Include="UI\ValueConverters\CheckIfJumpPageButtonConverter.cs" />
-    <Compile Include="UI\ValueConverters\DisplaySpeedConverter.cs" />
-    <Compile Include="UI\ValueConverters\FormatBytesLengthConverter.cs" />
-    <Compile Include="UI\ValueConverters\SettingUI\AssemblyTypeDisplayConverter.cs" />
-    <Compile Include="UI\ValueConverters\SettingUI\AutoValueConverter.cs" />
-    <Compile Include="UI\ValueConverters\SettingUI\RangeValueConverter.cs" />
-    <Compile Include="UI\ValueConverters\SimpleExpressionConverters.cs" />
-    <Compile Include="UI\ValueConverters\VisiableIfFeatureSupportConverter.cs" />
-    <Compile Include="Utils\AsyncImageWrapper.cs" />
-    <Compile Include="Utils\CacheFolderHelper.cs" />
-    <Compile Include="Utils\CalculatableFormatter.cs" />
-    <Compile Include="Utils\CommandLineHelper.cs" />
-    <Compile Include="Utils\ConsoleWindow.cs" />
-    <Compile Include="Utils\FileNameHelper.cs" />
-    <Compile Include="Utils\ICacheCleanable.cs" />
-    <Compile Include="Utils\IEnumerableExtension.cs" />
-    <Compile Include="Utils\IEnumerableMultiThreadable.cs" />
-    <Compile Include="Utils\ExceptionHelper.cs" />
-    <Compile Include="Utils\ImageExtension.cs" />
-    <Compile Include="Utils\InteropStream.cs" />
-    <Compile Include="Utils\Log.cs" />
-    <Compile Include="Utils\MathEx.cs" />
-    <Compile Include="Utils\ObjectPool.cs" />
-    <Compile Include="Utils\Resource\ImageResourceManager.cs" />
-    <Compile Include="UI\ValueConverters\AutoFitHeightConverter.cs" />
-    <Compile Include="UI\ValueConverters\CustomBindableMarginConverter.cs" />
-    <Compile Include="UI\ValueConverters\DefaultBorderHeightConverter.cs" />
-    <Compile Include="UI\ValueConverters\FormatDownloadDescriptionConverter.cs" />
-    <Compile Include="UI\ValueConverters\GalleryFeatureContainConverter.cs" />
-    <Compile Include="UI\ValueConverters\ImageAsyncLoadingConverter.cs" />
-    <Compile Include="UI\ValueConverters\ItemMarginConverter.cs" />
-    <Compile Include="UI\ValueConverters\TagColorConverter.cs" />
-    <Compile Include="Utils\UpdaterHelper.cs" />
-    <Compile Include="Utils\ViusalTreeHelperEx.cs" />
-    <Compile Include="Utils\ZipArchiveExtension.cs" />
-    <Page Include="UI\Controls\EmbeddedDataOperationPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\ImageViewer.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Controls\OperableImageBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\SearchInput.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\SettingUI\CommonValueSetting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\SettingUI\ListSetting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\SettingUI\PathSetting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\SettingUI\RangeValueSetting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\TagListViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\Toast.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Dialogs\DialogContentHost.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Dialogs\MessageBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Dialogs\SelectableImageList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Dialogs\SettingRestartComfirmDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Dialogs\TagMetaPredownloadProgressDisplayer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Pages\AboutPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Pages\DefaultLoginPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Pages\DownloadListPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Pages\MainGalleryPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\Pages\MainGalleryPage.xaml.cs">
-      <DependentUpon>MainGalleryPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="UI\Controls\GalleryGridView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\LoadingStatusDisplayer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\MenuButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\MainWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Pages\PictureDetailViewPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Pages\PluginManagerPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Pages\SettingPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Pages\TagManagePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Migrations\202001301252010_Init.resx">
-      <DependentUpon>202001301252010_Init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Dependencies\LoadingIndicators.WPF\src\LoadingIndicators.WPF\LoadingIndicators.WPF.csproj">
-      <Project>{77f764d6-27ce-4b6d-beb1-c6520ce1b6a2}</Project>
-      <Name>LoadingIndicators.WPF</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\LoadingIndicators.WPF\src\LoadingIndicators.WPF\LoadingIndicators.WPF.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
@@ -449,9 +40,6 @@
     </PackageReference>
     <PackageReference Include="DynamicExpresso.Core">
       <Version>2.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="EntityFramework">
-      <Version>6.3.0-preview5-19254-05</Version>
     </PackageReference>
     <PackageReference Include="ExtrameFunctionCalculator">
       <Version>1.0.1</Version>
@@ -470,25 +58,24 @@
     <PackageReference Include="LambdaConverters">
       <Version>3.0.0</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces">
-      <Version>1.0.0</Version>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.2</Version>
     </PackageReference>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SQLite">
       <Version>1.0.110</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite.Core">
-      <Version>1.0.110</Version>
-    </PackageReference>
-    <PackageReference Include="System.Data.SQLite.EF6">
-      <Version>1.0.110</Version>
-    </PackageReference>
-    <PackageReference Include="System.Data.SQLite.EF6.Migrations">
-      <Version>1.0.106</Version>
-    </PackageReference>
-    <PackageReference Include="System.Data.SQLite.Linq">
       <Version>1.0.110</Version>
     </PackageReference>
     <PackageReference Include="System.Interactive.Async">
@@ -497,9 +84,7 @@
     <PackageReference Include="System.Linq.Async">
       <Version>4.0.0</Version>
     </PackageReference>
-    <PackageReference Include="System.Runtime.Caching">
-      <Version>4.6.0-preview5.19224.8</Version>
-    </PackageReference>
+    <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
       <Version>4.5.2</Version>
     </PackageReference>
@@ -509,9 +94,14 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
-    <PackageReference Include="System.Windows.Interactivity.WPF">
-      <Version>2.0.20525</Version>
-    </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Remove="Galleries\IContainDetail.cs" />
+    <Compile Remove="UI\Controls\SettingUI\MultiSelectComboBox.xaml.cs" />
+    <Compile Remove="UI\ValueConverters\AutoPickImageConverter.cs" />
+    <Page Remove="UI\Controls\SettingUI\MultiSelectComboBox.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
 </Project>

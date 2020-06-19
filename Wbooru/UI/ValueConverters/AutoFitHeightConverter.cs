@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
+using Wbooru.Models;
 
 namespace Wbooru.UI.ValueConverters
 {
@@ -14,7 +15,7 @@ namespace Wbooru.UI.ValueConverters
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values.Length < 2 || !(values[0] is Size image) ||!(values[1] is uint item_width))
+            if (values.Length < 2 || !(values[0] is ImageSize image) ||!(values[1] is uint item_width))
                 return 0;
 
             var height= item_width * 1.0d * image.Height / image.Width;

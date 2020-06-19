@@ -85,7 +85,7 @@
                                 Width="{Binding GridItemWidth, ElementName=controlss}"
                                 Background="#3FFFFFFF">
                                 <Border.Height>
-                                    <MultiBinding Converter="{StaticResource AutoFitHeightConverter}" ConverterParameter="BOARD">
+                                    <MultiBinding Converter="{StaticResource AutoFitHeightConverter}">
                                         <Binding Path="PreviewImageSize" />
                                         <Binding ElementName="controlss" Path="GridItemWidth" />
                                     </MultiBinding>
