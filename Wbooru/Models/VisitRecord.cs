@@ -12,7 +12,8 @@ namespace Wbooru.Models
     public class VisitRecord
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int VisitRecordID { get; set; } = -1000;
+        [Key]
+        public int VisitRecordID { get; set; }
 
         public virtual GalleryItem GalleryItem { get; set; }
         public DateTime LastVisitTime { get; set; }

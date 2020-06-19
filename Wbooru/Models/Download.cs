@@ -14,11 +14,6 @@ namespace Wbooru.Models
 {
     public class Download
     {
-        public Download()
-        {
-            DownloadId = MathEx.Random(max: -1);
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DownloadId { get; set; }

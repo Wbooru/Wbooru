@@ -23,6 +23,12 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Logs\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <None Remove="Logs\**" />
+    <Page Remove="Logs\**" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Dependencies\LoadingIndicators.WPF\src\LoadingIndicators.WPF\LoadingIndicators.WPF.csproj" />
   </ItemGroup>
   <ItemGroup>
