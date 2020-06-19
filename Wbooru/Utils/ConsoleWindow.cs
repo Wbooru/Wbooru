@@ -72,18 +72,15 @@ namespace Wbooru.Utils
             Type type = typeof(System.Console);
 
             System.Reflection.FieldInfo _out = type.GetField("_out",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)??type.GetField("s_out",
                 System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
             System.Reflection.FieldInfo _error = type.GetField("_error",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-
-            System.Reflection.MethodInfo _InitializeStdOutError = type.GetMethod("InitializeStdOutError",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)??type.GetField("s_error",
                 System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
             _out?.SetValue(null, null);
             _error?.SetValue(null, null);
-
-            _InitializeStdOutError?.Invoke(null, new object[] { true });
         }
 
         static void SetOutAndErrorNull()

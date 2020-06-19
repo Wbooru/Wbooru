@@ -14,7 +14,6 @@ using Wbooru.Utils;
 using System.IO;
 using System.Threading.Tasks;
 using Wbooru.PluginExt;
-using MessageBox = System.Windows.Forms.MessageBox;
 using Wbooru.Kernel.Updater.PluginMarket;
 using Wbooru.Persistence;
 
@@ -167,7 +166,7 @@ namespace Wbooru
                     return;
 
                 Process.Start(Log.LogFilePath);
-                MessageBox.Show("Wbooru遇到了无法解决的错误，程序即将关闭。请查看日志文件.", "Wbooru", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Stop);
+                MessageBox.Show("Wbooru遇到了无法解决的错误，程序即将关闭。请查看日志文件.", "Wbooru",MessageBoxButton.OK,MessageBoxImage.Error);
 
                 Environment.Exit(0);
             }

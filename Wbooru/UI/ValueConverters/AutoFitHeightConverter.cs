@@ -19,7 +19,6 @@ namespace Wbooru.UI.ValueConverters
                 return 0;
 
             var height= item_width * 1.0d * image.Height / image.Width;
-            Log<AutoFitHeightConverter>.Debug(height.ToString());
 
             return height;
         }

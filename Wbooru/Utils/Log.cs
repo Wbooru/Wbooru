@@ -127,6 +127,7 @@ namespace Wbooru
                 return;
 
             OutputDebugString(message);
+            System.Diagnostics.Debug.Write(message);
 #endif
             Console.Write(message);
             FileWrite(message);
