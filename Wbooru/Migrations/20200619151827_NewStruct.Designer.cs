@@ -9,8 +9,8 @@ using Wbooru.Persistence;
 namespace Wbooru.Migrations
 {
     [DbContext(typeof(LocalDBContext))]
-    [Migration("20200619025733_InitNewDBStuct")]
-    partial class InitNewDBStuct
+    [Migration("20200619151827_NewStruct")]
+    partial class NewStruct
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -81,7 +81,7 @@ namespace Wbooru.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ItemID")
+                    b.Property<int?>("GalleryItemID")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Time")
@@ -89,7 +89,7 @@ namespace Wbooru.Migrations
 
                     b.HasKey("GalleryItemMarkID");
 
-                    b.HasIndex("ItemID");
+                    b.HasIndex("GalleryItemID");
 
                     b.ToTable("ItemMarks");
                 });
@@ -140,11 +140,33 @@ namespace Wbooru.Migrations
                         .HasForeignKey("GalleryItemID");
                 });
 
+            modelBuilder.Entity("Wbooru.Models.Gallery.GalleryItem", b =>
+                {
+                    b.OwnsOne("Wbooru.Models.ImageSize", "PreviewImageSize", b1 =>
+                        {
+                            b1.Property<int>("GalleryItemID")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<int>("Height")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<int>("Width")
+                                .HasColumnType("INTEGER");
+
+                            b1.HasKey("GalleryItemID");
+
+                            b1.ToTable("GalleryItems");
+
+                            b1.WithOwner()
+                                .HasForeignKey("GalleryItemID");
+                        });
+                });
+
             modelBuilder.Entity("Wbooru.Models.GalleryItemMark", b =>
                 {
-                    b.HasOne("Wbooru.Models.Gallery.GalleryItem", "Item")
+                    b.HasOne("Wbooru.Models.Gallery.GalleryItem", "GalleryItem")
                         .WithMany()
-                        .HasForeignKey("ItemID");
+                        .HasForeignKey("GalleryItemID");
                 });
 
             modelBuilder.Entity("Wbooru.Models.TagRecord", b =>

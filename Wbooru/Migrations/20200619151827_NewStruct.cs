@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Wbooru.Migrations
 {
-    public partial class InitNewDBStuct : Migration
+    public partial class NewStruct : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,6 +13,8 @@ namespace Wbooru.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    PreviewImageSize_Width = table.Column<int>(nullable: true),
+                    PreviewImageSize_Height = table.Column<int>(nullable: true),
                     PreviewImageDownloadLink = table.Column<string>(nullable: true),
                     DownloadFileName = table.Column<string>(nullable: true),
                     GalleryName = table.Column<string>(nullable: true),
@@ -72,14 +74,14 @@ namespace Wbooru.Migrations
                     GalleryItemMarkID = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Time = table.Column<DateTime>(nullable: false),
-                    ItemID = table.Column<int>(nullable: true)
+                    GalleryItemID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ItemMarks", x => x.GalleryItemMarkID);
                     table.ForeignKey(
-                        name: "FK_ItemMarks_GalleryItems_ItemID",
-                        column: x => x.ItemID,
+                        name: "FK_ItemMarks_GalleryItems_GalleryItemID",
+                        column: x => x.GalleryItemID,
                         principalTable: "GalleryItems",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
@@ -111,9 +113,9 @@ namespace Wbooru.Migrations
                 column: "GalleryItemID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemMarks_ItemID",
+                name: "IX_ItemMarks_GalleryItemID",
                 table: "ItemMarks",
-                column: "ItemID");
+                column: "GalleryItemID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VisitRecords_GalleryItemID",

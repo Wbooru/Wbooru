@@ -50,12 +50,9 @@ namespace Wbooru.Kernel
             if (Contain(tag.Tag.Name,tag.FromGallery,TagRecordType.Subscribed))
                 return;
 
-            tag.RecordType = TagRecordType.Subscribed;
-            
-            if (LocalDBContext.Instance.Tags.Find(tag.TagID) is TagRecord record)
-            {
-                LocalDBContext.Instance.Entry(record).CurrentValues.SetValues(tag);
-            }
+            LocalDBContext.Instance.Attach(tag).Entity.RecordType = TagRecordType.Subscribed;
+
+            LocalDBContext.Instance.SaveChanges();
 
             SubscribedTags.Add(tag);
         }
@@ -66,12 +63,9 @@ namespace Wbooru.Kernel
             if (!tag.RecordType.HasFlag(TagRecordType.Subscribed))
                 return;
 
-            tag.RecordType = TagRecordType.Marked;
+            LocalDBContext.Instance.Attach(tag).Entity.RecordType = TagRecordType.Marked;
 
-            if (LocalDBContext.Instance.Tags.Find(tag.TagID) is TagRecord record)
-            {
-                LocalDBContext.Instance.Entry(record).CurrentValues.SetValues(tag);
-            }
+            LocalDBContext.Instance.SaveChanges();
 
             SubscribedTags.Remove(SubscribedTags.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.FromGallery == tag.FromGallery && x.Tag.Type == tag.Tag.Type));
         }

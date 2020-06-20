@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -372,7 +373,6 @@ namespace Wbooru.UI.Pages
                     else
                     {
                         visit_entity.LastVisitTime = DateTime.Now;
-                        DB.Entry(visit_entity).CurrentValues.SetValues(visit_entity);
                     }
 
                     await DB.SaveChangesAsync();
@@ -380,10 +380,9 @@ namespace Wbooru.UI.Pages
                 }
             });
 
-            var is_mark = DB.ItemMarks.AsEnumerable().Where(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == item.GalleryItemID).Any();
+            var is_mark = !(DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == item.GalleryItemID) is null);
 
             var (is_vote, _) = await VoteManager.GetVote(Gallery, PictureInfo);
-
 
             IsMark = is_mark;
             IsVoted = is_vote;
@@ -427,7 +426,7 @@ namespace Wbooru.UI.Pages
                     {
                         DB.ItemMarks.Add(new GalleryItemMark()
                         {
-                            Item = info,
+                            GalleryItem = info,
                             Time = DateTime.Now
                         });
 
@@ -435,7 +434,7 @@ namespace Wbooru.UI.Pages
                     }
                     else
                     {
-                        var x = DB.ItemMarks.FirstOrDefault(x => x.Item.GalleryName == gallery.GalleryName && x.Item.GalleryItemID == info.GalleryItemID);
+                        var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == info.GalleryItemID);
                         DB.ItemMarks.Remove(x);
                         is_mark = false;
                     }

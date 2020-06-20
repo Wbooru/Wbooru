@@ -17,6 +17,7 @@ using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Models;
 using Wbooru.Persistence;
 using Wbooru.UI.Controls.PluginExtension;
+using Microsoft.EntityFrameworkCore;
 
 namespace Wbooru.UI.Pages
 {
@@ -317,9 +318,9 @@ namespace Wbooru.UI.Pages
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
 
-            var source = new Func<IEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks.AsEnumerable()
-                .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.Item.GalleryName)))
-                .Select(x=>x.Item)
+            var source = new Func<IEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks.Include(x=>x.GalleryItem)
+                .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryItem.GalleryName)))
+                .Select(x=>x.GalleryItem)
                 .ToArray());//avoid SQL.
                  
 

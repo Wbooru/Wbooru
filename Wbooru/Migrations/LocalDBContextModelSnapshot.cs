@@ -79,7 +79,7 @@ namespace Wbooru.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ItemID")
+                    b.Property<int?>("GalleryItemID")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Time")
@@ -87,7 +87,7 @@ namespace Wbooru.Migrations
 
                     b.HasKey("GalleryItemMarkID");
 
-                    b.HasIndex("ItemID");
+                    b.HasIndex("GalleryItemID");
 
                     b.ToTable("ItemMarks");
                 });
@@ -162,9 +162,9 @@ namespace Wbooru.Migrations
 
             modelBuilder.Entity("Wbooru.Models.GalleryItemMark", b =>
                 {
-                    b.HasOne("Wbooru.Models.Gallery.GalleryItem", "Item")
+                    b.HasOne("Wbooru.Models.Gallery.GalleryItem", "GalleryItem")
                         .WithMany()
-                        .HasForeignKey("ItemID");
+                        .HasForeignKey("GalleryItemID");
                 });
 
             modelBuilder.Entity("Wbooru.Models.TagRecord", b =>

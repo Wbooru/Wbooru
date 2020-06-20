@@ -146,7 +146,7 @@ namespace Wbooru.Kernel
         public static bool CheckIfContained(DownloadWrapper download)
         {
             //check
-            if (DownloadList.FirstOrDefault(x => x.DownloadInfo.CheckIfSame(download.DownloadInfo) && download.DownloadInfo.DownloadId < 0 && (x.DownloadInfo.DownloadId != download.DownloadInfo.DownloadId)) is DownloadWrapper _)
+            if (DownloadList.FirstOrDefault(x => x.DownloadInfo == download.DownloadInfo && download.DownloadInfo.DownloadId < 0 && (x.DownloadInfo.DownloadId != download.DownloadInfo.DownloadId)) is DownloadWrapper _)
             {
                 return true;
             }
