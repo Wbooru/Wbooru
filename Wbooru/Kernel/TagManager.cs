@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Wbooru.Galleries;
 using Wbooru.Galleries.SupportFeatures;
@@ -12,6 +11,7 @@ using Wbooru.Persistence;
 using Wbooru.Settings;
 using Wbooru.Utils;
 using static Wbooru.Models.TagRecord;
+using static System.Linq.Enumerable;
 
 namespace Wbooru.Kernel
 {
@@ -25,9 +25,9 @@ namespace Wbooru.Kernel
         {
             try
             {
-                MarkedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsEnumerable().Where(x => x.RecordType.HasFlag(TagRecordType.Marked))));
-                FiltedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsEnumerable().Where(x => x.RecordType.HasFlag(TagRecordType.Filter))));
-                SubscribedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsEnumerable().Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))));
+                MarkedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Marked))));
+                FiltedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Filter))));
+                SubscribedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))));
 
                 IEnumerable<TagRecord> order(IEnumerable<TagRecord> source)
                 {
@@ -264,7 +264,7 @@ namespace Wbooru.Kernel
             var tag_names = tags.Select(x => x.Name).ToArray();
 
             var exist_record = (from record in
-                             (from record in LocalDBContext.Instance.Tags.AsEnumerable()
+                             (from record in LocalDBContext.Instance.Tags.AsNoTracking()
                               where tag_names.Contains(record.Tag.Name)
                               where record.Tag.Type != TagType.Unknown
                               select record)
@@ -272,9 +272,7 @@ namespace Wbooru.Kernel
                          select record).ToArray();
 
             foreach (var r in exist_record)
-            {
-                r.Tag.Type = tags.FirstOrDefault(x => x.Name == r.Tag.Name).Type;
-            }
+                LocalDBContext.Instance.Attach(r).Entity.Tag.Type = tags.FirstOrDefault(x => x.Name == r.Tag.Name).Type;
 
             var records = tags.Where(x=>!exist_record.Any(y=>y.Tag.Name == x.Name)).Select(x => new TagRecord()
             {
@@ -298,7 +296,7 @@ namespace Wbooru.Kernel
             var strict_check = (!Setting<GlobalSetting>.Current.SearchTagMetaStrict) || gallery_name == null;
         
             var result = from record in
-                             (from record in LocalDBContext.Instance.Tags.AsEnumerable()
+                             (from record in LocalDBContext.Instance.Tags.AsNoTracking()
                               where tag_names.Contains(record.Tag.Name)
                               where record.Tag.Type != TagType.Unknown
                               select record)

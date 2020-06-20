@@ -319,11 +319,10 @@ namespace Wbooru.UI.Pages
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
 
             var source = new Func<IEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks.Include(x=>x.GalleryItem)
-                .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryItem.GalleryName)))
-                .Select(x=>x.GalleryItem)
+                .Select(x => x.GalleryItem)
+                .Where(x => galleries.Contains(x.GalleryName))
                 .ToArray());//avoid SQL.
                  
-
             GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature!=null?"在线":"本地") + "收藏列表";
             GridViewer.ViewType = GalleryViewType.Marked;
             GridViewer.ClearGallery();

@@ -141,6 +141,35 @@ namespace Wbooru
 #endif
             Log.Info("Program version:" + ProgramUpdater.CurrentProgramVersion.ToString());
 
+            if (LocalDBContext.CheckIfUsingOldDatabase())
+            {
+                Log.Warn("Program is using old version db file and its db file have to upgrade.");
+
+                if (MessageBoxResult.OK == MessageBox.Show($"检查到Wbooru正在使用的数据库文件是老版本的，即将对此数据库文件进行更新以及数据迁移,请备份好数据库文件并点击确认开始:{Path.GetFullPath(Setting<GlobalSetting>.Current.DBFilePath)}","警告",MessageBoxButton.OKCancel))
+                {
+                    if (LocalDBContext.UpdateOldDatabase())
+                    {
+                        //migrate successfully
+                        MessageBox.Show("数据库迁移升级成功!");
+                        UnusualSafeRestart();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Process.Start(Log.LogFilePath);
+                        }
+                        catch {}
+                        MessageBox.Show("数据库迁移升级失败!查看日志获取更详细情况.");
+                        UnusualSafeRestart();
+                    }
+                }
+                else
+                {
+                    UnusualSafeExit();
+                }
+            }
+
             Container.BuildDefault();
 
             CheckPlugin();

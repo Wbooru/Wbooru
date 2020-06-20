@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
@@ -22,9 +24,10 @@ namespace Wbooru.Persistence
 
         public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
 
-        public LocalDBContext() : base(new DbContextOptionsBuilder().UseSqlite(DBConnectionFactory.GetConnection()).Options)
+        public LocalDBContext(DbContextOptions option = null, bool migrate = true) : base(option ?? DBConnectionFactory.GetDbContextOptions())
         {
-            Database.Migrate();
+            if (migrate)
+                Database.Migrate();
         }
 
         public DbSet<Download> Downloads { get; set; }
@@ -48,63 +51,331 @@ namespace Wbooru.Persistence
             File.Copy(from, to, true);
         }
 
-        private class DatabaseLoggerProvider : ILoggerProvider
+        internal static bool CheckIfUsingOldDatabase()
         {
-            private class DatabaseLogger : ILogger
+            using var context = new LocalDBContext(migrate : false);
+            var db = context.Database;
+            using var command = db.GetDbConnection().CreateCommand();
+
+            command.CommandText = "select * from __MigrationHistory";
+            db.OpenConnection();
+            var count = -1;
+
+            try
             {
-                public IDisposable BeginScope<TState>(TState state) => null;
-
-                public bool IsEnabled(LogLevel logLevel)
-                {
-                    if (logLevel != LogLevel.Debug || logLevel != LogLevel.Trace || Setting<GlobalSetting>.Current.EnableOutputDebugMessage)
-                        return true;
-
-                    return false;
-                }
-
-                public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-                {
-                    var message = $"[{logLevel}]  {formatter?.Invoke(state, exception)}";
-
-                    switch (logLevel)
-                    {
-                        case LogLevel.Trace:
-                        case LogLevel.Debug:
-                            Wbooru.Log.Debug(message,"Database");
-                            break;
-                        case LogLevel.None:
-                        case LogLevel.Information:
-                            Wbooru.Log.Info(message, "Database");
-                            break;
-                        case LogLevel.Warning:
-                            Wbooru.Log.Warn(message, "Database");
-                            break;
-                        case LogLevel.Error:
-                        case LogLevel.Critical:
-                            Wbooru.Log.Error(message, "Database");
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                using var reader = command.ExecuteReader();
+                count = reader.FieldCount;
+            }
+            catch
+            {
+                count = -1;
             }
 
-            public ILogger CreateLogger(string categoryName)
-            {
-                return new DatabaseLogger();
-            }
-
-            public void Dispose()
-            {
-
-            }
+            return count >= 0;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseLoggerFactory(new LoggerFactory(new[] { new DatabaseLoggerProvider() }));
-            //optionsBuilder.UseLazyLoadingProxies(true);
+
+            if (Setting<GlobalSetting>.Current.EnableDatabaseLog)
+                optionsBuilder.UseLoggerFactory(new LoggerFactory(new[] { new DatabaseLoggerProvider() }));
+        }
+
+        internal static bool UpdateOldDatabase()
+        {
+            var _cache_params = new Dictionary<(int, int), string>();
+
+            var oldDBPath = Setting<GlobalSetting>.Current.DBFilePath;
+            var tempDBPath = Path.GetTempFileName();
+            var backupDBPath = oldDBPath + ".backup";
+
+            if (!File.Exists(backupDBPath))
+            {
+                Log.Info($"Backup old db file:{backupDBPath}");
+                File.Copy(oldDBPath, backupDBPath);
+            }
+
+            Log.Info($"Copy old db file:{tempDBPath}");
+            File.Copy(oldDBPath, tempDBPath,true);
+
+            var tempDBOption = new DbContextOptionsBuilder().UseSqlite(new SQLiteConnectionStringBuilder()
+            {
+                DataSource = tempDBPath,
+                ForeignKeys = false
+            }.ConnectionString).Options;
+            using var targetDBContext = new DbContext(tempDBOption);
+            targetDBContext.Database.OpenConnection();
+            using var targetConnection = targetDBContext.Database.GetDbConnection();
+
+            var tables = new[]
+            {
+                "__MigrationHistory","Downloads","GalleryItemMarks","ShadowGalleryItems","TagRecords","VisitRecords","sqlite_sequence"
+            };
+
+            //drop tables
+            foreach (var table in tables)
+            {
+                try
+                {
+                    using var command = targetConnection.CreateCommand();
+                    command.CommandText = $"drop TABLE {table}";
+                    var result = command.ExecuteReader();
+
+                    Log.Info($"delete table {table},affected count :{result.RecordsAffected}");
+                }
+                catch (Exception e)
+                {
+                    Log.Warn($"delete table {table} failed :{e.Message}");
+                }
+            }
+
+            Log.Info($"begin migrate and update...");
+            var wrapContext = new LocalDBContext(tempDBOption, false);
+            wrapContext.Database.OpenConnection();
+            wrapContext.Database.Migrate();
+            Log.Info($"migration finished...");
+
+            var oldDBOption = new DbContextOptionsBuilder().UseSqlite(new SQLiteConnectionStringBuilder()
+            {
+                DataSource = oldDBPath,
+                ForeignKeys = false,
+            }.ConnectionString).Options;
+            using var oldDBContext = new DbContext(oldDBOption);
+            oldDBContext.Database.OpenConnection();
+            var oldDBConnection = oldDBContext.Database.GetDbConnection();
+
+            const int BATCH_SIZE = 5;
+
+            //Downloads
+            try
+            {
+                using var command = oldDBConnection.CreateCommand();
+                command.CommandText = $"select * from Downloads";
+                var reader = command.ExecuteReader();
+
+                var i1 = reader.GetOrdinal(nameof(Download.DownloadId));
+                var i2 = reader.GetOrdinal(nameof(Download.TotalBytes));
+                var i3 = reader.GetOrdinal(nameof(Download.DownloadStartTime));
+                var i4 = reader.GetOrdinal(nameof(Download.DownloadUrl));
+                var i5 = reader.GetOrdinal(nameof(Download.FileName));
+                var i6 = reader.GetOrdinal(nameof(Download.DownloadFullPath));
+                var i7 = reader.GetOrdinal(nameof(Download.DisplayDownloadedLength));
+                var i8 = reader.GetOrdinal("GalleryItem_ID");
+
+                foreach (var set in reader.MakeEnumerable(x => new object[] {
+                    reader.GetInt32(i1),
+                        reader.GetInt32(i2),
+                        reader.GetString(i3),
+                        reader.GetString(i4),
+                        reader.GetInt32(i8),
+                        reader.GetString(i5),
+                        reader.GetString(i6),
+                        reader.GetInt32(i7)
+                }).SequenceWrap(BATCH_SIZE))
+                {
+                    var cmd = "INSERT INTO \"main\".\"Downloads\"(\"DownloadId\",\"TotalBytes\",\"DownloadStartTime\",\"DownloadUrl\",\"GalleryItemID\",\"FileName\",\"DownloadFullPath\",\"DisplayDownloadedLength\") VALUES "
+                        + GetParamString(set.Count(), set.First().Length);
+
+                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x => x));
+                }
+
+                Log.Info("migrating table Downloads is finished.");
+            }
+            catch (Exception e)
+            {
+                Log.Error("Migrate table Downloads failed:" + e.Message);
+                return false;
+            }
+
+            //ItemMarks
+            try
+            {
+                using var command = oldDBConnection.CreateCommand();
+                command.CommandText = $"select * from GalleryItemMarks";
+                var reader = command.ExecuteReader();
+
+                var i1 = reader.GetOrdinal(nameof(GalleryItemMark.GalleryItemMarkID));
+                var i2 = reader.GetOrdinal(nameof(GalleryItemMark.Time));
+                var i3 = reader.GetOrdinal("Item_ID");
+
+                foreach (var set in reader.MakeEnumerable(x => new object[] {
+                    reader.GetInt32(i1),
+                    reader.GetString(i2),
+                    reader.GetInt32(i3)
+                }).SequenceWrap(BATCH_SIZE))
+                {
+                    var cmd = "INSERT INTO \"main\".\"ItemMarks\"(\"GalleryItemMarkID\",\"Time\",\"GalleryItemID\") VALUES "
+                        + GetParamString(set.Count(), set.First().Length);
+
+                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x => x));
+                }
+
+                Log.Info("migrating table ItemMarks is finished.");
+            }
+            catch (Exception e)
+            {
+                Log.Error("Migrate table ItemMarks failed:" + e.Message);
+                return false;
+            }
+
+            //GalleryItems
+            try
+            {
+                using var command = oldDBConnection.CreateCommand();
+                command.CommandText = $"select * from ShadowGalleryItems";
+                var reader = command.ExecuteReader();
+
+                var i1 = reader.GetOrdinal("ID");
+                var i2 = reader.GetOrdinal(nameof(GalleryItem.PreviewImageDownloadLink));
+                var i3 = reader.GetOrdinal(nameof(GalleryItem.DownloadFileName));
+                var i4 = reader.GetOrdinal(nameof(GalleryItem.GalleryItemID));
+                var i5 = reader.GetOrdinal(nameof(GalleryItem.GalleryName));
+                var i6 = reader.GetOrdinal("PreviewImageWidth");
+                var i7 = reader.GetOrdinal("PreviewImageHeight");
+
+                foreach (var set in reader.MakeEnumerable(x=> new object[] {
+                    reader.GetInt32(i1),
+                    reader.GetInt32(i6),
+                    reader.GetInt32(i7),
+                    reader.GetString(i2),
+                    reader.GetString(i3),
+                    reader.GetString(i5),
+                    reader.GetString(i4)
+                }).SequenceWrap(BATCH_SIZE))
+                {
+                    var cmd = "INSERT INTO \"main\".\"GalleryItems\"(\"ID\",\"PreviewImageSize_Width\",\"PreviewImageSize_Height\",\"PreviewImageDownloadLink\",\"DownloadFileName\",\"GalleryName\",\"GalleryItemID\") VALUES " 
+                        + GetParamString(set.Count(), set.First().Length);
+
+                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x=>x));
+                }
+
+                Log.Info("migrating table GalleryItems is finished.");
+            }
+            catch (Exception e)
+            {
+                Log.Error("Migrate table GalleryItems failed:" + e.Message);
+                return false;
+            }
+
+            // Tags
+            try
+            {
+                using var command = oldDBConnection.CreateCommand();
+                command.CommandText = $"select * from TagRecords";
+                var reader = command.ExecuteReader();
+
+                var i1 = reader.GetOrdinal(nameof(TagRecord.TagID));
+                var i2 = reader.GetOrdinal("Tag_Name");
+                var i3 = reader.GetOrdinal("Tag_Type");
+                var i4 = reader.GetOrdinal(nameof(TagRecord.AddTime));
+                var i5 = reader.GetOrdinal(nameof(TagRecord.FromGallery));
+                var i6 = reader.GetOrdinal(nameof(TagRecord.RecordType));
+
+                foreach (var set in reader.MakeEnumerable(x => new object[] {
+                    reader.GetInt32(i1),
+                        reader.GetString(i2),
+                        reader.GetInt32(i3),
+                        reader.GetString(i4),
+                        reader.GetString(i5),
+                        reader.GetInt32(i6)
+                }).SequenceWrap(BATCH_SIZE))
+                {
+                    var cmd = "INSERT INTO \"main\".\"Tags\"(\"TagID\",\"Tag_Name\",\"Tag_Type\",\"AddTime\",\"FromGallery\",\"RecordType\") VALUES "
+                        + GetParamString(set.Count(), set.First().Length);
+
+                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x => x));
+                }
+
+                Log.Info("migrating table Tags is finished.");
+            }
+            catch (Exception e)
+            {
+                Log.Error("Migrate table Tags failed:" + e.Message);
+                return false;
+            }
+
+
+            // VisitRecords
+            try
+            {
+                using var command = oldDBConnection.CreateCommand();
+                command.CommandText = $"select * from VisitRecords";
+                var reader = command.ExecuteReader();
+
+                var i1 = reader.GetOrdinal(nameof(VisitRecord.VisitRecordID));
+                var i2 = reader.GetOrdinal("GalleryItem_ID");
+                var i3 = reader.GetOrdinal(nameof(VisitRecord.LastVisitTime));
+
+                foreach (var set in reader.MakeEnumerable(x => new object[] {
+                        reader.GetInt32(i1),
+                        reader.GetInt32(i2),
+                        reader.GetString(i3)
+                }).SequenceWrap(BATCH_SIZE))
+                {
+                    var cmd = "INSERT INTO \"main\".\"VisitRecords\"(\"VisitRecordID\",\"GalleryItemID\",\"LastVisitTime\") VALUES "
+                        + GetParamString(set.Count(), set.First().Length);
+
+                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x => x));
+                }
+
+                Log.Info("migrating table VisitRecords is finished.");
+            }
+            catch (Exception e)
+            {
+                Log.Error("Migrate table VisitRecords failed:" + e.Message);
+                return false;
+            }
+
+            targetDBContext.SaveChanges();
+
+            Log.Info("All tables migration process were done.");
+
+            wrapContext.Database.CloseConnection();
+            oldDBContext.Dispose();
+            targetDBContext.Dispose();
+            wrapContext.Dispose();
+
+            Log.Info("All db context were disposed.");
+
+            try
+            {
+                File.Copy(tempDBPath, oldDBPath, true);
+                Log.Info("New db file override copy successfully!");
+            }
+            catch (Exception e)
+            {
+                Log.Info("New db file override copy failed: " + e.Message);
+                return false;
+            }
+
+            return true;
+
+            string GetParamString(int count,int paramCount)
+            {
+                var key = (count, paramCount);
+
+                if (_cache_params.TryGetValue(key, out var s))
+                    return s;
+
+                var i = 0;
+
+                return _cache_params[key] = string.Join(",", Enumerable.Range(0, count).Select(x => "(" + string.Join(",", Enumerable.Range(0, paramCount).Select(x => $"{{{i++}}}")) + ")"));
+            }
+        }
+    }
+
+    internal static class DbDataReaderExtension
+    {
+        public static IEnumerable<T> MakeEnumerable<T>(this DbDataReader reader, Func<DbDataReader, T> mapFunc)
+        {
+            while (reader.Read())
+            {
+                if (!reader.HasRows)
+                    continue;
+
+                yield return mapFunc(reader);
+            }
         }
     }
 }
