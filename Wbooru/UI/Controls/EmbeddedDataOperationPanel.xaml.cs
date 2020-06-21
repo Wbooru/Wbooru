@@ -182,7 +182,7 @@ namespace Wbooru.UI.Controls
         {
             try
             {
-                Process.Start(System.IO.Path.GetFullPath(path));
+                Process.Start("explorer.exe" , System.IO.Path.GetFullPath(path));
             }
             catch (Exception e)
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Drawing;
@@ -6,6 +7,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -60,7 +63,7 @@ namespace Wbooru.Utils.Resource
 
         public static async Task<Image> RequestImageAsync(string resource_name,Func<Task<Image>> manual_request)
         {
-            var hash = resource_name.GetHashCode().ToString();
+            var hash = resource_name.CalculateMD5();
             Log.Debug($"Convert Hash:{resource_name} -> {hash}");
             resource_name = hash;
 
@@ -85,6 +88,7 @@ namespace Wbooru.Utils.Resource
 
             return null;
         }
+
 
         private static bool TryGetImageFromDownloadFolder(string name, out Image res)
         {
@@ -145,9 +149,9 @@ namespace Wbooru.Utils.Resource
                 if (!CheckAndDeleteCacheFile(obj, out stream))
                     return;
 
-                var file_stream = File.OpenWrite(file_path);
+                using var file_stream = File.OpenWrite(file_path);
 
-                var buffer = new byte[1024];
+                var buffer = ArrayPool<byte>.Shared.Rent(1024 * 1024);
                 int read = 0;
 
                 do
@@ -155,6 +159,8 @@ namespace Wbooru.Utils.Resource
                     read = stream.Read(buffer, 0, buffer.Length);
                     file_stream.Write(buffer, 0, read);
                 } while (read != 0);
+
+                ArrayPool<byte>.Shared.Return(buffer);
 
                 Log.Debug($"Saved cache file :{file_path}");
             }
