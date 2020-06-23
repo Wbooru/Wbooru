@@ -159,7 +159,7 @@ namespace Wbooru.UI.Pages
 
             GridViewer.ClearGallery();
             GridViewer.Gallery = gallery;
-            GridViewer.LoadableSourceFactory = items_source_creator;
+            GridViewer.LoadableSource = items_source_creator;
 
             if (gallery.SupportFeatures.HasFlag(GallerySupportFeature.Account))
                 await TryAutoLogin(gallery);
@@ -327,7 +327,7 @@ namespace Wbooru.UI.Pages
             GridViewer.ViewType = GalleryViewType.Marked;
             GridViewer.ClearGallery();
             GridViewer.Gallery = null;
-            GridViewer.LoadableSourceFactory = source;
+            GridViewer.LoadableSource = source;
 
             CloseLeftPanel();
         }
@@ -480,7 +480,7 @@ namespace Wbooru.UI.Pages
             GridViewer.ViewType = GalleryViewType.History;
             GridViewer.ClearGallery();
             GridViewer.Gallery = null;
-            GridViewer.LoadableSourceFactory = source;
+            GridViewer.LoadableSource = source;
 
             CloseLeftPanel();
         }

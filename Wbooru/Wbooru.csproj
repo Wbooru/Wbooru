@@ -5,22 +5,8 @@
     <DisableFody Condition="'$(Configuration)' == 'Debug'">true</DisableFody>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <LangVersion>preview</LangVersion>
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>TRACE;SQLITE</DefineConstants>
-    <LangVersion>preview</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SQLITE_DEBUG|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\SQLITE_DEBUG\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SQLITE_DEBUG</DefineConstants>
-    <LangVersion>preview</LangVersion>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Logs\**" />

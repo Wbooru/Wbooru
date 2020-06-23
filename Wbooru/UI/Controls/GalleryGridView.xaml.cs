@@ -69,7 +69,7 @@ namespace Wbooru.UI.Controls
         /// <summary>
         /// 表示可以加载的列表源，一般View会自动遍历此集合来拿更多的图片数据.
         /// </summary>
-        public Func<IEnumerable<GalleryItem>> LoadableSourceFactory
+        public Func<IEnumerable<GalleryItem>> LoadableSource
         {
             get { return (Func<IEnumerable<GalleryItem>>)GetValue(LoadableSourceProperty); }
             set { SetValue(LoadableSourceProperty, value); }
@@ -108,7 +108,7 @@ namespace Wbooru.UI.Controls
             current_index = 0;
             ListScrollViewer.ScrollToVerticalOffset(0);
 
-            loadable_items = LoadableSourceFactory?.Invoke();
+            loadable_items = LoadableSource?.Invoke();
             Log.Debug($"generate new loadable_items({loadable_items?.GetHashCode()})");
 
             TryRequestMoreItemFromLoadableSource();
@@ -144,7 +144,7 @@ namespace Wbooru.UI.Controls
         {
             CleanCurrentItems();
             Gallery = null;
-            LoadableSourceFactory = null;
+            LoadableSource = null;
         }
 
         private async void TryRequestMoreItemFromLoadableSource()
@@ -336,7 +336,7 @@ namespace Wbooru.UI.Controls
                
                 //这里不会根据因刷新而开头会有不同的变化
                 var list = feature.IteratorSkip(page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad).MakeMultiThreadable();
-                LoadableSourceFactory = new Func<IEnumerable<GalleryItem>>(() => list);
+                LoadableSource = new Func<IEnumerable<GalleryItem>>(() => list);
             }
         }
 
