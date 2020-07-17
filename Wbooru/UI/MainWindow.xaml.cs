@@ -6,7 +6,6 @@ using Wbooru.Kernel;
 using Wbooru.Settings;
 using Wbooru.UI.Dialogs;
 using Wbooru.UI.Pages;
-using Windows.UI.Xaml.Hosting;
 
 namespace Wbooru.UI
 {

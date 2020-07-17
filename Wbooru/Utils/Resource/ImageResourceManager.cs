@@ -23,7 +23,6 @@ namespace Wbooru.Utils.Resource
     {
         private static GlobalSetting option;
         private static string temporary_folder_path;
-        private static long current_record_capacity;
 
         public static void InitImageResourceManager()
         {
@@ -35,13 +34,7 @@ namespace Wbooru.Utils.Resource
                 {
                     temporary_folder_path = CacheFolderHelper.CacheFolderPath;
 
-                    current_record_capacity = Directory.EnumerateFiles(temporary_folder_path, "*.cache").Select(x =>
-                    {
-                        using var stream = File.OpenRead(x);
-                        return stream.Length;
-                    }).Sum();
-
-                    Log.Info($"Check&Create tempoary cache folder({current_record_capacity}):{temporary_folder_path}");
+                    Directory.CreateDirectory(temporary_folder_path);
                 }
                 catch (Exception e)
                 {
@@ -139,15 +132,15 @@ namespace Wbooru.Utils.Resource
             if (!option.EnableFileCache || temporary_folder_path==null)
                 return;
 
-            Stream stream = null;
 
             resource_name = resource_name.EndsWith(".cache") ? resource_name : (resource_name + ".cache");
             var file_path = Path.Combine(temporary_folder_path, resource_name);
 
             try
             {
-                if (!CheckAndDeleteCacheFile(obj, out stream))
-                    return;
+                using var stream = new MemoryStream();
+                obj.Save(stream, obj.RawFormat);
+                stream.Seek(0, SeekOrigin.Begin);
 
                 using var file_stream = File.OpenWrite(file_path);
 
@@ -167,53 +160,6 @@ namespace Wbooru.Utils.Resource
             catch (Exception e)
             {
                 Log.Debug("Failed to cache image to cache folder:" + e.Message);
-            }
-            finally
-            {
-                stream?.Dispose();
-            }
-        }
-
-        private static bool CheckAndDeleteCacheFile(Image obj, out Stream stream)
-        {
-            stream = new MemoryStream();
-
-            try
-            {
-                obj.Save(stream, obj.RawFormat);
-                var image_size = stream.Length;
-                stream.Seek(0, SeekOrigin.Begin);
-
-                var limit_size = option.CacheFolderMaxSize * 1024 * 1024; //MB -> bytes
-
-                if (limit_size == 0 || current_record_capacity + image_size < limit_size)
-                    return true;
-
-                Log.Debug($"{current_record_capacity} + {image_size} >= {limit_size} ,delete old cache files");
-
-                var delete_queue = Directory.EnumerateFiles(temporary_folder_path, "*.cache").Select(x =>
-                {
-                    using var stream = File.OpenRead(x);
-                    return (File.GetLastAccessTime(x), stream.Length, x);
-                }).OrderBy(x => x.Item1).ToArray();
-
-                foreach (var (date, size, file_path) in delete_queue)
-                {
-                    File.Delete(file_path);
-                    current_record_capacity -= size;
-
-                    Log.Debug($"Delete old cache file for release folder space:({date},{size},{file_path}) , current_record_capacity={current_record_capacity}");
-
-                    if (current_record_capacity + image_size < limit_size)
-                        return true;
-                }
-
-                return false;
-            }
-            catch (Exception e)
-            {
-                stream?.Dispose();
-                throw e;
             }
         }
 

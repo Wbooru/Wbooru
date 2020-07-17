@@ -137,13 +137,6 @@ namespace Wbooru.Settings
 
         [Group("Cache Option")]
         [NeedRestart]
-        [Description("钦定缓存文件夹的大小,以MB为单位，若空间不足则自动删除较旧的资源缓存文件(不建议调小)")]
-        [EnableBy(nameof(EnableFileCache), true)]
-        [NameAlias("缓存文件夹空间占用最大值")]
-        public uint CacheFolderMaxSize { get; set; } = 100;
-
-        [Group("Cache Option")]
-        [NeedRestart]
         [Description("%Temp%表示系统临时文件夹路径")]
         [EnableBy(nameof(EnableFileCache), true)]
         [NameAlias("缓存文件夹的存放路径")]

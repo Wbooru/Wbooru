@@ -58,7 +58,7 @@ namespace Wbooru.UI.Controls
               }).Sum());
 
             CleanCacheFolderButton.IsEnabled = true;
-            CacheFolderUsageText.Text = $"{FormatFileSize(len)} / {FormatFileSize(Setting<GlobalSetting>.Current.CacheFolderMaxSize * 1024 * 1024)}";
+            CacheFolderUsageText.Text = FormatFileSize(len).ToString();
         }
 
         private static string FormatFileSize(long bytes)
