@@ -94,25 +94,27 @@ namespace Wbooru.UI.Controls
             {
                 await Task.Delay(3000);
 
-                using (var transaction = LocalDBContext.Instance.Database.BeginTransaction())
-                {
-                    DownloadManager.Close();
+                using var currentDBContext = new LocalDBContext();
 
-                    CleanTable(LocalDBContext.Instance.Downloads, "正在清理下载记录");
-                    CleanTable(LocalDBContext.Instance.Tags, "正在清理标签数据");
-                    CleanTable(LocalDBContext.Instance.ItemMarks, "正在清理收藏记录");
-                    CleanTable(LocalDBContext.Instance.VisitRecords, "正在清理浏览记录");
-                    CleanTable(LocalDBContext.Instance.GalleryItems, "正在清理图片数据缓存记录");
+                using var transaction = await currentDBContext.Database.BeginTransactionAsync();
 
-                    await LocalDBContext.Instance.SaveChangesAsync();
-                    transaction.Commit();
+                DownloadManager.Close();
 
-                    task.Description = "清理完成，三秒后重启软件...";
+                CleanTable(currentDBContext.Downloads, "正在清理下载记录");
+                CleanTable(currentDBContext.Tags, "正在清理标签数据");
+                CleanTable(currentDBContext.ItemMarks, "正在清理收藏记录");
+                CleanTable(currentDBContext.VisitRecords, "正在清理浏览记录");
+                CleanTable(currentDBContext.GalleryItems, "正在清理图片数据缓存记录");
 
-                    await Task.Delay(3000);
+                await currentDBContext.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-                    App.UnusualSafeRestart();
-                }
+                task.Description = "清理完成，三秒后重启软件...";
+
+                await Task.Delay(3000);
+
+                App.UnusualSafeRestart();
+
 
                 async void CleanTable<T>(DbSet<T> set, string description) where T : class
                 {

@@ -119,7 +119,7 @@ namespace Wbooru
             Log.Info("OK.");
         }
 
-        public static void Init()
+        public static async void Init()
         {
             Log.Info("-----------------Begin Init()-----------------");
 
@@ -147,7 +147,7 @@ namespace Wbooru
 
                 if (MessageBoxResult.OK == MessageBox.Show($"检查到Wbooru正在使用的数据库文件是老版本的，即将对此数据库文件进行更新以及数据迁移,请备份好数据库文件并点击确认开始:{Path.GetFullPath(Setting<GlobalSetting>.Current.DBFilePath)}","警告",MessageBoxButton.OKCancel))
                 {
-                    if (LocalDBContext.UpdateOldDatabase())
+                    if (await LocalDBContext.UpdateOldDatabase())
                     {
                         //migrate successfully
                         MessageBox.Show("数据库迁移升级成功!");

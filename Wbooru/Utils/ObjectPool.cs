@@ -112,6 +112,24 @@ namespace Wbooru.Utils
 
         #region Sugar~
 
+        public class AutoDisposable : IDisposable
+        {
+            public AutoDisposable(T obj) => this.obj = obj;
+
+            private T obj;
+
+            public void Dispose()
+            {
+                Return(obj);
+            }
+        }
+
+        public static IDisposable GetWithUsingDisposable(out T obj,out bool isNewObject)
+        {
+            isNewObject = Get(out obj);
+            return new AutoDisposable(obj);
+        }
+
         /// <summary>
         /// 
         /// </summary>

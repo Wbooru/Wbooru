@@ -10,11 +10,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Wbooru.Galleries;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.Settings;
+using Wbooru.Utils;
 
 namespace Wbooru.Persistence
 {
@@ -22,9 +24,14 @@ namespace Wbooru.Persistence
     {
         private static LocalDBContext _instance;
 
-        public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
+        //public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
 
-        public LocalDBContext(DbContextOptions option = null, bool migrate = true) : base(option ?? DBConnectionFactory.GetDbContextOptions())
+        public LocalDBContext() : this(null, true)
+        {
+
+        }
+
+        public LocalDBContext(DbContextOptions option, bool migrate) : base(option ?? DBConnectionFactory.GetDbContextOptions())
         {
             if (migrate)
                 Database.Migrate();
@@ -53,7 +60,7 @@ namespace Wbooru.Persistence
 
         internal static bool CheckIfUsingOldDatabase()
         {
-            using var context = new LocalDBContext(migrate : false);
+            using var context = new LocalDBContext(null,false);
             var db = context.Database;
             using var command = db.GetDbConnection().CreateCommand();
 
@@ -82,7 +89,7 @@ namespace Wbooru.Persistence
                 optionsBuilder.UseLoggerFactory(new LoggerFactory(new[] { new DatabaseLoggerProvider() }));
         }
 
-        internal static bool UpdateOldDatabase()
+        internal static async Task<bool> UpdateOldDatabase()
         {
             var _cache_params = new Dictionary<(int, int), string>();
 
@@ -105,7 +112,7 @@ namespace Wbooru.Persistence
                 ForeignKeys = false
             }.ConnectionString).Options;
             using var targetDBContext = new DbContext(tempDBOption);
-            targetDBContext.Database.OpenConnection();
+            await targetDBContext.Database.OpenConnectionAsync();
             using var targetConnection = targetDBContext.Database.GetDbConnection();
 
             var tables = new[]
@@ -132,8 +139,8 @@ namespace Wbooru.Persistence
 
             Log.Info($"begin migrate and update...");
             var wrapContext = new LocalDBContext(tempDBOption, false);
-            wrapContext.Database.OpenConnection();
-            wrapContext.Database.Migrate();
+            await wrapContext.Database.OpenConnectionAsync();
+            await wrapContext.Database.MigrateAsync();
             Log.Info($"migration finished...");
 
             var oldDBOption = new DbContextOptionsBuilder().UseSqlite(new SQLiteConnectionStringBuilder()
@@ -142,7 +149,7 @@ namespace Wbooru.Persistence
                 ForeignKeys = false,
             }.ConnectionString).Options;
             using var oldDBContext = new DbContext(oldDBOption);
-            oldDBContext.Database.OpenConnection();
+            await oldDBContext.Database.OpenConnectionAsync();
             var oldDBConnection = oldDBContext.Database.GetDbConnection();
 
             const int BATCH_SIZE = 5;
@@ -177,7 +184,7 @@ namespace Wbooru.Persistence
                     var cmd = "INSERT INTO \"main\".\"Downloads\"(\"DownloadId\",\"TotalBytes\",\"DownloadStartTime\",\"DownloadUrl\",\"GalleryItemID\",\"FileName\",\"DownloadFullPath\",\"DisplayDownloadedLength\") VALUES "
                         + GetParamString(set.Count(), set.First().Length);
 
-                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x => x));
+                    var insertResult = await wrapContext.Database.ExecuteSqlRawAsync(cmd, set.SelectMany(x => x));
                 }
 
                 Log.Info("migrating table Downloads is finished.");
@@ -208,7 +215,7 @@ namespace Wbooru.Persistence
                     var cmd = "INSERT INTO \"main\".\"ItemMarks\"(\"GalleryItemMarkID\",\"Time\",\"GalleryItemID\") VALUES "
                         + GetParamString(set.Count(), set.First().Length);
 
-                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x => x));
+                    var insertResult = await wrapContext.Database.ExecuteSqlRawAsync(cmd, set.SelectMany(x => x));
                 }
 
                 Log.Info("migrating table ItemMarks is finished.");
@@ -247,7 +254,7 @@ namespace Wbooru.Persistence
                     var cmd = "INSERT INTO \"main\".\"GalleryItems\"(\"ID\",\"PreviewImageSize_Width\",\"PreviewImageSize_Height\",\"PreviewImageDownloadLink\",\"DownloadFileName\",\"GalleryName\",\"GalleryItemID\") VALUES " 
                         + GetParamString(set.Count(), set.First().Length);
 
-                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x=>x));
+                    var insertResult = await wrapContext.Database.ExecuteSqlRawAsync(cmd, set.SelectMany(x=>x));
                 }
 
                 Log.Info("migrating table GalleryItems is finished.");
@@ -284,7 +291,7 @@ namespace Wbooru.Persistence
                     var cmd = "INSERT INTO \"main\".\"Tags\"(\"TagID\",\"Tag_Name\",\"Tag_Type\",\"AddTime\",\"FromGallery\",\"RecordType\") VALUES "
                         + GetParamString(set.Count(), set.First().Length);
 
-                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x => x));
+                    var insertResult = await wrapContext.Database.ExecuteSqlRawAsync(cmd, set.SelectMany(x => x));
                 }
 
                 Log.Info("migrating table Tags is finished.");
@@ -316,7 +323,7 @@ namespace Wbooru.Persistence
                     var cmd = "INSERT INTO \"main\".\"VisitRecords\"(\"VisitRecordID\",\"GalleryItemID\",\"LastVisitTime\") VALUES "
                         + GetParamString(set.Count(), set.First().Length);
 
-                    var insertResult = wrapContext.Database.ExecuteSqlRaw(cmd, set.SelectMany(x => x));
+                    var insertResult = await wrapContext.Database.ExecuteSqlRawAsync(cmd, set.SelectMany(x => x));
                 }
 
                 Log.Info("migrating table VisitRecords is finished.");
@@ -327,14 +334,14 @@ namespace Wbooru.Persistence
                 return false;
             }
 
-            targetDBContext.SaveChanges();
+            await targetDBContext.SaveChangesAsync();
 
             Log.Info("All tables migration process were done.");
 
-            wrapContext.Database.CloseConnection();
-            oldDBContext.Dispose();
-            targetDBContext.Dispose();
-            wrapContext.Dispose();
+            await wrapContext.Database.CloseConnectionAsync();
+            await oldDBContext.DisposeAsync();
+            await targetDBContext.DisposeAsync();
+            await wrapContext.DisposeAsync();
 
             Log.Info("All db context were disposed.");
 
@@ -362,6 +369,31 @@ namespace Wbooru.Persistence
 
                 return _cache_params[key] = string.Join(",", Enumerable.Range(0, count).Select(x => "(" + string.Join(",", Enumerable.Range(0, paramCount).Select(x => $"{{{i++}}}")) + ")"));
             }
+        }
+
+        private static Task currentExecuteTask = null;
+        private static Thread currentExecuteThread;
+        public static async Task<T> PostDbAction<T>(Func<LocalDBContext,T> executeFunc)
+        {
+            if (currentExecuteTask != null)
+            {
+                if (currentExecuteThread == Thread.CurrentThread)
+                    throw new Exception("DEAD THREAD LOCK.");
+
+                await currentExecuteTask;
+                currentExecuteThread = default;
+                currentExecuteTask = null;
+            }
+
+            using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var context, out var _);
+            using var transaction = await context.Database.BeginTransactionAsync();
+            var task = Task.Run(() =>
+            {
+                currentExecuteThread = Thread.CurrentThread;
+                return executeFunc(context);
+            });
+            currentExecuteTask = task;
+            return await task;
         }
     }
 

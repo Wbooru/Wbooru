@@ -26,7 +26,7 @@ namespace Wbooru.Kernel
         private static HashSet<DownloadWrapper> RunningDownloadTask  = new HashSet<DownloadWrapper>();
         private static Dictionary<DownloadWrapper, FileStream> FileStreamHolder = new Dictionary<DownloadWrapper, FileStream>();
 
-        internal static void Close()
+        internal static async void Close()
         {
             try
             {
@@ -34,29 +34,31 @@ namespace Wbooru.Kernel
             }
             catch{}
 
-            var db = LocalDBContext.Instance;
-
-            foreach (var item in DownloadList)
+            await LocalDBContext.PostDbAction(db =>
             {
-                if (item.Status == DownloadTaskStatus.Started)
+                foreach (var item in DownloadList)
                 {
-                    Log.Debug($"Pause download task:{item.DownloadInfo.FileName}");
-                    DownloadPause(item);
+                    if (item.Status == DownloadTaskStatus.Started)
+                    {
+                        Log.Debug($"Pause download task:{item.DownloadInfo.FileName}");
+                        DownloadPause(item);
+                    }
+
+                    if (db.Downloads.Find(item.DownloadInfo.DownloadId) is Download entity)
+                    {
+                        Log.Debug($"Update download record :{item.DownloadInfo.DownloadFullPath}");
+                        db.Entry(entity).CurrentValues.SetValues(item.DownloadInfo);
+                    }
+                    else
+                    {
+                        Log.Debug($"Add download record :{item.DownloadInfo.DownloadFullPath}");
+                        db.Downloads.Add(item.DownloadInfo);
+                    }
                 }
 
-                if (db.Downloads.Find(item.DownloadInfo.DownloadId) is Download entity)
-                {
-                    Log.Debug($"Update download record :{item.DownloadInfo.DownloadFullPath}");
-                    db.Entry(entity).CurrentValues.SetValues(item.DownloadInfo);
-                }
-                else
-                {
-                    Log.Debug($"Add download record :{item.DownloadInfo.DownloadFullPath}");
-                    db.Downloads.Add(item.DownloadInfo);
-                }
-            }
-
-            db.SaveChanges();
+                db.SaveChanges();
+                return Task.CompletedTask;
+            });
 
             Log.Debug($"Download record save all done.");
         }
@@ -70,50 +72,56 @@ namespace Wbooru.Kernel
             DownloadStart(download);
         }
 
-        internal static void Init()
+        internal static async void Init()
         {
             //start a timer
             timer_thread = new Thread(OnSpeedCalculationTimer);
             timer_thread.IsBackground = true;
             timer_thread.Start();
 
-            var db = LocalDBContext.Instance;
-
-            try
+            await LocalDBContext.PostDbAction(db =>
             {
-                foreach (var item in db.Downloads.AsEnumerable().Select(x => new DownloadWrapper()
+                try
                 {
-                    DownloadInfo = x,
-                    CurrentDownloadedLength = x.DisplayDownloadedLength,
-                    Status = x.DisplayDownloadedLength != 0 && x.DisplayDownloadedLength == x.TotalBytes ? DownloadTaskStatus.Finished : DownloadTaskStatus.Paused
-                }))
-                {
-                    Log.Debug($"Load download record :{item.DownloadInfo.DownloadFullPath}");
-                    DownloadList.Add(item);
+                    foreach (var item in db.Downloads.AsEnumerable().Select(x => new DownloadWrapper()
+                    {
+                        DownloadInfo = x,
+                        CurrentDownloadedLength = x.DisplayDownloadedLength,
+                        Status = x.DisplayDownloadedLength != 0 && x.DisplayDownloadedLength == x.TotalBytes ? DownloadTaskStatus.Finished : DownloadTaskStatus.Paused
+                    }))
+                    {
+                        Log.Debug($"Load download record :{item.DownloadInfo.DownloadFullPath}");
+                        DownloadList.Add(item);
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                ExceptionHelper.DebugThrow(e);
-                Log.Error("Can't get download record from database.", e);
-            }
+                catch (Exception e)
+                {
+                    ExceptionHelper.DebugThrow(e);
+                    Log.Error("Can't get download record from database.", e);
+                }
+
+                return Task.CompletedTask;
+            });
         }
 
-        internal static void DownloadDelete(DownloadWrapper download)
+        internal static async void DownloadDelete(DownloadWrapper download)
         {
-            DownloadPause(download);
-
-            var temp_dl_path = download.DownloadInfo.DownloadFullPath + ".dl";
-            File.Delete(temp_dl_path);
-            DownloadList.Remove(download);
-
-            var db = LocalDBContext.Instance;
-
-            if (download.IsSaveInDB && db.Downloads.Remove(download.DownloadInfo).Entity is Download)
+            await LocalDBContext.PostDbAction(db =>
             {
-                Log.Info("Deleted entity record in DB");
-                db.SaveChanges();
-            }
+                DownloadPause(download);
+
+                var temp_dl_path = download.DownloadInfo.DownloadFullPath + ".dl";
+                File.Delete(temp_dl_path);
+                DownloadList.Remove(download);
+
+                if (download.IsSaveInDB && db.Downloads.Remove(download.DownloadInfo).Entity is Download)
+                {
+                    Log.Info("Deleted entity record in DB");
+                    db.SaveChanges();
+                }
+
+                return Task.CompletedTask;
+            });
 
             Log.Info($"Deleted download task :{download.DownloadInfo.FileName}");
         }

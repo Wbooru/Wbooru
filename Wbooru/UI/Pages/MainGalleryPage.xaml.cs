@@ -317,11 +317,21 @@ namespace Wbooru.UI.Pages
             var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x=>x.GalleryName).ToArray();
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
+            Func<IEnumerable<GalleryItem>> source = null;
 
-            var source = new Func<IEnumerable<GalleryItem>>(() => (online_mark_feature?.GetMarkedGalleryItem()) ?? LocalDBContext.Instance.ItemMarks.Include(x=>x.GalleryItem)
+            if (online_mark_feature != null)
+            {
+                source = new Func<IEnumerable<GalleryItem>>(() => online_mark_feature?.GetMarkedGalleryItem());
+            }
+            else
+            {
+                var collection = await LocalDBContext.PostDbAction(ctx => ctx.ItemMarks.Include(x => x.GalleryItem)
                 .Select(x => x.GalleryItem)
                 .Where(x => galleries.Contains(x.GalleryName))
-                .ToArray());//avoid SQL.
+                .ToArray()//avoid SQL.
+                );
+                source = new Func<IEnumerable<GalleryItem>>(() => collection);
+            }
                  
             GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature!=null?"在线":"本地") + "收藏列表";
             GridViewer.ViewType = GalleryViewType.Marked;
@@ -468,13 +478,14 @@ namespace Wbooru.UI.Pages
 
             var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
 
-            var source = new Func<IEnumerable<GalleryItem>>(() => LocalDBContext.Instance.VisitRecords.AsEnumerable()
+            using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx,out var __);
+
+            var source = new Func<IEnumerable<GalleryItem>>(() => ctx.VisitRecords.AsEnumerable()
             .OrderByDescending(x => x.LastVisitTime)
             .Select(x => x.GalleryItem)
             .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)))
             .ToArray()
             );//avoid SQL.
-
 
             GalleryTitle = "历史浏览记录";
             GridViewer.ViewType = GalleryViewType.History;

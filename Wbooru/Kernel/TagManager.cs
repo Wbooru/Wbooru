@@ -21,13 +21,20 @@ namespace Wbooru.Kernel
         public static ObservableCollection<TagRecord> FiltedTags { get; private set; }
         public static ObservableCollection<TagRecord> SubscribedTags { get; private set; }
 
-        public static void InitTagManager()
+        public static async void InitTagManager()
         {
             try
             {
-                MarkedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Marked))));
-                FiltedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Filter))));
-                SubscribedTags = new ObservableCollection<TagRecord>(order(LocalDBContext.Instance.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))));
+                var result = await LocalDBContext.PostDbAction(ctx => new {
+                    MarkedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Marked)))),
+                    FiltedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Filter)))),
+                    SubscribedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))))
+
+                });
+
+                MarkedTags = result.MarkedTags;
+                FiltedTags = result.FiltedTags;
+                SubscribedTags = result.SubscribedTags;
 
                 IEnumerable<TagRecord> order(IEnumerable<TagRecord> source)
                 {
@@ -45,27 +52,33 @@ namespace Wbooru.Kernel
         }
 
         //因为从现有的收藏标签进行订阅，所以不需要其他重载形式
-        public static void SubscribedTag(TagRecord tag)
+        public static async void SubscribedTag(TagRecord tag)
         {
             if (Contain(tag.Tag.Name,tag.FromGallery,TagRecordType.Subscribed))
                 return;
 
-            LocalDBContext.Instance.Attach(tag).Entity.RecordType = TagRecordType.Subscribed;
-
-            LocalDBContext.Instance.SaveChanges();
+            await LocalDBContext.PostDbAction(ctx =>
+            {
+                ctx.Attach(tag).Entity.RecordType = TagRecordType.Subscribed;
+                ctx.SaveChanges();
+                return Task.CompletedTask;
+            });
 
             SubscribedTags.Add(tag);
         }
 
         //因为从现有的收藏标签进行订阅，所以不需要其他重载形式
-        public static void UnSubscribedTag(TagRecord tag)
+        public static async void UnSubscribedTag(TagRecord tag)
         {
             if (!tag.RecordType.HasFlag(TagRecordType.Subscribed))
                 return;
 
-            LocalDBContext.Instance.Attach(tag).Entity.RecordType = TagRecordType.Marked;
-
-            LocalDBContext.Instance.SaveChanges();
+            await LocalDBContext.PostDbAction(ctx =>
+            {
+                ctx.Attach(tag).Entity.RecordType = TagRecordType.Marked;
+                ctx.SaveChanges();
+                return Task.CompletedTask;
+            });
 
             SubscribedTags.Remove(SubscribedTags.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.FromGallery == tag.FromGallery && x.Tag.Type == tag.Tag.Type));
         }
@@ -86,7 +99,7 @@ namespace Wbooru.Kernel
             Type = type
         }, gallery_name, record_type);
 
-        public static void AddTag(Tag tag, string gallery_name, TagRecordType record_type)
+        public static async void AddTag(Tag tag, string gallery_name, TagRecordType record_type)
         {
             var rt = record_type switch
             {
@@ -98,42 +111,52 @@ namespace Wbooru.Kernel
 
             var tag_name = tag.Name;
 
-            if (LocalDBContext.Instance.Tags.FirstOrDefault(x => tag_name == x.Tag.Name && gallery_name == x.FromGallery) is TagRecord record)
+            await LocalDBContext.PostDbAction(ctx =>
             {
-                record.RecordType = record_type;
-                rt.Add(record);
-            }
-            else
-            {
-                TagRecord tag2 = new TagRecord()
+                if (ctx.Tags.FirstOrDefault(x => tag_name == x.Tag.Name && gallery_name == x.FromGallery) is TagRecord record)
                 {
-                    Tag = tag,
-                    TagID = MathEx.Random(max: -1),
-                    AddTime = DateTime.Now,
-                    FromGallery = gallery_name,
-                    RecordType = record_type
-                };
+                    record.RecordType = record_type;
+                    rt.Add(record);
+                }
+                else
+                {
+                    TagRecord tag2 = new TagRecord()
+                    {
+                        Tag = tag,
+                        TagID = MathEx.Random(max: -1),
+                        AddTime = DateTime.Now,
+                        FromGallery = gallery_name,
+                        RecordType = record_type
+                    };
 
-                LocalDBContext.Instance.Tags.Add(tag2);
-                rt.Add(tag2);
-            }
+                    ctx.Tags.Add(tag2);
+                    rt.Add(tag2);
+                }
 
-            LocalDBContext.Instance.SaveChanges();
+                ctx.SaveChanges();
+                return Task.CompletedTask;
+            });
         }
 
-        public static void RemoveTag(TagRecord record)
+        public static async void RemoveTag(TagRecord record)
         {
             var list = record.RecordType.HasFlag(TagRecordType.Filter) ? FiltedTags : MarkedTags;
-            var tag = LocalDBContext.Instance.Tags.FirstOrDefault(x => x.RecordType == record.RecordType && x.FromGallery == record.FromGallery && x.Tag.Name.Equals(record.Tag.Name, StringComparison.InvariantCultureIgnoreCase));
 
-            list.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
+            await LocalDBContext.PostDbAction(ctx =>
+            {
 
-            if (tag.RecordType == TagRecordType.Subscribed)
-                SubscribedTags.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
+                var tag = ctx.Tags.FirstOrDefault(x => x.RecordType == record.RecordType && x.FromGallery == record.FromGallery && x.Tag.Name.Equals(record.Tag.Name, StringComparison.InvariantCultureIgnoreCase));
 
-            tag.RecordType = TagRecordType.None;
+                list.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
 
-            LocalDBContext.Instance.SaveChanges();
+                if (tag.RecordType == TagRecordType.Subscribed)
+                    SubscribedTags.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
+
+                tag.RecordType = TagRecordType.None;
+
+                ctx.SaveChanges();
+                return Task.CompletedTask;
+            });
         }
 
         public static CacheTagMetaProgressStatus StartCacheTagMeta()
@@ -176,45 +199,45 @@ namespace Wbooru.Kernel
             return status;
         }
 
-        private static void ProcessTags(Tag[] tags, IGalleryTagMetaSearch searcher)
+        private static async void ProcessTags(Tag[] tags, IGalleryTagMetaSearch searcher)
         {
-            var ctx = LocalDBContext.Instance;
             var gallery_name = (searcher as Gallery)?.GalleryName;
-            using var u = ctx.Database.BeginTransaction();
 
-            foreach (var tag in tags)
-            {
-                if (ctx.Tags.FirstOrDefault(x => x.Tag.Name == tag.Name && x.FromGallery == gallery_name) is TagRecord record)
+            await LocalDBContext.PostDbAction(ctx => {
+                foreach (var tag in tags)
                 {
-                    record.Tag.Type = tag.Type;
-                    Log.Debug($"Modify tag record ({record.TagID}){record.Tag.Name} type = {record.Tag.Type}");
-                }
-                else
-                {
-                    record = new TagRecord()
+                    if (ctx.Tags.FirstOrDefault(x => x.Tag.Name == tag.Name && x.FromGallery == gallery_name) is TagRecord record)
                     {
-                        TagID = MathEx.Random(max: -1),
-                        Tag = tag,
-                        RecordType = TagRecordType.None,
-                        FromGallery = gallery_name,
-                        AddTime = DateTime.Now
-                    };
-                    ctx.Tags.Add(record);
+                        record.Tag.Type = tag.Type;
+                        Log.Debug($"Modify tag record ({record.TagID}){record.Tag.Name} type = {record.Tag.Type}");
+                    }
+                    else
+                    {
+                        record = new TagRecord()
+                        {
+                            TagID = MathEx.Random(max: -1),
+                            Tag = tag,
+                            RecordType = TagRecordType.None,
+                            FromGallery = gallery_name,
+                            AddTime = DateTime.Now
+                        };
+                        ctx.Tags.Add(record);
 
-                    Log.Debug($"Add new tag record {record.Tag.Name} type = {record.Tag.Type}");
+                        Log.Debug($"Add new tag record {record.Tag.Name} type = {record.Tag.Type}");
+                    }
+
+                    ctx.SaveChanges();
                 }
 
-                ctx.SaveChanges();
-            }
-
-            u.Commit();
+                return Task.CompletedTask;
+            });
         }
 
-        public static Dictionary<string, Tag> SearchTagMeta(Gallery gallery = null, string id = null, params string[] tag_names)
+        public static async Task<Dictionary<string, Tag>> SearchTagMeta(Gallery gallery = null, string id = null, params string[] tag_names)
         {
             Log.Debug($"+ Begin search({tag_names.Count()}): {string.Join(" , ", tag_names)}");
 
-            var final_result = SearchTagMetaFromLocalDataBase(gallery, tag_names);
+            var final_result = await SearchTagMetaFromLocalDataBase(gallery, tag_names);
 
             if (final_result.Count != tag_names.Length)
             {
@@ -224,8 +247,8 @@ namespace Wbooru.Kernel
                     {
                         try
                         {
-                            var rid = !string.IsNullOrWhiteSpace(id) ? searcher.SearchTagMetaById(id).ToArray() : Enumerable.Empty<Tag>();
-                            var sid = rid.Count() == tag_names.Length ? Enumerable.Empty<Tag>() : searcher.SearchTagMeta(tag_names.Except(rid.Select(x => x.Name)).ToArray());
+                            var rid = !string.IsNullOrWhiteSpace(id) ? searcher.SearchTagMetaById(id).ToArray() : Empty<Tag>();
+                            var sid = rid.Count() == tag_names.Length ? Empty<Tag>() : searcher.SearchTagMeta(tag_names.Except(rid.Select(x => x.Name)).ToArray());
 
                             return rid.Concat(sid).ToDictionary(x => x.Name, x => x);
                         }
@@ -254,7 +277,7 @@ namespace Wbooru.Kernel
             return final_result;
         }
 
-        public static void UpdateTagMeta(IEnumerable<Tag> tags,Gallery gallery)
+        public static async void UpdateTagMeta(IEnumerable<Tag> tags,Gallery gallery)
         {
             if (gallery == null)
                 return;
@@ -263,45 +286,65 @@ namespace Wbooru.Kernel
 
             var tag_names = tags.Select(x => x.Name).ToArray();
 
-            var exist_record = (from record in
-                             (from record in LocalDBContext.Instance.Tags.AsNoTracking()
+
+            await LocalDBContext.PostDbAction(async context =>
+            {
+                using var transaction = await context.Database.BeginTransactionAsync();
+
+                var exist_record = (from record in
+                             (from record in context.Tags.AsNoTracking()
                               where tag_names.Contains(record.Tag.Name)
                               where record.Tag.Type != TagType.Unknown
                               select record)
-                         where gallery_name == record.FromGallery
-                         select record).ToArray();
+                                    where gallery_name == record.FromGallery
+                                    select record).ToArray();
 
-            foreach (var r in exist_record)
-                LocalDBContext.Instance.Attach(r).Entity.Tag.Type = tags.FirstOrDefault(x => x.Name == r.Tag.Name).Type;
+                foreach (var r in exist_record)
+                {
+                    r.Tag.Type = tags.FirstOrDefault(x => x.Name == r.Tag.Name).Type;
 
-            var records = tags.Where(x=>!exist_record.Any(y=>y.Tag.Name == x.Name)).Select(x => new TagRecord()
-            {
-                TagID = MathEx.Random(max: -1),
-                Tag = x,
-                RecordType = TagRecordType.None,
-                FromGallery = gallery_name,
-                AddTime = DateTime.Now
+                    try
+                    {
+                        context.Update(r);
+                    }
+                    catch { }
+                }
+
+                var records = tags.Where(x => !exist_record.Any(y => y.Tag.Name == x.Name)).Select(x => new TagRecord()
+                {
+                    TagID = MathEx.Random(max: -1),
+                    Tag = x,
+                    RecordType = TagRecordType.None,
+                    FromGallery = gallery_name,
+                    AddTime = DateTime.Now
+                });
+
+                await context.Tags.AddRangeAsync(records);
+
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
             });
-
-            LocalDBContext.Instance.Tags.AddRange(records);
-
-            LocalDBContext.Instance.SaveChanges();
         }
 
-        public static Dictionary<string, Tag> SearchTagMetaFromLocalDataBase(Gallery gallery = null,params string[] tag_names)
+        public static async Task<Dictionary<string, Tag>> SearchTagMetaFromLocalDataBase(Gallery gallery = null,params string[] tag_names)
         {
             Log.Debug($"++ Begin search from database({tag_names.Length}): {string.Join(" , ", tag_names)}");
 
             var gallery_name = gallery?.GalleryName;
             var strict_check = (!Setting<GlobalSetting>.Current.SearchTagMetaStrict) || gallery_name == null;
-        
-            var result = from record in
-                             (from record in LocalDBContext.Instance.Tags.AsNoTracking()
-                              where tag_names.Contains(record.Tag.Name)
-                              where record.Tag.Type != TagType.Unknown
-                              select record)
-                         where strict_check || gallery_name == record.FromGallery
-                         select record;
+
+            var result = await LocalDBContext.PostDbAction(context =>
+            {
+                return (from record in
+                                (from record in context.Tags.AsNoTracking()
+                                 where tag_names.Contains(record.Tag.Name)
+                                 where record.Tag.Type != TagType.Unknown
+                                 select record)
+                        where strict_check || gallery_name == record.FromGallery
+                        select record).ToArray();
+            });
+
+            
 
             Dictionary<string, Tag> r = new Dictionary<string, Tag>();
 

@@ -92,8 +92,6 @@ namespace Wbooru.UI.Pages
             DependencyProperty.Register("IsVoted", typeof(bool), typeof(PictureDetailViewPage),
                 new PropertyMetadata(false));
 
-        public LocalDBContext DB { get; }
-
         public DownloadableImageLink CurrentDisplayImageLink { get; private set; }
 
         public ObservableCollection<Tag> Tags { get; set; } = new ObservableCollection<Tag>();
@@ -106,8 +104,6 @@ namespace Wbooru.UI.Pages
         public PictureDetailViewPage()
         {
             InitializeComponent();
-
-            DB = LocalDBContext.Instance;
 
             SetupExtraUI();
 
@@ -341,11 +337,11 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                using var d = LoadingStatus.BeginBusy("正在获取标签信息");
+                using var d = LoadingStatus.BeginBusy("正在获取标签信息并渲染");
 
                 var tags = PictureDetailInfo.Tags.ToArray();
 
-                var dir = await Task.Run(() =>TagManager.SearchTagMeta(gallery, item.GalleryItemID, tags));
+                var dir = await TagManager.SearchTagMeta(gallery, item.GalleryItemID, tags);
 
                 foreach (var tag in PictureDetailInfo.Tags.Select(x => dir.TryGetValue(x, out var t) ? t : new Tag() { Name = x, Type = TagType.Unknown }))
                     Tags.Add(tag);
@@ -355,32 +351,29 @@ namespace Wbooru.UI.Pages
                 Log.Error(e.Message);
             }
 
-            await Task.Run(async () =>
+            var is_mark = await LocalDBContext.PostDbAction(DB =>
             {
-                using (var transaction = DB.Database.BeginTransaction())
+                var visit_entity = DB.VisitRecords.AsQueryable().Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
+                
+                if (visit_entity == null)
                 {
-                    var visit_entity = DB.VisitRecords.FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
-                    if (visit_entity == null)
+                    var visit = new VisitRecord()
                     {
-                        var visit = new VisitRecord()
-                        {
-                            GalleryItem = item,
-                            LastVisitTime = DateTime.Now
-                        };
+                        GalleryItem = item,
+                        LastVisitTime = DateTime.Now
+                    };
 
-                        DB.VisitRecords.Add(visit);
-                    }
-                    else
-                    {
-                        visit_entity.LastVisitTime = DateTime.Now;
-                    }
-
-                    await DB.SaveChangesAsync();
-                    transaction.Commit();
+                    DB.VisitRecords.Add(visit);
                 }
-            });
+                else
+                {
+                    visit_entity.LastVisitTime = DateTime.Now;
+                }
 
-            var is_mark = !(DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == item.GalleryItemID) is null);
+                DB.SaveChanges();
+
+                return !(DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == item.GalleryItemID) is null);
+            });
 
             var (is_vote, _) = await VoteManager.GetVote(Gallery, PictureInfo);
 
@@ -418,30 +411,27 @@ namespace Wbooru.UI.Pages
             var gallery = Gallery;
             var info = PictureInfo;
 
-            await Task.Run(() =>
+            await LocalDBContext.PostDbAction(DB =>
             {
-                using (var transaction = DB.Database.BeginTransaction())
+                if (!is_mark)
                 {
-                    if (!is_mark)
+                    DB.ItemMarks.Add(new GalleryItemMark()
                     {
-                        DB.ItemMarks.Add(new GalleryItemMark()
-                        {
-                            GalleryItem = info,
-                            Time = DateTime.Now
-                        });
+                        GalleryItem = info,
+                        Time = DateTime.Now
+                    });
 
-                        is_mark = true;
-                    }
-                    else
-                    {
-                        var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == info.GalleryItemID);
-                        DB.ItemMarks.Remove(x);
-                        is_mark = false;
-                    }
-
-                    DB.SaveChanges();
-                    transaction.Commit();
+                    is_mark = true;
                 }
+                else
+                {
+                    var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == info.GalleryItemID);
+                    DB.ItemMarks.Remove(x);
+                    is_mark = false;
+                }
+
+                DB.SaveChanges();
+                return Task.CompletedTask;
             });
 
             IsMark = is_mark;
