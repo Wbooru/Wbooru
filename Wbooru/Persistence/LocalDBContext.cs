@@ -385,13 +385,13 @@ namespace Wbooru.Persistence
                 currentExecuteTask = null;
             }
 
-            using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var context, out var _);
-            using var transaction = await context.Database.BeginTransactionAsync();
             var task = Task.Run(() =>
             {
+                using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var context, out var _);
                 currentExecuteThread = Thread.CurrentThread;
                 return executeFunc(context);
             });
+
             currentExecuteTask = task;
             return await task;
         }

@@ -29,7 +29,6 @@ namespace Wbooru.Kernel
                     MarkedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Marked)))),
                     FiltedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Filter)))),
                     SubscribedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))))
-
                 });
 
                 MarkedTags = result.MarkedTags;

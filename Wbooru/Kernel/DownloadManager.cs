@@ -34,7 +34,7 @@ namespace Wbooru.Kernel
             }
             catch{}
 
-            await LocalDBContext.PostDbAction(db =>
+            await LocalDBContext.PostDbAction(async db =>
             {
                 foreach (var item in DownloadList)
                 {
@@ -44,7 +44,7 @@ namespace Wbooru.Kernel
                         DownloadPause(item);
                     }
 
-                    if (db.Downloads.Find(item.DownloadInfo.DownloadId) is Download entity)
+                    if (await db.Downloads.FindAsync(item.DownloadInfo.DownloadId) is Download entity)
                     {
                         Log.Debug($"Update download record :{item.DownloadInfo.DownloadFullPath}");
                         db.Entry(entity).CurrentValues.SetValues(item.DownloadInfo);
@@ -52,12 +52,11 @@ namespace Wbooru.Kernel
                     else
                     {
                         Log.Debug($"Add download record :{item.DownloadInfo.DownloadFullPath}");
-                        db.Downloads.Add(item.DownloadInfo);
+                        await db.Downloads.AddAsync(item.DownloadInfo);
                     }
                 }
 
-                db.SaveChanges();
-                return Task.CompletedTask;
+                return db.SaveChangesAsync();
             });
 
             Log.Debug($"Download record save all done.");
@@ -79,11 +78,11 @@ namespace Wbooru.Kernel
             timer_thread.IsBackground = true;
             timer_thread.Start();
 
-            await LocalDBContext.PostDbAction(db =>
+            await LocalDBContext.PostDbAction(async db =>
             {
                 try
                 {
-                    foreach (var item in db.Downloads.AsEnumerable().Select(x => new DownloadWrapper()
+                    await foreach (var item in db.Downloads.AsAsyncEnumerable().Select(x => new DownloadWrapper()
                     {
                         DownloadInfo = x,
                         CurrentDownloadedLength = x.DisplayDownloadedLength,
@@ -99,8 +98,6 @@ namespace Wbooru.Kernel
                     ExceptionHelper.DebugThrow(e);
                     Log.Error("Can't get download record from database.", e);
                 }
-
-                return Task.CompletedTask;
             });
         }
 

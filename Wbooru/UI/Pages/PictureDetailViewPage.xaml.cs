@@ -411,11 +411,11 @@ namespace Wbooru.UI.Pages
             var gallery = Gallery;
             var info = PictureInfo;
 
-            await LocalDBContext.PostDbAction(DB =>
+            await LocalDBContext.PostDbAction(async DB =>
             {
                 if (!is_mark)
                 {
-                    DB.ItemMarks.Add(new GalleryItemMark()
+                    await DB.ItemMarks.AddAsync(new GalleryItemMark()
                     {
                         GalleryItem = info,
                         Time = DateTime.Now
@@ -430,7 +430,7 @@ namespace Wbooru.UI.Pages
                     is_mark = false;
                 }
 
-                DB.SaveChanges();
+                await DB.SaveChangesAsync();
                 return Task.CompletedTask;
             });
 
