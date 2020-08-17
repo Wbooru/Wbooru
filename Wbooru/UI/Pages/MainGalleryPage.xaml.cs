@@ -139,6 +139,12 @@ namespace Wbooru.UI.Pages
         {
             Func<IEnumerable<GalleryItem>> items_source_creator;
 
+            CurrentGallery = gallery;
+            SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName = gallery.GalleryName;
+
+            GridViewer.ClearGallery();
+            GridViewer.Gallery = gallery;
+
             if (keywords?.Any() ?? false)
             {
                 GridViewer.ViewType = GalleryViewType.SearchResult;
@@ -154,17 +160,16 @@ namespace Wbooru.UI.Pages
                 ShowReturnButton = false;
             }
 
-            CurrentGallery = gallery;
-            SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName = gallery.GalleryName;
-
-            GridViewer.ClearGallery();
-            GridViewer.Gallery = gallery;
-            GridViewer.LoadableSource = items_source_creator;
+            var status = LoadStatusDisplayer.BeginBusy("正在自动登录账号...");
 
             if (gallery.SupportFeatures.HasFlag(GallerySupportFeature.Account))
                 await TryAutoLogin(gallery);
 
+            status.Dispose();
+
             UpdateAccountButtonText();
+
+            GridViewer.LoadableSource = items_source_creator;
 
             Log.Info($"Switch main page gallery:{gallery.GalleryName}");
         }
