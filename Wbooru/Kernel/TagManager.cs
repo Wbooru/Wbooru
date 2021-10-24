@@ -17,23 +17,24 @@ namespace Wbooru.Kernel
 {
     public static class TagManager
     {
-        public static ObservableCollection<TagRecord> MarkedTags { get; private set; }
-        public static ObservableCollection<TagRecord> FiltedTags { get; private set; }
-        public static ObservableCollection<TagRecord> SubscribedTags { get; private set; }
+        public static ObservableCollection<TagRecord> MarkedTags { get; private set; } = new ObservableCollection<TagRecord>();
+        public static ObservableCollection<TagRecord> FiltedTags { get; private set; } = new ObservableCollection<TagRecord>();
+        public static ObservableCollection<TagRecord> SubscribedTags { get; private set; } = new ObservableCollection<TagRecord>();
 
         public static async void InitTagManager()
         {
             try
             {
-                var result = await LocalDBContext.PostDbAction(ctx => new {
+                var result = await LocalDBContext.PostDbAction(ctx => new
+                {
                     MarkedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Marked)))),
                     FiltedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Filter)))),
                     SubscribedTags = new ObservableCollection<TagRecord>(order(ctx.Tags.AsNoTracking().Where(x => x.RecordType.HasFlag(TagRecordType.Subscribed))))
                 });
 
-                MarkedTags = result.MarkedTags;
-                FiltedTags = result.FiltedTags;
-                SubscribedTags = result.SubscribedTags;
+                result.MarkedTags.ForEach(x => MarkedTags.Add(x));
+                result.FiltedTags.ForEach(x => FiltedTags.Add(x));
+                result.SubscribedTags.ForEach(x => SubscribedTags.Add(x));
 
                 IEnumerable<TagRecord> order(IEnumerable<TagRecord> source)
                 {
@@ -53,7 +54,7 @@ namespace Wbooru.Kernel
         //因为从现有的收藏标签进行订阅，所以不需要其他重载形式
         public static async void SubscribedTag(TagRecord tag)
         {
-            if (Contain(tag.Tag.Name,tag.FromGallery,TagRecordType.Subscribed))
+            if (Contain(tag.Tag.Name, tag.FromGallery, TagRecordType.Subscribed))
                 return;
 
             await LocalDBContext.PostDbAction(ctx =>
@@ -84,7 +85,7 @@ namespace Wbooru.Kernel
 
         public static void AddTag(string name, string gallery_name, string type, TagRecordType record_type) => AddTag(name, gallery_name, Enum.TryParse<TagType>(type, true, out var r) ? r : TagType.Unknown, record_type);
 
-        public static bool Contain(string tag_name,string gallery_name, TagRecordType record_type) => (record_type switch
+        public static bool Contain(string tag_name, string gallery_name, TagRecordType record_type) => (record_type switch
         {
             TagRecordType.Filter => FiltedTags,
             TagRecordType.Subscribed => SubscribedTags,
@@ -141,21 +142,21 @@ namespace Wbooru.Kernel
         {
             var list = record.RecordType.HasFlag(TagRecordType.Filter) ? FiltedTags : MarkedTags;
 
-            await LocalDBContext.PostDbAction(ctx =>
+            var tag = await LocalDBContext.PostDbAction(ctx =>
             {
+                var tagEntity = ctx.Tags.FirstOrDefault(x => x.RecordType == record.RecordType && x.FromGallery == record.FromGallery && x.Tag.Name == record.Tag.Name);
 
-                var tag = ctx.Tags.FirstOrDefault(x => x.RecordType == record.RecordType && x.FromGallery == record.FromGallery && x.Tag.Name.Equals(record.Tag.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (tagEntity.RecordType == TagRecordType.Subscribed)
+                    SubscribedTags.Remove(list.FirstOrDefault(x => x.Tag.Name == tagEntity.Tag.Name && x.Tag.Type == tagEntity.Tag.Type));
 
-                list.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
-
-                if (tag.RecordType == TagRecordType.Subscribed)
-                    SubscribedTags.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
-
-                tag.RecordType = TagRecordType.None;
+                tagEntity.RecordType = TagRecordType.None;
 
                 ctx.SaveChanges();
-                return Task.CompletedTask;
+                return tagEntity;
             });
+
+            if (tag is TagRecord)
+                list.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
         }
 
         public static CacheTagMetaProgressStatus StartCacheTagMeta()
@@ -202,7 +203,8 @@ namespace Wbooru.Kernel
         {
             var gallery_name = (searcher as Gallery)?.GalleryName;
 
-            await LocalDBContext.PostDbAction(ctx => {
+            await LocalDBContext.PostDbAction(ctx =>
+            {
                 foreach (var tag in tags)
                 {
                     if (ctx.Tags.FirstOrDefault(x => x.Tag.Name == tag.Name && x.FromGallery == gallery_name) is TagRecord record)
@@ -276,7 +278,7 @@ namespace Wbooru.Kernel
             return final_result;
         }
 
-        public static async void UpdateTagMeta(IEnumerable<Tag> tags,Gallery gallery)
+        public static async void UpdateTagMeta(IEnumerable<Tag> tags, Gallery gallery)
         {
             if (gallery == null)
                 return;
@@ -325,7 +327,7 @@ namespace Wbooru.Kernel
             });
         }
 
-        public static async Task<Dictionary<string, Tag>> SearchTagMetaFromLocalDataBase(Gallery gallery = null,params string[] tag_names)
+        public static async Task<Dictionary<string, Tag>> SearchTagMetaFromLocalDataBase(Gallery gallery = null, params string[] tag_names)
         {
             Log.Debug($"++ Begin search from database({tag_names.Length}): {string.Join(" , ", tag_names)}");
 
@@ -343,7 +345,7 @@ namespace Wbooru.Kernel
                         select record).ToArray();
             });
 
-            
+
 
             Dictionary<string, Tag> r = new Dictionary<string, Tag>();
 

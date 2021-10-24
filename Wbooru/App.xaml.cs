@@ -159,9 +159,10 @@ namespace Wbooru
                         {
                             Process.Start(Log.LogFilePath);
                         }
-                        catch {}
-                        MessageBox.Show("数据库迁移升级失败!查看日志获取更详细情况.");
-                        UnusualSafeRestart();
+                        catch {
+                            MessageBox.Show("数据库迁移升级失败!查看日志获取更详细情况.");
+                            UnusualSafeRestart();
+                        }
                     }
                 }
                 else
