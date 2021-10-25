@@ -175,9 +175,9 @@ namespace Wbooru
 
             CheckPlugin();
 
-            DownloadManager.Init();
-
             SchedulerManager.Init();
+
+            DownloadManager.Init();
 
             TagManager.InitTagManager();
 

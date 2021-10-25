@@ -7,6 +7,7 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Wbooru.Settings;
@@ -51,15 +52,11 @@ namespace Wbooru.Persistence
             if (File.Exists(path))
                 return;
 
-            //try get default empty database file
-            var exe_path = Directory.GetParent(Process.GetCurrentProcess().MainModule.FileName).FullName;
-            var default_db_path = Path.Combine(exe_path,"default_empty.db");
+            using var stream = typeof(App).Assembly.GetManifestResourceStream("Wbooru.Persistence.default_empty.db");
+            using var file = File.OpenWrite(path);
+            stream.CopyTo(file);
 
-            if (!File.Exists(default_db_path))
-                throw new Exception($"Wbooru没有数据库，也没从{default_db_path}找到default_empty.db以及其他的数据库文件资源，请自行生成数据库文件并放置到{path}.");
-
-            Log.Info($"user database file not found , move default database file {default_db_path} to {path}");
-            File.Copy(default_db_path, path);
+            Log.Info($"user database file not found , generate new empty database file to {path}");
         }
     }
 }

@@ -60,14 +60,21 @@
             <GroupBox.Header>
                 <TextBlock FontSize="16" Foreground="OrangeRed">危险操作</TextBlock>
             </GroupBox.Header>
-
-            <StackPanel Orientation="Horizontal">
-                <Button Click="RestoreDatabase" IsEnabled="{Binding ElementName=StatusDisplayer, Path=IsBusy, Converter={x:Static cv:SimpleExpressionConverters.ReverseBooleanConverter}}">*还原数据库*</Button>
-                <Button
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Click="RestoreDatabase" IsEnabled="{Binding ElementName=StatusDisplayer, Path=IsBusy, Converter={x:Static cv:SimpleExpressionConverters.ReverseBooleanConverter}}">*还原数据库*</Button>
+                    <Button
                     Margin="20,0,0,0"
                     Click="EraseDatabase"
                     IsEnabled="{Binding ElementName=StatusDisplayer, Path=IsBusy, Converter={x:Static cv:SimpleExpressionConverters.ReverseBooleanConverter}}">
-                    *清空数据库*
+                        *清空数据库*
+                    </Button>
+                </StackPanel>
+                <Button
+                    Margin="0,20,0,0"
+                    Click="CombineDatabase"
+                    IsEnabled="{Binding ElementName=StatusDisplayer, Path=IsBusy, Converter={x:Static cv:SimpleExpressionConverters.ReverseBooleanConverter}}">
+                    *从其他数据库文件合并数据到本数据*
                 </Button>
             </StackPanel>
         </GroupBox>
