@@ -367,6 +367,7 @@ namespace Wbooru.UI.Controls
 
         internal void RefreshItem()
         {
+            Log.Info("refresh gallery.");
             OnLoadableSourceChanged();
         }
 

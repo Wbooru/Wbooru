@@ -87,8 +87,13 @@ namespace Wbooru
             }
             else
             {
-                if (!string.IsNullOrWhiteSpace(LogFilePath))
-                    File.AppendAllText(LogFilePath, content);
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(LogFilePath))
+                        File.AppendAllText(LogFilePath, content);
+                }
+                catch
+                {}
             }
         }
 
