@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Wbooru.Persistence;
 
 namespace Wbooru.Migrations
 {
     [DbContext(typeof(LocalDBContext))]
-    partial class LocalDBContextModelSnapshot : ModelSnapshot
+    [Migration("20211026201613_AddDetailLink")]
+    partial class AddDetailLink
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
