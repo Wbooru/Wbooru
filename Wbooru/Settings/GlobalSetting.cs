@@ -99,7 +99,7 @@ namespace Wbooru.Settings
         [NeedRestart]
         [Description("单位是像素(px)")]
         [NameAlias("画廊浏览列表每个缩略图的宽度")]
-        public uint PictureGridItemWidth { get; set; } = 150;
+        public uint PictureGridItemWidth { get; set; } = 250;
 
         [Group("View Options")]
         [NeedRestart]
