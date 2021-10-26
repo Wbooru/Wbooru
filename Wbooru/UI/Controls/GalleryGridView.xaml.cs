@@ -20,6 +20,8 @@ using Wbooru.Galleries;
 using static Wbooru.UI.Pages.MainGalleryPage;
 using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Utils;
+using System.Threading;
+using Wbooru.Utils.Resource;
 
 namespace Wbooru.UI.Controls
 {
@@ -366,6 +368,55 @@ namespace Wbooru.UI.Controls
         internal void RefreshItem()
         {
             OnLoadableSourceChanged();
+        }
+
+        CancellationTokenSource copyTask = new CancellationTokenSource();
+
+        private void OnCopyLink(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is FrameworkElement f && f.DataContext is GalleryItem item))
+                return;
+            copyTask?.Cancel();
+            copyTask = new CancellationTokenSource();
+
+            Toast.ShowMessage("复制成功");
+            Clipboard.SetText(item?.DetailLink);
+        }
+
+        private async void OnCopyPic(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is FrameworkElement f && f.DataContext is GalleryItem item))
+                return;
+            copyTask?.Cancel();
+            copyTask = new CancellationTokenSource();
+
+            var gallery = Gallery;
+            var detial = gallery.GetImageDetial(item);
+            var dl = detial.PickSuitableImageURL(SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget);
+
+            Toast.ShowMessage("开始加载图片...");
+            using var image = await ImageResourceManager.RequestImageAsync(dl.FullFileName, dl.DownloadLink, true, default, copyTask.Token);
+            if (copyTask.Token.IsCancellationRequested)
+                return;
+
+            Clipboard.SetImage(image.ConvertToBitmapImage());
+            if (copyTask.Token.IsCancellationRequested)
+                return;
+            Toast.ShowMessage("复制图片成功");
+        }
+
+        private void OnCopyID(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is FrameworkElement f && f.DataContext is GalleryItem item))
+                return;
+            copyTask?.Cancel();
+            copyTask = new CancellationTokenSource();
+
+            var gallery = Gallery;
+            var detial = gallery.GetImageDetial(item);
+
+            Toast.ShowMessage("复制成功");
+            Clipboard.SetText(detial?.ID);
         }
     }
 }

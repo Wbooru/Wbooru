@@ -19,6 +19,7 @@ namespace Wbooru.Models.Gallery
 
         public ImageSize PreviewImageSize { get; set; }
         public string PreviewImageDownloadLink { get; set; }
+        public string DetailLink { get; set; }
         public string DownloadFileName { get; set; }    
         public string GalleryName { get; set; }
 

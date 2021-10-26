@@ -14,7 +14,7 @@
         <SolidColorBrush x:Key="ContentBackgroundColor_LowTransparent" Color="#CC23283C" />
         <SolidColorBrush x:Key="ContentBackgroundColor_MiddleTransparent" Color="#8023283C" />
         <SolidColorBrush x:Key="ContentBackgroundColor_HighTransparent" Color="#3023283C" />
-
+        
         <ControlTemplate x:Key="NormalControlBoxTemplate" TargetType="ComboBox">
             <Grid>
                 <ToggleButton

@@ -28,14 +28,9 @@ namespace Wbooru.Network
         private List<Task<Image>> tasks_waiting_queue=new List<Task<Image>>();
         private HashSet<Task<Image>> tasks_running_queue=new HashSet<Task<Image>>();
 
-        public Task<Image> DownloadImageAsync(string download_path, CancellationToken? cancel_token = null, Action<(long downloaded_bytes, long content_bytes)> reporter = null, bool front_insert = false)
+        public Task<Image> DownloadImageAsync(string download_path, CancellationToken cancel_token = default, Action<(long downloaded_bytes, long content_bytes)> reporter = null, bool front_insert = false)
         {
-            Task<Image> task;
-
-            if (!cancel_token.HasValue)
-                task = new Task<Image>(OnDownloadTaskStart, (download_path, reporter));
-            else
-                task = new Task<Image>(OnDownloadTaskStart, (download_path, reporter), cancel_token.Value);
+            Task<Image> task = new Task<Image>(OnDownloadTaskStart, (download_path, reporter, cancel_token), cancel_token);
 
             lock (tasks_waiting_queue)
             {
@@ -85,7 +80,9 @@ namespace Wbooru.Network
         {
             try
             {
-                (string download_path, Action<(long downloaded_bytes, long content_bytes)> reporter) = (ValueTuple<string,Action<(long,long)>>)state;
+                (string download_path, Action<(long downloaded_bytes, long content_bytes)> reporter, CancellationToken cancelToken) = (ValueTuple<string,Action<(long,long)>, CancellationToken>)state;
+                if (cancelToken.IsCancellationRequested)
+                    return default;
 
                 Log<ImageFetchDownloadScheduler>.Info($"Start download image:{download_path}");
 
@@ -110,7 +107,7 @@ namespace Wbooru.Network
             {
                 Log<ImageFetchDownloadScheduler>.Error($"Can't download image ({e.Message}):{state}");
                 //Toast.ShowMessage($"无法下载图片({e.Message})");
-                return null;
+                return default;
             }
         }
 

@@ -10,6 +10,7 @@ using System.Runtime.Caching;
 using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Wbooru.Network;
@@ -43,12 +44,12 @@ namespace Wbooru.Utils.Resource
             }
         }
 
-        public static async Task<Image> RequestImageFromNetworkAsync(string resource_name,string url,bool load_first, Action<(long downloaded_bytes, long content_bytes)> reporter = default)
+        public static async Task<Image> RequestImageAsync(string resource_name,string url,bool load_first, Action<(long downloaded_bytes, long content_bytes)> reporter = default,CancellationToken cancellationToken = default)
         {
             const int retry = 3;
 
             for (int i = 0; i < retry; i++)
-                if(await RequestImageAsync(resource_name, async () =>await Container.Default.GetExportedValue<ImageFetchDownloadScheduler>().DownloadImageAsync(url, null, reporter, load_first)) is Image image)
+                if(await RequestImageAsync(resource_name, async () =>await Container.Default.GetExportedValue<ImageFetchDownloadScheduler>().DownloadImageAsync(url, cancellationToken, reporter, load_first)) is Image image)
                     return image;
 
             return default;

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Wbooru.Models.Gallery.Annotation;
+using Wbooru.Settings;
+using static Wbooru.Settings.GlobalSetting;
+using static Wbooru.UI.Pages.PictureDetailViewPage;
 
 namespace Wbooru.Models.Gallery
 {
@@ -35,5 +39,22 @@ namespace Wbooru.Models.Gallery
         public IEnumerable<string> Tags { get; set; }
 
         public IEnumerable<DownloadableImageLink> DownloadableImageLinks { get; set; }
+
+        public DownloadableImageLink PickSuitableImageURL(SelectViewQualityTarget qualityTarget)
+        {
+            var target_list = DownloadableImageLinks.OrderByDescending(x => x, DownloadableImageLinkComparer.Instance).ToArray();
+
+            var result = target_list.Length == 0 ? null : (qualityTarget switch
+            {
+                SelectViewQualityTarget.Lowest => target_list.Last(),
+                SelectViewQualityTarget.Lower => (target_list.Length > 1 ? target_list[target_list.Length - 2] : target_list.First()),
+                SelectViewQualityTarget.Middle => target_list[target_list.Length / 2],
+                SelectViewQualityTarget.Higher => (target_list.Length > 1 ? target_list[1] : target_list.First()),
+                SelectViewQualityTarget.Highest => target_list.First(),
+                _ => target_list.Last()
+            });
+
+            return result;
+        }
     }
 }

@@ -16,6 +16,34 @@
         <Converter:ItemMarginConverter x:Key="ItemMarginConverter" />
         <Converter:DefaultBorderHeightConverter x:Key="DefaultBorderHeightConverter" />
         <Converter:ImageAsyncLoadingConverter x:Key="ImageAsyncLoadingConverter" />
+
+        <Style TargetType="{x:Type ContextMenu}">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <Border
+                                                    Background="{StaticResource ContentBackgroundColor_LowTransparent}"
+                                                    BorderBrush="White"
+                                                    BorderThickness="1">
+                            <StackPanel 
+                                                        ClipToBounds="True">
+                                <StackPanel Margin="15,0,0,0" Orientation="Horizontal">
+                                    <Label Foreground="White" Content="ID : ">
+                                    </Label>
+                                    <Label Foreground="White" Content="{Binding GalleryItemID}">
+                                    </Label>
+                                </StackPanel>
+
+                                <StackPanel
+                                                        IsItemsHost="True"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -96,6 +124,80 @@
                                     Height="{Binding Height, ElementName=GalleryImageBorder}"
                                     DataContext="{Binding Converter={StaticResource ImageAsyncLoadingConverter}}"
                                     Source="{Binding AsyncValue}" />
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <ContextMenu.Resources>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Padding" Value="5,10,5,10" />
+                                                <Setter Property="Background" Value="Transparent" />
+                                                <Setter Property="FontSize" Value="14" />
+                                                <Setter Property="Icon">
+                                                    <Setter.Value>
+                                                        <Grid Background="Transparent">
+                                                        </Grid>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ContextMenu.Resources>
+                                        <MenuItem Padding="40,10,5,10"  Header="复制..">
+                                            <MenuItem.Template>
+                                                <ControlTemplate TargetType="{x:Type MenuItem}">
+                                                    <Border x:Name="templateRoot" 
+                                                            BorderBrush="Transparent" 
+                                                            CornerRadius="3" 
+                                                            BorderThickness="1" 
+                                                            Background="{TemplateBinding Background}" 
+                                                            SnapsToDevicePixels="True">
+                                                        <Grid VerticalAlignment="Center">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                            <Popup x:Name="PART_Popup"  AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom">
+                                                                <Border x:Name="SubMenuBorder" BorderBrush="White" BorderThickness="1" Background="{StaticResource ContentBackgroundColor_LowTransparent}" Padding="2">
+                                                                    <ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                                                                        <Grid RenderOptions.ClearTypeHint="Enabled">
+                                                                            <Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+                                                                                <Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}" Height="{Binding ActualHeight, ElementName=SubMenuBorder}" Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
+                                                                            </Canvas>
+                                                                            <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
+                                                                        </Grid>
+                                                                    </ScrollViewer>
+                                                                </Border>
+                                                            </Popup>
+                                                        </Grid>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsSuspendingPopupAnimation" Value="True">
+                                                            <Setter Property="PopupAnimation" TargetName="PART_Popup" Value="None"/>
+                                                        </Trigger>
+
+                                                        <Trigger Property="IsHighlighted" Value="True">
+                                                            <Setter Property="Background" TargetName="templateRoot" Value="Transparent"/>
+                                                            <Setter Property="BorderThickness" TargetName="templateRoot" Value="1"></Setter>
+                                                        </Trigger>
+
+                                                        <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
+                                                            <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
+                                                            <Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                                            <Setter TargetName="templateRoot" Property="Background" Value="Transparent" />
+                                                            <Setter Property="Header" Value="Test" />
+                                                            <Setter Property="BorderBrush" Value="#2C2C2C"></Setter>
+                                                            <Setter Property="BorderThickness" Value="1"></Setter>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </MenuItem.Template>
+                                            <MenuItem Click="OnCopyPic" Header="图片"/>
+                                            <MenuItem Click="OnCopyLink" Header="大图链接"/>
+                                            <MenuItem Click="OnCopyID" Header="ID"/>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
                             </Border>
                         </StackPanel>
                     </DataTemplate>

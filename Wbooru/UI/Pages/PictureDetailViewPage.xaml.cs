@@ -128,7 +128,7 @@ namespace Wbooru.UI.Pages
 
             DisplayDetailInfo(galleryImageDetail);
 
-            var pick_download = PickSuitableImageURL(galleryImageDetail.DownloadableImageLinks);
+            var pick_download = galleryImageDetail.PickSuitableImageURL(SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget);
 
             if (pick_download == null)
             {
@@ -149,9 +149,7 @@ namespace Wbooru.UI.Pages
 
             using var notify = LoadingStatus.BeginBusy(notify_content);
 
-            var downloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
-
-            var image = await ImageResourceManager.RequestImageFromNetworkAsync(pick_download.FullFileName, pick_download.DownloadLink , true , d =>
+            var image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, pick_download.DownloadLink , true , d =>
             {
                 var (cur,total) = d;
                 notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";

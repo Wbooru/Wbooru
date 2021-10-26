@@ -240,18 +240,20 @@ namespace Wbooru.Persistence
                 var i5 = reader.GetOrdinal(nameof(GalleryItem.GalleryName));
                 var i6 = reader.GetOrdinal("PreviewImageWidth");
                 var i7 = reader.GetOrdinal("PreviewImageHeight");
+                var i8 = reader.GetOrdinal(nameof(GalleryItem.DetailLink));
 
                 foreach (var set in reader.MakeEnumerable(x=> new object[] {
                     reader.GetInt32(i1),
                     reader.GetInt32(i6),
                     reader.GetInt32(i7),
+                    reader.GetString(i8),
                     reader.GetString(i2),
                     reader.GetString(i3),
                     reader.GetString(i5),
                     reader.GetString(i4)
                 }).SequenceWrap(BATCH_SIZE))
                 {
-                    var cmd = "INSERT INTO \"main\".\"GalleryItems\"(\"ID\",\"PreviewImageSize_Width\",\"PreviewImageSize_Height\",\"PreviewImageDownloadLink\",\"DownloadFileName\",\"GalleryName\",\"GalleryItemID\") VALUES " 
+                    var cmd = "INSERT INTO \"main\".\"GalleryItems\"(\"ID\",\"PreviewImageSize_Width\",\"PreviewImageSize_Height\",\"DetailLink\",\"PreviewImageDownloadLink\",\"DownloadFileName\",\"GalleryName\",\"GalleryItemID\") VALUES "
                         + GetParamString(set.Count(), set.First().Length);
 
                     var insertResult = await wrapContext.Database.ExecuteSqlRawAsync(cmd, set.SelectMany(x=>x));
