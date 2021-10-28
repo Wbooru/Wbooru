@@ -11,6 +11,7 @@ namespace Wbooru.Kernel.Updater
         public ReleaseType ReleaseType { get; set; }
         public Version Version { get; set; }
         public DateTime ReleaseDate { get; set; }
+        public Version RequestWbooruMinVersion { get; set; }
         public string DownloadURL { get; set; }
         public string ReleaseURL { get; set; }
         public string ReleaseDescription { get; set; }

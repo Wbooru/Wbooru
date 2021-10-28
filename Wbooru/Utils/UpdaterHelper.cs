@@ -15,6 +15,8 @@ namespace Wbooru.Utils
 {
     public static class UpdaterHelper
     {
+        private static Regex wbooruMinVersionRegex = new Regex(@"^Wbooru(\b.*\b)?Min(\b.*\b)?Version(\b.*)=\s*(\w+\.\w+\.\w+(\.\w+)?)$", RegexOptions.IgnoreCase);
+
         static UpdaterHelper()
         {
             TypeDescriptor.AddAttributes(typeof(Version), new TypeConverterAttribute(typeof(VersionSimpleTypeConverter)));
@@ -29,9 +31,7 @@ namespace Wbooru.Utils
                 req.UserAgent = "Wbooru";
             }));
 
-            return array
-                .Select(x => TryGetReleaseInfo(x))
-                .OfType<ReleaseInfo>().ToArray();
+            return array.Select(x => TryGetReleaseInfo(x)).OfType<ReleaseInfo>().ToArray();
         }
 
         private static ReleaseInfo TryGetReleaseInfo(JToken x)
@@ -55,7 +55,7 @@ namespace Wbooru.Utils
             }
         }
 
-        public static (string owner,string repo_name) ParseOwnerAndRepoFromUrl(string github_link)
+        public static (string owner, string repo_name) ParseOwnerAndRepoFromUrl(string github_link)
         {
             var match = Regex.Match(github_link, @"^.*github\.com/([^/]+)/([^/]+).*$");
 
@@ -67,7 +67,7 @@ namespace Wbooru.Utils
 
             Log.Debug($"github_link = {github_link} | owner = {owner} | repo = {repo}");
 
-            return (owner,repo);
+            return (owner, repo);
         }
 
         public static string BuildGithubReleaseApiUrl(string owner, string repo) => $"https://api.github.com/repos/{owner}/{repo}/releases";
@@ -80,14 +80,25 @@ namespace Wbooru.Utils
 
             Log.Debug($"{githubRepoUrl} -> {github_release_api}");
 
-            var raw_release_infos = GetGithubAllReleaseInfoList(github_release_api).Select(x => new PluginMarketRelease()
+            var raw_release_infos = GetGithubAllReleaseInfoList(github_release_api).Select(x =>
             {
-                DownloadURL = x.DownloadURL,
-                ReleaseDate = x.ReleaseDate,
-                ReleaseDescription = x.ReleaseDescription,
-                ReleaseType = x.ReleaseType,
-                Version = x.Version,
-                ReleaseURL = x.ReleaseURL
+                var releaseInfo = new PluginMarketRelease()
+                {
+                    DownloadURL = x.DownloadURL,
+                    ReleaseDate = x.ReleaseDate,
+                    ReleaseDescription = x.ReleaseDescription,
+                    ReleaseType = x.ReleaseType,
+                    Version = x.Version,
+                    ReleaseURL = x.ReleaseURL
+                };
+                //parse wbooru min version field.
+                var match = wbooruMinVersionRegex.Match(releaseInfo.ReleaseDescription);
+                if (match?.Success ?? false)
+                {
+                    var wmvStr = match.Groups[4].Value;
+                    releaseInfo.RequestWbooruMinVersion = new Version(wmvStr);
+                }
+                return releaseInfo;
             });
 
             return raw_release_infos;
@@ -136,7 +147,7 @@ namespace Wbooru.Utils
             }
         }
 
-        public static IEnumerable<PluginMarketRelease> GetPostReleaseInfosFromIssueCommentsAPI(string url,string issue_author)
+        public static IEnumerable<PluginMarketRelease> GetPostReleaseInfosFromIssueCommentsAPI(string url, string issue_author)
         {
             JArray release_infos;
 
@@ -162,15 +173,17 @@ namespace Wbooru.Utils
                     info.ReleaseDate = post["created_at"].ToObject<DateTime>();
                     info.ReleaseURL = post["html_url"].ToString();
 
-                    if (CheckReleaseInfoVailed(info))
+                    //parse wbooru min version field.
+                    var match = wbooruMinVersionRegex.Match(info.ReleaseDescription);
+                    if (match?.Success ?? false)
+                    {
+                        var wmvStr = match.Groups[4].Value;
+                        info.RequestWbooruMinVersion = new Version(wmvStr);
+                    }
+
+                    if ((!string.IsNullOrWhiteSpace(info.DownloadURL)) && info.Version != null)
                         yield return info;
                 }
-            }
-
-            bool CheckReleaseInfoVailed(PluginMarketRelease info)
-            {
-                return (!string.IsNullOrWhiteSpace(info.DownloadURL)) &&
-                    info.Version != null;
             }
         }
     }

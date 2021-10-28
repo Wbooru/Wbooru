@@ -7,7 +7,6 @@
     xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
     xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-    xmlns:ld="http://github.com/zeluisping/loadingIndicators/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vc="clr-namespace:Wbooru.UI.ValueConverters"
     x:Name="ViewPage"
@@ -188,12 +187,12 @@
                 Visibility="Hidden">
                 <StackPanel>
                     <StackPanel Margin="20,50,0,20" Orientation="Horizontal">
-                        <ld:LoadingIndicator Foreground="White" Mode="Wave">
-                            <ld:LoadingIndicator.RenderTransform>
-                                <ScaleTransform ScaleX="0.65">
-                                </ScaleTransform>
-                            </ld:LoadingIndicator.RenderTransform>
-                        </ld:LoadingIndicator>
+                        <controls:LoadingCircle VerticalAlignment="Center">
+                            <controls:LoadingCircle.LayoutTransform>
+                                <ScaleTransform ScaleX="2" ScaleY="2"></ScaleTransform>
+                            </controls:LoadingCircle.LayoutTransform>
+                        </controls:LoadingCircle>
+                        
                         <TextBlock Name="ProgressHeader" FontSize="30">正在更新...</TextBlock>
 
                     </StackPanel>
@@ -314,11 +313,11 @@
                                                         VerticalAlignment="Center"
                                                         FontSize="16"
                                                         Foreground="Gray">
-                                                        更新日期:
+                                                        最近更新日期:
                                                     </TextBlock>
                                                     <Label
                                                         VerticalAlignment="Center"
-                                                        Content="{Binding ReleaseInfos, Converter={x:Static vc:SimpleExpressionConverters.LatestUpdateDateConverter}}"
+                                                        Content="{Binding LatestRelease.ReleaseDate}"
                                                         FontSize="16">
                                                     </Label>
                                                 </StackPanel>

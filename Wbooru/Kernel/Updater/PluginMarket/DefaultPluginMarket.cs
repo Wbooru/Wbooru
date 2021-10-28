@@ -57,6 +57,19 @@ namespace Wbooru.Kernel.Updater.PluginMarket
                 post.ReleaseUrl = string.IsNullOrWhiteSpace(post.ReleaseUrl) ? post_json["html_url"].ToString() : post.ReleaseUrl;
             }
 
+            //adjus post.ReleaseInfos
+            var currentRequiredWbooruMinVersion = new Version(0, 0, 0, 0);
+            var currentWbooruVersion = ProgramUpdater.CurrentProgramVersion;
+
+            post.ReleaseInfos = post.ReleaseInfos.OrderBy(x=>x.Version).Select(x =>
+            {
+                var wmv = x.RequestWbooruMinVersion ?? currentRequiredWbooruMinVersion;
+                if (wmv > currentRequiredWbooruMinVersion)
+                    currentRequiredWbooruMinVersion = wmv;
+                x.RequestWbooruMinVersion = wmv;
+                return x;
+            }).ToArray();
+
             return post;
         }
     }

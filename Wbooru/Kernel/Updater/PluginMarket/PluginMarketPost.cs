@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Settings;
 
 namespace Wbooru.Kernel.Updater.PluginMarket
 {
@@ -16,5 +17,12 @@ namespace Wbooru.Kernel.Updater.PluginMarket
         public string ReleaseUrl { get; set; }
 
         public IEnumerable<PluginMarketRelease> ReleaseInfos { get; set; }
+
+        public IEnumerable<PluginMarketRelease> SuitableReleaseInfos => ReleaseInfos
+            .Where(x => x.ReleaseType == Updater.ReleaseType.Stable || (x.ReleaseType == Updater.ReleaseType.Preview && Setting<GlobalSetting>.Current.UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview))
+            .Where(x => ProgramUpdater.CurrentProgramVersion >= x.RequestWbooruMinVersion);
+
+        public PluginMarketRelease CurrentSuitableRelease => SuitableReleaseInfos.FirstOrDefault();
+        public PluginMarketRelease LatestRelease => ReleaseInfos.OrderByDescending(x => x.ReleaseDate).FirstOrDefault();
     }
 }
