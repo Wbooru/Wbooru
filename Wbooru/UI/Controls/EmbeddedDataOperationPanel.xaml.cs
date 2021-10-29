@@ -208,14 +208,9 @@ namespace Wbooru.UI.Controls
             await Dialog.ShowDialog<TagMetaPredownloadProgressDisplayer>();
         }
 
-        private void CombineDatabase()
+        private async void CombineDatabase(object sender, RoutedEventArgs e)
         {
-
-        }
-
-        private void CombineDatabase(object sender, RoutedEventArgs e)
-        {
-
+            await Dialog.ShowDialog<CombineDatabaseOption>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,7 +21,7 @@ using Wbooru.Utils;
 
 namespace Wbooru.Persistence
 {
-    public class LocalDBContext:DbContext
+    public class LocalDBContext : DbContext
     {
         private static LocalDBContext _instance;
 
@@ -43,6 +44,14 @@ namespace Wbooru.Persistence
         public DbSet<VisitRecord> VisitRecords { get; set; }
         public DbSet<GalleryItemMark> ItemMarks { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+
+            if (Setting<GlobalSetting>.Current.EnableDatabaseLog)
+                optionsBuilder.UseLoggerFactory(new LoggerFactory(new[] { new DatabaseLoggerProvider() }));
+        }
+
         internal static void BackupDatabase(string to)
         {
             var from = SettingManager.LoadSetting<GlobalSetting>().DBFilePath;
@@ -58,9 +67,97 @@ namespace Wbooru.Persistence
             File.Copy(from, to, true);
         }
 
+        internal static async Task CombineDatabase(string fromDBFilePath, Action<string> reportCallback = default, DatabaseCombinePart combinePart = DatabaseCombinePart.All)
+        {
+            reportCallback = reportCallback ?? ((x) => { });
+            var dbOption = new DbContextOptionsBuilder().UseSqlite(new SQLiteConnectionStringBuilder()
+            {
+                DataSource = fromDBFilePath,
+                ForeignKeys = false
+            }.ConnectionString).Options;
+            var fromDBContext = new LocalDBContext(dbOption, false);
+            await fromDBContext.Database.OpenConnectionAsync();
+            await fromDBContext.Database.MigrateAsync();
+
+            reportCallback("开始数据库...");
+            var changed = 0;
+
+            if (combinePart.HasFlag(DatabaseCombinePart.Downloads))
+            {
+                reportCallback("开始合并下载列表数据...");
+                await PostDbAction(async x =>
+                {
+                    var diff = (fromDBContext.Downloads as IEnumerable<Download>).Where(t => !x.Downloads.Contains(t)).ToList();
+                    await x.Downloads.AddRangeAsync(diff);
+                    changed = diff.Count;
+                    return x.SaveChangesAsync();
+                });
+                await Task.Delay(2000);
+                reportCallback($"下载列表数据合并完成(+{changed})");
+            }
+
+            if (combinePart.HasFlag(DatabaseCombinePart.Tags))
+            {
+                reportCallback("开始合并标签数据...");
+                await PostDbAction(async x =>
+                {
+                    var diff = (fromDBContext.Tags as IEnumerable<TagRecord>).Where(t => !x.Tags.Contains(t)).ToList();
+                    await x.Tags.AddRangeAsync(diff);
+                    changed = diff.Count;
+                    return x.SaveChangesAsync();
+                });
+                await Task.Delay(2000);
+                reportCallback($"标签数据合并完成(+{changed})");
+            }
+
+            if (combinePart.HasFlag(DatabaseCombinePart.GalleryItems))
+            {
+                reportCallback("开始合并图片数据...");
+                await PostDbAction(async x =>
+                {
+                    var diff = (fromDBContext.GalleryItems as IEnumerable<GalleryItem>).Where(t => !x.GalleryItems.Contains(t)).ToList();
+                    await x.GalleryItems.AddRangeAsync(diff);
+                    changed = diff.Count;
+                    return x.SaveChangesAsync();
+                });
+                await Task.Delay(2000);
+                reportCallback($"图片数据合并完成(+{changed})");
+            }
+
+            if (combinePart.HasFlag(DatabaseCombinePart.ItemMarks))
+            {
+                reportCallback("开始合并本地收藏数据...");
+                await PostDbAction(async x =>
+                {
+                    var diff = (fromDBContext.ItemMarks as IEnumerable<GalleryItemMark>).Where(t => !x.ItemMarks.Contains(t)).ToList();
+                    await x.ItemMarks.AddRangeAsync(diff);
+                    changed = diff.Count;
+                    return x.SaveChangesAsync();
+                });
+                await Task.Delay(2000);
+                reportCallback($"本地收藏数据合并完成(+{changed})");
+            }
+
+            if (combinePart.HasFlag(DatabaseCombinePart.VisitRecords))
+            {
+                reportCallback("开始合并浏览历史数据...");
+                await PostDbAction(async x =>
+                {
+                    var diff = (fromDBContext.VisitRecords as IEnumerable<VisitRecord>).Where(t => !x.VisitRecords.Contains(t)).ToList();
+                    await x.VisitRecords.AddRangeAsync(diff);
+                    changed = diff.Count;
+                    return x.SaveChangesAsync();
+                });
+                await Task.Delay(2000);
+                reportCallback($"浏览历史数据合并完成(+{changed})");
+            }
+
+            reportCallback("合并完成!");
+        }
+
         internal static bool CheckIfUsingOldDatabase()
         {
-            using var context = new LocalDBContext(null,false);
+            using var context = new LocalDBContext(null, false);
             var db = context.Database;
             using var command = db.GetDbConnection().CreateCommand();
 
@@ -81,14 +178,6 @@ namespace Wbooru.Persistence
             return count >= 0;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            if (Setting<GlobalSetting>.Current.EnableDatabaseLog)
-                optionsBuilder.UseLoggerFactory(new LoggerFactory(new[] { new DatabaseLoggerProvider() }));
-        }
-
         internal static async Task<bool> UpdateOldDatabase()
         {
             var _cache_params = new Dictionary<(int, int), string>();
@@ -104,7 +193,7 @@ namespace Wbooru.Persistence
             }
 
             Log.Info($"Copy old db file:{tempDBPath}");
-            File.Copy(oldDBPath, tempDBPath,true);
+            File.Copy(oldDBPath, tempDBPath, true);
 
             var tempDBOption = new DbContextOptionsBuilder().UseSqlite(new SQLiteConnectionStringBuilder()
             {
@@ -242,7 +331,7 @@ namespace Wbooru.Persistence
                 var i7 = reader.GetOrdinal("PreviewImageHeight");
                 var i8 = reader.GetOrdinal(nameof(GalleryItem.DetailLink));
 
-                foreach (var set in reader.MakeEnumerable(x=> new object[] {
+                foreach (var set in reader.MakeEnumerable(x => new object[] {
                     reader.GetInt32(i1),
                     reader.GetInt32(i6),
                     reader.GetInt32(i7),
@@ -256,7 +345,7 @@ namespace Wbooru.Persistence
                     var cmd = "INSERT INTO \"main\".\"GalleryItems\"(\"ID\",\"PreviewImageSize_Width\",\"PreviewImageSize_Height\",\"DetailLink\",\"PreviewImageDownloadLink\",\"DownloadFileName\",\"GalleryName\",\"GalleryItemID\") VALUES "
                         + GetParamString(set.Count(), set.First().Length);
 
-                    var insertResult = await wrapContext.Database.ExecuteSqlRawAsync(cmd, set.SelectMany(x=>x));
+                    var insertResult = await wrapContext.Database.ExecuteSqlRawAsync(cmd, set.SelectMany(x => x));
                 }
 
                 Log.Info("migrating table GalleryItems is finished.");
@@ -360,7 +449,7 @@ namespace Wbooru.Persistence
 
             return true;
 
-            string GetParamString(int count,int paramCount)
+            string GetParamString(int count, int paramCount)
             {
                 var key = (count, paramCount);
 
@@ -375,7 +464,17 @@ namespace Wbooru.Persistence
 
         private static Task currentExecuteTask = null;
         private static Thread currentExecuteThread;
-        public static async Task<T> PostDbAction<T>(Func<LocalDBContext,T> executeFunc)
+
+        public static Task PostDbAction(Action<LocalDBContext> executeFunc)
+        {
+            return PostDbAction(x =>
+            {
+                executeFunc(x);
+                return Task.CompletedTask;
+            });
+        }
+
+        public static async Task<T> PostDbAction<T>(Func<LocalDBContext, T> executeFunc)
         {
             if (currentExecuteTask != null)
             {

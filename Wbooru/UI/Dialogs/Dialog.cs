@@ -20,7 +20,7 @@ namespace Wbooru.UI.Dialogs
         private static Grid DialogLayer { get; set; }
         private static FrameworkElement BackgroundElement { get; set; }
 
-        private static Storyboard begin_blur_sb, end_blur_sb,fade_in_sb;
+        private static Storyboard begin_blur_sb, end_blur_sb, fade_in_sb;
 
         internal static void Init(Grid layer, FrameworkElement background)
         {
@@ -119,6 +119,13 @@ namespace Wbooru.UI.Dialogs
 
         public static Task ShowDialog<T>() where T : DialogContentBase, new() => ShowDialog(new T());
 
+        public static async Task<bool> ShowDialog(string message, string title, string yesButtonStr, string noButtonStr)
+        {
+            var dialog = new MessageBox(title, message, yesButtonStr, noButtonStr);
+            await ShowDialog(dialog);
+            return dialog.Result;
+        }
+
         public static Task ShowDialog(string message, string title = null)
         {
             return ShowDialog(new MessageBox(title, message));
@@ -151,7 +158,7 @@ namespace Wbooru.UI.Dialogs
         {
             Log.Debug($"Try close dialog via framework element content : {content.Name}({content.GetType().Name})");
 
-            var dialog = await_tokens.Keys.FirstOrDefault(x=>x.Content == content);
+            var dialog = await_tokens.Keys.FirstOrDefault(x => x.Content == content);
 
             if (dialog is null)
                 ExceptionHelper.DebugThrow(new Exception("Can't reference host dialog from content param."));
