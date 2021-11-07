@@ -30,7 +30,7 @@ namespace Wbooru.UI.Pages
     {
         public enum GalleryViewType
         {
-            Marked, Voted, Main, SearchResult , History
+            Marked, Voted, Main, SearchResult, History
         }
 
         public Gallery CurrentGallery
@@ -67,7 +67,7 @@ namespace Wbooru.UI.Pages
         public static readonly DependencyProperty ShowReturnButtonProperty =
             DependencyProperty.Register("ShowReturnButton", typeof(bool), typeof(MainGalleryPage), new PropertyMetadata(false));
 
-        public MainGalleryPage(IEnumerable<string> keywords=null,Gallery lock_gallery = null)
+        public MainGalleryPage(IEnumerable<string> keywords = null, Gallery lock_gallery = null)
         {
             Keywords = keywords;
 
@@ -101,7 +101,7 @@ namespace Wbooru.UI.Pages
                     GalleriesSelector.SelectionChanged += GalleriesSelector_SelectionChanged;
                     GalleriesSelector.SelectedIndex = i;
 
-                    if (list.Count>i)
+                    if (list.Count > i)
                         ApplyGallery(list[i], Keywords);
 
                     if (galleries.Count() <= 1)
@@ -135,7 +135,7 @@ namespace Wbooru.UI.Pages
                 MainMenu.Children.Add(item);
         }
 
-        public async void ApplyGallery(Gallery gallery,IEnumerable<string> keywords=null)
+        public async void ApplyGallery(Gallery gallery, IEnumerable<string> keywords = null)
         {
             Func<IEnumerable<GalleryItem>> items_source_creator;
 
@@ -228,7 +228,8 @@ namespace Wbooru.UI.Pages
                 if (LeftMenuPanel_Enter)
                     return;
 
-                await Dispatcher.BeginInvoke(new Action(() => {
+                await Dispatcher.BeginInvoke(new Action(() =>
+                {
                     CloseLeftPanel();
                 }));
                 Log.Debug("Mouse have left menu over 3s,auto close left menu.");
@@ -319,7 +320,7 @@ namespace Wbooru.UI.Pages
             if (GridViewer.ViewType == GalleryViewType.Marked)
                 return;
 
-            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x=>x.GalleryName).ToArray();
+            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
             Func<IEnumerable<GalleryItem>> source = null;
@@ -331,14 +332,15 @@ namespace Wbooru.UI.Pages
             else
             {
                 var collection = await LocalDBContext.PostDbAction(ctx => ctx.ItemMarks.Include(x => x.GalleryItem)
+                .OrderByDescending(x => x.Time)
                 .Select(x => x.GalleryItem)
                 .Where(x => galleries.Contains(x.GalleryName))
                 .ToArray()//avoid SQL.
                 );
                 source = new Func<IEnumerable<GalleryItem>>(() => collection);
             }
-                 
-            GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature!=null?"在线":"本地") + "收藏列表";
+
+            GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature != null ? "在线" : "本地") + "收藏列表";
             GridViewer.ViewType = GalleryViewType.Marked;
             GridViewer.ClearGallery();
             GridViewer.Gallery = null;
@@ -375,7 +377,7 @@ namespace Wbooru.UI.Pages
                 AccountButton.BusyStatusDescription = "正在登出中...";
 
                 await Task.Run(() => feature.AccountLogout());
-                
+
                 UpdateAccountButtonText();
                 AccountInfoDataContainer.Instance.CleanAccountInfo(CurrentGallery);
                 Toast.ShowMessage("登出成功");
@@ -433,7 +435,7 @@ namespace Wbooru.UI.Pages
         {
             PageJumpPopup.IsOpen = false;
 
-            if (!int.TryParse(JumpPageInput.Text,out var page))
+            if (!int.TryParse(JumpPageInput.Text, out var page))
                 return;
 
             GridViewer.ChangePage(page);
@@ -483,13 +485,24 @@ namespace Wbooru.UI.Pages
 
             var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
 
-            using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx,out var __);
+            using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx, out var __);
 
-            var source = new Func<IEnumerable<GalleryItem>>(() => ctx.VisitRecords.AsEnumerable()
-            .OrderByDescending(x => x.LastVisitTime)
-            .Select(x => x.GalleryItem)
-            .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)))
-            .ToArray()
+            var source = new Func<IEnumerable<GalleryItem>>(() =>
+            {
+                using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx, out var __);
+                using var _timer = TimerHelper.BeginTimer("Load all VisitRecords for history");
+
+                var l = ctx.VisitRecords
+                    .Include(x => x.GalleryItem)
+                    .AsEnumerable()
+                    .OrderByDescending(x => x.LastVisitTime)
+                    .Select(x => x.GalleryItem)
+                    .Where(x => x != null)
+                    .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)))
+                    .ToArray();
+
+                return l;
+            }
             );//avoid SQL.
 
             GalleryTitle = "历史浏览记录";
