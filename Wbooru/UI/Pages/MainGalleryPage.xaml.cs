@@ -492,14 +492,12 @@ namespace Wbooru.UI.Pages
                 using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx, out var __);
                 using var _timer = TimerHelper.BeginTimer("Load all VisitRecords for history");
 
-                var l = ctx.VisitRecords
-                    .Include(x => x.GalleryItem)
-                    .AsEnumerable()
+                var l = new EnumerableSqlPageCollection<VisitRecord>(() => ctx.VisitRecords.Include(x => x.GalleryItem))
                     .OrderByDescending(x => x.LastVisitTime)
                     .Select(x => x.GalleryItem)
                     .Where(x => x != null)
-                    .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)))
-                    .ToArray();
+                    .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)));
+                    //.ToArray();
 
                 return l;
             }
