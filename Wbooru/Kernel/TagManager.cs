@@ -111,12 +111,12 @@ namespace Wbooru.Kernel
 
             var tag_name = tag.Name;
 
-            await LocalDBContext.PostDbAction(ctx =>
+            var record = await LocalDBContext.PostDbAction(ctx =>
             {
                 if (ctx.Tags.FirstOrDefault(x => tag_name == x.Tag.Name && gallery_name == x.FromGallery) is TagRecord record)
                 {
                     record.RecordType = record_type;
-                    rt.Add(record);
+                    return record;
                 }
                 else
                 {
@@ -130,12 +130,12 @@ namespace Wbooru.Kernel
                     };
 
                     ctx.Tags.Add(tag2);
-                    rt.Add(tag2);
+                    ctx.SaveChanges();
+                    return tag2;
                 }
-
-                ctx.SaveChanges();
-                return Task.CompletedTask;
             });
+
+            rt.Add(record);
         }
 
         public static async void RemoveTag(TagRecord record)
