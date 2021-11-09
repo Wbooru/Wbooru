@@ -43,7 +43,7 @@ namespace Wbooru.UI.Pages
     /// <summary>
     /// PictureDetailViewPage.xaml 的交互逻辑
     /// </summary>
-    public partial class PictureDetailViewPage : Page , INavigatableAction
+    public partial class PictureDetailViewPage : Page, INavigatableAction
     {
         public Gallery Gallery
         {
@@ -117,7 +117,7 @@ namespace Wbooru.UI.Pages
 
         private void SetupExtraUI()
         {
-            foreach (var control in Container.Default.GetExportedValues<IExtraDetailImageMenuItem>().Select(x=>x.Create()))
+            foreach (var control in Container.Default.GetExportedValues<IExtraDetailImageMenuItem>().Select(x => x.Create()))
                 DetailImageBox.ContextMenu.Items.Add(control);
         }
 
@@ -149,11 +149,11 @@ namespace Wbooru.UI.Pages
 
             using var notify = LoadingStatus.BeginBusy(notify_content);
 
-            var image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, pick_download.DownloadLink , true , d =>
-            {
-                var (cur,total) = d;
-                notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
-            });
+            var image = await ImageResourceManager.RequestImageAsync(pick_download.FullFileName, pick_download.DownloadLink, true, d =>
+          {
+              var (cur, total) = d;
+              notify.Description = $"({cur * 1.0 / total * 100:F2}%) {notify_content}";
+          });
 
             if (image is null)
                 Toast.ShowMessage("加载图片失败");
@@ -189,11 +189,11 @@ namespace Wbooru.UI.Pages
                     Height = GridLength.Auto
                 });
 
-            var generated_controls = displayable_props.Select(x => (x.Name, GenerateDisplayControl(detail,x.PropertyInfo, x.Value))).ToList();
+            var generated_controls = displayable_props.Select(x => (x.Name, GenerateDisplayControl(detail, x.PropertyInfo, x.Value))).ToList();
 
             for (int i = 0; i < generated_controls.Count; i++)
             {
-                var (name,control) = generated_controls[i];
+                var (name, control) = generated_controls[i];
 
                 Grid.SetRow(control, i);
                 Grid.SetColumn(control, 1);
@@ -216,7 +216,7 @@ namespace Wbooru.UI.Pages
             DetailContentGrid.Children.Add(grid);
         }
 
-        private UIElement GenerateDisplayControl(GalleryImageDetail detail,PropertyInfo propertyInfo, object value)
+        private UIElement GenerateDisplayControl(GalleryImageDetail detail, PropertyInfo propertyInfo, object value)
         {
             var string_value = (value?.ToString() ?? string.Empty).Trim();
             var custom_action = propertyInfo.GetCustomAttribute<DisplayClickActionAttribute>();
@@ -226,7 +226,7 @@ namespace Wbooru.UI.Pages
             block.FontSize = 16;
             block.Foreground = Brushes.White;
 
-            if (string_value.StartsWith("https://") || string_value.StartsWith("http://") || custom_action!=null)
+            if (string_value.StartsWith("https://") || string_value.StartsWith("http://") || custom_action != null)
             {
                 var hyper = new Hyperlink()
                 {
@@ -237,8 +237,8 @@ namespace Wbooru.UI.Pages
                 {
                     e.Handled = true;
 
-                    if (!(custom_action?.RemoteCallBack(detail, value)??false))
-                        Process.Start(string_value);
+                    if (!(custom_action?.RemoteCallBack(detail, value) ?? false))
+                        Process.Start(new ProcessStartInfo(string_value) { UseShellExecute = true });
                 };
 
                 hyper.Foreground = block.Foreground;
@@ -352,7 +352,7 @@ namespace Wbooru.UI.Pages
             var is_mark = await LocalDBContext.PostDbAction(DB =>
             {
                 var visit_entity = DB.VisitRecords.AsQueryable().Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
-                
+
                 if (visit_entity == null)
                 {
                     var visit = new VisitRecord()
@@ -507,7 +507,7 @@ namespace Wbooru.UI.Pages
             if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            if (TagManager.Contain(tag.Name,Gallery.GalleryName, TagRecordType.Marked))
+            if (TagManager.Contain(tag.Name, Gallery.GalleryName, TagRecordType.Marked))
             {
                 Toast.ShowMessage($"已收藏此标签了");
                 return;
@@ -539,7 +539,7 @@ namespace Wbooru.UI.Pages
             if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            NavigationHelper.NavigationPush(new MainGalleryPage(new[] { tag.Name },Gallery));
+            NavigationHelper.NavigationPush(new MainGalleryPage(new[] { tag.Name }, Gallery));
         }
 
         enum LayoutState

@@ -34,7 +34,7 @@ namespace Wbooru.Kernel.Updater
 
             try
             {
-                var releases = UpdaterHelper.GetGithubAllReleaseInfoList("MikiraSora","Wbooru");
+                var releases = UpdaterHelper.GetGithubAllReleaseInfoList("MikiraSora", "Wbooru");
 
                 if (!releases.Any())
                 {
@@ -62,7 +62,7 @@ namespace Wbooru.Kernel.Updater
             }
         }
 
-        public static void BeginUpdate(Action<long, long> reporter = null,Func<bool> restart_comfirm=null)
+        public static void BeginUpdate(Action<long, long> reporter = null, Func<bool> restart_comfirm = null)
         {
             if (CacheUpdatableReleaseInfo == null)
                 throw new Exception("Must call IsUpdatable() before.");
@@ -117,7 +117,7 @@ namespace Wbooru.Kernel.Updater
             Log.Info($"exe_file_path = {exe_file_path}");
 
             unzip_target_path = Directory.GetParent(exe_file_path).FullName;
-            var updater_exe_file = Path.Combine(unzip_target_path, UPDATE_EXE_NAME); 
+            var updater_exe_file = Path.Combine(unzip_target_path, UPDATE_EXE_NAME);
             Log.Info($"updater_exe_file = {updater_exe_file}");
 
             File.Copy(exe_file_path, updater_exe_file, true);
@@ -127,14 +127,14 @@ namespace Wbooru.Kernel.Updater
 
             #region Comfirm and Restart
 
-            if (restart_comfirm?.Invoke()??true)
+            if (restart_comfirm?.Invoke() ?? true)
             {
                 var current_path = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('/', '\\');
 
                 var command_line = $"-update -UpdateTargetPath=\"{current_path}\" -ReleaseReadmeURL=\"{CacheUpdatableReleaseInfo.ReleaseURL}\"";
                 Log.Info($"command_line = {command_line}");
 
-                Process.Start(new ProcessStartInfo(updater_exe_file, command_line));
+                Process.Start(new ProcessStartInfo(updater_exe_file, command_line) { UseShellExecute = true });
 
                 App.UnusualSafeExit();
             }
@@ -152,7 +152,8 @@ namespace Wbooru.Kernel.Updater
             CommandLineHelper.TryGetOptionValue("ReleaseReadmeURL", out string readme_url);
             Log.Info($"target_path = {target_path}");
 
-            var files = Directory.EnumerateFiles(current_path, "*", SearchOption.AllDirectories).Where(x => {
+            var files = Directory.EnumerateFiles(current_path, "*", SearchOption.AllDirectories).Where(x =>
+            {
                 var file_name = Path.GetFileName(x);
                 return !exclude_copy_file_names.Any(y => file_name == y);
             }).ToArray();

@@ -94,7 +94,7 @@ namespace Wbooru.UI.Pages
                     {
                         CacheReleaseInfo = ProgramUpdater.CacheUpdatableReleaseInfo;
 
-                        if (CacheReleaseInfo!=null)
+                        if (CacheReleaseInfo != null)
                         {
 
                         }
@@ -105,7 +105,7 @@ namespace Wbooru.UI.Pages
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
             e.Handled = true;
         }
 
