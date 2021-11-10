@@ -25,8 +25,10 @@ namespace Wbooru.Network
 
         public string SchedulerName => "Images Fetching Scheduler";
 
-        private List<Task<Image>> tasks_waiting_queue=new List<Task<Image>>();
-        private HashSet<Task<Image>> tasks_running_queue=new HashSet<Task<Image>>();
+        public TimeSpan ScheduleCallLoopInterval { get; } = TimeSpan.FromSeconds(0.5);
+
+        private List<Task<Image>> tasks_waiting_queue = new List<Task<Image>>();
+        private HashSet<Task<Image>> tasks_running_queue = new HashSet<Task<Image>>();
 
         public Task<Image> DownloadImageAsync(string download_path, CancellationToken cancel_token = default, Action<(long downloaded_bytes, long content_bytes)> reporter = null, bool front_insert = false)
         {
@@ -35,22 +37,22 @@ namespace Wbooru.Network
             lock (tasks_waiting_queue)
             {
                 if (front_insert)
-                    tasks_waiting_queue.Insert(0,task);
+                    tasks_waiting_queue.Insert(0, task);
                 else
-                    tasks_waiting_queue.Insert(tasks_waiting_queue.Count,task);
+                    tasks_waiting_queue.Insert(tasks_waiting_queue.Count, task);
             }
 
             return task;
         }
 
-        public void OnScheduleCall()
+        public Task OnScheduleCall(CancellationToken cancellationToken)
         {
             var finished_tasks = tasks_running_queue.Where(t => t.Status != TaskStatus.Running).ToArray();
 
             foreach (var finished_task in finished_tasks)
                 tasks_running_queue.Remove(finished_task);
 
-            foreach (var except_task in finished_tasks.Where(x=>x.IsFaulted))
+            foreach (var except_task in finished_tasks.Where(x => x.IsFaulted))
             {
                 lock (tasks_waiting_queue)
                 {
@@ -60,7 +62,7 @@ namespace Wbooru.Network
 
             var add_count = SettingManager.LoadSetting<GlobalSetting>().LoadingImageThread - tasks_running_queue.Count;
 
-            for (int i = 0; (i < add_count) && tasks_waiting_queue.Count > 0 ; i++)
+            for (int i = 0; (i < add_count) && tasks_waiting_queue.Count > 0; i++)
             {
                 Task<Image> task;
 
@@ -74,13 +76,15 @@ namespace Wbooru.Network
 
                 tasks_running_queue.Add(task);
             }
+
+            return Task.CompletedTask;
         }
 
         private Image OnDownloadTaskStart(object state)
         {
             try
             {
-                (string download_path, Action<(long downloaded_bytes, long content_bytes)> reporter, CancellationToken cancelToken) = (ValueTuple<string,Action<(long,long)>, CancellationToken>)state;
+                (string download_path, Action<(long downloaded_bytes, long content_bytes)> reporter, CancellationToken cancelToken) = (ValueTuple<string, Action<(long, long)>, CancellationToken>)state;
                 if (cancelToken.IsCancellationRequested)
                     return default;
 
@@ -94,7 +98,8 @@ namespace Wbooru.Network
 
                 int total_read = 0;
 
-                stream.OnAfterRead += (buffer, offset, count, read) => {
+                stream.OnAfterRead += (buffer, offset, count, read) =>
+                {
                     total_read += read;
                     reporter?.Invoke((total_read, content_length));
                 };

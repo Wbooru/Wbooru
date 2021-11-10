@@ -13,17 +13,17 @@ namespace Wbooru.Kernel
     {
         private static List<ISchedulable> schedulers { get; } = new List<ISchedulable>();
 
+        private static Dictionary<ISchedulable, bool> schedulersAsyncLocker { get; } = new();
+        private static Dictionary<ISchedulable, DateTime> schedulersCallTime { get; } = new();
+
         public static IEnumerable<ISchedulable> Schedulers => schedulers;
 
-        private static Thread schedule_thread;
-        
+        private static CancellationTokenSource schedule_thread_cancel_token = new CancellationTokenSource();
+
         public static void Init()
         {
-            schedule_thread = new Thread(Run);
-            schedule_thread.Name = "SchedulerManager Thread";
-            schedule_thread.SetApartmentState(ApartmentState.STA);
-            schedule_thread.IsBackground = true;
-            schedule_thread.Start();
+            schedule_thread_cancel_token = new CancellationTokenSource();
+            Task.Run(Run, schedule_thread_cancel_token.Token);
 
             foreach (var s in Container.Default.GetExportedValues<ISchedulable>())
             {
@@ -37,24 +37,45 @@ namespace Wbooru.Kernel
                 return;
 
             schedulers.Add(s);
-            Log.Info("Added new scheduler: "+s.SchedulerName);
+            schedulersAsyncLocker[s] = false;
+            schedulersCallTime[s] = DateTime.MinValue;
+            Log.Info("Added new scheduler: " + s.SchedulerName);
         }
 
-        private static void Run()
+        private static async void Run()
         {
-            while (true)
+            while (!schedule_thread_cancel_token.IsCancellationRequested)
             {
                 for (int i = 0; i < Schedulers.Count(); i++)
                 {
                     var schedule = Schedulers.ElementAt(i);
 
+                    if (DateTime.Now - schedulersCallTime[schedule] < schedule.ScheduleCallLoopInterval)
+                        continue;
+
                     if (schedule.IsAsyncSchedule)
-                        Task.Run(schedule.OnScheduleCall);
+                    {
+                        if (schedulersAsyncLocker[schedule])
+                            continue;
+                        schedulersAsyncLocker[schedule] = true;
+
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                        Task.Run(async () =>
+                        {
+                            await schedule.OnScheduleCall(schedule_thread_cancel_token.Token);
+                            schedulersAsyncLocker[schedule] = false;
+                            schedulersCallTime[schedule] = DateTime.Now;
+                        });
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                    }
                     else
-                        schedule.OnScheduleCall();
+                    {
+                        await schedule.OnScheduleCall(schedule_thread_cancel_token.Token);
+                        schedulersCallTime[schedule] = DateTime.Now;
+                    }
                 }
 
-                Thread.Sleep(10);
+                await Task.Yield();
             }
         }
 
@@ -62,7 +83,7 @@ namespace Wbooru.Kernel
         {
             try
             {
-                schedule_thread.Abort();
+                schedule_thread_cancel_token.Cancel();
             }
             catch { }
 
