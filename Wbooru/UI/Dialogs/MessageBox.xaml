@@ -18,7 +18,7 @@
 
         <ScrollViewer>
             <TextBlock
-                Name="Content"
+                Name="MainContent"
                 Margin="10"
                 VerticalAlignment="Center"
                 FontSize="14"

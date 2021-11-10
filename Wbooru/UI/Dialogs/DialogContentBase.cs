@@ -37,7 +37,7 @@ namespace Wbooru.UI.Dialogs
 
         static DialogContentBase()
         {
-            
+
         }
     }
 }

@@ -220,15 +220,27 @@ namespace Wbooru
             }
         }
 
-        internal static void Term()
+        internal static async Task Term()
         {
             Log.Info("-----------------Begin Term()-----------------");
             SafeTermSubModule(PluginsTerm);
-            SafeTermSubModule(DownloadManager.Close);
+            await SafeTermSubModuleAsync(DownloadManager.Close);
             SafeTermSubModule(SettingManager.SaveSettingFile);
             SafeTermSubModule(SchedulerManager.Term);
             SafeTermSubModule(Log.Term);
             Log.Info("-----------------End Term()-----------------");
+
+            async Task SafeTermSubModuleAsync(Func<Task> action)
+            {
+                try
+                {
+                    await action();
+                }
+                catch (Exception e)
+                {
+                    ExceptionHelper.DebugThrow(e);
+                }
+            }
 
             void SafeTermSubModule(Action action)
             {
@@ -254,13 +266,13 @@ namespace Wbooru
             }
         }
 
-        internal static void UnusualSafeExit()
+        internal static async void UnusualSafeExit()
         {
             Log.Info("Begin save&clean program data/resources");
 
             try
             {
-                Term();
+                await Term();
             }
             catch (Exception e)
             {
@@ -272,11 +284,11 @@ namespace Wbooru
             }
         }
 
-        internal static void UnusualSafeRestart()
+        internal static async void UnusualSafeRestart()
         {
             try
             {
-                Term();
+                await Term();
             }
             catch (Exception e)
             {

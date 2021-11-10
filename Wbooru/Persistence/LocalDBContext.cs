@@ -22,10 +22,6 @@ namespace Wbooru.Persistence
 {
     public class LocalDBContext : DbContext
     {
-        private static LocalDBContext _instance;
-
-        //public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
-
         public LocalDBContext() : this(null, true)
         {
 

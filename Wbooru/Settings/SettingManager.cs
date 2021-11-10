@@ -106,7 +106,7 @@ namespace Wbooru.Settings
                         Log.Error($"loading settings failed:{e},backup current setting file for protecting.copy file from {config_path} to {backup_file_path}");
                         File.Copy(config_path, backup_file_path, true);
 
-                        throw e;
+                        throw;
                     }
                 }
             }

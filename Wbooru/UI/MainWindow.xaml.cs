@@ -73,11 +73,11 @@ namespace Wbooru.UI
             Log.Info("Initialized MainWindow");
         }
 
-        protected override void OnClosed(EventArgs e)
+        protected override async void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
 
-            App.Term();
+            await App.Term();
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

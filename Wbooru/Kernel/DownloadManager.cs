@@ -19,22 +19,22 @@ namespace Wbooru.Kernel
 {
     public static class DownloadManager
     {
-        private static Thread timer_thread;
+        private static AbortableThread timer_thread;
 
         public static ObservableCollection<DownloadWrapper> DownloadList { get; } = new ObservableCollection<DownloadWrapper>();
 
         private static HashSet<DownloadWrapper> RunningDownloadTask  = new HashSet<DownloadWrapper>();
         private static Dictionary<DownloadWrapper, FileStream> FileStreamHolder = new Dictionary<DownloadWrapper, FileStream>();
 
-        internal static async void Close()
+        internal static Task Close()
         {
             try
             {
-                timer_thread.Abort();
+                timer_thread?.Abort();
             }
             catch{}
 
-            await LocalDBContext.PostDbAction(async db =>
+            return LocalDBContext.PostDbAction(async db =>
             {
                 foreach (var item in DownloadList)
                 {
@@ -44,7 +44,7 @@ namespace Wbooru.Kernel
                         DownloadPause(item);
                     }
 
-                    if (await db.Downloads.FindAsync(item.DownloadInfo.DownloadId) is Download entity)
+                    if (db.Downloads.Find(item.DownloadInfo.DownloadId) is Download entity)
                     {
                         Log.Debug($"Update download record :{item.DownloadInfo.DownloadFullPath}");
                         db.Entry(entity).CurrentValues.SetValues(item.DownloadInfo);
@@ -52,14 +52,15 @@ namespace Wbooru.Kernel
                     else
                     {
                         Log.Debug($"Add download record :{item.DownloadInfo.DownloadFullPath}");
-                        await db.Downloads.AddAsync(item.DownloadInfo);
+                        db.Downloads.Add(item.DownloadInfo);
                     }
                 }
 
-                return db.SaveChangesAsync();
+                db.SaveChanges();
+                Log.Debug($"Download record save all done.");
+                await Task.Delay(15000);
+                Log.Debug($"aa");
             });
-
-            Log.Debug($"Download record save all done.");
         }
 
         internal static void DownloadRestart(DownloadWrapper download)
@@ -74,8 +75,9 @@ namespace Wbooru.Kernel
         internal static async void Init()
         {
             //start a timer
-            timer_thread = new Thread(OnSpeedCalculationTimer);
+            timer_thread = new AbortableThread(OnSpeedCalculationTimer);
             timer_thread.IsBackground = true;
+            timer_thread.Name = "OnSpeedCalculationTimer";
             timer_thread.Start();
 
             await LocalDBContext.PostDbAction(async db =>
@@ -123,12 +125,11 @@ namespace Wbooru.Kernel
             Log.Info($"Deleted download task :{download.DownloadInfo.FileName}");
         }
 
-        private static void OnSpeedCalculationTimer()
+        private static void OnSpeedCalculationTimer(CancellationToken cancellationToken)
         {
-
             var record = new Dictionary<DownloadWrapper, long>();
 
-            while (true)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 lock (RunningDownloadTask)
                 {

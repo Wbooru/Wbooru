@@ -26,6 +26,7 @@ namespace Wbooru.Kernel
                 AddScheduler(s);
 
             runThread = new AbortableThread(Run);
+            runThread.Name = "SchedulerManager::Run()";
             runThread.Start();
         }
 
