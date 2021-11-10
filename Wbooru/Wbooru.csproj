@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
@@ -23,10 +23,7 @@
       <Version>2.9.3</Version>
     </PackageReference>
     <PackageReference Include="ExtrameFunctionCalculator">
-      <Version>1.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="FontAwesome.WPF">
-      <Version>4.7.0.9</Version>
+      <Version>1.0.3</Version>
     </PackageReference>
     <PackageReference Include="HttpToSocks5Proxy">
       <Version>1.4.0</Version>
