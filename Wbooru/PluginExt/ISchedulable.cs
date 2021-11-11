@@ -10,8 +10,6 @@ namespace Wbooru.PluginExt
 
         TimeSpan ScheduleCallLoopInterval { get; }
 
-        bool IsAsyncSchedule { get; }
-
         Task OnScheduleCall(CancellationToken cancellationToken);
 
         void OnSchedulerTerm();

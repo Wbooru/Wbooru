@@ -35,11 +35,9 @@ namespace Wbooru.Utils
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class ObjectPoolManager : ISchedulable
     {
-        public bool IsAsyncSchedule => false;
-
         public string SchedulerName => "Object Pool Maintenance Scheduler";
 
-        public TimeSpan ScheduleCallLoopInterval { get; } = TimeSpan.FromMinutes(2);
+        public TimeSpan ScheduleCallLoopInterval { get; } = TimeSpan.FromSeconds(10);
 
         HashSet<ObjectPoolBase> object_pools = new HashSet<ObjectPoolBase>();
 
@@ -59,6 +57,8 @@ namespace Wbooru.Utils
 
         public Task OnScheduleCall(CancellationToken cancellationToken)
         {
+            Log.Warn("gugu");
+
             foreach (var pool in object_pools)
                 pool.OnPreReduceSchedule();
 

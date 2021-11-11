@@ -21,8 +21,6 @@ namespace Wbooru.Network
     [Export(typeof(ImageFetchDownloadScheduler))]
     public class ImageFetchDownloadScheduler : ISchedulable
     {
-        public bool IsAsyncSchedule => false;
-
         public string SchedulerName => "Images Fetching Scheduler";
 
         public TimeSpan ScheduleCallLoopInterval { get; } = TimeSpan.FromSeconds(0.5);
