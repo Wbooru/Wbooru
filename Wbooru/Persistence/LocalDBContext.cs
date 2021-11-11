@@ -481,11 +481,16 @@ namespace Wbooru.Persistence
                 currentExecuteTask = null;
             }
 
-            var task = Task.Run(() =>
+            Task<T> task = default;
+
+            task = Task.Run(() =>
             {
                 using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var context, out var _);
                 currentExecuteThread = Thread.CurrentThread;
-                return executeFunc(context);
+                var r = executeFunc(context);
+                if (currentExecuteTask == task)
+                    currentExecuteThread = default;
+                return r;
             });
 
             currentExecuteTask = task;
