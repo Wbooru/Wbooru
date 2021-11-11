@@ -58,8 +58,6 @@ namespace Wbooru.Kernel
 
                 db.SaveChanges();
                 Log.Debug($"Download record save all done.");
-                await Task.Delay(15000);
-                Log.Debug($"aa");
             });
         }
 
