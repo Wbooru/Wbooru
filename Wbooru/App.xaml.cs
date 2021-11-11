@@ -225,6 +225,7 @@ namespace Wbooru
             Log.Info("-----------------Begin Term()-----------------");
             SafeTermSubModule(PluginsTerm);
             await SafeTermSubModuleAsync(DownloadManager.Close);
+            await Task.Delay(20000);
             SafeTermSubModule(SettingManager.SaveSettingFile);
             SafeTermSubModule(SchedulerManager.Term);
             SafeTermSubModule(Log.Term);

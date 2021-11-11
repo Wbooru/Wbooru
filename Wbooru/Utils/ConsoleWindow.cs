@@ -22,6 +22,16 @@ namespace Wbooru.Utils
         [DllImport("kernel32.dll")]
         private static extern int GetConsoleOutputCP();
 
+        private const int MF_BYCOMMAND = 0x00000000;
+
+        private const int SC_CLOSE = 0xF060;
+
+        [DllImport("user32.dll")]
+        public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
         public static bool HasConsole
         {
             get { return GetConsoleWindow() != IntPtr.Zero; }
@@ -36,6 +46,7 @@ namespace Wbooru.Utils
             if (!HasConsole)
             {
                 AllocConsole();
+                DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_CLOSE, MF_BYCOMMAND);
                 InvalidateOutAndError();
             }
             //#endif

@@ -46,13 +46,16 @@ namespace Wbooru.Utils
         public void Start()
         {
             thread.Start();
+            Log.Info($"Thread {Name} started.", "AbortableThread");
         }
 
 
         public void Abort()
         {
+            Log.Info($"Begin to abort thread {Name}.", "AbortableThread");
             cancellationTokenSource.Cancel();
             thread?.Join();
+            Log.Info($"Aborted thread {Name}.", "AbortableThread");
         }
     }
 }
