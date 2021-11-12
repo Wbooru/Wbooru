@@ -21,7 +21,7 @@ namespace Wbooru.Kernel
         public static ObservableCollection<TagRecord> FiltedTags { get; private set; } = new ObservableCollection<TagRecord>();
         public static ObservableCollection<TagRecord> SubscribedTags { get; private set; } = new ObservableCollection<TagRecord>();
 
-        public static async void InitTagManager()
+        public static async Task InitTagManager()
         {
             try
             {

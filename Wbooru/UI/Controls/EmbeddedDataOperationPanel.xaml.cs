@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Kernel;
+using Wbooru.Kernel.DI;
 using Wbooru.Persistence;
 using Wbooru.Settings;
 using Wbooru.UI.Dialogs;
@@ -98,7 +99,7 @@ namespace Wbooru.UI.Controls
 
                 using var transaction = await currentDBContext.Database.BeginTransactionAsync();
 
-                await DownloadManager.Close();
+                await Singleton<IDownloadManager>.Instance.OnExit();
 
                 CleanTable(currentDBContext.Downloads, "正在清理下载记录");
                 CleanTable(currentDBContext.Tags, "正在清理标签数据");

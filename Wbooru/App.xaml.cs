@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Wbooru.PluginExt;
 using Wbooru.Kernel.Updater.PluginMarket;
 using Wbooru.Persistence;
+using Wbooru.Kernel.DI;
 
 namespace Wbooru
 {
@@ -177,9 +178,9 @@ namespace Wbooru
 
             SchedulerManager.Init();
 
-            DownloadManager.Init();
+            await Singleton<IDownloadManager>.Instance.OnInit();
 
-            TagManager.InitTagManager();
+            await TagManager.InitTagManager();
 
             ImageResourceManager.InitImageResourceManager();
 
@@ -224,7 +225,7 @@ namespace Wbooru
         {
             Log.Info("-----------------Begin Term()-----------------");
             SafeTermSubModule(PluginsTerm);
-            await SafeTermSubModuleAsync(DownloadManager.Close);
+            await SafeTermSubModuleAsync(Singleton<IDownloadManager>.Instance.OnExit);
             SafeTermSubModule(SettingManager.SaveSettingFile);
             SafeTermSubModule(SchedulerManager.Term);
             SafeTermSubModule(Log.Term);

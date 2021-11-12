@@ -24,6 +24,7 @@ using System.Windows.Shapes;
 using Wbooru.Galleries;
 using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel;
+using Wbooru.Kernel.DI;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.Models.Gallery.Annotation;
@@ -458,7 +459,7 @@ namespace Wbooru.UI.Pages
                 Toast.ShowMessage($"投票失败,{message}");
         }
 
-        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        private async void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
             var download_link = (sender as FrameworkElement).DataContext as DownloadableImageLink;
 
@@ -487,7 +488,7 @@ namespace Wbooru.UI.Pages
                 }
             };
 
-            if (DownloadManager.CheckIfContained(download_task))
+            if (await Singleton<IDownloadManager>.Instance.CheckIfContained(download_task))
             {
                 //jump to download page if download task is exist.
 
@@ -498,7 +499,7 @@ namespace Wbooru.UI.Pages
                 return;
             }
 
-            DownloadManager.DownloadStart(download_task);
+            await Singleton<IDownloadManager>.Instance.DownloadStart(download_task);
             Toast.ShowMessage("开始下载图片...");
         }
 

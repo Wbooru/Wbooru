@@ -14,19 +14,21 @@ using Wbooru.Persistence;
 using Wbooru.UI.Controls;
 using Wbooru.Utils;
 using System.Net;
+using Wbooru.Kernel.DI;
 
 namespace Wbooru.Kernel
 {
-    public static class DownloadManager
+    [PriorityExport(typeof(IDownloadManager),Priority = 0)]
+    public class DownloadManager : IDownloadManager
     {
-        private static AbortableThread timer_thread;
+        private AbortableThread timer_thread;
 
-        public static ObservableCollection<DownloadWrapper> DownloadList { get; } = new ObservableCollection<DownloadWrapper>();
+        public ObservableCollection<DownloadWrapper> DownloadList { get; } = new ObservableCollection<DownloadWrapper>();
 
-        private static HashSet<DownloadWrapper> RunningDownloadTask  = new HashSet<DownloadWrapper>();
-        private static Dictionary<DownloadWrapper, FileStream> FileStreamHolder = new Dictionary<DownloadWrapper, FileStream>();
+        private HashSet<DownloadWrapper> RunningDownloadTask  = new HashSet<DownloadWrapper>();
+        private Dictionary<DownloadWrapper, FileStream> FileStreamHolder = new Dictionary<DownloadWrapper, FileStream>();
 
-        internal static Task Close()
+        public Task OnExit()
         {
             try
             {
@@ -41,7 +43,7 @@ namespace Wbooru.Kernel
                     if (item.Status == DownloadTaskStatus.Started)
                     {
                         Log.Debug($"Pause download task:{item.DownloadInfo.FileName}");
-                        DownloadPause(item);
+                        await DownloadPause(item);
                     }
 
                     if (db.Downloads.Find(item.DownloadInfo.DownloadId) is Download entity)
@@ -61,16 +63,17 @@ namespace Wbooru.Kernel
             });
         }
 
-        internal static void DownloadRestart(DownloadWrapper download)
+        public Task DownloadRestart(DownloadWrapper download)
         {
             var temp_dl_path = download.DownloadInfo.DownloadFullPath + ".dl";
             File.Delete(temp_dl_path);
 
             download.Status = DownloadTaskStatus.Paused;
             DownloadStart(download);
+            return Task.CompletedTask;
         }
 
-        internal static async void Init()
+        public Task OnInit()
         {
             //start a timer
             timer_thread = new AbortableThread(OnSpeedCalculationTimer);
@@ -78,11 +81,11 @@ namespace Wbooru.Kernel
             timer_thread.Name = "OnSpeedCalculationTimer";
             timer_thread.Start();
 
-            await LocalDBContext.PostDbAction(async db =>
+            return LocalDBContext.PostDbAction(db =>
             {
                 try
                 {
-                    await foreach (var item in db.Downloads.AsAsyncEnumerable().Select(x => new DownloadWrapper()
+                    foreach (var item in db.Downloads.Select(x => new DownloadWrapper()
                     {
                         DownloadInfo = x,
                         CurrentDownloadedLength = x.DisplayDownloadedLength,
@@ -101,7 +104,7 @@ namespace Wbooru.Kernel
             });
         }
 
-        internal static async void DownloadDelete(DownloadWrapper download)
+        public async Task DownloadDelete(DownloadWrapper download)
         {
             await LocalDBContext.PostDbAction(db =>
             {
@@ -123,7 +126,7 @@ namespace Wbooru.Kernel
             Log.Info($"Deleted download task :{download.DownloadInfo.FileName}");
         }
 
-        private static void OnSpeedCalculationTimer(CancellationToken cancellationToken)
+        public void OnSpeedCalculationTimer(CancellationToken cancellationToken)
         {
             var record = new Dictionary<DownloadWrapper, long>();
 
@@ -147,23 +150,21 @@ namespace Wbooru.Kernel
             }
         }
 
-        public static bool CheckIfContained(DownloadWrapper download)
+        public Task<bool> CheckIfContained(DownloadWrapper download)
         {
             //check
             if (DownloadList.FirstOrDefault(x => x.DownloadInfo == download.DownloadInfo && download.DownloadInfo.DownloadId < 0 && (x.DownloadInfo.DownloadId != download.DownloadInfo.DownloadId)) is DownloadWrapper _)
-            {
-                return true;
-            }
+                return Task.FromResult(true);
 
-            return false;
+            return Task.FromResult(false);
         }
 
-        public static void DownloadStart(DownloadWrapper download)
+        public Task DownloadStart(DownloadWrapper download)
         {
             if (download.Status == DownloadTaskStatus.Started || download.Status == DownloadTaskStatus.Finished)
             {
                 Log.Info($"Download task {download.DownloadInfo.FileName} has already been started/finished.");
-                return;
+                return Task.CompletedTask;
             }
 
             //check
@@ -195,9 +196,10 @@ namespace Wbooru.Kernel
             }
 
             Log.Info($"Started downloading task :{download.DownloadInfo.FileName}");
+            return Task.CompletedTask;
         }
 
-        private static void OnDownloadTaskStart(DownloadWrapper download)
+        public void OnDownloadTaskStart(DownloadWrapper download)
         {
             FileStream file_stream=null;
 
@@ -278,12 +280,12 @@ namespace Wbooru.Kernel
             }
         }
 
-        public static void DownloadPause(DownloadWrapper download)
+        public Task DownloadPause(DownloadWrapper download)
         {
             if (download.Status == DownloadTaskStatus.Paused || download.Status == DownloadTaskStatus.Finished)
             {
                 Log.Info($"Download task {download.DownloadInfo.FileName} has already been paused/finished.");
-                return;
+                return Task.CompletedTask;
             }
 
             download.Status = DownloadTaskStatus.Paused;
@@ -293,6 +295,7 @@ namespace Wbooru.Kernel
                 stream.Dispose();
 
             Log.Info($"Paused downloading task :{download.DownloadInfo.FileName}");
+            return Task.CompletedTask;
         }
     }
 }
