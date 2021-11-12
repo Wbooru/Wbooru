@@ -36,7 +36,7 @@ namespace Wbooru
                 Log.Info($"Add folder for loading plugins : {folder}");
         }
 
-        public static IEnumerable<T> GetAll<T>() where T : IMultiImplementInjectable => instance.GetExportedValues<T>();
+        public static IEnumerable<T> GetAll<T>() where T : IMultiImplementProvidable => instance.GetExportedValues<T>();
 
         public static T Get<T>() where T : IImplementInjectable
         {

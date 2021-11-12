@@ -7,7 +7,7 @@ using Wbooru.Kernel.DI;
 
 namespace Wbooru.PluginExt
 {
-    public abstract class PluginInfo : IMultiImplementInjectable
+    public abstract class PluginInfo : IMultiImplementProvidable
     {
         public abstract string PluginName { get; }
         public Version PluginVersion => (this is IPluginUpdatable updatable) ? updatable.CurrentPluginVersion : GetType().Assembly.GetName().Version;

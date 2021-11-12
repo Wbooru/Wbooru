@@ -12,7 +12,7 @@ using Wbooru.Settings;
 
 namespace Wbooru.Galleries
 {
-    public abstract class Gallery : IMultiImplementInjectable
+    public abstract class Gallery : IMultiImplementProvidable
     {
         #region SupportFeatures
 

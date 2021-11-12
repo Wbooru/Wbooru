@@ -7,7 +7,7 @@ using Wbooru.Kernel.DI;
 
 namespace Wbooru.Settings
 {
-    public class SettingBase : IMultiImplementInjectable
+    public class SettingBase : IMultiImplementProvidable
     {
         public virtual void OnAfterLoad() { }
         public virtual void OnBeforeSave() { }

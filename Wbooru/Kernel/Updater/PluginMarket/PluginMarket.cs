@@ -7,7 +7,7 @@ using Wbooru.Kernel.DI;
 
 namespace Wbooru.Kernel.Updater.PluginMarket
 {
-    public abstract class PluginMarket: IMultiImplementInjectable
+    public abstract class PluginMarket: IMultiImplementProvidable
     {
         public abstract string MarketName { get; }
         public abstract IEnumerable<PluginMarketPost> GetPluginPosts();

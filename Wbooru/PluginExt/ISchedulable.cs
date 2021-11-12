@@ -5,7 +5,7 @@ using Wbooru.Kernel.DI;
 
 namespace Wbooru.PluginExt
 {
-    public interface ISchedulable : IMultiImplementInjectable
+    public interface ISchedulable : IMultiImplementProvidable
     {
         string SchedulerName { get; }
 

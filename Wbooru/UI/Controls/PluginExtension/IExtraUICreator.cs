@@ -8,7 +8,7 @@ using Wbooru.Kernel.DI;
 
 namespace Wbooru.UI.Controls.PluginExtension
 {
-    public interface IExtraUICreator : IMultiImplementInjectable
+    public interface IExtraUICreator : IMultiImplementProvidable
     {
         UIElement Create();
     }
