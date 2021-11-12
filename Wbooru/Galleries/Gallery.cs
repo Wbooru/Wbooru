@@ -64,7 +64,7 @@ namespace Wbooru.Galleries
 
         internal IEnumerable<GalleryItem> TryFilterIfNSFWEnable(IEnumerable<GalleryItem> item)
         {
-            if (!SettingManager.LoadSetting<GlobalSetting>().EnableNSFWFileterMode)
+            if (!Setting<GlobalSetting>.Current.EnableNSFWFileterMode)
                 return item;
 
             if (Feature<IGalleryNSFWFilter>() is IGalleryNSFWFilter filter)

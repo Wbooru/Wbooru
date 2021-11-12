@@ -24,7 +24,7 @@ namespace Wbooru.UI
 
             Dialog.Init(DialogLayer, WindowFrame);
 
-            setting = SettingManager.LoadSetting<GlobalSetting>();
+            setting = Setting<GlobalSetting>.Current;
 
             if (setting.RememberWindowSizeAndLocation)
             {

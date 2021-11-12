@@ -116,7 +116,7 @@ namespace Wbooru.Settings
             }
         }
 
-        public static AccountInfoDataContainer Instance => SettingManager.LoadSetting<AccountInfoDataContainer>();
+        public static AccountInfoDataContainer Instance => Setting<AccountInfoDataContainer>.Current;
 
         public void CleanAccountInfo(Gallery currentGallery)
         {

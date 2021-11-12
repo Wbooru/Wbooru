@@ -129,7 +129,7 @@ namespace Wbooru.UI.Pages
 
             DisplayDetailInfo(galleryImageDetail);
 
-            var pick_download = galleryImageDetail.PickSuitableImageURL(SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget);
+            var pick_download = galleryImageDetail.PickSuitableImageURL(Setting<GlobalSetting>.Current.SelectPreferViewQualityTarget);
 
             if (pick_download == null)
             {
@@ -282,7 +282,7 @@ namespace Wbooru.UI.Pages
 
         private DownloadableImageLink PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
         {
-            var prefer_target = SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget;
+            var prefer_target = Setting<GlobalSetting>.Current.SelectPreferViewQualityTarget;
 
             var target_list = downloadableImageLinks.OrderByDescending(x => x, DownloadableImageLinkComparer.Instance).ToArray();
 
@@ -326,7 +326,7 @@ namespace Wbooru.UI.Pages
 
             var detail = await Task.Run(() => gallery.GetImageDetial(item));
 
-            if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
+            if (Setting<GlobalSetting>.Current.TryGetVaildDownloadFileSize)
                 foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength <= 0))
                     i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
 
@@ -467,7 +467,7 @@ namespace Wbooru.UI.Pages
                 $"{FileNameHelper.GetFileNameWithoutExtName(PictureDetailInfo)}{System.IO.Path.GetExtension(download_link.DownloadLink)}"
                 : FileNameHelper.FilterFileName(download_link.FullFileName);
 
-            var config = SettingManager.LoadSetting<GlobalSetting>();
+            var config = Setting<GlobalSetting>.Current;
 
             var full_file_path = System.IO.Path.Combine(config.DownloadPath, config.SeparateGallerySubDirectories ? Gallery.GalleryName : "", file_name);
 

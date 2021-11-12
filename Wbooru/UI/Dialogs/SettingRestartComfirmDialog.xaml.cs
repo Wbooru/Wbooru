@@ -29,7 +29,7 @@ namespace Wbooru.UI.Dialogs
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            SettingManager.LoadSetting<GlobalSetting>().IgnoreSettingChangedComfirm = (sender as CheckBox).IsChecked ?? false;
+            Setting<GlobalSetting>.Current.IgnoreSettingChangedComfirm = (sender as CheckBox).IsChecked ?? false;
         }
 
         private void RestartComfirmButton_Click(object sender, RoutedEventArgs e)

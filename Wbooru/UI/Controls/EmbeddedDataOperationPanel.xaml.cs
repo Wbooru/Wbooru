@@ -136,7 +136,7 @@ namespace Wbooru.UI.Controls
                 return;
 
             //build command and params
-            var command = $"-database_restore -from=\"{restore_file}\" -to=\"{System.IO.Path.GetFullPath(SettingManager.LoadSetting<GlobalSetting>().DBFilePath)}\"";
+            var command = $"-database_restore -from=\"{restore_file}\" -to=\"{System.IO.Path.GetFullPath(Setting<GlobalSetting>.Current.DBFilePath)}\"";
 
             Process.Start(Process.GetCurrentProcess().MainModule.FileName,command);
             App.UnusualSafeExit();

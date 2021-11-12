@@ -48,7 +48,7 @@ namespace Wbooru
             Log.Info("Enter BeginCheckUpdatable()");
             await Task.Run(() =>
             {
-                if (SettingManager.LoadSetting<GlobalSetting>().EnableAutoCheckUpdatable)
+                if (Setting<GlobalSetting>.Current.EnableAutoCheckUpdatable)
                 {
                     ProgramUpdater.CheckUpdatable();
 
@@ -171,9 +171,7 @@ namespace Wbooru
                     UnusualSafeExit();
                 }
             }
-
             Container.BuildDefault();
-
             CheckPlugin();
 
 

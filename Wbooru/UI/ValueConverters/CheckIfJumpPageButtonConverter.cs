@@ -21,7 +21,7 @@ namespace Wbooru.UI.ValueConverters
                 //判断是否为主页面且画廊支持快速翻页功能
                 ((values?.FirstOrDefault() as Gallery)?.SupportFeatures.HasFlag(GallerySupportFeature.ImageFastSkipable)??false && ((GalleryViewType)values.Last()) == GalleryViewType.Main) 
                 //判断是否强制开启此功能
-                || SettingManager.LoadSetting<GlobalSetting>().ForceEnablePageJumpFeature;
+                || Setting<GlobalSetting>.Current.ForceEnablePageJumpFeature;
 
             return avaliable ? Visibility.Visible : Visibility.Collapsed;
         }

@@ -18,7 +18,7 @@ namespace Wbooru.Utils
             {
                 if (cache_folder == null)
                 {
-                    cache_folder = SettingManager.LoadSetting<GlobalSetting>().CacheFolderPath.Replace("%Temp%", Path.GetTempPath());
+                    cache_folder = Setting<GlobalSetting>.Current.CacheFolderPath.Replace("%Temp%", Path.GetTempPath());
                     Directory.CreateDirectory(cache_folder);
                 }
 

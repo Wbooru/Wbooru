@@ -49,7 +49,7 @@ namespace Wbooru.Persistence
 
         internal static void BackupDatabase(string to)
         {
-            var from = SettingManager.LoadSetting<GlobalSetting>().DBFilePath;
+            var from = Setting<GlobalSetting>.Current.DBFilePath;
             Log.Info($"Copy sqlite db file from {from} to {to}");
 
             File.Copy(from, to, true);

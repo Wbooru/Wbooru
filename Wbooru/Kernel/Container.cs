@@ -23,9 +23,6 @@ namespace Wbooru
 
             var plugin_folders = Directory.GetDirectories("Plugins").Select(x => new DirectoryCatalog(x)).OfType<ComposablePartCatalog>();
 
-            foreach (var folder in plugin_folders)
-                Log.Info($"Add folder for loading plugins : {folder}");
-
             catalog = new AggregateCatalog(
                 plugin_folders.Concat(new[] {
                     new AssemblyCatalog(typeof(Container).Assembly)
@@ -34,6 +31,9 @@ namespace Wbooru
 
             instance = new CompositionContainer(catalog);
             cachedGotObjects.Clear();
+
+            foreach (var folder in plugin_folders)
+                Log.Info($"Add folder for loading plugins : {folder}");
         }
 
         public static IEnumerable<T> GetAll<T>() => instance.GetExportedValues<T>();

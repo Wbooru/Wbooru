@@ -9,7 +9,7 @@ using Wbooru.Kernel.DI;
 using Wbooru.PluginExt;
 using Wbooru.Utils;
 
-namespace Wbooru.Kernel
+namespace Wbooru.Kernel.ManagerImpl
 {
     [PriorityExport(typeof(ISchedulerManager))]
     [PartCreationPolicy(CreationPolicy.Shared)]

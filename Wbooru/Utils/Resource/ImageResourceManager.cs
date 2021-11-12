@@ -27,7 +27,7 @@ namespace Wbooru.Utils.Resource
 
         public static void InitImageResourceManager()
         {
-            option = SettingManager.LoadSetting<GlobalSetting>();
+            option = Setting<GlobalSetting>.Current;
 
             if (option.EnableFileCache)
             {
@@ -88,7 +88,7 @@ namespace Wbooru.Utils.Resource
         {
             res = null;
 
-            var file_path = Path.Combine(SettingManager.LoadSetting<GlobalSetting>().DownloadPath, name);
+            var file_path = Path.Combine(Setting<GlobalSetting>.Current.DownloadPath, name);
 
             if (!File.Exists(file_path))
                 return false;

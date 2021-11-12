@@ -30,7 +30,7 @@ namespace Wbooru.Kernel.Updater
 
         public static bool CheckUpdatable()
         {
-            var option = SettingManager.LoadSetting<GlobalSetting>();
+            var option = Setting<GlobalSetting>.Current;
 
             try
             {

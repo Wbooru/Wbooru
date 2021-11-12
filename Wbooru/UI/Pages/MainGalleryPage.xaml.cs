@@ -73,7 +73,7 @@ namespace Wbooru.UI.Pages
 
             InitializeComponent();
 
-            Setting = SettingManager.LoadSetting<GlobalSetting>();
+            Setting = Setting<GlobalSetting>.Current;
 
             GridViewer.GridItemWidth = Setting.PictureGridItemWidth;
             GridViewer.GridItemMarginWidth = Setting.PictureGridItemMarginWidth;
@@ -96,7 +96,7 @@ namespace Wbooru.UI.Pages
                 if (lock_gallery == null)
                 {
                     var list = galleries.ToList();
-                    var i = Math.Max(0, list.IndexOf(list.FirstOrDefault(x => x.GalleryName == SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName)));
+                    var i = Math.Max(0, list.IndexOf(list.FirstOrDefault(x => x.GalleryName == Setting<GlobalSetting>.Current.RememberLastViewedGalleryName)));
                     GalleriesSelector.ItemsSource = list;
                     GalleriesSelector.SelectionChanged += GalleriesSelector_SelectionChanged;
                     GalleriesSelector.SelectedIndex = i;
@@ -140,7 +140,7 @@ namespace Wbooru.UI.Pages
             Func<IEnumerable<GalleryItem>> items_source_creator;
 
             CurrentGallery = gallery;
-            SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName = gallery.GalleryName;
+            Setting<GlobalSetting>.Current.RememberLastViewedGalleryName = gallery.GalleryName;
 
             GridViewer.ClearGallery();
             GridViewer.Gallery = gallery;

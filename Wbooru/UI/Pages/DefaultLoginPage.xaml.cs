@@ -80,7 +80,7 @@ namespace Wbooru.UI.Pages
 
                 if (AutoLogin.IsChecked??false)
                 {
-                    var container = SettingManager.LoadSetting<AccountInfoDataContainer>();
+                    var container = Setting<AccountInfoDataContainer>.Current;
                     container.SaveAccountInfoData(Gallery, AccountInfo);
                 }
             }

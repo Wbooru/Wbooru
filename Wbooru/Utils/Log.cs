@@ -37,12 +37,12 @@ namespace Wbooru
                 InitLogFile();
 
 #if !DEBUG
-            enable_debug_output = SettingManager.LoadSetting<GlobalSetting>().EnableOutputDebugMessage;
+            enable_debug_output = Setting<GlobalSetting>.Current.EnableOutputDebugMessage;
 #else
             enable_debug_output = true;
 #endif
 
-            var console_window_option = SettingManager.LoadSetting<GlobalSetting>().ShowOutputWindow;
+            var console_window_option = Setting<GlobalSetting>.Current.ShowOutputWindow;
 
 #if DEBUG
             //Disable log window in designer mode
@@ -65,7 +65,7 @@ namespace Wbooru
         {
             try
             {
-                var log_dir = SettingManager.LoadSetting<GlobalSetting>().LogOutputDirectory;
+                var log_dir = Setting<GlobalSetting>.Current.LogOutputDirectory;
                 Directory.CreateDirectory(log_dir);
                 LogFilePath = Path.Combine(log_dir, FileNameHelper.FilterFileName(DateTime.Now.ToString() + ".log", '-'));
 

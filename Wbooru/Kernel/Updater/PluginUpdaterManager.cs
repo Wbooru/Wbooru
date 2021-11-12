@@ -35,7 +35,7 @@ namespace Wbooru.Kernel.Updater
                 if (!releases_list.Any())
                     return;
 
-                var release_info = (SettingManager.LoadSetting<GlobalSetting>().UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Preview) : null) ?? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Stable);
+                var release_info = (Setting<GlobalSetting>.Current.UpdatableTargetVersion == GlobalSetting.UpdatableTarget.Preview ? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Preview) : null) ?? releases_list.FirstOrDefault(x => x.ReleaseType == ReleaseType.Stable);
 
                 UpdatablePluginsInfo[type] = release_info;
             }

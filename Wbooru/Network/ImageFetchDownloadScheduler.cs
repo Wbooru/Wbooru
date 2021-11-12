@@ -58,7 +58,7 @@ namespace Wbooru.Network
                 }
             }
 
-            var add_count = SettingManager.LoadSetting<GlobalSetting>().LoadingImageThread - tasks_running_queue.Count;
+            var add_count = Setting<GlobalSetting>.Current.LoadingImageThread - tasks_running_queue.Count;
 
             for (int i = 0; (i < add_count) && tasks_waiting_queue.Count > 0; i++)
             {

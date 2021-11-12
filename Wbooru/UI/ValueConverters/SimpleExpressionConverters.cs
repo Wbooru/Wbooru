@@ -46,6 +46,6 @@ namespace Wbooru.UI.ValueConverters
 
         public static IValueConverter IfStringEmptyOrNullConverter => ValueConverter.Create<string, bool>(x => string.IsNullOrEmpty(x.Value));
 
-        public static IValueConverter VisibilityIFNSFWModeConverter => ValueConverter.Create<object, Visibility>(_ =>SettingManager.LoadSetting<GlobalSetting>().EnableNSFWFileterMode ? Visibility.Visible : Visibility.Collapsed);
+        public static IValueConverter VisibilityIFNSFWModeConverter => ValueConverter.Create<object, Visibility>(_ =>Setting<GlobalSetting>.Current.EnableNSFWFileterMode ? Visibility.Visible : Visibility.Collapsed);
     }
 }

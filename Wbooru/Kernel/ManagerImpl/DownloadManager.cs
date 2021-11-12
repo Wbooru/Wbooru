@@ -16,7 +16,7 @@ using Wbooru.Utils;
 using System.Net;
 using Wbooru.Kernel.DI;
 
-namespace Wbooru.Kernel
+namespace Wbooru.Kernel.ManagerImpl
 {
     [PriorityExport(typeof(IDownloadManager),Priority = 0)]
     internal class DownloadManager : IDownloadManager
