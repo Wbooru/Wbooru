@@ -19,7 +19,7 @@ using Wbooru.Kernel.DI;
 namespace Wbooru.Kernel
 {
     [PriorityExport(typeof(IDownloadManager),Priority = 0)]
-    public class DownloadManager : IDownloadManager
+    internal class DownloadManager : IDownloadManager
     {
         private AbortableThread timer_thread;
 

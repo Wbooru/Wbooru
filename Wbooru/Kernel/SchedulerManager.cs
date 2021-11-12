@@ -13,7 +13,7 @@ namespace Wbooru.Kernel
 {
     [PriorityExport(typeof(ISchedulerManager))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class SchedulerManager : ISchedulerManager
+    internal class SchedulerManager : ISchedulerManager
     {
         private AbortableThread runThread;
 
