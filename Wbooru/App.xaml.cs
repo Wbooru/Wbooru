@@ -52,7 +52,7 @@ namespace Wbooru
                 {
                     ProgramUpdater.CheckUpdatable();
 
-                    foreach (var updatable in Container.Default.GetExportedValues<PluginInfo>().OfType<IPluginUpdatable>())
+                    foreach (var updatable in Container.GetAll<PluginInfo>().OfType<IPluginUpdatable>())
                         PluginUpdaterManager.CheckPluginUpdatable(updatable);
                 }
             });
@@ -176,9 +176,10 @@ namespace Wbooru
 
             CheckPlugin();
 
-            SchedulerManager.Init();
 
-            await Singleton<IDownloadManager>.Instance.OnInit();
+            await Container.Get<ISchedulerManager>().OnInit();
+
+            await Container.Get<IDownloadManager>().OnInit();
 
             await TagManager.InitTagManager();
 
@@ -205,7 +206,7 @@ namespace Wbooru
 
         private static void CheckPlugin()
         {
-            var conflict_plugin_group = Container.Default.GetExportedValues<PluginInfo>().GroupBy(x => x.PluginName).Where(x => x.Count() > 1);
+            var conflict_plugin_group = Container.GetAll<PluginInfo>().GroupBy(x => x.PluginName).Where(x => x.Count() > 1);
 
             foreach (var p in conflict_plugin_group)
             {
@@ -225,9 +226,9 @@ namespace Wbooru
         {
             Log.Info("-----------------Begin Term()-----------------");
             SafeTermSubModule(PluginsTerm);
-            await SafeTermSubModuleAsync(Singleton<IDownloadManager>.Instance.OnExit);
+            await SafeTermSubModuleAsync(Container.Get<IDownloadManager>().OnExit);
             SafeTermSubModule(SettingManager.SaveSettingFile);
-            SafeTermSubModule(SchedulerManager.Term);
+            await SafeTermSubModuleAsync(Container.Get<ISchedulerManager>().OnExit);
             SafeTermSubModule(Log.Term);
             Log.Info("-----------------End Term()-----------------");
 
@@ -260,7 +261,7 @@ namespace Wbooru
         {
             Log.Info("Call PluginsTerm()");
 
-            foreach (var plugin in Container.Default.GetExportedValues<PluginInfo>())
+            foreach (var plugin in Container.GetAll<PluginInfo>())
             {
                 Log.Info($"Call {plugin.PluginName}.OnApplicationTerm()");
                 plugin.CallApplicationTerm();

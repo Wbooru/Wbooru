@@ -34,7 +34,7 @@ namespace Wbooru.UI.Pages
         {
             InitializeComponent();
 
-            var list = Container.Default.GetExportedValues<Gallery>().Select(x => x.GalleryName).ToList();
+            var list = Container.GetAll<Gallery>().Select(x => x.GalleryName).ToList();
             list.Insert(0, "AllGallery");
 
             GalleriesSelector.ItemsSource = list;
@@ -138,7 +138,7 @@ namespace Wbooru.UI.Pages
                 return;
             }
 
-            var gallery = Container.Default.GetExportedValues<Gallery>().Where(x => GalleriesSelector.SelectedItem.ToString() == x.GalleryName).FirstOrDefault();
+            var gallery = Container.GetAll<Gallery>().Where(x => GalleriesSelector.SelectedItem.ToString() == x.GalleryName).FirstOrDefault();
 
             if (gallery == null)
             {

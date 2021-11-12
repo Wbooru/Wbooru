@@ -8,25 +8,14 @@ using System.Linq;
 using System.Reflection;
 using Wbooru.Kernel.DI;
 
+//make get this anywhere
 namespace Wbooru
 {
     public static class Container
     {
         private static AggregateCatalog catalog;
         private static CompositionContainer instance = null;
-
         private static Dictionary<Type, object> cachedGotObjects = new Dictionary<Type, object>();
-
-        public static CompositionContainer Default
-        {
-            get
-            {
-                if (instance != null)
-                    return instance;
-
-                throw new Exception("MEF hasn't been initalized yet.");
-            }
-        }
 
         public static void BuildDefault()
         {
@@ -44,7 +33,10 @@ namespace Wbooru
                ));
 
             instance = new CompositionContainer(catalog);
+            cachedGotObjects.Clear();
         }
+
+        public static IEnumerable<T> GetAll<T>() => instance.GetExportedValues<T>();
 
         public static T Get<T>() where T : class
         {
@@ -53,16 +45,16 @@ namespace Wbooru
             if (cachedGotObjects.TryGetValue(type, out var d))
                 return d as T;
 
-            var pickList = Default.GetExports<T, IPriorityMetadata>()
+            var pickList = instance.GetExports<T, IPriorityMetadata>()
                 .Select(x => (x, x.Metadata.Priority))
-                .Concat(Default.GetExports<T>().Select(y => (new Lazy<T, IPriorityMetadata>(() => y.Value, null), (uint)0)))
+                .Concat(instance.GetExports<T>().Select(y => (new Lazy<T, IPriorityMetadata>(() => y.Value, null), (uint)0)))
                 .GroupBy(x => x.Item2)
-                .OrderByDescending(x => x.Key)
-                .ToArray();
+                .OrderByDescending(x => x.Key);
 
-            var picked = pickList.FirstOrDefault().FirstOrDefault();
+            var priorityGroup = pickList.FirstOrDefault().ToArray();
+            var picked = priorityGroup.FirstOrDefault();
             var actualValue = picked.Item1.Value;
-            Log.Debug($"Require : {typeof(T).Name} , Pick : {actualValue.GetType().Name} , Priority : {picked.Item2}");
+            Log.Debug(() => $"Require : {typeof(T).Name} , Pick : {actualValue.GetType().Name} , Priority : {picked.Item2} {(priorityGroup.Length > 1 ? ($"(More exports has same priority, please check it.)") : string.Empty)}");
             if (!(actualValue.GetType().GetCustomAttribute<PartCreationPolicyAttribute>() is PartCreationPolicyAttribute a && a.CreationPolicy == CreationPolicy.NonShared))
                 cachedGotObjects[type] = actualValue;
             return actualValue;

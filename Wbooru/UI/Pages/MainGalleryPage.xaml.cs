@@ -82,7 +82,7 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                var galleries = Container.Default.GetExportedValues<Gallery>();
+                var galleries = Container.GetAll<Gallery>();
 
                 if (Setting.EnableNSFWFileterMode)
                 {
@@ -91,7 +91,7 @@ namespace Wbooru.UI.Pages
                 }
 
                 var gallery = galleries.FirstOrDefault();
-                ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
+                ImageDownloader = Container.Get<ImageFetchDownloadScheduler>();
 
                 if (lock_gallery == null)
                 {
@@ -128,7 +128,7 @@ namespace Wbooru.UI.Pages
         private void TryAddExtraContent()
         {
             //menu items
-            var menu_items = Container.Default.GetExportedValues<IExtraMainMenuItemCreator>().Select(x => x.Create());
+            var menu_items = Container.GetAll<IExtraMainMenuItemCreator>().Select(x => x.Create());
             var current_items = MainMenu.Children.OfType<UIElement>().ToArray();
 
             foreach (var item in menu_items.Where(x => !current_items.Any(y => y.GetValue(NameProperty) == x.GetValue(NameProperty))))
@@ -320,7 +320,7 @@ namespace Wbooru.UI.Pages
             if (GridViewer.ViewType == GalleryViewType.Marked)
                 return;
 
-            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
+            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.GetAll<Gallery>()).Select(x => x.GalleryName).ToArray();
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
             Func<IEnumerable<GalleryItem>> source = null;
@@ -483,7 +483,7 @@ namespace Wbooru.UI.Pages
             if (GridViewer.ViewType == GalleryViewType.History)
                 return;
 
-            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
+            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.GetAll<Gallery>()).Select(x => x.GalleryName).ToArray();
 
             using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx, out var __);
 

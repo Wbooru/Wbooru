@@ -78,7 +78,7 @@ namespace Wbooru.UI.Pages
 
             PluginMarketPosts = new ObservableCollection<PluginMarketPost>();
 
-            PluginInfoList.ItemsSource = Container.Default.GetExportedValues<PluginInfo>().Select(x => new PluginInfoWrapper()
+            PluginInfoList.ItemsSource = Container.GetAll<PluginInfo>().Select(x => new PluginInfoWrapper()
             {
                 PluginInfo = x,
                 UpdatableVersion = PluginUpdaterManager.UpdatablePluginsInfo.TryGetValue(x.GetType(), out var info) ? info?.Version : null
@@ -91,7 +91,7 @@ namespace Wbooru.UI.Pages
                 ObjectPool<ThicknessAnimation>.Return(e as ThicknessAnimation);
             };
 
-            var plugin_markets = Container.Default.GetExportedValues<PluginMarket>();
+            var plugin_markets = Container.GetAll<PluginMarket>();
 
             PluginMarketList.ItemsSource = plugin_markets;
 

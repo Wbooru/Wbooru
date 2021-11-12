@@ -18,7 +18,7 @@ namespace Wbooru
     {
 #if DEBUG
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        public static extern void OutputDebugString(string message);
+        private static extern void OutputDebugString(string message);
 #endif
 
         private static StringBuilder sb = new StringBuilder(2048);
@@ -152,6 +152,15 @@ namespace Wbooru
         {
             var msg = BuildLogMessage(message, "INFO", true, true, prefix);
             ColorizeConsoleOutput(msg, ConsoleColor.Green, DefaultBackgroundColor);
+        }
+
+        public static void Debug(Func<string> messageFactory, [CallerMemberName] string prefix = "<Unknown Method>")
+        {
+            if (enable_debug_output)
+            {
+                var msg = BuildLogMessage(messageFactory(), "DEBUG", true, true, prefix);
+                Output(msg);
+            }
         }
 
         public static void Debug(string message, [CallerMemberName]string prefix = "<Unknown Method>")

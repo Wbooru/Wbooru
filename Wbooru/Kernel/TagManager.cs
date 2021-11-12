@@ -165,7 +165,7 @@ namespace Wbooru.Kernel
 
             status.Task = Task.Run(() =>
             {
-                var search_list = Container.Default.GetExportedValues<Gallery>().OfType<IGalleryTagMetaSearch>().ToArray();
+                var search_list = Container.GetAll<Gallery>().OfType<IGalleryTagMetaSearch>().ToArray();
                 status.SearchCount = search_list.Length + 1;
 
                 foreach (var searcher in search_list)
@@ -242,7 +242,7 @@ namespace Wbooru.Kernel
 
             if (final_result.Count != tag_names.Length)
             {
-                var searchers = gallery == null ? Container.Default.GetExportedValues<Gallery>() : new[] { gallery };
+                var searchers = gallery == null ? Container.GetAll<Gallery>() : new[] { gallery };
                 var tasks = searchers.OfType<IGalleryTagMetaSearch>()
                     .Select(searcher => Task.Run(() =>
                     {

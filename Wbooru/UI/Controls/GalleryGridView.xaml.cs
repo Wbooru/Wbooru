@@ -221,7 +221,7 @@ namespace Wbooru.UI.Controls
         public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery=null)
         {
             var option = SettingManager.LoadSetting<GlobalSetting>();
-            IEnumerable<Gallery> galleries = gallery == null ? Container.Default.GetExportedValues<Gallery>() : new[] { gallery };
+            IEnumerable<Gallery> galleries = gallery == null ? Container.GetAll<Gallery>() : new[] { gallery };
 
             return items.Where(x =>
             {

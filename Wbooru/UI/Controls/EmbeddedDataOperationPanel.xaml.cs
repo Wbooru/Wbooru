@@ -99,7 +99,7 @@ namespace Wbooru.UI.Controls
 
                 using var transaction = await currentDBContext.Database.BeginTransactionAsync();
 
-                await Singleton<IDownloadManager>.Instance.OnExit();
+                await Container.Get<IDownloadManager>().OnExit();
 
                 CleanTable(currentDBContext.Downloads, "正在清理下载记录");
                 CleanTable(currentDBContext.Tags, "正在清理标签数据");

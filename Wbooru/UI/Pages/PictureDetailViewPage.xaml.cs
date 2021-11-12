@@ -118,7 +118,7 @@ namespace Wbooru.UI.Pages
 
         private void SetupExtraUI()
         {
-            foreach (var control in Container.Default.GetExportedValues<IExtraDetailImageMenuItem>().Select(x => x.Create()))
+            foreach (var control in Container.GetAll<IExtraDetailImageMenuItem>().Select(x => x.Create()))
                 DetailImageBox.ContextMenu.Items.Add(control);
         }
 
@@ -318,7 +318,7 @@ namespace Wbooru.UI.Pages
 
             PictureInfo = item;
 
-            Gallery = gallery ?? Container.Default.GetExportedValues<Gallery>().FirstOrDefault(x => x.GalleryName == item.GalleryName);
+            Gallery = gallery ?? Container.GetAll<Gallery>().FirstOrDefault(x => x.GalleryName == item.GalleryName);
 
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
 
@@ -488,7 +488,7 @@ namespace Wbooru.UI.Pages
                 }
             };
 
-            if (await Singleton<IDownloadManager>.Instance.CheckIfContained(download_task))
+            if (await Container.Get<IDownloadManager>().CheckIfContained(download_task))
             {
                 //jump to download page if download task is exist.
 
@@ -499,7 +499,7 @@ namespace Wbooru.UI.Pages
                 return;
             }
 
-            await Singleton<IDownloadManager>.Instance.DownloadStart(download_task);
+            await Container.Get<IDownloadManager>().DownloadStart(download_task);
             Toast.ShowMessage("开始下载图片...");
         }
 

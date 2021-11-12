@@ -40,9 +40,9 @@ namespace Wbooru.UI.ValueConverters
         });
 
         public static IValueConverter ReverseCheckIfPluginInstalled => ValueConverter.Create<PluginMarketPost, Visibility>(
-            x => !Container.Default.GetExportedValues<PluginInfo>().Any(y => y.PluginName.Equals(x.Value?.PluginName ?? string.Empty, StringComparison.InvariantCultureIgnoreCase)) ? Visibility.Visible : Visibility.Collapsed);
+            x => !Container.GetAll<PluginInfo>().Any(y => y.PluginName.Equals(x.Value?.PluginName ?? string.Empty, StringComparison.InvariantCultureIgnoreCase)) ? Visibility.Visible : Visibility.Collapsed);
         public static IValueConverter CheckIfPluginInstalled => ValueConverter.Create<PluginMarketPost, Visibility>(
-            x => Container.Default.GetExportedValues<PluginInfo>().Any(y => y.PluginName.Equals(x.Value?.PluginName ?? string.Empty, StringComparison.InvariantCultureIgnoreCase)) ? Visibility.Visible : Visibility.Collapsed);
+            x => Container.GetAll<PluginInfo>().Any(y => y.PluginName.Equals(x.Value?.PluginName ?? string.Empty, StringComparison.InvariantCultureIgnoreCase)) ? Visibility.Visible : Visibility.Collapsed);
 
         public static IValueConverter IfStringEmptyOrNullConverter => ValueConverter.Create<string, bool>(x => string.IsNullOrEmpty(x.Value));
 

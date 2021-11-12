@@ -65,8 +65,8 @@ namespace Wbooru.UI.Pages
         {
             InitializeComponent();
 
-            SupportSettingWrappers = Container.Default.GetExports<SettingBase>()
-                .Select(x => SettingManager.LoadSetting(x.Value.GetType()))
+            SupportSettingWrappers = Container.GetAll<SettingBase>()
+                .Select(x => SettingManager.LoadSetting(x.GetType()))
                 .OfType<SettingBase>()
                 .GroupBy(x => x.GetType().Assembly)
                 .Select(x => new GroupedSupportSettingWrapper() {

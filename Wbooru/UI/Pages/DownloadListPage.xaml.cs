@@ -33,7 +33,7 @@ namespace Wbooru.UI.Pages
 
             MainPanel.DataContext = this;
 
-            DownloadList.ItemsSource = Singleton<IDownloadManager>.Instance.DownloadList;
+            DownloadList.ItemsSource = Container.Get<IDownloadManager>().DownloadList;
         }
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
@@ -48,10 +48,10 @@ namespace Wbooru.UI.Pages
                 switch (download_task.Status)
                 {
                     case DownloadTaskStatus.Paused:
-                        await Singleton<IDownloadManager>.Instance.DownloadStart(download_task);
+                        await Container.Get<IDownloadManager>().DownloadStart(download_task);
                         break;
                     case DownloadTaskStatus.Started:
-                        await Singleton<IDownloadManager>.Instance.DownloadPause(download_task);
+                        await Container.Get<IDownloadManager>().DownloadPause(download_task);
                         break;
                     case DownloadTaskStatus.Finished:
                         ShowRedownloadConfimPanel(sender as Button,download_task);
@@ -85,7 +85,7 @@ namespace Wbooru.UI.Pages
 
             var download_task = panel.DataContext as DownloadWrapper;
 
-            await Singleton<IDownloadManager>.Instance.DownloadDelete(download_task);
+            await Container.Get<IDownloadManager>().DownloadDelete(download_task);
 
             if (need_delete)
                 File.Delete(download_task.DownloadInfo.DownloadFullPath);
@@ -111,7 +111,7 @@ namespace Wbooru.UI.Pages
             panel.IsOpen = false;
             var download_task = panel.DataContext as DownloadWrapper;
 
-            await Singleton<IDownloadManager>.Instance.DownloadRestart(download_task);
+            await Container.Get<IDownloadManager>().DownloadRestart(download_task);
         }
     }
 }

@@ -13,13 +13,7 @@ namespace Wbooru.UI.ValueConverters
 {
     public class CustomBindableMarginConverter : IMultiValueConverter
     {
-        [Import(typeof(CalculatableFormatter))]
-        public CalculatableFormatter Formatter { get; set; }
-
-        public CustomBindableMarginConverter()
-        {
-            Container.Default.ComposeParts(this);
-        }
+        public CalculatableFormatter Formatter { get; set; } = Container.Get<CalculatableFormatter>();
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

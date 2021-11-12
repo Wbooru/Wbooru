@@ -76,7 +76,7 @@ namespace Wbooru.Utils
                 if (instance == null)
                 {
                     instance = new ObjectPool<T>();
-                    Container.Default.GetExportedValue<ObjectPoolManager>().RegisterNewObjectPool(instance);
+                    Container.Get<ObjectPoolManager>().RegisterNewObjectPool(instance);
                 }
 
                 return instance;
