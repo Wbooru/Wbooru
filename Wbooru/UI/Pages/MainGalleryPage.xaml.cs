@@ -320,7 +320,7 @@ namespace Wbooru.UI.Pages
             if (GridViewer.ViewType == GalleryViewType.Marked)
                 return;
 
-            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.GetAll<Gallery>()).Select(x => x.GalleryName).ToArray();
+            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.GetAll<Gallery>()).ToArray();
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
             Func<IEnumerable<GalleryItem>> source = null;
@@ -331,12 +331,7 @@ namespace Wbooru.UI.Pages
             }
             else
             {
-                var collection = await LocalDBContext.PostDbAction(ctx => ctx.ItemMarks.Include(x => x.GalleryItem)
-                .OrderByDescending(x => x.Time)
-                .Select(x => x.GalleryItem)
-                .Where(x => galleries.Contains(x.GalleryName))
-                .ToArray()//avoid SQL.
-                );
+                var collection = await Container.Get<IMarkManager>().GetMarkedList(galleries);
                 source = new Func<IEnumerable<GalleryItem>>(() => collection);
             }
 

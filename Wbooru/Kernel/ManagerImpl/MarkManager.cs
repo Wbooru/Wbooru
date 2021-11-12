@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -40,29 +41,21 @@ namespace Wbooru.Kernel.ManagerImpl
 
         public Task<bool> GetMark(Gallery gallery, GalleryItem item)
         {
-            return LocalDBContext.PostDbAction(DB =>
+            return LocalDBContext.PostDbAction(ctx =>
             {
-                var visit_entity = DB.VisitRecords.AsQueryable().Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
-
-                if (visit_entity == null)
-                {
-                    var visit = new VisitRecord()
-                    {
-                        GalleryItem = item,
-                        LastVisitTime = DateTime.Now
-                    };
-
-                    DB.VisitRecords.Add(visit);
-                }
-                else
-                {
-                    visit_entity.LastVisitTime = DateTime.Now;
-                }
-
-                DB.SaveChanges();
-
-                return !(DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == item.GalleryItemID) is null);
+                return !(ctx.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == item.GalleryItemID) is null);
             });
+        }
+
+        public async Task<IEnumerable<GalleryItem>> GetMarkedList(params Gallery[] filterGalleries)
+        {
+            var names = filterGalleries.Select(x => x.GalleryName);
+            return await LocalDBContext.PostDbAction(ctx => ctx.ItemMarks.Include(x => x.GalleryItem)
+                .OrderByDescending(x => x.Time)
+                .Select(x => x.GalleryItem)
+                .Where(x => names.Contains(x.GalleryName))
+                .ToArray()//avoid SQL.
+                );
         }
     }
 }

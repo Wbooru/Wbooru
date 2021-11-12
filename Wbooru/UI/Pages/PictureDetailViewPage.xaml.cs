@@ -338,6 +338,28 @@ namespace Wbooru.UI.Pages
                 Log.Error(e.Message);
             }
 
+            await LocalDBContext.PostDbAction(ctx =>
+            {
+                var visit_entity = ctx.VisitRecords.Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
+
+                if (visit_entity == null)
+                {
+                    var visit = new VisitRecord()
+                    {
+                        GalleryItem = item,
+                        LastVisitTime = DateTime.Now
+                    };
+
+                    ctx.VisitRecords.Add(visit);
+                }
+                else
+                {
+                    visit_entity.LastVisitTime = DateTime.Now;
+                }
+
+                ctx.SaveChanges();
+            });
+
             var is_mark = await Container.Get<IMarkManager>().GetMark(Gallery, PictureInfo);
             var (is_vote, _) = await Container.Get<IVoteManager>().GetVote(Gallery, PictureInfo);
 
@@ -371,34 +393,10 @@ namespace Wbooru.UI.Pages
 
             MarkButton.IsBusy = true;
 
-            var is_mark = IsMark;
-            var gallery = Gallery;
-            var info = PictureInfo;
+            var reverse_mark = !IsMark;
+            await Container.Get<IMarkManager>().SetMark(Gallery, PictureInfo, reverse_mark);
 
-            await LocalDBContext.PostDbAction(async DB =>
-            {
-                if (!is_mark)
-                {
-                    await DB.ItemMarks.AddAsync(new GalleryItemMark()
-                    {
-                        GalleryItem = info,
-                        Time = DateTime.Now
-                    });
-
-                    is_mark = true;
-                }
-                else
-                {
-                    var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == info.GalleryItemID);
-                    DB.ItemMarks.Remove(x);
-                    is_mark = false;
-                }
-
-                await DB.SaveChangesAsync();
-                return Task.CompletedTask;
-            });
-
-            IsMark = is_mark;
+            IsMark = reverse_mark;
             MarkButton.IsBusy = false;
 
             Log<PictureDetailViewPage>.Debug($"Now IsMark={IsMark}");
@@ -495,7 +493,7 @@ namespace Wbooru.UI.Pages
                 return;
             }
 
-           await Container.Get<ITagManager>().AddTag(tag, Gallery.GalleryName, TagRecordType.Filter);
+            await Container.Get<ITagManager>().AddTag(tag, Gallery.GalleryName, TagRecordType.Filter);
 
             Toast.ShowMessage($"过滤标签添加成功");
         }
