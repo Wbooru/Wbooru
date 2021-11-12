@@ -57,8 +57,6 @@ namespace Wbooru.Utils
 
         public Task OnScheduleCall(CancellationToken cancellationToken)
         {
-            Log.Warn("gugu");
-
             foreach (var pool in object_pools)
                 pool.OnPreReduceSchedule();
 
