@@ -10,7 +10,7 @@ using Wbooru.Models;
 
 namespace Wbooru.Kernel
 {
-    public interface IDownloadManager : IManagerLifetime
+    public interface IDownloadManager : IManagerLifetime, IImplementInjectable
     {
         Task DownloadStart(DownloadWrapper download);
         Task DownloadDelete(DownloadWrapper download);

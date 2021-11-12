@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Wbooru.Kernel.DI;
 using Wbooru.PluginExt;
 
 namespace Wbooru.Utils
@@ -33,7 +34,7 @@ namespace Wbooru.Utils
     [Export(typeof(ISchedulable))]
     [Export(typeof(ObjectPoolManager))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class ObjectPoolManager : ISchedulable
+    public class ObjectPoolManager : ISchedulable,IImplementInjectable
     {
         public string SchedulerName => "Object Pool Maintenance Scheduler";
 

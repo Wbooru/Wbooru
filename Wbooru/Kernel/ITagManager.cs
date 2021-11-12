@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wbooru.Galleries;
+using Wbooru.Kernel.DI;
 using Wbooru.Models;
 using static Wbooru.Models.TagRecord;
 
 namespace Wbooru.Kernel
 {
-    public interface ITagManager: IManagerLifetime
+    public interface ITagManager: IManagerLifetime, IImplementInjectable
     {
         ObservableCollection<TagRecord> MarkedTags { get; }
         ObservableCollection<TagRecord> FiltedTags { get; }

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wbooru.Kernel.DI;
 
-namespace Wbooru.UI.Controls.PluginExtension
+namespace Wbooru.Kernel.DI
 {
-    public interface IExtraMainMenuItemCreator : IExtraUICreator
+    public interface IMultiImplementInjectable
     {
-
     }
 }

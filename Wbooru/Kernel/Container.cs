@@ -36,14 +36,14 @@ namespace Wbooru
                 Log.Info($"Add folder for loading plugins : {folder}");
         }
 
-        public static IEnumerable<T> GetAll<T>() => instance.GetExportedValues<T>();
+        public static IEnumerable<T> GetAll<T>() where T : IMultiImplementInjectable => instance.GetExportedValues<T>();
 
-        public static T Get<T>() where T : class
+        public static T Get<T>() where T : IImplementInjectable
         {
             var type = typeof(T);
 
             if (cachedGotObjects.TryGetValue(type, out var d))
-                return d as T;
+                return (T)d;
 
             var pickList = instance.GetExports<T, IPriorityMetadata>()
                 .Select(x => (x, x.Metadata.Priority))

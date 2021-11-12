@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wbooru.Galleries;
 using Wbooru.Galleries.SupportFeatures;
+using Wbooru.Kernel.DI;
 using Wbooru.Models.Gallery;
 
-namespace Wbooru.Kernel
+namespace Wbooru.Kernel.ManagerImpl
 {
-    public static class VoteManager
+    [PriorityExport(typeof(IVoteManager))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
+    internal class VoteManager
     {
-        public static async Task<(bool action_success,string error_message)> SetVote(Gallery gallery,GalleryItem item,bool is_vote)
+        public async Task<(bool action_success,string error_message)> SetVote(Gallery gallery,GalleryItem item,bool is_vote)
         {
             try
             {
@@ -25,7 +29,7 @@ namespace Wbooru.Kernel
             }
         }
 
-        public static async Task<(bool action_success, string error_message)> GetVote(Gallery gallery, GalleryItem item)
+        public async Task<(bool action_success, string error_message)> GetVote(Gallery gallery, GalleryItem item)
         {
             try
             {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wbooru.Galleries.SupportFeatures;
+using Wbooru.Kernel.DI;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.PluginExt;
@@ -11,7 +12,7 @@ using Wbooru.Settings;
 
 namespace Wbooru.Galleries
 {
-    public abstract class Gallery
+    public abstract class Gallery : IMultiImplementInjectable
     {
         #region SupportFeatures
 

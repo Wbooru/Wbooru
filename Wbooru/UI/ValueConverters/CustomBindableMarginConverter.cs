@@ -13,11 +13,11 @@ namespace Wbooru.UI.ValueConverters
 {
     public class CustomBindableMarginConverter : IMultiValueConverter
     {
-        public CalculatableFormatter Formatter { get; set; } = Container.Get<CalculatableFormatter>();
+        public CalculatableFormatter Formatter { get; set; } = new();
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var format = parameter.ToString().Replace("\\","");
+            var format = parameter.ToString().Replace("\\", "");
 
             var b = format;
 
@@ -30,7 +30,7 @@ namespace Wbooru.UI.ValueConverters
 
             format = Formatter.FormatCalculatableString(format);
 
-            var rz = format.Split(',').Select(x => string.IsNullOrWhiteSpace(x)?0:double.Parse(x)).ToArray();
+            var rz = format.Split(',').Select(x => string.IsNullOrWhiteSpace(x) ? 0 : double.Parse(x)).ToArray();
             var r = Enumerable.Range(0, 4).Select(x => x >= rz.Length ? 0 : rz[x]).ToArray();
 
             Log<CustomBindableMarginConverter>.Debug($"{b}  -->  {c}  ->  {format}");

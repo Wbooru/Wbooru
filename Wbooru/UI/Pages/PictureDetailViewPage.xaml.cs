@@ -374,7 +374,7 @@ namespace Wbooru.UI.Pages
                 return !(DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == item.GalleryItemID) is null);
             });
 
-            var (is_vote, _) = await VoteManager.GetVote(Gallery, PictureInfo);
+            var (is_vote, _) = await Container.Get<IVoteManager>().GetVote(Gallery, PictureInfo);
 
             IsMark = is_mark;
             IsVoted = is_vote;
@@ -448,7 +448,7 @@ namespace Wbooru.UI.Pages
 
             var new_vote = !IsVoted;
 
-            var (success, message) = await VoteManager.SetVote(Gallery, PictureInfo, new_vote);
+            var (success, message) = await Container.Get<IVoteManager>().SetVote(Gallery, PictureInfo, new_vote);
 
             if (success)
             {

@@ -14,12 +14,14 @@ using Wbooru.UI.Controls;
 using System.Threading;
 using System.IO;
 using Wbooru.Utils;
+using Wbooru.Kernel.DI;
 
 namespace Wbooru.Network
 {
     [Export(typeof(ISchedulable))]
     [Export(typeof(ImageFetchDownloadScheduler))]
-    public class ImageFetchDownloadScheduler : ISchedulable
+    [PartCreationPolicy(CreationPolicy.Shared)]
+    public class ImageFetchDownloadScheduler : ISchedulable, IImplementInjectable
     {
         public string SchedulerName => "Images Fetching Scheduler";
 

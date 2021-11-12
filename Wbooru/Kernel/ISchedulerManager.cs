@@ -9,7 +9,7 @@ using Wbooru.PluginExt;
 
 namespace Wbooru.Kernel
 {
-    public interface ISchedulerManager : IManagerLifetime
+    public interface ISchedulerManager : IManagerLifetime, IImplementInjectable
     {
         Task AddScheduler(ISchedulable s);
         Task RemoveScheduler(ISchedulable s);
