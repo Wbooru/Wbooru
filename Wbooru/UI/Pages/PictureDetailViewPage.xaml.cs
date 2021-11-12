@@ -1,30 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Wbooru.Galleries;
-using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel;
-using Wbooru.Kernel.DI;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.Models.Gallery.Annotation;
@@ -350,30 +338,7 @@ namespace Wbooru.UI.Pages
                 Log.Error(e.Message);
             }
 
-            var is_mark = await LocalDBContext.PostDbAction(DB =>
-            {
-                var visit_entity = DB.VisitRecords.AsQueryable().Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
-
-                if (visit_entity == null)
-                {
-                    var visit = new VisitRecord()
-                    {
-                        GalleryItem = item,
-                        LastVisitTime = DateTime.Now
-                    };
-
-                    DB.VisitRecords.Add(visit);
-                }
-                else
-                {
-                    visit_entity.LastVisitTime = DateTime.Now;
-                }
-
-                DB.SaveChanges();
-
-                return !(DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == item.GalleryItemID) is null);
-            });
-
+            var is_mark = await Container.Get<IMarkManager>().GetMark(Gallery, PictureInfo);
             var (is_vote, _) = await Container.Get<IVoteManager>().GetVote(Gallery, PictureInfo);
 
             IsMark = is_mark;
