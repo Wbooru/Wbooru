@@ -179,7 +179,7 @@ namespace Wbooru
 
             await Container.Get<IDownloadManager>().OnInit();
 
-            await TagManager.InitTagManager();
+            await Container.Get<ITagManager>().OnInit();
 
             ImageResourceManager.InitImageResourceManager();
 
@@ -225,7 +225,7 @@ namespace Wbooru
             Log.Info("-----------------Begin Term()-----------------");
             SafeTermSubModule(PluginsTerm);
             await SafeTermSubModuleAsync(Container.Get<IDownloadManager>().OnExit);
-            SafeTermSubModule(SettingManager.SaveSettingFile);
+
             await SafeTermSubModuleAsync(Container.Get<ISchedulerManager>().OnExit);
             SafeTermSubModule(Log.Term);
             Log.Info("-----------------End Term()-----------------");

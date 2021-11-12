@@ -12,16 +12,22 @@ using Wbooru.Settings;
 using Wbooru.Utils;
 using static Wbooru.Models.TagRecord;
 using static System.Linq.Enumerable;
+using Wbooru.Kernel.DI;
+using System.ComponentModel.Composition;
 
-namespace Wbooru.Kernel
+namespace Wbooru.Kernel.ManagerImpl
 {
-    public static class TagManager
+    [PriorityExport(typeof(ITagManager))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
+    internal class TagManager : ITagManager
     {
-        public static ObservableCollection<TagRecord> MarkedTags { get; private set; } = new ObservableCollection<TagRecord>();
-        public static ObservableCollection<TagRecord> FiltedTags { get; private set; } = new ObservableCollection<TagRecord>();
-        public static ObservableCollection<TagRecord> SubscribedTags { get; private set; } = new ObservableCollection<TagRecord>();
+        public ObservableCollection<TagRecord> MarkedTags { get; } = new ObservableCollection<TagRecord>();
+        public ObservableCollection<TagRecord> FiltedTags { get; } = new ObservableCollection<TagRecord>();
+        public ObservableCollection<TagRecord> SubscribedTags { get; } = new ObservableCollection<TagRecord>();
 
-        public static async Task InitTagManager()
+        public Task OnExit() => Task.CompletedTask;
+
+        public async Task OnInit()
         {
             try
             {
@@ -52,9 +58,9 @@ namespace Wbooru.Kernel
         }
 
         //因为从现有的收藏标签进行订阅，所以不需要其他重载形式
-        public static async void SubscribedTag(TagRecord tag)
+        public async Task SubscribedTag(TagRecord tag)
         {
-            if (Contain(tag.Tag.Name, tag.FromGallery, TagRecordType.Subscribed))
+            if (await ContainTag(tag.Tag.Name, tag.FromGallery, TagRecordType.Subscribed))
                 return;
 
             await LocalDBContext.PostDbAction(ctx =>
@@ -68,7 +74,7 @@ namespace Wbooru.Kernel
         }
 
         //因为从现有的收藏标签进行订阅，所以不需要其他重载形式
-        public static async void UnSubscribedTag(TagRecord tag)
+        public async Task UnSubscribedTag(TagRecord tag)
         {
             if (!tag.RecordType.HasFlag(TagRecordType.Subscribed))
                 return;
@@ -83,23 +89,15 @@ namespace Wbooru.Kernel
             SubscribedTags.Remove(SubscribedTags.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.FromGallery == tag.FromGallery && x.Tag.Type == tag.Tag.Type));
         }
 
-        public static void AddTag(string name, string gallery_name, string type, TagRecordType record_type) => AddTag(name, gallery_name, Enum.TryParse<TagType>(type, true, out var r) ? r : TagType.Unknown, record_type);
-
-        public static bool Contain(string tag_name, string gallery_name, TagRecordType record_type) => (record_type switch
+        public Task<bool> ContainTag(string tag_name, string gallery_name, TagRecordType record_type) => Task.FromResult((record_type switch
         {
             TagRecordType.Filter => FiltedTags,
             TagRecordType.Subscribed => SubscribedTags,
             TagRecordType.Marked => MarkedTags,
             _ => throw new Exception("咕咕")
-        }).Any(x => x.Tag.Name.Equals(tag_name, StringComparison.InvariantCultureIgnoreCase) && gallery_name == x.FromGallery);
+        }).Any(x => x.Tag.Name.Equals(tag_name, StringComparison.InvariantCultureIgnoreCase) && gallery_name == x.FromGallery));
 
-        public static void AddTag(string name, string gallery_name, TagType type, TagRecordType record_type) => AddTag(new Tag()
-        {
-            Name = name,
-            Type = type
-        }, gallery_name, record_type);
-
-        public static async void AddTag(Tag tag, string gallery_name, TagRecordType record_type)
+        public async Task AddTag(Tag tag, string gallery_name, TagRecordType record_type)
         {
             var rt = record_type switch
             {
@@ -138,7 +136,7 @@ namespace Wbooru.Kernel
             rt.Add(record);
         }
 
-        public static async void RemoveTag(TagRecord record)
+        public async Task RemoveTag(TagRecord record)
         {
             var list = record.RecordType.HasFlag(TagRecordType.Filter) ? FiltedTags : MarkedTags;
 
@@ -159,7 +157,7 @@ namespace Wbooru.Kernel
                 list.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
         }
 
-        public static CacheTagMetaProgressStatus StartCacheTagMeta()
+        public CacheTagMetaProgressStatus StartCacheTagMeta()
         {
             CacheTagMetaProgressStatus status = new CacheTagMetaProgressStatus();
 
@@ -199,7 +197,7 @@ namespace Wbooru.Kernel
             return status;
         }
 
-        private static async void ProcessTags(Tag[] tags, IGalleryTagMetaSearch searcher)
+        private async void ProcessTags(Tag[] tags, IGalleryTagMetaSearch searcher)
         {
             var gallery_name = (searcher as Gallery)?.GalleryName;
 
@@ -234,7 +232,7 @@ namespace Wbooru.Kernel
             });
         }
 
-        public static async Task<Dictionary<string, Tag>> SearchTagMeta(Gallery gallery = null, string id = null, params string[] tag_names)
+        public async Task<Dictionary<string, Tag>> SearchTagMeta(Gallery gallery = null, string id = null, params string[] tag_names)
         {
             Log.Debug($"+ Begin search({tag_names.Count()}): {string.Join(" , ", tag_names)}");
 
@@ -278,7 +276,7 @@ namespace Wbooru.Kernel
             return final_result;
         }
 
-        public static async void UpdateTagMeta(IEnumerable<Tag> tags, Gallery gallery)
+        public async void UpdateTagMeta(IEnumerable<Tag> tags, Gallery gallery)
         {
             if (gallery == null)
                 return;
@@ -327,7 +325,7 @@ namespace Wbooru.Kernel
             });
         }
 
-        public static async Task<Dictionary<string, Tag>> SearchTagMetaFromLocalDataBase(Gallery gallery = null, params string[] tag_names)
+        public async Task<Dictionary<string, Tag>> SearchTagMetaFromLocalDataBase(Gallery gallery = null, params string[] tag_names)
         {
             Log.Debug($"++ Begin search from database({tag_names.Length}): {string.Join(" , ", tag_names)}");
 

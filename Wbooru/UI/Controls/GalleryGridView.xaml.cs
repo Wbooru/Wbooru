@@ -257,7 +257,7 @@ namespace Wbooru.UI.Controls
                             break;
                     }
 
-                    var filter_list = option.UseAllGalleryFilterList ? TagManager.FiltedTags : TagManager.FiltedTags.Where(x => x.FromGallery == gallery.GalleryName);
+                    var filter_list = option.UseAllGalleryFilterList ? Container.Get<ITagManager>().FiltedTags : Container.Get<ITagManager>().FiltedTags.Where(x => x.FromGallery == gallery.GalleryName);
 
                     foreach (var filter_tag in filter_list)
                     {

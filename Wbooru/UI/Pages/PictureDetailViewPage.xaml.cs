@@ -340,7 +340,7 @@ namespace Wbooru.UI.Pages
 
                 var tags = PictureDetailInfo.Tags.ToArray();
 
-                var dir = await TagManager.SearchTagMeta(gallery, item.GalleryItemID, tags);
+                var dir = await Container.Get<ITagManager>().SearchTagMeta(gallery, item.GalleryItemID, tags);
 
                 foreach (var tag in PictureDetailInfo.Tags.Select(x => dir.TryGetValue(x, out var t) ? t : new Tag() { Name = x, Type = TagType.Unknown }))
                     Tags.Add(tag);
@@ -503,34 +503,34 @@ namespace Wbooru.UI.Pages
             Toast.ShowMessage("开始下载图片...");
         }
 
-        private void AddTagCollectionButton_Click(object sender, RoutedEventArgs e)
+        private async void AddTagCollectionButton_Click(object sender, RoutedEventArgs e)
         {
             if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            if (TagManager.Contain(tag.Name, Gallery.GalleryName, TagRecordType.Marked))
+            if (await Container.Get<ITagManager>().ContainTag(tag.Name, Gallery.GalleryName, TagRecordType.Marked))
             {
                 Toast.ShowMessage($"已收藏此标签了");
                 return;
             }
 
-            TagManager.AddTag(tag, Gallery.GalleryName, TagRecordType.Marked);
+            await Container.Get<ITagManager>().AddTag(tag, Gallery.GalleryName, TagRecordType.Marked);
 
             Toast.ShowMessage($"添加成功");
         }
 
-        private void AddTagFilterButton_Click(object sender, RoutedEventArgs e)
+        private async void AddTagFilterButton_Click(object sender, RoutedEventArgs e)
         {
             if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            if (TagManager.Contain(tag.Name, Gallery.GalleryName, TagRecordType.Filter))
+            if (await Container.Get<ITagManager>().ContainTag(tag.Name, Gallery.GalleryName, TagRecordType.Filter))
             {
                 Toast.ShowMessage($"已过滤此标签了");
                 return;
             }
 
-            TagManager.AddTag(tag, Gallery.GalleryName, TagRecordType.Filter);
+           await Container.Get<ITagManager>().AddTag(tag, Gallery.GalleryName, TagRecordType.Filter);
 
             Toast.ShowMessage($"过滤标签添加成功");
         }

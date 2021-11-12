@@ -38,7 +38,7 @@ namespace Wbooru.UI.Controls
 
         public static readonly DependencyProperty TagsListTypeProperty =
             DependencyProperty.Register("TagsListType", typeof(bool), typeof(TagListViewer), new PropertyMetadata(false,(e,d) => {
-                var list = (bool)d.NewValue ? TagManager.FiltedTags : TagManager.MarkedTags;
+                var list = (bool)d.NewValue ? Container.Get<ITagManager>().FiltedTags : Container.Get<ITagManager>().MarkedTags;
                 ((TagListViewer)(e)).TagsList = list;
             }
         ));
@@ -51,7 +51,7 @@ namespace Wbooru.UI.Controls
 
         public static readonly DependencyProperty TagsListProperty =
             DependencyProperty.Register("TagsList", typeof(ObservableCollection<TagRecord>), typeof(TagListViewer), 
-                new PropertyMetadata(TagManager.MarkedTags));
+                new PropertyMetadata(Container.Get<ITagManager>().MarkedTags));
 
         public TagListViewer()
         {
@@ -91,11 +91,11 @@ namespace Wbooru.UI.Controls
             TagsListType = !TagsListType;
         }
 
-        private void DeleteTagButton_Click(object sender, RoutedEventArgs e)
+        private async void DeleteTagButton_Click(object sender, RoutedEventArgs e)
         {
             var tag = (sender as FrameworkElement).DataContext as TagRecord;
 
-            TagManager.RemoveTag(tag);
+            await Container.Get<ITagManager>().RemoveTag(tag);
 
             Toast.ShowMessage("删除标签成功");
         }

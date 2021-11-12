@@ -40,13 +40,13 @@ namespace Wbooru.UI.Pages
             GalleriesSelector.ItemsSource = list;
             GalleriesSelector.SelectedIndex = 0;
 
-            MarkedTagsView.Source = TagManager.MarkedTags;
+            MarkedTagsView.Source = Container.Get<ITagManager>().MarkedTags;
             MarkedTagsView.Filter += MarkedTagsView_Filter;
 
-            FilterTagsView.Source = TagManager.FiltedTags;
+            FilterTagsView.Source = Container.Get<ITagManager>().FiltedTags;
             FilterTagsView.Filter += FilterTagsView_Filter;
 
-            SubscribedTagsView.Source = TagManager.SubscribedTags;
+            SubscribedTagsView.Source = Container.Get<ITagManager>().SubscribedTags;
             SubscribedTagsView.Filter += SubscribedTagsView_Filter;
 
             MainContent.DataContext = this;
@@ -104,18 +104,18 @@ namespace Wbooru.UI.Pages
             SubscribedTagsView?.View?.Refresh();
         }
 
-        private void DeleteTag_Click(object sender, RoutedEventArgs e)
+        private async void DeleteTag_Click(object sender, RoutedEventArgs e)
         {
             var record = (sender as FrameworkElement).DataContext as TagRecord;
 
             if (record.RecordType == TagRecord.TagRecordType.Subscribed)
             {
-                TagManager.UnSubscribedTag(record);
+                await Container.Get<ITagManager>().UnSubscribedTag(record);
                 Toast.ShowMessage("已取消订阅此标签");
             }
             else
             {
-                TagManager.RemoveTag(record);
+                await Container.Get<ITagManager>().RemoveTag(record);
                 Toast.ShowMessage("已删除此标签");
             }
         }
@@ -149,11 +149,11 @@ namespace Wbooru.UI.Pages
             NavigationHelper.NavigationPush(new MainGalleryPage(tags, gallery));
         }
 
-        private void SubscribeButton_Click(object sender, RoutedEventArgs e)
+        private async void SubscribeButton_Click(object sender, RoutedEventArgs e)
         {
             var record = (sender as FrameworkElement).DataContext as TagRecord;
 
-            TagManager.SubscribedTag(record);
+            await Container.Get<ITagManager>().SubscribedTag(record);
 
             Toast.ShowMessage("成功订阅此标签");
         }
