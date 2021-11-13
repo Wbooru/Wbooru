@@ -13,19 +13,19 @@ namespace Wbooru.Kernel.ManagerImpl
 {
     [PriorityExport(typeof(IVoteManager))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    internal class VoteManager
+    internal class VoteManager : IVoteManager
     {
-        public async Task<(bool action_success,string error_message)> SetVote(Gallery gallery,GalleryItem item,bool is_vote)
+        public async Task<(bool action_success, string error_message)> SetVote(Gallery gallery, GalleryItem item, bool is_vote)
         {
             try
             {
                 await Task.Run(() => gallery.Feature<IGalleryVote>().SetVote(item, is_vote));
-                return (true,default);
+                return (true, default);
             }
             catch (Exception e)
             {
                 Log.Error($"Vote {(is_vote ? "up" : "down")} {gallery.GalleryName} item {item.GalleryItemID} failed:{e.Message}");
-                return (false,e.Message);
+                return (false, e.Message);
             }
         }
 
@@ -33,7 +33,7 @@ namespace Wbooru.Kernel.ManagerImpl
         {
             try
             {
-                return (await Task.Run(() => gallery.Feature<IGalleryVote>()?.IsVoted(item))??false, default);
+                return (await Task.Run(() => gallery.Feature<IGalleryVote>()?.IsVoted(item)) ?? false, default);
             }
             catch (Exception e)
             {
