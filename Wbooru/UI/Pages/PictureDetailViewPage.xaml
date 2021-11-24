@@ -1,4 +1,4 @@
-﻿<Page
+﻿<local:DetailImagePageBase
     x:Class="Wbooru.UI.Pages.PictureDetailViewPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,7 +8,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:valueconverters="clr-namespace:Wbooru.UI.ValueConverters"
-    x:Name="ViewPage"
     Title="PictureDetailViewPage"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -29,9 +28,9 @@
 
     <Grid Name="MainGrid" SizeChanged="ViewPage_SizeChanged">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
-            <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
-            <ColumnDefinition Width="{Binding ActualWidth, ElementName=ViewPage}" />
+            <ColumnDefinition Width="{Binding ActualWidth}" />
+            <ColumnDefinition Width="{Binding ActualWidth}" />
+            <ColumnDefinition Width="{Binding ActualWidth}" />
         </Grid.ColumnDefinitions>
 
         <Grid
@@ -251,7 +250,7 @@
                         Stroke="White"
                         StrokeThickness="2"
                         X1="0"
-                        X2="{Binding ActualWidth, ElementName=ViewPage}" />
+                        X2="{Binding ActualWidth}" />
                     <Grid Name="DetailContentGrid">
 
                     </Grid>
@@ -269,7 +268,7 @@
                         Stroke="White"
                         StrokeThickness="2"
                         X1="0"
-                        X2="{Binding ActualWidth, ElementName=ViewPage}" />
+                        X2="{Binding ActualWidth}" />
 
                     <ItemsControl
                         Name="DownloadList"
@@ -378,4 +377,4 @@
             </ScrollViewer>
         </Grid>
     </Grid>
-</Page>
+</local:DetailImagePageBase>

@@ -8,7 +8,7 @@ namespace Wbooru.Utils
 {
     public static class MathEx
     {
-        private static Random rand=new System.Random();
+        private static Random rand=new Random();
 
         public static T Max<T>(T a,T b) where T : IComparable
         {

@@ -32,7 +32,7 @@ namespace Wbooru.UI.Pages
     /// <summary>
     /// PictureDetailViewPage.xaml 的交互逻辑
     /// </summary>
-    public partial class PictureDetailViewPage : Page, INavigatableAction
+    public partial class PictureDetailViewPage : DetailImagePageBase, INavigatableAction
     {
         public Gallery Gallery
         {
@@ -300,7 +300,7 @@ namespace Wbooru.UI.Pages
             }
         }
 
-        public async void ApplyItem(Gallery gallery, GalleryItem item)
+        public async override void ApplyItem(Gallery gallery, GalleryItem item)
         {
             using var _ = LoadingStatus.BeginBusy("正在读取图片详细信息....");
 
@@ -373,7 +373,7 @@ namespace Wbooru.UI.Pages
             if (!(((FrameworkElement)sender).DataContext is DownloadableImageLink link))
                 return;
 
-            Process.Start(link.DownloadLink);
+            Process.Start(new ProcessStartInfo(link.DownloadLink) { UseShellExecute = true });
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -557,7 +557,7 @@ namespace Wbooru.UI.Pages
                     break;
             }
 
-            margin_left *= -ViewPage.ActualWidth;
+            margin_left *= -ActualWidth;
 
             return new Thickness(margin_left, 0, 0, 0);
         }

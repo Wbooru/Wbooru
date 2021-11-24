@@ -251,7 +251,7 @@ namespace Wbooru.UI.Pages
 
         private void GridViewer_ClickItemEvent(GalleryItem item)
         {
-            var page = new PictureDetailViewPage();
+            var page = CurrentGallery.Feature<ICustomDetailImagePage>()?.GenerateDetailImagePageObject() is DetailImagePageBase customDetailPage ? customDetailPage : new PictureDetailViewPage();
             NavigationHelper.NavigationPush(page);
             page.ApplyItem(CurrentGallery, item);
         }
@@ -492,7 +492,7 @@ namespace Wbooru.UI.Pages
                     .Select(x => x.GalleryItem)
                     .Where(x => x != null)
                     .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)));
-                    //.ToArray();
+                //.ToArray();
 
                 return l;
             }

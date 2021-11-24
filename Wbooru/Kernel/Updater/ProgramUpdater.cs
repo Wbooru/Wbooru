@@ -211,7 +211,10 @@ namespace Wbooru.Kernel.Updater
             if (execute_successfully)
             {
                 if (!string.IsNullOrWhiteSpace(readme_url))
-                    Process.Start(readme_url);
+                    Process.Start(new ProcessStartInfo(readme_url)
+                    {
+                        UseShellExecute = true
+                    });
 
                 MessageBox.Show("更新成功!");
             }

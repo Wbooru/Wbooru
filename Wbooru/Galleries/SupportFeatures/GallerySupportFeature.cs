@@ -19,6 +19,7 @@ namespace Wbooru.Galleries.SupportFeatures
         TagMetaSearch = 2 << 5,
         ImageSearch = 2 << 6,
         ImageFastSkipable = 2 << 7,
-        NSFWFilter = 2 << 8
+        NSFWFilter = 2 << 8,
+        CustomDetailImagePage = 2 << 9,
     }
 }
