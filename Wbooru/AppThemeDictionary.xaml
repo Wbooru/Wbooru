@@ -236,4 +236,12 @@
         <Setter Property="Background" Value="#FF23283C" />
         <Setter Property="BorderBrush" Value="White" />
     </Style>
+
+    <Style TargetType="{x:Type TextBlock}" x:Key="ClickableTextBlock">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
