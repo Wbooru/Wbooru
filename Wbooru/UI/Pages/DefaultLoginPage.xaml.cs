@@ -59,17 +59,7 @@ namespace Wbooru.UI.Pages
 
             using var status = LoadingStatus.BeginBusy("正在登录...");
 
-            await Task.Run(() =>
-            {
-                try
-                {
-                    feature.AccountLogin(AccountInfo);
-                }
-                catch (Exception e)
-                {
-                    Toast.ShowMessage($"登录失败!原因:{e.Message}");
-                }
-            });
+            await feature.AccountLoginAsync(AccountInfo);
 
             IsLoginRequesting = false;
 

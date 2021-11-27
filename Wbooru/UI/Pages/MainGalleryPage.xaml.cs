@@ -185,7 +185,7 @@ namespace Wbooru.UI.Pages
 
                 try
                 {
-                    await Task.Run(() => login.AccountLogin(account_info));
+                    await Task.Run(() => login.AccountLoginAsync(account_info));
 
                     Log.Info($"Auto login gallery {gallery.GalleryName} -> {login.IsLoggined}");
                 }
@@ -371,11 +371,14 @@ namespace Wbooru.UI.Pages
             {
                 AccountButton.BusyStatusDescription = "正在登出中...";
 
-                await Task.Run(() => feature.AccountLogout());
+                await feature.AccountLogoutAsync();
 
                 UpdateAccountButtonText();
                 AccountInfoDataContainer.Instance.CleanAccountInfo(CurrentGallery);
-                Toast.ShowMessage("登出成功");
+                if (!feature.IsLoggined)
+                    Toast.ShowMessage("登出成功");
+                else
+                    Toast.ShowMessage("登出失败");
                 CloseLeftPanel();
             }
             else
