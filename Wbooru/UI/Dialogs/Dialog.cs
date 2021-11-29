@@ -13,6 +13,11 @@ using Wbooru.Utils;
 
 namespace Wbooru.UI.Dialogs
 {
+    public static class Dialog<T> where T : DialogContentBase, new()
+    {
+        public static Task ShowDialog() => Dialog.ShowDialog<T>();
+    }
+
     public static class Dialog
     {
         private static Dictionary<DialogContentHost, Task> await_tokens = new Dictionary<DialogContentHost, Task>();

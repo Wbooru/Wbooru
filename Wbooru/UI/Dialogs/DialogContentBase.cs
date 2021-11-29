@@ -35,9 +35,6 @@ namespace Wbooru.UI.Dialogs
         public static readonly DependencyProperty DialogTitleProperty =
             DependencyProperty.Register("DialogTitle", typeof(string), typeof(DialogContentBase), new PropertyMetadata(null));
 
-        static DialogContentBase()
-        {
-
-        }
+        public void CloseDialog() => Dialog.CloseDialog(this);
     }
 }
