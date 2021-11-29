@@ -36,6 +36,7 @@ namespace Wbooru.Settings
             });
 
             Log.Info($"Saved gallery {gallery.GalleryName} account info {info.GetType().Name}");
+            Setting.ForceSave();
         }
 
         TripleDESCryptoServiceProvider symm = new TripleDESCryptoServiceProvider()
