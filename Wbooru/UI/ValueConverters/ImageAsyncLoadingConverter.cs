@@ -32,6 +32,10 @@ namespace Wbooru.UI.ValueConverters
             {
                 return new AsyncImageWrapper(param.ImageUrl, param.PreviewImageDownloadUrl);
             }
+            else if (value is string url)
+            {
+                return new AsyncImageWrapper(url, url);
+            }
 
             return null;
         }
