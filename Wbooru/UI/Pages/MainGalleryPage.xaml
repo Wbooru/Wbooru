@@ -110,7 +110,6 @@
                         Name="CloseLeftPanelButton"
                         Grid.Column="1"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                        BorderBrush="Transparent"
                         Click="CloseLeftPanelButton_Click"
                         FontFamily="Segoe UI Symbol"
                         FontSize="20">
@@ -194,7 +193,6 @@
                     <Button
                         Name="CloseButton"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                        BorderBrush="Transparent"
                         Click="CloseButton_Click"
                         FontFamily="Segoe UI Symbol"
                         FontSize="20"
@@ -204,7 +202,6 @@
                     <Button
                         Name="MenuButton"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                        BorderBrush="Transparent"
                         Click="MenuButton_Click"
                         FontFamily="Segoe UI Symbol"
                         FontSize="20"

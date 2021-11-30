@@ -164,6 +164,7 @@
                         BusyStatusDescription="正在获取图片信息..."
                         Button.Click="MarkButton_Click"
                         Icon=""
+                        OverridesDefaultStyle="True"
                         Text="收藏">
                         <controls:MenuButton.Style>
                             <Style TargetType="controls:MenuButton">
@@ -187,6 +188,7 @@
                         BusyStatusDescription="正在获取图片信息..."
                         Button.Click="VoteButton_Click"
                         Icon=""
+                        OverridesDefaultStyle="True"
                         Text="点赞"
                         Visibility="{Binding Gallery, Converter={StaticResource VisiableIfFeatureSupportConverter}, ConverterParameter=Vote}">
                         <controls:MenuButton.Style>
