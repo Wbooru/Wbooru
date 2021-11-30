@@ -78,6 +78,15 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
+            <Grid.Resources>
+                <ResourceDictionary>
+                    <Style TargetType="controls:MenuButton">
+                        <Setter Property="Height" Value="35">
+                        </Setter>
+                    </Style>
+                </ResourceDictionary>
+            </Grid.Resources>
+
 
             <StackPanel x:Name="MainMenu">
                 <Grid Height="{Binding Source={StaticResource BoardHeaderHeight}}">
