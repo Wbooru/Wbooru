@@ -271,6 +271,7 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
+                    d:Visibility="Visible"
                     Background="Transparent"
                     Click="PageJumpLabel_Click"
                     FontFamily="Segoe UI Symbol"

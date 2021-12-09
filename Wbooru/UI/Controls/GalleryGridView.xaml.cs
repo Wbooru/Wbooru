@@ -135,8 +135,7 @@ namespace Wbooru.UI.Controls
         private void ListScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             var height = (sender as ScrollViewer).ScrollableHeight;
-            var at_end = e.VerticalOffset
-                                    >= height;
+            var at_end = e.VerticalOffset >= height;
 
             if (at_end)
                 TryRequestMoreItemFromLoadableSource();

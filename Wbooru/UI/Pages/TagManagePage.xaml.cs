@@ -125,7 +125,7 @@ namespace Wbooru.UI.Pages
             var tags = MarkedTagList.ItemContainerGenerator.Items
                 .Select(x => MarkedTagList.ItemContainerGenerator.ContainerFromItem(x))
                 .OfType<FrameworkElement>()
-                .Select(x => ViusalTreeHelperEx.FindName("SelectCheckBox", x))
+                .Select(x => VisualTreeHelperEx.FindName("SelectCheckBox", x))
                 .OfType<CheckBox>()
                 .Where(x => x.IsChecked ?? false)
                 .Select(x => x.DataContext)

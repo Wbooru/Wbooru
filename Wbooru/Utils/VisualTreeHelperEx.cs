@@ -8,19 +8,19 @@ using System.Windows.Media;
 
 namespace Wbooru.Utils
 {
-    public static class ViusalTreeHelperEx
+    public static class VisualTreeHelperEx
     {
         public static FrameworkElement FindName(string name, FrameworkElement root) => Find(x => x.Name == name, root);
 
-        public static IEnumerable<T> GetAllRecursively<T>(DependencyObject obj) where T: DependencyObject
+        public static IEnumerable<T> GetAllRecursively<T>(DependencyObject obj) where T : DependencyObject
         {
             if (obj is T t)
                 yield return t;
-            foreach (var i in LogicalTreeHelper.GetChildren(obj).OfType<DependencyObject>().Select(x => GetAllRecursively<T>(x)).SelectMany(x => x))
+            foreach (var i in Enumerable.Range(0, VisualTreeHelper.GetChildrenCount(obj)).Select(x => VisualTreeHelper.GetChild(obj, x)).OfType<DependencyObject>().Select(x => GetAllRecursively<T>(x)).SelectMany(x => x))
                 yield return i;
         }
 
-        public static FrameworkElement Find(Func<FrameworkElement,bool> check, FrameworkElement root)
+        public static FrameworkElement Find(Func<FrameworkElement, bool> check, FrameworkElement root)
         {
             Stack<FrameworkElement> tree = ObjectPool<Stack<FrameworkElement>>.Get();
             tree.Clear();
