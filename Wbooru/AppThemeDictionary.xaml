@@ -27,6 +27,7 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderBrush" Value="FloralWhite" />
                 <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Cursor" Value="Hand" />
             </Trigger>
         </Style.Triggers>
     </Style>
