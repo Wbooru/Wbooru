@@ -15,6 +15,7 @@ using System.Threading;
 using System.IO;
 using Wbooru.Utils;
 using Wbooru.Kernel.DI;
+using System.Net;
 
 namespace Wbooru.Network
 {
@@ -30,9 +31,9 @@ namespace Wbooru.Network
         private List<Task<Image>> tasks_waiting_queue = new List<Task<Image>>();
         private HashSet<Task<Image>> tasks_running_queue = new HashSet<Task<Image>>();
 
-        public Task<Image> DownloadImageAsync(string download_path, CancellationToken cancel_token = default, Action<(long downloaded_bytes, long content_bytes)> reporter = null, bool front_insert = false)
+        public Task<Image> DownloadImageAsync(string download_path, CancellationToken cancel_token = default, Action<(long downloaded_bytes, long content_bytes)> reporter = null, Action<HttpWebRequest> customReqFunc = default, bool front_insert = false)
         {
-            Task<Image> task = new Task<Image>(OnDownloadTaskStart, (download_path, reporter, cancel_token), cancel_token);
+            Task<Image> task = new Task<Image>(OnDownloadTaskStart, (download_path, reporter, cancel_token, customReqFunc), cancel_token);
 
             lock (tasks_waiting_queue)
             {
@@ -84,13 +85,13 @@ namespace Wbooru.Network
         {
             try
             {
-                (string download_path, Action<(long downloaded_bytes, long content_bytes)> reporter, CancellationToken cancelToken) = (ValueTuple<string, Action<(long, long)>, CancellationToken>)state;
+                (string download_path, Action<(long downloaded_bytes, long content_bytes)> reporter, CancellationToken cancelToken, Action<HttpWebRequest> customReqFunc) = (ValueTuple<string, Action<(long, long)>, CancellationToken, Action<HttpWebRequest>>)state;
                 if (cancelToken.IsCancellationRequested)
                     return default;
 
                 Log<ImageFetchDownloadScheduler>.Info($"Start download image:{download_path}");
 
-                var response = RequestHelper.CreateDeafultAsync(download_path).ConfigureAwait(false).GetAwaiter().GetResult();
+                var response = RequestHelper.CreateDeafultAsync(download_path,customReqFunc).ConfigureAwait(false).GetAwaiter().GetResult();
 
                 var content_length = response.ContentLength;
 
