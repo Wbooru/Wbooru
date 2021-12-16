@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -12,17 +13,17 @@ using Wbooru.Utils.Resource;
 
 namespace Wbooru.Utils
 {
-    public class AsyncImageWrapper : DependencyObject
+    public class AsyncImageWrapper : INotifyPropertyChanged
     {
 #if DEBUG
         string name;
         string download_link;
 #endif
 
-        public AsyncImageWrapper(string name,string dl) :this(async () =>
-        {
-            return (await ImageResourceManager.RequestImageAsync(name, dl,false))?.ConvertToBitmapImage();
-        })
+        public AsyncImageWrapper(string name, string dl) : this(async () =>
+          {
+              return (await ImageResourceManager.RequestImageAsync(name, dl, false))?.ConvertToBitmapImage();
+          })
         {
 #if DEBUG
             this.name = name;
@@ -44,13 +45,17 @@ namespace Wbooru.Utils
             });
         }
 
+        public BitmapImage asyncValue;
         public BitmapImage AsyncValue
         {
-            get { return (BitmapImage)GetValue(AsyncValueProperty); }
-            set { SetValue(AsyncValueProperty, value); }
+            get { return asyncValue; }
+            set
+            {
+                asyncValue = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AsyncValue)));
+            }
         }
 
-        public static readonly DependencyProperty AsyncValueProperty =
-            DependencyProperty.Register("AsyncValue", typeof(BitmapImage), typeof(AsyncImageWrapper), new PropertyMetadata(default(BitmapImage)));
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

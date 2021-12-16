@@ -175,7 +175,7 @@ namespace Wbooru.UI.Controls
             {
                 try
                 {
-                    var l = FilterTag(source.Skip(current_index), counter, gallery).Where(x=> 
+                    var l = FilterTag(source.Skip(current_index), counter, gallery).Where(x =>
                     {
                         if (unique_items.Contains(x.GalleryItemID))
                             return false;
@@ -217,7 +217,7 @@ namespace Wbooru.UI.Controls
             public int Count { get; set; } = 0;
         }
 
-        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery=null)
+        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery = null)
         {
             var option = Setting<GlobalSetting>.Current;
             IEnumerable<Gallery> galleries = gallery == null ? Container.GetAll<Gallery>() : new[] { gallery };
@@ -334,7 +334,7 @@ namespace Wbooru.UI.Controls
             else
             {
                 Log.Info($"Use IGalleryItemIteratorFastSkipable.IteratorSkip() to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
-               
+
                 //这里不会根据因刷新而开头会有不同的变化
                 var list = feature.IteratorSkip(page * Setting<GlobalSetting>.Current.GetPictureCountPerLoad).MakeMultiThreadable();
                 LoadableSource = new Func<IEnumerable<GalleryItem>>(() => list);
@@ -395,7 +395,7 @@ namespace Wbooru.UI.Controls
             var dl = detial.PickSuitableImageURL(Setting<GlobalSetting>.Current.SelectPreferViewQualityTarget);
 
             Toast.ShowMessage("开始加载图片...");
-            using var image = await ImageResourceManager.RequestImageAsync(dl.FullFileName, dl.DownloadLink, true, default, copyTask.Token);
+            using var image = await ImageResourceManager.RequestImageAsync(dl.FullFileName, dl.DownloadLink, true, default, default, copyTask.Token);
             if (copyTask.Token.IsCancellationRequested)
                 return;
 

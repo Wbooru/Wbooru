@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.Caching;
 using System.Security.Cryptography;
 using System.Security.Policy;
@@ -44,18 +45,18 @@ namespace Wbooru.Utils.Resource
             }
         }
 
-        public static async Task<Image> RequestImageAsync(string resource_name,string url,bool load_first, Action<(long downloaded_bytes, long content_bytes)> reporter = default,CancellationToken cancellationToken = default)
+        public static async Task<Image> RequestImageAsync(string resource_name, string url, bool load_first, Action<(long downloaded_bytes, long content_bytes)> reporter = default, Action<HttpWebRequest> customReqFunc = default, CancellationToken cancellationToken = default)
         {
             const int retry = 3;
 
             for (int i = 0; i < retry; i++)
-                if(await RequestImageAsync(resource_name, async () =>await Container.Get<ImageFetchDownloadScheduler>().DownloadImageAsync(url, cancellationToken, reporter, load_first)) is Image image)
+                if (await RequestImageAsync(resource_name, async () => await Container.Get<ImageFetchDownloadScheduler>().DownloadImageAsync(url, cancellationToken, reporter, customReqFunc, load_first)) is Image image)
                     return image;
 
             return default;
         }
 
-        public static async Task<Image> RequestImageAsync(string resource_name,Func<Task<Image>> manual_request)
+        public static async Task<Image> RequestImageAsync(string resource_name, Func<Task<Image>> manual_request)
         {
             var hash = resource_name.CalculateMD5();
             Log.Debug($"Convert Hash:{resource_name} -> {hash}");
@@ -130,7 +131,7 @@ namespace Wbooru.Utils.Resource
 
         private static void CacheImageResourceAsFile(string resource_name, Image obj)
         {
-            if (!option.EnableFileCache || temporary_folder_path==null)
+            if (!option.EnableFileCache || temporary_folder_path == null)
                 return;
 
 
