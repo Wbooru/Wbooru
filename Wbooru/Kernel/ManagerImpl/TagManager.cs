@@ -95,7 +95,7 @@ namespace Wbooru.Kernel.ManagerImpl
             TagRecordType.Subscribed => SubscribedTags,
             TagRecordType.Marked => MarkedTags,
             _ => throw new Exception("咕咕")
-        }).Any(x => x.Tag.Name.Equals(tag_name, StringComparison.InvariantCultureIgnoreCase) && gallery_name == x.FromGallery));
+        }).Any(x => x.Tag.Name.Equals(tag_name, StringComparison.InvariantCultureIgnoreCase) && (gallery_name == null || gallery_name == x.FromGallery)));
 
         public async Task AddTag(Tag tag, string gallery_name, TagRecordType record_type)
         {
@@ -138,6 +138,9 @@ namespace Wbooru.Kernel.ManagerImpl
 
         public async Task RemoveTag(TagRecord record)
         {
+            if (record is null)
+                return;
+
             var list = record.RecordType.HasFlag(TagRecordType.Filter) ? FiltedTags : MarkedTags;
 
             var tag = await LocalDBContext.PostDbAction(ctx =>
