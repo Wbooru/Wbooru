@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Wbooru.Kernel.DI;
 using Wbooru.PluginExt;
 
 namespace Wbooru.Utils
@@ -12,27 +14,18 @@ namespace Wbooru.Utils
     {
         public abstract int CachingObjectCount { get; }
         public static int MaxTempCache { get; set; } = 10;
-        public static TimeSpan ReduceTime { get; set; } = TimeSpan.FromMinutes(2);
 
-        private DateTime last_schedule=DateTime.Now;
-        
         internal void OnPreReduceSchedule()
         {
-            var now = DateTime.Now;
+            var before = CachingObjectCount;
+            OnReduceObjects();
+            var after = CachingObjectCount;
 
-            if (now - last_schedule>ReduceTime)
-            {
-                var before = CachingObjectCount;
-                OnReduceObjects();
-                var after = CachingObjectCount;
+            var diff = after - before;
 
-                var diff = after - before;
+            if (diff < 0)
+                Log.Debug($"Reduced {diff} {GetType().GenericTypeArguments?.FirstOrDefault()?.Name ?? "unknown type"} objects");
 
-                if (diff < 0)
-                    Log.Debug($"Reduced {diff} {this.GetType().GenericTypeArguments?.FirstOrDefault()?.Name??"unknown type"} objects");
-            }
-
-            last_schedule = now;
         }
 
         protected abstract void OnReduceObjects();
@@ -41,11 +34,11 @@ namespace Wbooru.Utils
     [Export(typeof(ISchedulable))]
     [Export(typeof(ObjectPoolManager))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class ObjectPoolManager : ISchedulable
+    public class ObjectPoolManager : ISchedulable,IImplementInjectable
     {
-        public bool IsAsyncSchedule => false;
-
         public string SchedulerName => "Object Pool Maintenance Scheduler";
+
+        public TimeSpan ScheduleCallLoopInterval { get; } = TimeSpan.FromSeconds(10);
 
         HashSet<ObjectPoolBase> object_pools = new HashSet<ObjectPoolBase>();
 
@@ -58,19 +51,21 @@ namespace Wbooru.Utils
             Log.Debug($"Register new object pool :{pool.GetType().Name}");
         }
 
-        public void OnScheduleCall()
-        {
-            foreach (var pool in object_pools)
-                pool.OnPreReduceSchedule();
-        }
-
         public void OnSchedulerTerm()
         {
 
         }
+
+        public Task OnScheduleCall(CancellationToken cancellationToken)
+        {
+            foreach (var pool in object_pools)
+                pool.OnPreReduceSchedule();
+
+            return Task.CompletedTask;
+        }
     }
 
-    public class ObjectPool<T> : ObjectPoolBase where T: new()
+    public class ObjectPool<T> : ObjectPoolBase where T : new()
     {
         #region AutoImpl
 
@@ -79,10 +74,10 @@ namespace Wbooru.Utils
         {
             get
             {
-                if (instance==null)
+                if (instance == null)
                 {
                     instance = new ObjectPool<T>();
-                    Container.Default.GetExportedValue<ObjectPoolManager>().RegisterNewObjectPool(instance);
+                    Container.Get<ObjectPoolManager>().RegisterNewObjectPool(instance);
                 }
 
                 return instance;
@@ -91,7 +86,7 @@ namespace Wbooru.Utils
 
         #endregion
 
-        private HashSet<T> cache_obj=new HashSet<T>();
+        private HashSet<T> cache_obj = new HashSet<T>();
 
         public static bool EnableTrim { get; set; } = true;
 
@@ -102,8 +97,8 @@ namespace Wbooru.Utils
             if (!EnableTrim)
                 return;
 
-            var count = CachingObjectCount > MaxTempCache ? 
-                (MaxTempCache + ((CachingObjectCount - MaxTempCache) / 2)) : 
+            var count = CachingObjectCount > MaxTempCache ?
+                (MaxTempCache + ((CachingObjectCount - MaxTempCache) / 2)) :
                 CachingObjectCount / 4; ;
 
             for (int i = 0; i < count / 2; i++)
@@ -124,7 +119,7 @@ namespace Wbooru.Utils
             }
         }
 
-        public static IDisposable GetWithUsingDisposable(out T obj,out bool isNewObject)
+        public static IDisposable GetWithUsingDisposable(out T obj, out bool isNewObject)
         {
             isNewObject = Get(out obj);
             return new AutoDisposable(obj);

@@ -27,7 +27,7 @@ namespace Wbooru.Persistence
 
             PreApplyDBFileIfNotExist();
 
-            var db_file_path = Path.GetFullPath(SettingManager.LoadSetting<GlobalSetting>().DBFilePath);
+            var db_file_path = Path.GetFullPath(Setting<GlobalSetting>.Current.DBFilePath);
 
 #if DEBUG
             db_file_path = File.Exists(db_file_path) ? db_file_path : @"F:\Wbooru\data.db";
@@ -47,7 +47,7 @@ namespace Wbooru.Persistence
 
         private static void PreApplyDBFileIfNotExist()
         {
-            var path = Path.GetFullPath(SettingManager.LoadSetting<GlobalSetting>().DBFilePath);
+            var path = Path.GetFullPath(Setting<GlobalSetting>.Current.DBFilePath);
 
             if (File.Exists(path))
                 return;

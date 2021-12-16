@@ -65,8 +65,8 @@ namespace Wbooru.UI.Pages
         {
             InitializeComponent();
 
-            SupportSettingWrappers = Container.Default.GetExports<SettingBase>()
-                .Select(x => SettingManager.LoadSetting(x.Value.GetType()))
+            SupportSettingWrappers = Container.GetAll<SettingBase>()
+                .Select(x => SettingManager.LoadSetting(x.GetType()))
                 .OfType<SettingBase>()
                 .GroupBy(x => x.GetType().Assembly)
                 .Select(x => new GroupedSupportSettingWrapper() {
@@ -331,7 +331,7 @@ namespace Wbooru.UI.Pages
 
             Log.Debug($"record_hash=({record_hash.Count}) , there are {changed_records.Count()} props had been changed.");
 
-            if (changed_records.Any() && !SettingManager.LoadSetting<GlobalSetting>().IgnoreSettingChangedComfirm)
+            if (changed_records.Any() && !Setting<GlobalSetting>.Current.IgnoreSettingChangedComfirm)
                 await Dialog.ShowDialog<SettingRestartComfirmDialog>();
         }
 

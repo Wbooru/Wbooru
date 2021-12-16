@@ -1,28 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Wbooru.Galleries;
-using Wbooru.Galleries.SupportFeatures;
 using Wbooru.Kernel;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
@@ -43,7 +32,7 @@ namespace Wbooru.UI.Pages
     /// <summary>
     /// PictureDetailViewPage.xaml 的交互逻辑
     /// </summary>
-    public partial class PictureDetailViewPage : Page, INavigatableAction
+    public partial class PictureDetailViewPage : DetailImagePageBase, INavigatableAction
     {
         public Gallery Gallery
         {
@@ -117,7 +106,7 @@ namespace Wbooru.UI.Pages
 
         private void SetupExtraUI()
         {
-            foreach (var control in Container.Default.GetExportedValues<IExtraDetailImageMenuItem>().Select(x => x.Create()))
+            foreach (var control in Container.GetAll<IExtraDetailImageMenuItem>().Select(x => x.Create()))
                 DetailImageBox.ContextMenu.Items.Add(control);
         }
 
@@ -128,7 +117,7 @@ namespace Wbooru.UI.Pages
 
             DisplayDetailInfo(galleryImageDetail);
 
-            var pick_download = galleryImageDetail.PickSuitableImageURL(SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget);
+            var pick_download = galleryImageDetail.PickSuitableImageURL(Setting<GlobalSetting>.Current.SelectPreferViewQualityTarget);
 
             if (pick_download == null)
             {
@@ -281,7 +270,7 @@ namespace Wbooru.UI.Pages
 
         private DownloadableImageLink PickSuitableImageURL(IEnumerable<DownloadableImageLink> downloadableImageLinks)
         {
-            var prefer_target = SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget;
+            var prefer_target = Setting<GlobalSetting>.Current.SelectPreferViewQualityTarget;
 
             var target_list = downloadableImageLinks.OrderByDescending(x => x, DownloadableImageLinkComparer.Instance).ToArray();
 
@@ -311,13 +300,13 @@ namespace Wbooru.UI.Pages
             }
         }
 
-        public async void ApplyItem(Gallery gallery, GalleryItem item)
+        public async override void ApplyItem(Gallery gallery, GalleryItem item)
         {
             using var _ = LoadingStatus.BeginBusy("正在读取图片详细信息....");
 
             PictureInfo = item;
 
-            Gallery = gallery ?? Container.Default.GetExportedValues<Gallery>().FirstOrDefault(x => x.GalleryName == item.GalleryName);
+            Gallery = gallery ?? Container.GetAll<Gallery>().FirstOrDefault(x => x.GalleryName == item.GalleryName);
 
             Log<PictureDetailViewPage>.Info($"Apply {gallery}/{item}");
 
@@ -325,7 +314,7 @@ namespace Wbooru.UI.Pages
 
             var detail = await Task.Run(() => gallery.GetImageDetial(item));
 
-            if (SettingManager.LoadSetting<GlobalSetting>().TryGetVaildDownloadFileSize)
+            if (Setting<GlobalSetting>.Current.TryGetVaildDownloadFileSize)
                 foreach (var i in detail.DownloadableImageLinks.Where(x => x.FileLength <= 0))
                     i.FileLength = await TryGetVaildDownloadFileSize(i.DownloadLink);
 
@@ -339,7 +328,7 @@ namespace Wbooru.UI.Pages
 
                 var tags = PictureDetailInfo.Tags.ToArray();
 
-                var dir = await TagManager.SearchTagMeta(gallery, item.GalleryItemID, tags);
+                var dir = await Container.Get<ITagManager>().SearchTagMeta(gallery, item.GalleryItemID, tags);
 
                 foreach (var tag in PictureDetailInfo.Tags.Select(x => dir.TryGetValue(x, out var t) ? t : new Tag() { Name = x, Type = TagType.Unknown }))
                     Tags.Add(tag);
@@ -349,9 +338,9 @@ namespace Wbooru.UI.Pages
                 Log.Error(e.Message);
             }
 
-            var is_mark = await LocalDBContext.PostDbAction(DB =>
+            await LocalDBContext.PostDbAction(ctx =>
             {
-                var visit_entity = DB.VisitRecords.AsQueryable().Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
+                var visit_entity = ctx.VisitRecords.Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
 
                 if (visit_entity == null)
                 {
@@ -361,19 +350,18 @@ namespace Wbooru.UI.Pages
                         LastVisitTime = DateTime.Now
                     };
 
-                    DB.VisitRecords.Add(visit);
+                    ctx.VisitRecords.Add(visit);
                 }
                 else
                 {
                     visit_entity.LastVisitTime = DateTime.Now;
                 }
 
-                DB.SaveChanges();
-
-                return !(DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == item.GalleryItemID) is null);
+                ctx.SaveChanges();
             });
 
-            var (is_vote, _) = await VoteManager.GetVote(Gallery, PictureInfo);
+            var is_mark = await Container.Get<IMarkManager>().GetMark(Gallery, PictureInfo);
+            var (is_vote, _) = await Container.Get<IVoteManager>().GetVote(Gallery, PictureInfo);
 
             IsMark = is_mark;
             IsVoted = is_vote;
@@ -385,7 +373,7 @@ namespace Wbooru.UI.Pages
             if (!(((FrameworkElement)sender).DataContext is DownloadableImageLink link))
                 return;
 
-            Process.Start(link.DownloadLink);
+            Process.Start(new ProcessStartInfo(link.DownloadLink) { UseShellExecute = true });
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -405,34 +393,10 @@ namespace Wbooru.UI.Pages
 
             MarkButton.IsBusy = true;
 
-            var is_mark = IsMark;
-            var gallery = Gallery;
-            var info = PictureInfo;
+            var reverse_mark = !IsMark;
+            await Container.Get<IMarkManager>().SetMark(Gallery, PictureInfo, reverse_mark);
 
-            await LocalDBContext.PostDbAction(async DB =>
-            {
-                if (!is_mark)
-                {
-                    await DB.ItemMarks.AddAsync(new GalleryItemMark()
-                    {
-                        GalleryItem = info,
-                        Time = DateTime.Now
-                    });
-
-                    is_mark = true;
-                }
-                else
-                {
-                    var x = DB.ItemMarks.FirstOrDefault(x => x.GalleryItem.GalleryName == gallery.GalleryName && x.GalleryItem.GalleryItemID == info.GalleryItemID);
-                    DB.ItemMarks.Remove(x);
-                    is_mark = false;
-                }
-
-                await DB.SaveChangesAsync();
-                return Task.CompletedTask;
-            });
-
-            IsMark = is_mark;
+            IsMark = reverse_mark;
             MarkButton.IsBusy = false;
 
             Log<PictureDetailViewPage>.Debug($"Now IsMark={IsMark}");
@@ -447,7 +411,7 @@ namespace Wbooru.UI.Pages
 
             var new_vote = !IsVoted;
 
-            var (success, message) = await VoteManager.SetVote(Gallery, PictureInfo, new_vote);
+            var (success, message) = await Container.Get<IVoteManager>().SetVote(Gallery, PictureInfo, new_vote);
 
             if (success)
             {
@@ -458,7 +422,7 @@ namespace Wbooru.UI.Pages
                 Toast.ShowMessage($"投票失败,{message}");
         }
 
-        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        private async void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
             var download_link = (sender as FrameworkElement).DataContext as DownloadableImageLink;
 
@@ -466,7 +430,7 @@ namespace Wbooru.UI.Pages
                 $"{FileNameHelper.GetFileNameWithoutExtName(PictureDetailInfo)}{System.IO.Path.GetExtension(download_link.DownloadLink)}"
                 : FileNameHelper.FilterFileName(download_link.FullFileName);
 
-            var config = SettingManager.LoadSetting<GlobalSetting>();
+            var config = Setting<GlobalSetting>.Current;
 
             var full_file_path = System.IO.Path.Combine(config.DownloadPath, config.SeparateGallerySubDirectories ? Gallery.GalleryName : "", file_name);
 
@@ -487,7 +451,7 @@ namespace Wbooru.UI.Pages
                 }
             };
 
-            if (DownloadManager.CheckIfContained(download_task))
+            if (await Container.Get<IDownloadManager>().CheckIfContained(download_task))
             {
                 //jump to download page if download task is exist.
 
@@ -498,38 +462,38 @@ namespace Wbooru.UI.Pages
                 return;
             }
 
-            DownloadManager.DownloadStart(download_task);
+            await Container.Get<IDownloadManager>().DownloadStart(download_task);
             Toast.ShowMessage("开始下载图片...");
         }
 
-        private void AddTagCollectionButton_Click(object sender, RoutedEventArgs e)
+        private async void AddTagCollectionButton_Click(object sender, RoutedEventArgs e)
         {
             if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            if (TagManager.Contain(tag.Name, Gallery.GalleryName, TagRecordType.Marked))
+            if (await Container.Get<ITagManager>().ContainTag(tag.Name, Gallery.GalleryName, TagRecordType.Marked))
             {
                 Toast.ShowMessage($"已收藏此标签了");
                 return;
             }
 
-            TagManager.AddTag(tag, Gallery.GalleryName, TagRecordType.Marked);
+            await Container.Get<ITagManager>().AddTag(tag, Gallery.GalleryName, TagRecordType.Marked);
 
             Toast.ShowMessage($"添加成功");
         }
 
-        private void AddTagFilterButton_Click(object sender, RoutedEventArgs e)
+        private async void AddTagFilterButton_Click(object sender, RoutedEventArgs e)
         {
             if (!((sender as FrameworkElement).DataContext is Tag tag))
                 return;
 
-            if (TagManager.Contain(tag.Name, Gallery.GalleryName, TagRecordType.Filter))
+            if (await Container.Get<ITagManager>().ContainTag(tag.Name, Gallery.GalleryName, TagRecordType.Filter))
             {
                 Toast.ShowMessage($"已过滤此标签了");
                 return;
             }
 
-            TagManager.AddTag(tag, Gallery.GalleryName, TagRecordType.Filter);
+            await Container.Get<ITagManager>().AddTag(tag, Gallery.GalleryName, TagRecordType.Filter);
 
             Toast.ShowMessage($"过滤标签添加成功");
         }
@@ -593,7 +557,7 @@ namespace Wbooru.UI.Pages
                     break;
             }
 
-            margin_left *= -ViewPage.ActualWidth;
+            margin_left *= -ActualWidth;
 
             return new Thickness(margin_left, 0, 0, 0);
         }

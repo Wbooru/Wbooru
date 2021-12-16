@@ -13,6 +13,9 @@
 [submodule "Plugins/WbooruPlugin.CommonMoebooruGallery"]
 	path = Plugins/WbooruPlugin.CommonMoebooruGallery
 	url = https://github.com/Wbooru/WbooruPlugin.CommonMoebooruGallery
+[submodule "Plugins/WbooruPlugin.EHentai"]
+	path = Plugins/WbooruPlugin.EHentai
+	url = https://github.com/Wbooru/WbooruPlugin.EHentai
 [submodule "Plugins/WbooruPlugin.WindowsStyleCustomizer"]
 	path = Plugins/WbooruPlugin.WindowsStyleCustomizer
 	url = https://github.com/Wbooru/WbooruPlugin.WindowsStyleCustomizer

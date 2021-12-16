@@ -50,7 +50,7 @@ namespace Wbooru.UI.Dialogs
         {
             InitializeComponent();
 
-            Status = TagManager.StartCacheTagMeta();
+            Status = Container.Get<ITagManager>().StartCacheTagMeta();
 
             Timer = new Timer(CalculateSpeed, null, 0, 5000);
 

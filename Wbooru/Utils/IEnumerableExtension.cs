@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace Wbooru
         {
             var i = 0;
 
-            var arr = new T[wrapCount];
+            var arr = ArrayPool<T>.Shared.Rent(wrapCount);
 
             foreach (var item in collection)
             {
@@ -27,14 +28,15 @@ namespace Wbooru
 
                 if (i == wrapCount)
                 {
-                    yield return arr;
-                    arr = new T[wrapCount];
+                    yield return arr.Take(wrapCount);
                     i = 0;
                 }
             }
 
             if (i != 0)
                 yield return arr.Take(i).ToArray();
+
+            ArrayPool<T>.Shared.Return(arr);
         }
     }
 }

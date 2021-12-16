@@ -30,7 +30,7 @@ namespace Wbooru.Kernel.Updater
 
         public static bool CheckUpdatable()
         {
-            var option = SettingManager.LoadSetting<GlobalSetting>();
+            var option = Setting<GlobalSetting>.Current;
 
             try
             {
@@ -211,7 +211,10 @@ namespace Wbooru.Kernel.Updater
             if (execute_successfully)
             {
                 if (!string.IsNullOrWhiteSpace(readme_url))
-                    Process.Start(readme_url);
+                    Process.Start(new ProcessStartInfo(readme_url)
+                    {
+                        UseShellExecute = true
+                    });
 
                 MessageBox.Show("更新成功!");
             }

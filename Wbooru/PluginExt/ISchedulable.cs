@@ -1,12 +1,17 @@
-﻿namespace Wbooru.PluginExt
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Wbooru.Kernel.DI;
+
+namespace Wbooru.PluginExt
 {
-    public interface ISchedulable
+    public interface ISchedulable : IMultiImplementProvidable
     {
         string SchedulerName { get; }
 
-        bool IsAsyncSchedule { get; }
+        TimeSpan ScheduleCallLoopInterval { get; }
 
-        void OnScheduleCall();
+        Task OnScheduleCall(CancellationToken cancellationToken);
 
         void OnSchedulerTerm();
     }

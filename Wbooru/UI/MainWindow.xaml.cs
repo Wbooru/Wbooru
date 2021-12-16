@@ -24,7 +24,7 @@ namespace Wbooru.UI
 
             Dialog.Init(DialogLayer, WindowFrame);
 
-            setting = SettingManager.LoadSetting<GlobalSetting>();
+            setting = Setting<GlobalSetting>.Current;
 
             if (setting.RememberWindowSizeAndLocation)
             {
@@ -73,11 +73,12 @@ namespace Wbooru.UI
             Log.Info("Initialized MainWindow");
         }
 
-        protected override void OnClosed(EventArgs e)
+        protected override async void OnClosing(CancelEventArgs e)
         {
-            base.OnClosed(e);
-
-            App.Term();
+            base.OnClosing(e);
+            e.Cancel = true;
+            await App.Term();
+            Environment.Exit(0);
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

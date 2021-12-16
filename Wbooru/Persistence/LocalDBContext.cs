@@ -22,10 +22,6 @@ namespace Wbooru.Persistence
 {
     public class LocalDBContext : DbContext
     {
-        private static LocalDBContext _instance;
-
-        //public static LocalDBContext Instance => _instance ?? (_instance = new LocalDBContext());
-
         public LocalDBContext() : this(null, true)
         {
 
@@ -53,7 +49,7 @@ namespace Wbooru.Persistence
 
         internal static void BackupDatabase(string to)
         {
-            var from = SettingManager.LoadSetting<GlobalSetting>().DBFilePath;
+            var from = Setting<GlobalSetting>.Current.DBFilePath;
             Log.Info($"Copy sqlite db file from {from} to {to}");
 
             File.Copy(from, to, true);
@@ -485,11 +481,16 @@ namespace Wbooru.Persistence
                 currentExecuteTask = null;
             }
 
-            var task = Task.Run(() =>
+            Task<T> task = default;
+
+            task = Task.Run(() =>
             {
                 using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var context, out var _);
                 currentExecuteThread = Thread.CurrentThread;
-                return executeFunc(context);
+                var r = executeFunc(context);
+                if (currentExecuteTask == task)
+                    currentExecuteThread = default;
+                return r;
             });
 
             currentExecuteTask = task;

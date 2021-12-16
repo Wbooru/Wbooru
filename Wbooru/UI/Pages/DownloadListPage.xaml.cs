@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wbooru.Kernel;
+using Wbooru.Kernel.DI;
 using Wbooru.Models;
 using Wbooru.UI.Controls;
 
@@ -32,7 +33,7 @@ namespace Wbooru.UI.Pages
 
             MainPanel.DataContext = this;
 
-            DownloadList.ItemsSource = DownloadManager.DownloadList;
+            DownloadList.ItemsSource = Container.Get<IDownloadManager>().DownloadList;
         }
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
@@ -40,17 +41,17 @@ namespace Wbooru.UI.Pages
             NavigationHelper.NavigationPop();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if((sender as FrameworkElement).DataContext as DownloadWrapper is DownloadWrapper download_task)
             {
                 switch (download_task.Status)
                 {
                     case DownloadTaskStatus.Paused:
-                        DownloadManager.DownloadStart(download_task);
+                        await Container.Get<IDownloadManager>().DownloadStart(download_task);
                         break;
                     case DownloadTaskStatus.Started:
-                        DownloadManager.DownloadPause(download_task);
+                        await Container.Get<IDownloadManager>().DownloadPause(download_task);
                         break;
                     case DownloadTaskStatus.Finished:
                         ShowRedownloadConfimPanel(sender as Button,download_task);
@@ -75,7 +76,7 @@ namespace Wbooru.UI.Pages
             panel.IsOpen = true;
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
         {
             var panel = (sender as FrameworkElement).DataContext as Popup;
             panel.IsOpen = false;
@@ -84,7 +85,7 @@ namespace Wbooru.UI.Pages
 
             var download_task = panel.DataContext as DownloadWrapper;
 
-            DownloadManager.DownloadDelete(download_task);
+            await Container.Get<IDownloadManager>().DownloadDelete(download_task);
 
             if (need_delete)
                 File.Delete(download_task.DownloadInfo.DownloadFullPath);
@@ -104,13 +105,13 @@ namespace Wbooru.UI.Pages
             panel.IsOpen = false;
         }
 
-        private void Button_Click_5(object sender, RoutedEventArgs e)
+        private async void Button_Click_5(object sender, RoutedEventArgs e)
         {
             var panel = (sender as FrameworkElement).DataContext as Popup;
             panel.IsOpen = false;
             var download_task = panel.DataContext as DownloadWrapper;
 
-            DownloadManager.DownloadRestart(download_task);
+            await Container.Get<IDownloadManager>().DownloadRestart(download_task);
         }
     }
 }

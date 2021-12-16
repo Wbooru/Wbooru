@@ -22,7 +22,7 @@ namespace Wbooru.Network
 
         private static IWebProxy socks5_proxy;
 
-        private static GlobalSetting setting = SettingManager.LoadSetting<GlobalSetting>();
+        private static GlobalSetting setting = Setting<GlobalSetting>.Current;
 
         private static IWebProxy TryGetAvaliableProxy()
         {
@@ -63,7 +63,7 @@ namespace Wbooru.Network
             req.Proxy = TryGetAvaliableProxy();
             req.Method = "GET";
 
-            var timeout = SettingManager.LoadSetting<GlobalSetting>().RequestTimeout;
+            var timeout = Setting<GlobalSetting>.Current.RequestTimeout;
             if (timeout != 0)
                 req.Timeout = timeout;
 

@@ -1,4 +1,5 @@
-﻿using Wbooru.UI.Pages;
+﻿using System.Threading.Tasks;
+using Wbooru.UI.Pages;
 
 namespace Wbooru.Galleries.SupportFeatures
 {
@@ -13,7 +14,7 @@ namespace Wbooru.Galleries.SupportFeatures
         bool IsLoggined { get; }
         CustomLoginPage CustomLoginPage { get; }
 
-        void AccountLogin(AccountInfo info);
-        void AccountLogout();
+        Task AccountLoginAsync(AccountInfo info);
+        Task AccountLogoutAsync();
     }
 }

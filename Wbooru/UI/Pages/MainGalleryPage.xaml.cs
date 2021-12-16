@@ -73,7 +73,7 @@ namespace Wbooru.UI.Pages
 
             InitializeComponent();
 
-            Setting = SettingManager.LoadSetting<GlobalSetting>();
+            Setting = Setting<GlobalSetting>.Current;
 
             GridViewer.GridItemWidth = Setting.PictureGridItemWidth;
             GridViewer.GridItemMarginWidth = Setting.PictureGridItemMarginWidth;
@@ -82,7 +82,7 @@ namespace Wbooru.UI.Pages
 
             try
             {
-                var galleries = Container.Default.GetExportedValues<Gallery>();
+                var galleries = Container.GetAll<Gallery>();
 
                 if (Setting.EnableNSFWFileterMode)
                 {
@@ -91,12 +91,12 @@ namespace Wbooru.UI.Pages
                 }
 
                 var gallery = galleries.FirstOrDefault();
-                ImageDownloader = Container.Default.GetExportedValue<ImageFetchDownloadScheduler>();
+                ImageDownloader = Container.Get<ImageFetchDownloadScheduler>();
 
                 if (lock_gallery == null)
                 {
                     var list = galleries.ToList();
-                    var i = Math.Max(0, list.IndexOf(list.FirstOrDefault(x => x.GalleryName == SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName)));
+                    var i = Math.Max(0, list.IndexOf(list.FirstOrDefault(x => x.GalleryName == Setting<GlobalSetting>.Current.RememberLastViewedGalleryName)));
                     GalleriesSelector.ItemsSource = list;
                     GalleriesSelector.SelectionChanged += GalleriesSelector_SelectionChanged;
                     GalleriesSelector.SelectedIndex = i;
@@ -128,7 +128,7 @@ namespace Wbooru.UI.Pages
         private void TryAddExtraContent()
         {
             //menu items
-            var menu_items = Container.Default.GetExportedValues<IExtraMainMenuItemCreator>().Select(x => x.Create());
+            var menu_items = Container.GetAll<IExtraMainMenuItemCreator>().Select(x => x.Create());
             var current_items = MainMenu.Children.OfType<UIElement>().ToArray();
 
             foreach (var item in menu_items.Where(x => !current_items.Any(y => y.GetValue(NameProperty) == x.GetValue(NameProperty))))
@@ -140,7 +140,7 @@ namespace Wbooru.UI.Pages
             Func<IEnumerable<GalleryItem>> items_source_creator;
 
             CurrentGallery = gallery;
-            SettingManager.LoadSetting<GlobalSetting>().RememberLastViewedGalleryName = gallery.GalleryName;
+            Setting<GlobalSetting>.Current.RememberLastViewedGalleryName = gallery.GalleryName;
 
             GridViewer.ClearGallery();
             GridViewer.Gallery = gallery;
@@ -185,7 +185,7 @@ namespace Wbooru.UI.Pages
 
                 try
                 {
-                    await Task.Run(() => login.AccountLogin(account_info));
+                    await Task.Run(() => login.AccountLoginAsync(account_info));
 
                     Log.Info($"Auto login gallery {gallery.GalleryName} -> {login.IsLoggined}");
                 }
@@ -251,7 +251,7 @@ namespace Wbooru.UI.Pages
 
         private void GridViewer_ClickItemEvent(GalleryItem item)
         {
-            var page = new PictureDetailViewPage();
+            var page = CurrentGallery.Feature<ICustomDetailImagePage>()?.GenerateDetailImagePageObject() is DetailImagePageBase customDetailPage ? customDetailPage : new PictureDetailViewPage();
             NavigationHelper.NavigationPush(page);
             page.ApplyItem(CurrentGallery, item);
         }
@@ -320,7 +320,7 @@ namespace Wbooru.UI.Pages
             if (GridViewer.ViewType == GalleryViewType.Marked)
                 return;
 
-            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
+            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.GetAll<Gallery>()).ToArray();
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
             Func<IEnumerable<GalleryItem>> source = null;
@@ -331,12 +331,7 @@ namespace Wbooru.UI.Pages
             }
             else
             {
-                var collection = await LocalDBContext.PostDbAction(ctx => ctx.ItemMarks.Include(x => x.GalleryItem)
-                .OrderByDescending(x => x.Time)
-                .Select(x => x.GalleryItem)
-                .Where(x => galleries.Contains(x.GalleryName))
-                .ToArray()//avoid SQL.
-                );
+                var collection = await Container.Get<IMarkManager>().GetMarkedList(galleries);
                 source = new Func<IEnumerable<GalleryItem>>(() => collection);
             }
 
@@ -376,11 +371,14 @@ namespace Wbooru.UI.Pages
             {
                 AccountButton.BusyStatusDescription = "正在登出中...";
 
-                await Task.Run(() => feature.AccountLogout());
+                await feature.AccountLogoutAsync();
 
                 UpdateAccountButtonText();
                 AccountInfoDataContainer.Instance.CleanAccountInfo(CurrentGallery);
-                Toast.ShowMessage("登出成功");
+                if (!feature.IsLoggined)
+                    Toast.ShowMessage("登出成功");
+                else
+                    Toast.ShowMessage("登出失败");
                 CloseLeftPanel();
             }
             else
@@ -483,7 +481,7 @@ namespace Wbooru.UI.Pages
             if (GridViewer.ViewType == GalleryViewType.History)
                 return;
 
-            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.Default.GetExportedValues<Gallery>()).Select(x => x.GalleryName).ToArray();
+            var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.GetAll<Gallery>()).Select(x => x.GalleryName).ToArray();
 
             using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx, out var __);
 
@@ -497,7 +495,7 @@ namespace Wbooru.UI.Pages
                     .Select(x => x.GalleryItem)
                     .Where(x => x != null)
                     .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)));
-                    //.ToArray();
+                //.ToArray();
 
                 return l;
             }

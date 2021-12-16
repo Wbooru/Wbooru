@@ -70,12 +70,13 @@
                         <Button
                             Name="DefaultSettingButton"
                             Grid.Column="1"
-                            Padding="20,10,20,10"
                             VerticalAlignment="Center"
                             VerticalContentAlignment="Center"
                             BorderBrush="White"
                             Click="DefaultSettingButton_Click">
-                            重置此配置
+                            <TextBlock Padding="10,5,10,5">
+                                重置此配置
+                            </TextBlock>
                         </Button>
                     </Grid>
                     <StackPanel Name="SettingListPanel">

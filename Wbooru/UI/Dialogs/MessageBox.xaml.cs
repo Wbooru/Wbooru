@@ -36,7 +36,7 @@ namespace Wbooru.UI.Dialogs
 
             YesButton.Content = yes;
             NoButton.Content = no;
-            Content.Text = content;
+            MainContent.Text = content;
             DialogTitle = title;
         }
 

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Wbooru.Utils
 {
-    [Export(typeof(CalculatableFormatter))]
     public class CalculatableFormatter
     {
         Calculator calculator;

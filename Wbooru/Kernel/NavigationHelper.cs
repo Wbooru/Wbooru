@@ -15,7 +15,8 @@ namespace Wbooru.Kernel
 {
     public static class NavigationHelper
     {
-        static Stack<Page> page_stack=new Stack<Page>();
+        private static Stack<Page> page_stack = new();
+        private static Dictionary<Page, TaskCompletionSource> close_task = new();
         private static NavigationService service;
 
         public static void InitNavigationHelper(Frame main_frame)
@@ -30,14 +31,17 @@ namespace Wbooru.Kernel
             //service.RemoveBackEntry();
         }
 
-        public static void NavigationPush(Page page)
+        public static Task NavigationPush(Page page)
         {
-            Log.Debug($"Push page : {page.ToString()}");
+            Log.Debug($"Push page : {page}");
             page_stack.Push(page);
+            var taskSource = new TaskCompletionSource();
+            close_task[page] = taskSource;
 
             ClearJournalEnties();
 
             service.Navigate(page_stack.Peek());
+            return taskSource.Task;
         }
 
         private static void ClearJournalEnties()
@@ -88,6 +92,12 @@ namespace Wbooru.Kernel
             Log.Debug($"Current page : {page_stack.Peek().ToString()}");
 
             ClearJournalEnties();
+
+            if (close_task.TryGetValue(page,out var taskSource))
+            {
+                close_task.Remove(page);
+                taskSource.SetResult();
+            }
 
             return page;
         }

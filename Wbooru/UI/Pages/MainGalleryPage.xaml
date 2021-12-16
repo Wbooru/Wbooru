@@ -78,6 +78,15 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
+            <Grid.Resources>
+                <ResourceDictionary>
+                    <Style TargetType="controls:MenuButton">
+                        <Setter Property="Height" Value="35">
+                        </Setter>
+                    </Style>
+                </ResourceDictionary>
+            </Grid.Resources>
+
 
             <StackPanel x:Name="MainMenu">
                 <Grid Height="{Binding Source={StaticResource BoardHeaderHeight}}">
@@ -101,7 +110,6 @@
                         Name="CloseLeftPanelButton"
                         Grid.Column="1"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                        BorderBrush="Transparent"
                         Click="CloseLeftPanelButton_Click"
                         FontFamily="Segoe UI Symbol"
                         FontSize="20">
@@ -185,7 +193,6 @@
                     <Button
                         Name="CloseButton"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                        BorderBrush="Transparent"
                         Click="CloseButton_Click"
                         FontFamily="Segoe UI Symbol"
                         FontSize="20"
@@ -195,7 +202,6 @@
                     <Button
                         Name="MenuButton"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                        BorderBrush="Transparent"
                         Click="MenuButton_Click"
                         FontFamily="Segoe UI Symbol"
                         FontSize="20"
@@ -265,6 +271,7 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
+                    d:Visibility="Visible"
                     Background="Transparent"
                     Click="PageJumpLabel_Click"
                     FontFamily="Segoe UI Symbol"

@@ -300,7 +300,7 @@ namespace Wbooru.UI.Controls
                                 .SearchTag(input_imcomplete_words)
                                 .OrderBy(tag => tag.Name.IndexOf(input_imcomplete_words));
 
-                                var take_count = SettingManager.LoadSetting<GlobalSetting>().MaxSearchSuggestsCount;
+                                var take_count = Setting<GlobalSetting>.Current.MaxSearchSuggestsCount;
                                 cached_suggests = (take_count == 0 ? list : list.Take(take_count)).ToArray();
 
                                 Logger.Debug($"Got {cached_suggests.Length} tags.");

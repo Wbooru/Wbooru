@@ -89,7 +89,7 @@ namespace Wbooru.UI.Controls
 
         private int current_index = 0;
 
-        public int DisplayedLogicPageIndex => current_index / SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
+        public int DisplayedLogicPageIndex => current_index / Setting<GlobalSetting>.Current.GetPictureCountPerLoad;
 
         public GalleryGridView()
         {
@@ -118,7 +118,7 @@ namespace Wbooru.UI.Controls
 
         public void UpdateSettingForScroller()
         {
-            var scrollbar_visiable = SettingManager.LoadSetting<GlobalSetting>().GalleryListScrollBarVisiable;
+            var scrollbar_visiable = Setting<GlobalSetting>.Current.GalleryListScrollBarVisiable;
 
             if (scrollbar_visiable)
             {
@@ -135,8 +135,7 @@ namespace Wbooru.UI.Controls
         private void ListScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             var height = (sender as ScrollViewer).ScrollableHeight;
-            var at_end = e.VerticalOffset
-                                    >= height;
+            var at_end = e.VerticalOffset >= height;
 
             if (at_end)
                 TryRequestMoreItemFromLoadableSource();
@@ -162,7 +161,7 @@ namespace Wbooru.UI.Controls
 
             OnRequestMoreItemStarted?.Invoke(this);
 
-            var option = SettingManager.LoadSetting<GlobalSetting>();
+            var option = Setting<GlobalSetting>.Current;
 
             is_requesting = true;
 
@@ -176,7 +175,7 @@ namespace Wbooru.UI.Controls
             {
                 try
                 {
-                    var l = FilterTag(source.Skip(current_index), counter, gallery).Where(x=> 
+                    var l = FilterTag(source.Skip(current_index), counter, gallery).Where(x =>
                     {
                         if (unique_items.Contains(x.GalleryItemID))
                             return false;
@@ -218,10 +217,10 @@ namespace Wbooru.UI.Controls
             public int Count { get; set; } = 0;
         }
 
-        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery=null)
+        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery = null)
         {
-            var option = SettingManager.LoadSetting<GlobalSetting>();
-            IEnumerable<Gallery> galleries = gallery == null ? Container.Default.GetExportedValues<Gallery>() : new[] { gallery };
+            var option = Setting<GlobalSetting>.Current;
+            IEnumerable<Gallery> galleries = gallery == null ? Container.GetAll<Gallery>() : new[] { gallery };
 
             return items.Where(x =>
             {
@@ -257,7 +256,7 @@ namespace Wbooru.UI.Controls
                             break;
                     }
 
-                    var filter_list = option.UseAllGalleryFilterList ? TagManager.FiltedTags : TagManager.FiltedTags.Where(x => x.FromGallery == gallery.GalleryName);
+                    var filter_list = option.UseAllGalleryFilterList ? Container.Get<ITagManager>().FiltedTags : Container.Get<ITagManager>().FiltedTags.Where(x => x.FromGallery == gallery.GalleryName);
 
                     foreach (var filter_tag in filter_list)
                     {
@@ -329,15 +328,15 @@ namespace Wbooru.UI.Controls
             {
                 Log.Info($"Use default method to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
                 CleanCurrentItems();
-                current_index = page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad;
+                current_index = page * Setting<GlobalSetting>.Current.GetPictureCountPerLoad;
                 TryRequestMoreItemFromLoadableSource();
             }
             else
             {
                 Log.Info($"Use IGalleryItemIteratorFastSkipable.IteratorSkip() to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
-               
+
                 //这里不会根据因刷新而开头会有不同的变化
-                var list = feature.IteratorSkip(page * SettingManager.LoadSetting<GlobalSetting>().GetPictureCountPerLoad).MakeMultiThreadable();
+                var list = feature.IteratorSkip(page * Setting<GlobalSetting>.Current.GetPictureCountPerLoad).MakeMultiThreadable();
                 LoadableSource = new Func<IEnumerable<GalleryItem>>(() => list);
             }
         }
@@ -393,10 +392,10 @@ namespace Wbooru.UI.Controls
 
             var gallery = Gallery;
             var detial = gallery.GetImageDetial(item);
-            var dl = detial.PickSuitableImageURL(SettingManager.LoadSetting<GlobalSetting>().SelectPreferViewQualityTarget);
+            var dl = detial.PickSuitableImageURL(Setting<GlobalSetting>.Current.SelectPreferViewQualityTarget);
 
             Toast.ShowMessage("开始加载图片...");
-            using var image = await ImageResourceManager.RequestImageAsync(dl.FullFileName, dl.DownloadLink, true, default, copyTask.Token);
+            using var image = await ImageResourceManager.RequestImageAsync(dl.FullFileName, dl.DownloadLink, true, default, default, copyTask.Token);
             if (copyTask.Token.IsCancellationRequested)
                 return;
 

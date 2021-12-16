@@ -34,19 +34,19 @@ namespace Wbooru.UI.Pages
         {
             InitializeComponent();
 
-            var list = Container.Default.GetExportedValues<Gallery>().Select(x => x.GalleryName).ToList();
+            var list = Container.GetAll<Gallery>().Select(x => x.GalleryName).ToList();
             list.Insert(0, "AllGallery");
 
             GalleriesSelector.ItemsSource = list;
             GalleriesSelector.SelectedIndex = 0;
 
-            MarkedTagsView.Source = TagManager.MarkedTags;
+            MarkedTagsView.Source = Container.Get<ITagManager>().MarkedTags;
             MarkedTagsView.Filter += MarkedTagsView_Filter;
 
-            FilterTagsView.Source = TagManager.FiltedTags;
+            FilterTagsView.Source = Container.Get<ITagManager>().FiltedTags;
             FilterTagsView.Filter += FilterTagsView_Filter;
 
-            SubscribedTagsView.Source = TagManager.SubscribedTags;
+            SubscribedTagsView.Source = Container.Get<ITagManager>().SubscribedTags;
             SubscribedTagsView.Filter += SubscribedTagsView_Filter;
 
             MainContent.DataContext = this;
@@ -104,18 +104,18 @@ namespace Wbooru.UI.Pages
             SubscribedTagsView?.View?.Refresh();
         }
 
-        private void DeleteTag_Click(object sender, RoutedEventArgs e)
+        private async void DeleteTag_Click(object sender, RoutedEventArgs e)
         {
             var record = (sender as FrameworkElement).DataContext as TagRecord;
 
             if (record.RecordType == TagRecord.TagRecordType.Subscribed)
             {
-                TagManager.UnSubscribedTag(record);
+                await Container.Get<ITagManager>().UnSubscribedTag(record);
                 Toast.ShowMessage("已取消订阅此标签");
             }
             else
             {
-                TagManager.RemoveTag(record);
+                await Container.Get<ITagManager>().RemoveTag(record);
                 Toast.ShowMessage("已删除此标签");
             }
         }
@@ -125,7 +125,7 @@ namespace Wbooru.UI.Pages
             var tags = MarkedTagList.ItemContainerGenerator.Items
                 .Select(x => MarkedTagList.ItemContainerGenerator.ContainerFromItem(x))
                 .OfType<FrameworkElement>()
-                .Select(x => ViusalTreeHelperEx.FindName("SelectCheckBox", x))
+                .Select(x => VisualTreeHelperEx.FindName("SelectCheckBox", x))
                 .OfType<CheckBox>()
                 .Where(x => x.IsChecked ?? false)
                 .Select(x => x.DataContext)
@@ -138,7 +138,7 @@ namespace Wbooru.UI.Pages
                 return;
             }
 
-            var gallery = Container.Default.GetExportedValues<Gallery>().Where(x => GalleriesSelector.SelectedItem.ToString() == x.GalleryName).FirstOrDefault();
+            var gallery = Container.GetAll<Gallery>().Where(x => GalleriesSelector.SelectedItem.ToString() == x.GalleryName).FirstOrDefault();
 
             if (gallery == null)
             {
@@ -149,11 +149,11 @@ namespace Wbooru.UI.Pages
             NavigationHelper.NavigationPush(new MainGalleryPage(tags, gallery));
         }
 
-        private void SubscribeButton_Click(object sender, RoutedEventArgs e)
+        private async void SubscribeButton_Click(object sender, RoutedEventArgs e)
         {
             var record = (sender as FrameworkElement).DataContext as TagRecord;
 
-            TagManager.SubscribedTag(record);
+            await Container.Get<ITagManager>().SubscribedTag(record);
 
             Toast.ShowMessage("成功订阅此标签");
         }

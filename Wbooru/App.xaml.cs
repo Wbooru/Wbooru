@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Wbooru.PluginExt;
 using Wbooru.Kernel.Updater.PluginMarket;
 using Wbooru.Persistence;
+using Wbooru.Kernel.DI;
 
 namespace Wbooru
 {
@@ -47,11 +48,11 @@ namespace Wbooru
             Log.Info("Enter BeginCheckUpdatable()");
             await Task.Run(() =>
             {
-                if (SettingManager.LoadSetting<GlobalSetting>().EnableAutoCheckUpdatable)
+                if (Setting<GlobalSetting>.Current.EnableAutoCheckUpdatable)
                 {
                     ProgramUpdater.CheckUpdatable();
 
-                    foreach (var updatable in Container.Default.GetExportedValues<PluginInfo>().OfType<IPluginUpdatable>())
+                    foreach (var updatable in Container.GetAll<PluginInfo>().OfType<IPluginUpdatable>())
                         PluginUpdaterManager.CheckPluginUpdatable(updatable);
                 }
             });
@@ -170,16 +171,15 @@ namespace Wbooru
                     UnusualSafeExit();
                 }
             }
-
             Container.BuildDefault();
-
             CheckPlugin();
 
-            SchedulerManager.Init();
 
-            DownloadManager.Init();
+            await Container.Get<ISchedulerManager>().OnInit();
 
-            TagManager.InitTagManager();
+            await Container.Get<IDownloadManager>().OnInit();
+
+            await Container.Get<ITagManager>().OnInit();
 
             ImageResourceManager.InitImageResourceManager();
 
@@ -204,7 +204,7 @@ namespace Wbooru
 
         private static void CheckPlugin()
         {
-            var conflict_plugin_group = Container.Default.GetExportedValues<PluginInfo>().GroupBy(x => x.PluginName).Where(x => x.Count() > 1);
+            var conflict_plugin_group = Container.GetAll<PluginInfo>().GroupBy(x => x.PluginName).Where(x => x.Count() > 1);
 
             foreach (var p in conflict_plugin_group)
             {
@@ -220,15 +220,27 @@ namespace Wbooru
             }
         }
 
-        internal static void Term()
+        internal static async Task Term()
         {
             Log.Info("-----------------Begin Term()-----------------");
             SafeTermSubModule(PluginsTerm);
-            SafeTermSubModule(DownloadManager.Close);
-            SafeTermSubModule(SettingManager.SaveSettingFile);
-            SafeTermSubModule(SchedulerManager.Term);
+            await SafeTermSubModuleAsync(Container.Get<IDownloadManager>().OnExit);
+            await SafeTermSubModuleAsync(Container.Get<ISchedulerManager>().OnExit);
+            SafeTermSubModule(Setting.ForceSave);
             SafeTermSubModule(Log.Term);
             Log.Info("-----------------End Term()-----------------");
+
+            async Task SafeTermSubModuleAsync(Func<Task> action)
+            {
+                try
+                {
+                    await action();
+                }
+                catch (Exception e)
+                {
+                    ExceptionHelper.DebugThrow(e);
+                }
+            }
 
             void SafeTermSubModule(Action action)
             {
@@ -247,20 +259,20 @@ namespace Wbooru
         {
             Log.Info("Call PluginsTerm()");
 
-            foreach (var plugin in Container.Default.GetExportedValues<PluginInfo>())
+            foreach (var plugin in Container.GetAll<PluginInfo>())
             {
                 Log.Info($"Call {plugin.PluginName}.OnApplicationTerm()");
                 plugin.CallApplicationTerm();
             }
         }
 
-        internal static void UnusualSafeExit()
+        internal static async void UnusualSafeExit()
         {
             Log.Info("Begin save&clean program data/resources");
 
             try
             {
-                Term();
+                await Term();
             }
             catch (Exception e)
             {
@@ -272,11 +284,11 @@ namespace Wbooru
             }
         }
 
-        internal static void UnusualSafeRestart()
+        internal static async void UnusualSafeRestart()
         {
             try
             {
-                Term();
+                await Term();
             }
             catch (Exception e)
             {

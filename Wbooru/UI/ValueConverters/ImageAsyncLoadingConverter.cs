@@ -24,10 +24,20 @@ namespace Wbooru.UI.ValueConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is GalleryItem item))
-                return null;
+            if (value is GalleryItem item)
+            {
+                return new AsyncImageWrapper(item.DownloadFileName, item.PreviewImageDownloadLink);
+            }
+            else if (value is ImageAsyncLoadingParam param)
+            {
+                return new AsyncImageWrapper(param.ImageUrl, param.PreviewImageDownloadUrl);
+            }
+            else if (value is string url)
+            {
+                return new AsyncImageWrapper(url, url);
+            }
 
-            return new AsyncImageWrapper(item.DownloadFileName,item.PreviewImageDownloadLink);
+            return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
