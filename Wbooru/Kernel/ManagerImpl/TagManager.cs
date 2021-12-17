@@ -14,6 +14,7 @@ using static Wbooru.Models.TagRecord;
 using static System.Linq.Enumerable;
 using Wbooru.Kernel.DI;
 using System.ComponentModel.Composition;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Wbooru.Kernel.ManagerImpl
 {
@@ -44,10 +45,11 @@ namespace Wbooru.Kernel.ManagerImpl
 
                 IEnumerable<TagRecord> order(IEnumerable<TagRecord> source)
                 {
+                    var s = source.DistinctBy(x => x.Tag.Name);
                     if (Setting<GlobalSetting>.Current.TagListViewerListOrder == GlobalSetting.TagListOrder.AddedDateTime)
-                        return source.OrderBy(x => x.AddTime);
+                        return s.OrderBy(x => x.AddTime);
                     else
-                        return source.OrderBy(x => x.Tag.Name);
+                        return s.OrderBy(x => x.Tag.Name);
                 }
             }
             catch (Exception e)
@@ -99,14 +101,6 @@ namespace Wbooru.Kernel.ManagerImpl
 
         public async Task AddTag(Tag tag, string gallery_name, TagRecordType record_type)
         {
-            var rt = record_type switch
-            {
-                TagRecordType.Filter => FiltedTags,
-                TagRecordType.Subscribed => SubscribedTags,
-                TagRecordType.Marked => MarkedTags,
-                _ => throw new Exception("咕咕")
-            };
-
             var tag_name = tag.Name;
 
             var record = await LocalDBContext.PostDbAction(ctx =>
@@ -132,8 +126,6 @@ namespace Wbooru.Kernel.ManagerImpl
                     return tag2;
                 }
             });
-
-            rt.Add(record);
         }
 
         public async Task RemoveTag(TagRecord record)
@@ -141,23 +133,15 @@ namespace Wbooru.Kernel.ManagerImpl
             if (record is null)
                 return;
 
-            var list = record.RecordType.HasFlag(TagRecordType.Filter) ? FiltedTags : MarkedTags;
-
             var tag = await LocalDBContext.PostDbAction(ctx =>
             {
                 var tagEntity = ctx.Tags.FirstOrDefault(x => x.RecordType == record.RecordType && x.FromGallery == record.FromGallery && x.Tag.Name == record.Tag.Name);
-
-                if (tagEntity.RecordType == TagRecordType.Subscribed)
-                    SubscribedTags.Remove(list.FirstOrDefault(x => x.Tag.Name == tagEntity.Tag.Name && x.Tag.Type == tagEntity.Tag.Type));
 
                 tagEntity.RecordType = TagRecordType.None;
 
                 ctx.SaveChanges();
                 return tagEntity;
             });
-
-            if (tag is TagRecord)
-                list.Remove(list.FirstOrDefault(x => x.Tag.Name == tag.Tag.Name && x.Tag.Type == tag.Tag.Type));
         }
 
         public CacheTagMetaProgressStatus StartCacheTagMeta()
