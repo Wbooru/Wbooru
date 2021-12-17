@@ -6,6 +6,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Wbooru.Kernel;
+using Wbooru.Kernel.ManagerImpl;
 using Wbooru.Models;
 
 namespace Wbooru.Models
@@ -20,7 +22,69 @@ namespace Wbooru.Models
         public DateTime AddTime { get; set; }
         public string FromGallery { get; set; }
 
-        public TagRecordType RecordType { get; set; }
+        private TagRecordType recordType;
+        [Column("RecordType")]
+        public TagRecordType RecordType
+        {
+            get
+            {
+                return recordType;
+            }
+            set
+            {
+                OnRecordTypeChanged(recordType, value);
+                recordType = value;
+            }
+        }
+
+        private void OnRecordTypeChanged(TagRecordType oldValue, TagRecordType newValue)
+        {
+            bool checkFlag(TagRecordType f, out bool isContain)
+            {
+                var o = oldValue.HasFlag(f);
+                var n = newValue.HasFlag(f);
+                isContain = n;
+                return o != n;
+            }
+
+            App.Current.Dispatcher.InvokeAsync(() =>
+            {
+                var tagManager = Container.Get<ITagManager>();
+                if (checkFlag(TagRecordType.Filter, out var isContain))
+                {
+                    if (isContain)
+                    {
+                        tagManager.FiltedTags.Add(this);
+                    }
+                    else
+                    {
+                        tagManager.FiltedTags.Remove(this);
+                    }
+                }
+                if (checkFlag(TagRecordType.Marked, out isContain))
+                {
+                    if (isContain)
+                    {
+                        tagManager.MarkedTags.Add(this);
+                    }
+                    else
+                    {
+                        tagManager.MarkedTags.Remove(this);
+                    }
+                }
+                if (checkFlag(TagRecordType.Subscribed, out isContain))
+                {
+                    if (isContain)
+                    {
+                        tagManager.SubscribedTags.Add(this);
+                    }
+                    else
+                    {
+                        tagManager.SubscribedTags.Remove(this);
+                    }
+                }
+            });
+        }
 
         [Flags]
         public enum TagRecordType

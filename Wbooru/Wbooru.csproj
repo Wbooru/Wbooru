@@ -64,6 +64,7 @@
     <Compile Remove="Galleries\IContainDetail.cs" />
     <Compile Remove="UI\Controls\SettingUI\MultiSelectComboBox.xaml.cs" />
     <Compile Remove="UI\ValueConverters\AutoPickImageConverter.cs" />
+    <None Remove="data.db" />
     <None Remove="Persistence\default_empty.db" />
     <Page Remove="UI\Controls\SettingUI\MultiSelectComboBox.xaml" />
   </ItemGroup>
