@@ -181,8 +181,6 @@ namespace Wbooru
 
             await Container.Get<ITagManager>().OnInit();
 
-            ImageResourceManager.InitImageResourceManager();
-
             Log.Info("-----------------End Init()-----------------");
         }
 

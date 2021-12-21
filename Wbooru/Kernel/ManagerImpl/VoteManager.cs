@@ -11,7 +11,7 @@ using Wbooru.Models.Gallery;
 
 namespace Wbooru.Kernel.ManagerImpl
 {
-    [PriorityExport(typeof(IVoteManager))]
+    [PriorityExport(typeof(IVoteManager), Priority = 0)]
     [PartCreationPolicy(CreationPolicy.Shared)]
     internal class VoteManager : IVoteManager
     {
@@ -19,7 +19,7 @@ namespace Wbooru.Kernel.ManagerImpl
         {
             try
             {
-                await Task.Run(() => gallery.Feature<IGalleryVote>().SetVote(item, is_vote));
+                await gallery.Feature<IGalleryVote>().SetVoteAsync(item, is_vote);
                 return (true, default);
             }
             catch (Exception e)
@@ -33,7 +33,7 @@ namespace Wbooru.Kernel.ManagerImpl
         {
             try
             {
-                return (await Task.Run(() => gallery.Feature<IGalleryVote>()?.IsVoted(item)) ?? false, default);
+                return (await gallery.Feature<IGalleryVote>()?.IsVotedAsync(item), default);
             }
             catch (Exception e)
             {

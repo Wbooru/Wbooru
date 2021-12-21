@@ -268,7 +268,7 @@ namespace Wbooru.UI.Controls
             {
                 if (suggest_query_task == null)
                 {
-                    suggest_query_task = Task.Run(() =>
+                    suggest_query_task = Task.Run(async () =>
                     {
                         while (true)
                         {
@@ -297,11 +297,11 @@ namespace Wbooru.UI.Controls
                             {
                                 var list = cur_gallery
                                 .Feature<IGalleryTagSearch>()
-                                .SearchTag(input_imcomplete_words)
+                                .SearchTagAsync(input_imcomplete_words)
                                 .OrderBy(tag => tag.Name.IndexOf(input_imcomplete_words));
 
                                 var take_count = Setting<GlobalSetting>.Current.MaxSearchSuggestsCount;
-                                cached_suggests = (take_count == 0 ? list : list.Take(take_count)).ToArray();
+                                cached_suggests = await (take_count == 0 ? list : list.Take(take_count)).ToArrayAsync();
 
                                 Logger.Debug($"Got {cached_suggests.Length} tags.");
                             }

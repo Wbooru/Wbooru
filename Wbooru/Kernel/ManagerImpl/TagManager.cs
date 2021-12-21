@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Wbooru.Kernel.ManagerImpl
 {
-    [PriorityExport(typeof(ITagManager))]
+    [PriorityExport(typeof(ITagManager), Priority = 0)]
     [PartCreationPolicy(CreationPolicy.Shared)]
     internal class TagManager : ITagManager
     {

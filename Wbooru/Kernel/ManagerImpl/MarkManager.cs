@@ -10,10 +10,11 @@ using Wbooru.Kernel.DI;
 using Wbooru.Models;
 using Wbooru.Models.Gallery;
 using Wbooru.Persistence;
+using Wbooru.Utils;
 
 namespace Wbooru.Kernel.ManagerImpl
 {
-    [PriorityExport(typeof(IMarkManager))]
+    [PriorityExport(typeof(IMarkManager), Priority = 0)]
     [PartCreationPolicy(CreationPolicy.Shared)]
     internal class MarkManager : IMarkManager
     {
@@ -47,15 +48,15 @@ namespace Wbooru.Kernel.ManagerImpl
             });
         }
 
-        public async Task<IEnumerable<GalleryItem>> GetMarkedList(params Gallery[] filterGalleries)
+        public IAsyncEnumerable<GalleryItem> GetMarkedListAsync(params Gallery[] filterGalleries)
         {
             var names = filterGalleries.Select(x => x.GalleryName);
-            return await LocalDBContext.PostDbAction(ctx => ctx.ItemMarks.Include(x => x.GalleryItem)
+
+            return new EnumerableSqlPageCollection<GalleryItem>(ctx => ctx.ItemMarks.Include(x => x.GalleryItem)
                 .OrderByDescending(x => x.Time)
                 .Select(x => x.GalleryItem)
                 .Where(x => names.Contains(x.GalleryName))
-                .ToArray()//avoid SQL.
-                );
+            );
         }
     }
 }

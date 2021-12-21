@@ -71,14 +71,14 @@ namespace Wbooru.UI.Controls
         /// <summary>
         /// 表示可以加载的列表源，一般View会自动遍历此集合来拿更多的图片数据.
         /// </summary>
-        public Func<IEnumerable<GalleryItem>> LoadableSource
+        public Func<IAsyncEnumerable<GalleryItem>> LoadableSource
         {
-            get { return (Func<IEnumerable<GalleryItem>>)GetValue(LoadableSourceProperty); }
+            get { return (Func<IAsyncEnumerable<GalleryItem>>)GetValue(LoadableSourceProperty); }
             set { SetValue(LoadableSourceProperty, value); }
         }
 
         public static readonly DependencyProperty LoadableSourceProperty =
-            DependencyProperty.Register("LoadableSource", typeof(Func<IEnumerable<GalleryItem>>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).OnLoadableSourceChanged()));
+            DependencyProperty.Register("LoadableSource", typeof(Func<IAsyncEnumerable<GalleryItem>>), typeof(GalleryGridView), new PropertyMetadata((e, d) => ((GalleryGridView)e).OnLoadableSourceChanged()));
 
         /// <summary>
         /// 设置此控件的用处，一般用于过滤指定标签的图片列表
@@ -102,15 +102,28 @@ namespace Wbooru.UI.Controls
             UpdateSettingForScroller();
         }
 
-        private IEnumerable<GalleryItem> loadable_items;
+        private IAsyncEnumerator<IEnumerable<GalleryItem>> loadable_items;
+        private SkipCounterWrapper skipCount;
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        private void OnLoadableSourceChanged()
+        private void OnLoadableSourceChanged(int specifyIndex = 0)
         {
+            cancellationTokenSource?.Cancel();
             CleanCurrentItems();
-            current_index = 0;
             ListScrollViewer.ScrollToVerticalOffset(0);
+            current_index = specifyIndex;
 
-            loadable_items = LoadableSource?.Invoke();
+            skipCount = new SkipCounterWrapper();
+            cancellationTokenSource = new CancellationTokenSource();
+
+            loadable_items = FilterTag(LoadableSource?.Invoke() ?? AsyncEnumerable.Empty<GalleryItem>(), skipCount, Gallery).Where(x =>
+           {
+               if (unique_items.Contains(x.GalleryItemID))
+                   return false;
+               unique_items.Add(x.GalleryItemID);
+               return true;
+           }).Skip(specifyIndex).SequenceWrapAsync(Setting<GlobalSetting>.Current.GetPictureCountPerLoad).GetAsyncEnumerator();
+
             Log.Debug($"generate new loadable_items({loadable_items?.GetHashCode()})");
 
             TryRequestMoreItemFromLoadableSource();
@@ -148,8 +161,10 @@ namespace Wbooru.UI.Controls
             LoadableSource = null;
         }
 
-        private async void TryRequestMoreItemFromLoadableSource()
+        private async void TryRequestMoreItemFromLoadableSource(CancellationToken? cancellation = default)
         {
+            var cancellationToken = cancellation ?? cancellationTokenSource?.Token ?? default;
+
             if (is_requesting)
             {
                 Log.Debug("Task is running");
@@ -161,49 +176,48 @@ namespace Wbooru.UI.Controls
 
             OnRequestMoreItemStarted?.Invoke(this);
 
-            var option = Setting<GlobalSetting>.Current;
-
             is_requesting = true;
 
-            Gallery gallery = Gallery;
-            IEnumerable<GalleryItem> source = loadable_items;
-            var counter = new SkipCounterWrapper();
+            var source = loadable_items;
+            var perLoad = Setting<GlobalSetting>.Current.GetPictureCountPerLoad;
 
             Log.Debug($"开始尝试获取列表({source.GetHashCode()})");
 
-            (GalleryItem[] list, bool success) = await Task.Run(() =>
+            var list = Enumerable.Empty<GalleryItem>();
+
+            try
             {
-                try
+                if (await loadable_items.MoveNextAsync())
                 {
-                    var l = FilterTag(source.Skip(current_index), counter, gallery).Where(x =>
-                    {
-                        if (unique_items.Contains(x.GalleryItemID))
-                            return false;
-                        unique_items.Add(x.GalleryItemID);
-                        return true;
-                    }).Take(option.GetPictureCountPerLoad).ToArray();
-                    return (l, true);
+                    list = loadable_items.Current ?? Enumerable.Empty<GalleryItem>();
                 }
-                catch (Exception e)
-                {
-                    Toast.ShowMessage($"无法获取图片列表数据:{e.Message}");
-                    return (new GalleryItem[0], false);
-                }
-            });
+            }
+            catch (Exception e)
+            {
+                Toast.ShowMessage($"无法获取图片列表数据:{e.Message}");
+                return;
+            }
 
             Log.Debug($"尝试获取列表结束({source.GetHashCode()} - {loadable_items?.GetHashCode()})");
 
-            if (source == loadable_items)
+            if (source == loadable_items && !cancellationToken.IsCancellationRequested)
             {
-                Log.Debug($"Skip({current_index}) Filter({counter.Count}) Take({option.GetPictureCountPerLoad}) ActualTake({list.Length})", "GridViewer_RequestMoreItems");
-
+                var c = 0;
                 foreach (var item in list)
+                {
+                    c++;
                     Items.Add(item);
+                }
 
-                if (success && list.Count() < option.GetPictureCountPerLoad)
+                Log.Debug($"Skip({current_index}) Filter({skipCount.Count}) Take({perLoad}) ActualTake({c})", "GridViewer_RequestMoreItems");
+
+                if (c < perLoad)
                     Toast.ShowMessage("已到达图片队列末尾");
-                current_index += list.Length + counter.Count;
+                current_index += c + skipCount.Count;
             }
+
+            if (cancellationToken.IsCancellationRequested)
+                Log.Debug($"拿到的({source.GetHashCode()} - {loadable_items?.GetHashCode()})抛弃，因为已被要求取消");
 
             OnRequestMoreItemFinished?.Invoke(this);
             is_requesting = false;
@@ -217,40 +231,40 @@ namespace Wbooru.UI.Controls
             public int Count { get; set; } = 0;
         }
 
-        public IEnumerable<GalleryItem> FilterTag(IEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery = null)
+        public IAsyncEnumerable<GalleryItem> FilterTag(IAsyncEnumerable<GalleryItem> items, SkipCounterWrapper counter, Gallery gallery = null)
         {
             var option = Setting<GlobalSetting>.Current;
-            IEnumerable<Gallery> galleries = gallery == null ? Container.GetAll<Gallery>() : new[] { gallery };
+            var galleries = gallery == null ? Container.GetAll<Gallery>() : new[] { gallery };
 
-            return items.Where(x =>
+            return items.PartParallelableSelectAsync(async x =>
             {
-                if (galleries.FirstOrDefault(g => g.GalleryName == x.GalleryName) is Gallery gallery && gallery.GetImageDetial(x) is GalleryImageDetail detail)
+                if (galleries.FirstOrDefault(g => g.GalleryName == x.GalleryName) is Gallery gallery && (await gallery.GetImageDetial(x)) is GalleryImageDetail detail)
                 {
                     if (!option.EnableTagFilter)
-                        return true;
+                        return x;
 
                     //todo: optimze them
                     switch (ViewType)
                     {
                         case GalleryViewType.Marked:
                             if (!option.FilterTarget.HasFlag(TagFilterTarget.MarkedWindow))
-                                return true;
+                                return x;
                             break;
                         case GalleryViewType.Voted:
                             if (!option.FilterTarget.HasFlag(TagFilterTarget.VotedWindow))
-                                return true;
+                                return x;
                             break;
                         case GalleryViewType.Main:
                             if (!option.FilterTarget.HasFlag(TagFilterTarget.MainWindow))
-                                return true;
+                                return x;
                             break;
                         case GalleryViewType.SearchResult:
                             if (!option.FilterTarget.HasFlag(TagFilterTarget.SearchResultWindow))
-                                return true;
+                                return x;
                             break;
                         case GalleryViewType.History:
                             if (!option.FilterTarget.HasFlag(TagFilterTarget.HistoryWindow))
-                                return true;
+                                return x;
                             break;
                         default:
                             break;
@@ -264,13 +278,13 @@ namespace Wbooru.UI.Controls
                         {
                             Log.Debug($"Skip this item because of filter:{captured_filter_tag} -> {string.Join(" ", detail.Tags)}");
                             counter.Count++;
-                            return false;
+                            return null;
                         }
                     }
                 }
 
-                return true;
-            });
+                return x;
+            }).OfType<GalleryItem>();
         }
 
         private void ListScrollViewer_MouseLeave(object sender, MouseEventArgs e)
@@ -326,18 +340,18 @@ namespace Wbooru.UI.Controls
              */
             if (ViewType != GalleryViewType.Main || !(Gallery is IGalleryItemIteratorFastSkipable feature))
             {
-                Log.Info($"Use default method to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
+                Log.Info($"Use default method to skip items.({ViewType} - {Gallery?.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
                 CleanCurrentItems();
                 current_index = page * Setting<GlobalSetting>.Current.GetPictureCountPerLoad;
-                TryRequestMoreItemFromLoadableSource();
+                OnLoadableSourceChanged(current_index);
             }
             else
             {
                 Log.Info($"Use IGalleryItemIteratorFastSkipable.IteratorSkip() to skip items.({ViewType} - {Gallery.GalleryName} - {Gallery is IGalleryItemIteratorFastSkipable})");
 
                 //这里不会根据因刷新而开头会有不同的变化
-                var list = feature.IteratorSkip(page * Setting<GlobalSetting>.Current.GetPictureCountPerLoad).MakeMultiThreadable();
-                LoadableSource = new Func<IEnumerable<GalleryItem>>(() => list);
+                var list = feature.IteratorSkipAsync(page * Setting<GlobalSetting>.Current.GetPictureCountPerLoad);
+                LoadableSource = new Func<IAsyncEnumerable<GalleryItem>>(() => list);
             }
         }
 
@@ -391,7 +405,7 @@ namespace Wbooru.UI.Controls
             copyTask = new CancellationTokenSource();
 
             var gallery = Gallery;
-            var detial = gallery.GetImageDetial(item);
+            var detial = await gallery.GetImageDetial(item);
             var dl = detial.PickSuitableImageURL(Setting<GlobalSetting>.Current.SelectPreferViewQualityTarget);
 
             Toast.ShowMessage("开始加载图片...");
@@ -405,7 +419,7 @@ namespace Wbooru.UI.Controls
             Toast.ShowMessage("复制图片成功");
         }
 
-        private void OnCopyID(object sender, RoutedEventArgs e)
+        private async void OnCopyID(object sender, RoutedEventArgs e)
         {
             if (!(sender is FrameworkElement f && f.DataContext is GalleryItem item))
                 return;
@@ -413,7 +427,7 @@ namespace Wbooru.UI.Controls
             copyTask = new CancellationTokenSource();
 
             var gallery = Gallery;
-            var detial = gallery.GetImageDetial(item);
+            var detial = await gallery.GetImageDetial(item);
 
             Toast.ShowMessage("复制成功");
             Clipboard.SetText(detial?.ID);

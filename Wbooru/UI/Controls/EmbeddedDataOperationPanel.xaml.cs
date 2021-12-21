@@ -45,21 +45,10 @@ namespace Wbooru.UI.Controls
             CleanCacheFolderButton.IsEnabled = false;
             CacheFolderUsageText.Text = "正在计算中...";
 
-            var len = await Task.Run(() => new DirectoryInfo(CacheFolderHelper.CacheFolderPath).EnumerateFileSystemInfos("*.*", SearchOption.AllDirectories).Select(x =>
-              {
-                  try
-                  {
-                      var file = new FileInfo(x.FullName);
-                      return file.Length;
-                  }
-                  catch
-                  {
-                      return 0;
-                  }
-              }).Sum());
+            (var used, _) = await Container.Get<ICacheManager>().GetCurrentCacheUsage();
 
             CleanCacheFolderButton.IsEnabled = true;
-            CacheFolderUsageText.Text = FormatFileSize(len).ToString();
+            CacheFolderUsageText.Text = FormatFileSize((long)used).ToString();
         }
 
         private static string FormatFileSize(long bytes)
@@ -138,29 +127,14 @@ namespace Wbooru.UI.Controls
             //build command and params
             var command = $"-database_restore -from=\"{restore_file}\" -to=\"{System.IO.Path.GetFullPath(Setting<GlobalSetting>.Current.DBFilePath)}\"";
 
-            Process.Start(Process.GetCurrentProcess().MainModule.FileName,command);
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName, command);
             App.UnusualSafeExit();
         }
 
         private async void CleanCacheFolder(object sender, RoutedEventArgs e)
         {
             CleanCacheFolderButton.IsEnabled = false;
-
-            await Task.Run(() => 
-            {
-                foreach (var item in Directory.EnumerateFileSystemEntries(CacheFolderHelper.CacheFolderPath))
-                {
-                    if (File.Exists(item))
-                    {
-                        File.Delete(item);
-                    }
-                    else
-                    {
-                        Directory.Delete(item,true);
-                    }
-                }
-            });
-
+            await Container.Get<ICacheManager>().ClearAllCacheContent();
             CleanCacheFolderButton.IsEnabled = true;
             CalcCacheFolder();
             Toast.ShowMessage("清理完成");
@@ -168,7 +142,7 @@ namespace Wbooru.UI.Controls
 
         private void Button_Click(object sender, RoutedEventArgs _)
         {
-            OpenWithPath(CacheFolderHelper.CacheFolderPath);
+
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs _)
@@ -185,7 +159,7 @@ namespace Wbooru.UI.Controls
         {
             try
             {
-                Process.Start("explorer.exe" , System.IO.Path.GetFullPath(path));
+                Process.Start("explorer.exe", System.IO.Path.GetFullPath(path));
             }
             catch (Exception e)
             {

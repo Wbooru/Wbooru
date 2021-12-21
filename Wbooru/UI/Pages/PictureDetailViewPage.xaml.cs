@@ -340,7 +340,7 @@ namespace Wbooru.UI.Pages
 
             await LocalDBContext.PostDbAction(ctx =>
             {
-                var visit_entity = ctx.VisitRecords.Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
+                var visit_entity = ctx.VisitRecords.AsQueryable().Where(x => x.GalleryItem != null).FirstOrDefault(x => x.GalleryItem.GalleryItemID == item.GalleryItemID && x.GalleryItem.GalleryName == gallery.GalleryName);
 
                 if (visit_entity == null)
                 {

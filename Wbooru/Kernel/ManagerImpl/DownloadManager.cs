@@ -85,7 +85,7 @@ namespace Wbooru.Kernel.ManagerImpl
             {
                 try
                 {
-                    foreach (var item in db.Downloads.Select(x => new DownloadWrapper()
+                    foreach (var item in db.Downloads.AsQueryable().Select(x => new DownloadWrapper()
                     {
                         DownloadInfo = x,
                         CurrentDownloadedLength = x.DisplayDownloadedLength,

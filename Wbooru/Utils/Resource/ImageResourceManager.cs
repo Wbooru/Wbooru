@@ -26,7 +26,7 @@ namespace Wbooru.Utils.Resource
         private static GlobalSetting option;
         private static string temporary_folder_path;
 
-        public static void InitImageResourceManager()
+        static ImageResourceManager()
         {
             option = Setting<GlobalSetting>.Current;
 

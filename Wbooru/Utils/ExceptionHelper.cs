@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 using Wbooru.UI.Controls;
@@ -22,7 +23,7 @@ namespace Wbooru.Utils
                 return;
             }
 
-            throw new AggregateException($"DebugThrow :{e.Message}", e);
+            ExceptionDispatchInfo.Capture(e).Throw();
 #endif
 
 #pragma warning disable CS0162

@@ -11,6 +11,6 @@ namespace Wbooru.Galleries.SupportFeatures
     {
         void SetMark(GalleryItem item,bool is_mark);
         bool IsMarked(GalleryItem item);
-        IEnumerable<GalleryItem> GetMarkedGalleryItem();
+        IAsyncEnumerable<GalleryItem> GetMarkedGalleryItem();
     }
 }

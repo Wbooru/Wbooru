@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Wbooru.Persistence;
 
 namespace Wbooru.Utils
 {
@@ -11,57 +14,35 @@ namespace Wbooru.Utils
     /// 通过Sql的分页兼容实现IEnumerable枚举
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EnumerableSqlPageCollection<T> : IEnumerable<T>
+    public class EnumerableSqlPageCollection<T> : IAsyncEnumerable<T>
     {
-        Func<IQueryable<T>> queryableGenerator;
+        private readonly Func<LocalDBContext, IQueryable<T>> queryableGenerator;
 
-        public EnumerableSqlPageCollection(Func<IQueryable<T>> queryableGenerator)
+        public EnumerableSqlPageCollection(Func<LocalDBContext, IQueryable<T>> queryableGenerator)
         {
             this.queryableGenerator = queryableGenerator;
         }
 
-        private class Enumerator : IEnumerable<T>
+        public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
             int count = 0;
             bool isDone = false;
             const int PageSize = 20;
-            IQueryable<T> queryable;
 
-            public Enumerator(IQueryable<T> queryable)
+            while (!isDone)
             {
-                this.queryable = queryable;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-            public IEnumerator<T> GetEnumerator()
-            {
-                while (!isDone)
+                var result = await LocalDBContext.PostDbAction(ctx =>
                 {
-                    var result = queryable.Skip(count).Take(PageSize).ToArray();
-                    count += result.Length;
-                    isDone = result.Length == 0;
+                    return queryableGenerator(ctx).Skip(count).Take(PageSize).ToArray();
+                });
+                count += result.Length;
+                isDone = result.Length == 0;
 
-                    foreach (var item in result)
-                    {
-                        yield return item;
-                    }
+                foreach (var item in result)
+                    yield return item;
 
-                    Log.Info($"=============> taken {count} objs");
-                }
+                Log.Debug($"taken {count} objs , isDone : {isDone}");
             }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return new Enumerator(queryableGenerator()).GetEnumerator();
-        }
-
-        public IEnumerable<T> GetEnumerable()
-        {
-            return this;
         }
     }
 }

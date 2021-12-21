@@ -10,6 +10,6 @@ namespace Wbooru.Kernel
     {
         Task SetMark(Gallery gallery, GalleryItem item, bool is_mark);
         Task<bool> GetMark(Gallery gallery, GalleryItem item);
-        Task<IEnumerable<GalleryItem>> GetMarkedList(params Gallery[] filterGalleries);
+        IAsyncEnumerable<GalleryItem> GetMarkedListAsync(params Gallery[] filterGalleries);
     }
 }

@@ -52,6 +52,7 @@
     <PackageReference Include="System.Data.SQLite.Core">
       <Version>1.0.110</Version>
     </PackageReference>
+    <PackageReference Include="System.Linq.Async" Version="5.1.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
       <Version>4.5.2</Version>

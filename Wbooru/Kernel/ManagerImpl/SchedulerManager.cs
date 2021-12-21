@@ -11,7 +11,7 @@ using Wbooru.Utils;
 
 namespace Wbooru.Kernel.ManagerImpl
 {
-    [PriorityExport(typeof(ISchedulerManager))]
+    [PriorityExport(typeof(ISchedulerManager),Priority = 0)]
     [PartCreationPolicy(CreationPolicy.Shared)]
     internal class SchedulerManager : ISchedulerManager
     {

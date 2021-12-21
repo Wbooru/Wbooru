@@ -55,15 +55,15 @@ namespace Wbooru.Galleries
 
         public abstract string GalleryName { get; }
 
-        public abstract IEnumerable<GalleryItem> GetMainPostedImages();
+        public abstract IAsyncEnumerable<GalleryItem> GetMainPostedImages();
 
-        public abstract GalleryImageDetail GetImageDetial(GalleryItem item);
+        public abstract Task<GalleryImageDetail> GetImageDetial(GalleryItem item);
 
-        public abstract GalleryItem GetImage(string id);
+        public abstract Task<GalleryItem> GetImage(string id);
 
         #region Helper Methods
 
-        internal IEnumerable<GalleryItem> TryFilterIfNSFWEnable(IEnumerable<GalleryItem> item)
+        internal IAsyncEnumerable<GalleryItem> TryFilterIfNSFWEnable(IAsyncEnumerable<GalleryItem> item)
         {
             if (!Setting<GlobalSetting>.Current.EnableNSFWFileterMode)
                 return item;

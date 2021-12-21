@@ -137,7 +137,7 @@ namespace Wbooru.UI.Pages
 
         public async void ApplyGallery(Gallery gallery, IEnumerable<string> keywords = null)
         {
-            Func<IEnumerable<GalleryItem>> items_source_creator;
+            Func<IAsyncEnumerable<GalleryItem>> items_source_creator;
 
             CurrentGallery = gallery;
             Setting<GlobalSetting>.Current.RememberLastViewedGalleryName = gallery.GalleryName;
@@ -148,14 +148,14 @@ namespace Wbooru.UI.Pages
             if (keywords?.Any() ?? false)
             {
                 GridViewer.ViewType = GalleryViewType.SearchResult;
-                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.Feature<IGallerySearchImage>().SearchImages(keywords).MakeMultiThreadable()));
+                items_source_creator = new Func<IAsyncEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.Feature<IGallerySearchImage>().SearchImagesAsync(keywords)));
                 GalleryTitle = $"{gallery.GalleryName} ({string.Join(" ", keywords)})";
                 ShowReturnButton = true;
             }
             else
             {
                 GridViewer.ViewType = GalleryViewType.Main;
-                items_source_creator = new Func<IEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.GetMainPostedImages().MakeMultiThreadable()));
+                items_source_creator = new Func<IAsyncEnumerable<GalleryItem>>(() => gallery.TryFilterIfNSFWEnable(gallery.GetMainPostedImages()));
                 GalleryTitle = gallery.GalleryName;
                 ShowReturnButton = false;
             }
@@ -323,16 +323,16 @@ namespace Wbooru.UI.Pages
             var galleries = (CurrentGallery != null ? new[] { CurrentGallery } : Container.GetAll<Gallery>()).ToArray();
 
             var online_mark_feature = CurrentGallery?.Feature<IGalleryMark>();
-            Func<IEnumerable<GalleryItem>> source = null;
+            Func<IAsyncEnumerable<GalleryItem>> source = null;
 
             if (online_mark_feature != null)
             {
-                source = new Func<IEnumerable<GalleryItem>>(() => online_mark_feature?.GetMarkedGalleryItem());
+                source = new Func<IAsyncEnumerable<GalleryItem>>(() => online_mark_feature?.GetMarkedGalleryItem());
             }
             else
             {
-                var collection = await Container.Get<IMarkManager>().GetMarkedList(galleries);
-                source = new Func<IEnumerable<GalleryItem>>(() => collection);
+                var collection = Container.Get<IMarkManager>().GetMarkedListAsync(galleries);
+                source = new Func<IAsyncEnumerable<GalleryItem>>(() => collection);
             }
 
             GalleryTitle = (CurrentGallery != null ? $"{CurrentGallery.GalleryName}的" : "") + (online_mark_feature != null ? "在线" : "本地") + "收藏列表";
@@ -485,21 +485,14 @@ namespace Wbooru.UI.Pages
 
             using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx, out var __);
 
-            var source = new Func<IEnumerable<GalleryItem>>(() =>
-            {
-                using var _ = ObjectPool<LocalDBContext>.GetWithUsingDisposable(out var ctx, out var __);
-                using var _timer = TimerHelper.BeginTimer("Load all VisitRecords for history");
-
-                var l = new EnumerableSqlPageCollection<VisitRecord>(() => ctx.VisitRecords.Include(x => x.GalleryItem))
-                    .OrderByDescending(x => x.LastVisitTime)
-                    .Select(x => x.GalleryItem)
-                    .Where(x => x != null)
-                    .Where(x => string.IsNullOrWhiteSpace(galleries.FirstOrDefault(y => y == x.GalleryName)));
-                //.ToArray();
-
-                return l;
-            }
-            );//avoid SQL.
+            var source = new Func<IAsyncEnumerable<GalleryItem>>(() =>
+           new EnumerableSqlPageCollection<GalleryItem>(ctx => ctx.VisitRecords
+                     .Include(x => x.GalleryItem)
+                     .OrderByDescending(x => x.LastVisitTime)
+                     .Select(x => x.GalleryItem)
+                     .Where(x => x != null)
+                     .Where(x => galleries.Any(y => y == x.GalleryName))
+            ));
 
             GalleryTitle = "历史浏览记录";
             GridViewer.ViewType = GalleryViewType.History;
