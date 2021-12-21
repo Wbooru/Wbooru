@@ -24,5 +24,7 @@ namespace Wbooru.Kernel.Updater.PluginMarket
 
         public PluginMarketRelease CurrentSuitableRelease => SuitableReleaseInfos.FirstOrDefault();
         public PluginMarketRelease LatestRelease => ReleaseInfos.OrderByDescending(x => x.ReleaseDate).FirstOrDefault();
+
+        public override string ToString() => $"Name={PluginName}, Author={PluginAuthor}, ReleaseType={ReleaseType}";
     }
 }

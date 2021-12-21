@@ -15,7 +15,7 @@ namespace Wbooru.Utils
 {
     public static class UpdaterHelper
     {
-        private static Regex wbooruMinVersionRegex = new Regex(@"^Wbooru(\b.*\b)?Min(\b.*\b)?Version(\b.*)=\s*(\w+\.\w+\.\w+(\.\w+)?)$", RegexOptions.IgnoreCase);
+        private static Regex wbooruMinVersionRegex = new Regex(@"^Wbooru(\b.*\b)?Min(\b.*\b)?Version(\b.*)=\s*(\w+\.\w+\.\w+(\.\w+)?)", RegexOptions.IgnoreCase);
 
         static UpdaterHelper()
         {

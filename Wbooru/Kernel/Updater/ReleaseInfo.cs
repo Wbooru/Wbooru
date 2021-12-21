@@ -15,5 +15,7 @@ namespace Wbooru.Kernel.Updater
         public string DownloadURL { get; set; }
         public string ReleaseURL { get; set; }
         public string ReleaseDescription { get; set; }
+
+        public override string ToString() => $"Version={Version}({ReleaseType}), ReleaseDate={ReleaseDate}, RequestWbooruMinVersion={RequestWbooruMinVersion}";
     }
 }
