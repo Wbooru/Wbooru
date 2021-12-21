@@ -315,7 +315,7 @@ namespace Wbooru.UI.Pages
             item_loading_notify = null;
         }
 
-        private async void ShowMarkPicturesButton_Click(object sender, RoutedEventArgs e)
+        private void ShowMarkPicturesButton_Click(object sender, RoutedEventArgs e)
         {
             if (GridViewer.ViewType == GalleryViewType.Marked)
                 return;

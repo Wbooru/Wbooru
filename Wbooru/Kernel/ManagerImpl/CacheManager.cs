@@ -39,14 +39,14 @@ namespace Wbooru.Kernel.ManagerImpl
             await fileStream.FlushAsync();
         }
 
-        public async Task<Stream> GetCacheContent(string cacheKey)
+        public Task<Stream> GetCacheContent(string cacheKey)
         {
             if (string.IsNullOrWhiteSpace(cacheKey) || !Setting<GlobalSetting>.Current.EnableFileCache)
-                return default;
+                return Task.FromResult<Stream>(default);
             var path = GetCacheFilePath(cacheKey);
             if (File.Exists(path))
-                return File.OpenRead(path);
-            return default;
+                return Task.FromResult<Stream>(File.OpenRead(path));
+            return Task.FromResult<Stream>(default);
         }
 
         public async Task<(ulong used, ulong total)> GetCurrentCacheUsage()

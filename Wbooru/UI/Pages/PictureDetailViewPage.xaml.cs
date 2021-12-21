@@ -457,7 +457,7 @@ namespace Wbooru.UI.Pages
 
                 Toast.ShowMessage("已存在相同的下载任务");
 
-                NavigationHelper.NavigationPush(new DownloadListPage());
+                await NavigationHelper.NavigationPush(new DownloadListPage());
 
                 return;
             }
