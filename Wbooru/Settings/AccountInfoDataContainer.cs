@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Wbooru.Galleries;
 using Wbooru.Galleries.SupportFeatures;
@@ -89,10 +90,14 @@ namespace Wbooru.Settings
             return Encoding.UTF8.GetString(Decrypt(Convert.FromBase64String(data))).TrimEnd('\0');
         }
 
+        static readonly Regex VersionRegex = new Regex(@"Version=((\d*\.)*\d)");
         public AccountInfo TryGetAccountInfoData(Gallery gallery)
         {
             if (!DataObject.TryGetValue(gallery.GalleryName, out var token))
                 return null;
+
+            var typeStr = token["AccountInfoType"].ToString();
+            token["AccountInfoType"] = VersionRegex.Replace(typeStr, "Version=0.0.0.0");
 
             if (!(token.ToObject<AccountInfoData>() is AccountInfoData data))
                 return null;
