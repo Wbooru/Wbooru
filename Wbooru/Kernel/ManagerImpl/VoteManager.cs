@@ -19,7 +19,9 @@ namespace Wbooru.Kernel.ManagerImpl
         {
             try
             {
-                await gallery.Feature<IGalleryVote>().SetVoteAsync(item, is_vote);
+                if (gallery.Feature<IGalleryVote>() is not IGalleryVote voter)
+                    return (false, default);
+                await voter.SetVoteAsync(item, is_vote);
                 return (true, default);
             }
             catch (Exception e)
@@ -33,7 +35,9 @@ namespace Wbooru.Kernel.ManagerImpl
         {
             try
             {
-                return (await gallery.Feature<IGalleryVote>()?.IsVotedAsync(item), default);
+                if (gallery.Feature<IGalleryVote>() is not IGalleryVote voter)
+                    return (false, default);
+                return (await voter.IsVotedAsync(item), default);
             }
             catch (Exception e)
             {

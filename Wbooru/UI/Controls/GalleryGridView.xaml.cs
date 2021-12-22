@@ -171,7 +171,7 @@ namespace Wbooru.UI.Controls
                 return;
             }
 
-            if (loadable_items == null)
+            if (loadable_items is null || LoadableSource is null)
                 return;
 
             OnRequestMoreItemStarted?.Invoke(this);
