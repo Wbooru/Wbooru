@@ -19,3 +19,6 @@
 [submodule "Plugins/WbooruPlugin.WindowsStyleCustomizer"]
 	path = Plugins/WbooruPlugin.WindowsStyleCustomizer
 	url = https://github.com/Wbooru/WbooruPlugin.WindowsStyleCustomizer
+[submodule "Plugins/WbooruPlugin.YourSeihekiStatistics"]
+	path = Plugins/WbooruPlugin.YourSeihekiStatistics
+	url = https://github.com/MikiraSora/WbooruPlugin.YourSeihekiStatistics
