@@ -54,10 +54,11 @@ namespace Wbooru
             var priorityGroup = pickList.FirstOrDefault().ToArray();
             var picked = priorityGroup.FirstOrDefault();
             var actualValue = picked.Item1.Value;
-            Log.Debug(() => $"Require : {typeof(T).Name} , Pick : {actualValue.GetType().Name} , Priority : {picked.Item2} {(priorityGroup.Length > 1 ? ($"(More exports has same priority, please check it.)") : string.Empty)}");
+            Log.Debug(() => $"Require : {typeof(T).Name} , Pick : {actualValue.GetType().Name} , Priority : {picked.Item2} {(priorityGroup.Length > 1 ? ($"(More exports has same priority [{string.Join(',', priorityGroup.Select(x => x.Item1.ToString()))}], please check it.)") : string.Empty)}");
             if (!(actualValue.GetType().GetCustomAttribute<PartCreationPolicyAttribute>() is PartCreationPolicyAttribute a && a.CreationPolicy == CreationPolicy.NonShared))
                 cachedGotObjects[type] = actualValue;
             return actualValue;
         }
+        public static CompositionContainer GetCurrent() => instance;
     }
 }
