@@ -13,5 +13,6 @@ namespace Wbooru.Kernel
     {
         Task AddScheduler(ISchedulable s);
         Task RemoveScheduler(ISchedulable s);
+        IEnumerable<ISchedulable> CurrentRunningSchedulers { get; }
     }
 }
