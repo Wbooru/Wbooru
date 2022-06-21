@@ -11,6 +11,7 @@ using System.IO;
 using Wbooru.Utils;
 using static Wbooru.Settings.GlobalSetting;
 using System.Threading;
+using Wbooru.Utils.Debugs;
 
 namespace Wbooru
 {
@@ -30,6 +31,7 @@ namespace Wbooru
 
         private static StreamWriter file_writer;
         private static bool enable_debug_output;
+        public static bool EnableConsoleOutputLog { get; set; } = true;
 
         static Log()
         {
@@ -93,7 +95,7 @@ namespace Wbooru
                         File.AppendAllText(LogFilePath, content);
                 }
                 catch
-                {}
+                { }
             }
         }
 
@@ -134,7 +136,8 @@ namespace Wbooru
             OutputDebugString(message);
             System.Diagnostics.Debug.Write(message);
 #endif
-            Console.Write(message);
+            if (EnableConsoleOutputLog)
+                Console.Write(message);
             FileWrite(message);
         }
 
@@ -148,7 +151,7 @@ namespace Wbooru
             Console.ResetColor();
         }
 
-        public static void Info(string message, [CallerMemberName]string prefix = "<Unknown Method>")
+        public static void Info(string message, [CallerMemberName] string prefix = "<Unknown Method>")
         {
             var msg = BuildLogMessage(message, "INFO", true, true, prefix);
             ColorizeConsoleOutput(msg, ConsoleColor.Green, DefaultBackgroundColor);
@@ -163,7 +166,7 @@ namespace Wbooru
             }
         }
 
-        public static void Debug(string message, [CallerMemberName]string prefix = "<Unknown Method>")
+        public static void Debug(string message, [CallerMemberName] string prefix = "<Unknown Method>")
         {
             if (enable_debug_output)
             {
@@ -172,19 +175,19 @@ namespace Wbooru
             }
         }
 
-        public static void Warn(string message, [CallerMemberName]string prefix = "<Unknown Method>")
+        public static void Warn(string message, [CallerMemberName] string prefix = "<Unknown Method>")
         {
             var msg = BuildLogMessage(message, "WARN", true, true, prefix);
             ColorizeConsoleOutput(msg, ConsoleColor.Yellow, DefaultBackgroundColor);
         }
 
-        public static void Error(string message, [CallerMemberName]string prefix = "<Unknown Method>")
+        public static void Error(string message, [CallerMemberName] string prefix = "<Unknown Method>")
         {
             var msg = BuildLogMessage(message, "ERROR", true, true, prefix);
             ColorizeConsoleOutput(msg, ConsoleColor.Red, ConsoleColor.Yellow);
         }
 
-        public static void Error(string message, Exception e, [CallerMemberName]string prefix = "<Unknown Method>")
+        public static void Error(string message, Exception e, [CallerMemberName] string prefix = "<Unknown Method>")
         {
             message = $"{message} , Exception : {Environment.NewLine} {e.Message} {Environment.NewLine} {e.StackTrace}";
             var msg = BuildLogMessage(message, "ERROR", true, true, prefix);
