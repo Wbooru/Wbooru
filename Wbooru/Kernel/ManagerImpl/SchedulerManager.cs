@@ -58,6 +58,8 @@ namespace Wbooru.Kernel.ManagerImpl
                     .Where(x => DateTime.Now - schedulersCallTime[x] >= x.ScheduleCallLoopInterval)
                     .Select(x => x.OnScheduleCall(cancellationToken).ContinueWith(_ => schedulersCallTime[x] = DateTime.Now))
                     .ToArray();
+                if (schedulers.Length == 0)
+                    await Task.Delay(500, cancellationToken);
                 await Task.WhenAll(schedulers);
                 await Task.Yield();
             }
