@@ -291,7 +291,7 @@ namespace Wbooru.UI.Pages
         {
             try
             {
-                return (await RequestHelper.CreateDeafultAsync(downloadLink, req => req.Method = "HEAD")).ContentLength;
+                return (await RequestHelper.CreateDeafultAsync(downloadLink, req => req.Method = System.Net.Http.HttpMethod.Head)).Content.Headers.ContentLength ?? 0;
             }
             catch (Exception e)
             {

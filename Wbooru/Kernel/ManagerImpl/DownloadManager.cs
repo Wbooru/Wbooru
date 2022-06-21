@@ -15,17 +15,18 @@ using Wbooru.UI.Controls;
 using Wbooru.Utils;
 using System.Net;
 using Wbooru.Kernel.DI;
+using System.Net.Http;
 
 namespace Wbooru.Kernel.ManagerImpl
 {
-    [PriorityExport(typeof(IDownloadManager),Priority = 0)]
+    [PriorityExport(typeof(IDownloadManager), Priority = 0)]
     internal class DownloadManager : IDownloadManager
     {
         private AbortableThread timer_thread;
 
         public ObservableCollection<DownloadWrapper> DownloadList { get; } = new ObservableCollection<DownloadWrapper>();
 
-        private HashSet<DownloadWrapper> RunningDownloadTask  = new HashSet<DownloadWrapper>();
+        private HashSet<DownloadWrapper> RunningDownloadTask = new HashSet<DownloadWrapper>();
         private Dictionary<DownloadWrapper, FileStream> FileStreamHolder = new Dictionary<DownloadWrapper, FileStream>();
 
         public Task OnExit()
@@ -34,7 +35,7 @@ namespace Wbooru.Kernel.ManagerImpl
             {
                 timer_thread?.Abort();
             }
-            catch{}
+            catch { }
 
             return LocalDBContext.PostDbAction(async db =>
             {
@@ -136,7 +137,7 @@ namespace Wbooru.Kernel.ManagerImpl
                 {
                     foreach (var task in RunningDownloadTask)
                     {
-                        if (!record.TryGetValue(task,out var prev_len))
+                        if (!record.TryGetValue(task, out var prev_len))
                             prev_len = 0;
                         var current_len = task.CurrentDownloadedLength;
                         task.DownloadSpeed = current_len - prev_len;
@@ -175,7 +176,7 @@ namespace Wbooru.Kernel.ManagerImpl
                 download.ErrorMessage = message;
                 DownloadPause(download);
 
-               throw new Exception(message);
+                throw new Exception(message);
             }
 
             if (!DownloadList.Contains(download))
@@ -186,7 +187,7 @@ namespace Wbooru.Kernel.ManagerImpl
             var cancel_token_source = new CancellationTokenSource();
             download.CancelTokenSource = cancel_token_source;
 
-            var task = Task.Run(()=>OnDownloadTaskStart(download), cancel_token_source.Token);
+            var task = Task.Run(() => OnDownloadTaskStart(download), cancel_token_source.Token);
 
             download.Status = DownloadTaskStatus.Started;
 
@@ -201,7 +202,7 @@ namespace Wbooru.Kernel.ManagerImpl
 
         public void OnDownloadTaskStart(DownloadWrapper download)
         {
-            FileStream file_stream=null;
+            FileStream file_stream = null;
 
             try
             {
@@ -211,14 +212,14 @@ namespace Wbooru.Kernel.ManagerImpl
                 download.CurrentDownloadedLength = file_stream.Length;
                 file_stream.Seek(download.CurrentDownloadedLength, SeekOrigin.Begin);
 
-                WebResponse response=null;
+                HttpResponseMessage response = null;
 
                 try
                 {
                     response = RequestHelper.CreateDeafult(download.DownloadInfo.DownloadUrl, request =>
                     {
                         if (download.CurrentDownloadedLength > 0)
-                            request.AddRange(download.CurrentDownloadedLength);
+                            request.Headers.Range.Ranges.Add(new System.Net.Http.Headers.RangeItemHeaderValue(download.CurrentDownloadedLength, request.Content.Headers.ContentLength ?? 0));
                     });
                 }
                 catch (Exception e) when (e.Message.Contains("416"))
@@ -235,7 +236,7 @@ namespace Wbooru.Kernel.ManagerImpl
                     response = RequestHelper.CreateDeafult(download.DownloadInfo.DownloadUrl);
                 }
 
-                using var response_stream = response.GetResponseStream();
+                using var response_stream = response.Content.ReadAsStream();
 
                 var buffer = new byte[1024];
                 int read_bytes = 0;
@@ -262,7 +263,7 @@ namespace Wbooru.Kernel.ManagerImpl
                     File.Delete(download.DownloadInfo.DownloadFullPath);
                 File.Move(temp_dl_path, download.DownloadInfo.DownloadFullPath);
 
-                download.Status =  DownloadTaskStatus.Finished;
+                download.Status = DownloadTaskStatus.Finished;
                 Log.Info($"Downloading task {download.DownloadInfo.FileName} now finished.");
             }
             catch (Exception e)
@@ -291,7 +292,7 @@ namespace Wbooru.Kernel.ManagerImpl
             download.Status = DownloadTaskStatus.Paused;
             download.CancelTokenSource?.Cancel();
 
-            if (FileStreamHolder.TryGetValue(download,out var stream))
+            if (FileStreamHolder.TryGetValue(download, out var stream))
                 stream.Dispose();
 
             Log.Info($"Paused downloading task :{download.DownloadInfo.FileName}");

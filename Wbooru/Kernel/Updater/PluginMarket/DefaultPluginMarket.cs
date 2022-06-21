@@ -26,7 +26,7 @@ namespace Wbooru.Kernel.Updater.PluginMarket
 
             try
             {
-                plugin_issues = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult("https://api.github.com/repos/Wbooru/Wbooru.PluginsMarket/issues?labels=Plugin-Release",req=>req.UserAgent="Wbooru"));
+                plugin_issues = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult("https://api.github.com/repos/Wbooru/Wbooru.PluginsMarket/issues?labels=Plugin-Release",req=> req.Headers.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Wbooru", "1.1.0"))));
             }
             catch (Exception e)
             {

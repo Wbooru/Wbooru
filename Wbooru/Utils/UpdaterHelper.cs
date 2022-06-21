@@ -26,10 +26,7 @@ namespace Wbooru.Utils
 
         public static IEnumerable<ReleaseInfo> GetGithubAllReleaseInfoList(string github_releases_url)
         {
-            var array = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(github_releases_url, req =>
-            {
-                req.UserAgent = "Wbooru";
-            }));
+            var array = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(github_releases_url, req => req.Headers.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Wbooru", "1.1.0"))));
 
             return array.Select(x => TryGetReleaseInfo(x)).OfType<ReleaseInfo>().ToArray();
         }
@@ -137,7 +134,7 @@ namespace Wbooru.Utils
                 var api_url = url.Contains("api.github.com") ? url : url.Replace("github.com", "api.github.com/repos");
                 Log.Debug($"{url} -> {api_url}");
 
-                var issue_json = RequestHelper.GetJsonContainer<JObject>(RequestHelper.CreateDeafult(api_url, req => req.UserAgent = "Wbooru"));
+                var issue_json = RequestHelper.GetJsonContainer<JObject>(RequestHelper.CreateDeafult(api_url, req => req.Headers.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Wbooru", "1.1.0"))));
                 return GetPostReleaseInfosFromIssueCommentsAPI(issue_json["comments_url"].ToString(), issue_json["user"]["id"].ToString());
             }
             catch (Exception e)
@@ -153,7 +150,7 @@ namespace Wbooru.Utils
 
             try
             {
-                release_infos = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(url, req => req.UserAgent = "Wbooru"));
+                release_infos = RequestHelper.GetJsonContainer<JArray>(RequestHelper.CreateDeafult(url, req => req.Headers.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("Wbooru", "1.1.0"))));
             }
             catch (Exception e)
             {

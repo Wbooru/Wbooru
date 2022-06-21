@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
@@ -44,7 +45,7 @@ namespace Wbooru.Utils.Resource
             }
         }
 
-        public static async Task<Image> RequestImageAsync(string resource_name, string url, bool load_first, Action<(long downloaded_bytes, long content_bytes)> reporter = default, Action<HttpWebRequest> customReqFunc = default, CancellationToken cancellationToken = default)
+        public static async Task<Image> RequestImageAsync(string resource_name, string url, bool load_first, Action<(long downloaded_bytes, long content_bytes)> reporter = default, Action<HttpRequestMessage> customReqFunc = default, CancellationToken cancellationToken = default)
         {
             const int retry = 3;
 

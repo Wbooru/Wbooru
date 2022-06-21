@@ -16,6 +16,7 @@ using System.IO;
 using Wbooru.Utils;
 using Wbooru.Kernel.DI;
 using System.Net;
+using System.Net.Http;
 
 namespace Wbooru.Network
 {
@@ -31,7 +32,7 @@ namespace Wbooru.Network
         private List<Task<Image>> tasks_waiting_queue = new List<Task<Image>>();
         private HashSet<Task<Image>> tasks_running_queue = new HashSet<Task<Image>>();
 
-        public Task<Image> DownloadImageAsync(string download_path, CancellationToken cancel_token = default, Action<(long downloaded_bytes, long content_bytes)> reporter = null, Action<HttpWebRequest> customReqFunc = default, bool front_insert = false)
+        public Task<Image> DownloadImageAsync(string download_path, CancellationToken cancel_token = default, Action<(long downloaded_bytes, long content_bytes)> reporter = null, Action<HttpRequestMessage> customReqFunc = default, bool front_insert = false)
         {
             Task<Image> task = new Task<Image>(OnDownloadTaskStart, (download_path, reporter, cancel_token, customReqFunc), cancel_token);
 
@@ -85,24 +86,24 @@ namespace Wbooru.Network
         {
             try
             {
-                (string download_path, Action<(long downloaded_bytes, long content_bytes)> reporter, CancellationToken cancelToken, Action<HttpWebRequest> customReqFunc) = (ValueTuple<string, Action<(long, long)>, CancellationToken, Action<HttpWebRequest>>)state;
+                (string download_path, Action<(long downloaded_bytes, long content_bytes)> reporter, CancellationToken cancelToken, Action<HttpRequestMessage> customReqFunc) = (ValueTuple<string, Action<(long, long)>, CancellationToken, Action<HttpRequestMessage>>)state;
                 if (cancelToken.IsCancellationRequested)
                     return default;
 
                 Log<ImageFetchDownloadScheduler>.Info($"Start download image:{download_path}");
 
-                var response = RequestHelper.CreateDeafultAsync(download_path,customReqFunc).ConfigureAwait(false).GetAwaiter().GetResult();
+                var response = RequestHelper.CreateDeafultAsync(download_path, customReqFunc).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                var content_length = response.ContentLength;
+                var content_length = response.Content.Headers.ContentLength;
 
-                using var stream = response.GetResponseStream().Interopable();
+                using var stream = response.Content.ReadAsStream().Interopable();
 
-                int total_read = 0;
+                long total_read = 0;
 
                 stream.OnAfterRead += (buffer, offset, count, read) =>
                 {
                     total_read += read;
-                    reporter?.Invoke((total_read, content_length));
+                    reporter?.Invoke((total_read, content_length ?? 0));
                 };
 
                 Image source = Image.FromStream(stream);

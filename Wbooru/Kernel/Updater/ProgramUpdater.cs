@@ -74,12 +74,12 @@ namespace Wbooru.Kernel.Updater
 
             var response = RequestHelper.CreateDeafult(CacheUpdatableReleaseInfo.DownloadURL);
 
-            var length = response.ContentLength;
+            var length = response.Content.Headers.ContentLength;
             var buffer = new byte[1024];
             long total_read = 0;
 
             Log.Info($"Started download update file : {CacheUpdatableReleaseInfo.DownloadURL}");
-            using (var net_stream = response.GetResponseStream())
+            using (var net_stream = response.Content.ReadAsStream())
             {
                 using (var file_stream = File.OpenWrite(file_save_path))
                 {
@@ -89,7 +89,7 @@ namespace Wbooru.Kernel.Updater
                         read = net_stream.Read(buffer, 0, buffer.Length);
                         file_stream.Write(buffer, 0, read);
                         total_read += read;
-                        reporter?.Invoke(total_read, length);
+                        reporter?.Invoke(total_read, length ?? 0);
                     } while (read != 0);
                 }
             }

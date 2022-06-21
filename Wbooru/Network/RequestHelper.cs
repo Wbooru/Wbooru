@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,11 +23,13 @@ namespace Wbooru.Network
 
         private static IWebProxy socks5_proxy;
 
+        private static HttpClient httpClient = new HttpClient(new HttpClientHandler { Proxy = TryGetAvaliableProxy() }) { Timeout = TimeSpan.FromSeconds(Setting<GlobalSetting>.Current.RequestTimeout) };
+
         private static GlobalSetting setting = Setting<GlobalSetting>.Current;
 
         private static IWebProxy TryGetAvaliableProxy()
         {
-            if (!setting.EnableSocks5Proxy)
+            if (setting == null || !setting.EnableSocks5Proxy)
                 return null;
 
             if (socks5_proxy != null)
@@ -48,43 +51,38 @@ namespace Wbooru.Network
             }
         }
 
-        public static WebResponse CreateDeafult(string url, Action<HttpWebRequest> custom = null)
+        public static HttpResponseMessage CreateDeafult(string url, Action<HttpRequestMessage> custom = null)
             => CreateDeafultAsync(url, custom).Result;
 
-        public static Task<WebResponse> CreateDeafultAsync(string url, Action<HttpWebRequest> custom)=>CreateDeafultAsync(url, req =>
+        public static Task<HttpResponseMessage> CreateDeafultAsync(string url, Action<HttpRequestMessage> custom) => CreateDeafultAsync(url, req =>
             {
                 custom?.Invoke(req);
                 return Task.CompletedTask;
             });
 
-        public static async Task<WebResponse> CreateDeafultAsync(string url, Func<HttpWebRequest,Task> custom = null)
+        public static async Task<HttpResponseMessage> CreateDeafultAsync(string url, Func<HttpRequestMessage, Task> custom = null)
         {
-            var req = WebRequest.Create(url);
-            req.Proxy = TryGetAvaliableProxy();
-            req.Method = "GET";
+            var req = new HttpRequestMessage(HttpMethod.Get, url);
+            req.Version = HttpVersion.Version20;
 
-            var timeout = Setting<GlobalSetting>.Current.RequestTimeout;
-            if (timeout != 0)
-                req.Timeout = timeout;
-
-            if (custom?.Invoke(req as HttpWebRequest) is Task task)
+            if (custom?.Invoke(req) is Task task)
                 await task;
 
             Log.Debug($"create http(s) {req.Method} request :{url}", "RequestHelper");
 
-            return await req.GetResponseAsync();
+            return await httpClient.SendAsync(req);
         }
 
-        public static string GetString(WebResponse response)
+        public static string GetString(HttpResponseMessage response)
         {
-            using var reader = new StreamReader(response.GetResponseStream());
+            using var reader = new StreamReader(response.Content.ReadAsStream());
 
             return reader.ReadToEnd();
         }
 
-        public static T GetJsonContainer<T>(WebResponse response) where T : JContainer
+        public static T GetJsonContainer<T>(HttpResponseMessage response) where T : JContainer
         {
-            using var reader = new StreamReader(response.GetResponseStream());
+            using var reader = new StreamReader(response.Content.ReadAsStream());
 
             try
             {
@@ -92,11 +90,11 @@ namespace Wbooru.Network
             }
             catch (Exception e)
             {
-                Log.Info($"Can't get json object from request : {response.ResponseUri.AbsoluteUri} , message : {e.Message}");
+                Log.Info($"Can't get json object from request : {response.RequestMessage.RequestUri.AbsoluteUri} , message : {e.Message}");
                 return default;
             }
         }
 
-        public static JObject GetJsonObject(WebResponse response) => GetJsonContainer<JObject>(response);
+        public static JObject GetJsonObject(HttpResponseMessage response) => GetJsonContainer<JObject>(response);
     }
 }

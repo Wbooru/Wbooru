@@ -63,12 +63,12 @@ namespace Wbooru.Kernel.Updater
                 {
                     var response = RequestHelper.CreateDeafult(release_info.DownloadURL);
 
-                    var length = response.ContentLength;
+                    var length = response.Content.Headers.ContentLength;
                     reporter?.Invoke($"ContentLength = {length}");
                     
                     var buffer = new byte[1024];
 
-                    using (var net_stream = response.GetResponseStream())
+                    using (var net_stream = response.Content.ReadAsStream())
                     {
                         using (var file_stream = File.OpenWrite(file_save_path))
                         {
@@ -112,11 +112,11 @@ namespace Wbooru.Kernel.Updater
 
             var response = RequestHelper.CreateDeafult(release.DownloadURL);
 
-            var length = response.ContentLength;
+            var length = response.Content.Headers.ContentLength;
 
             var buffer = new byte[1024];
 
-            using (var net_stream = response.GetResponseStream())
+            using (var net_stream = response.Content.ReadAsStream())
             {
                 using (var file_stream = File.OpenWrite(file_save_path))
                 {
