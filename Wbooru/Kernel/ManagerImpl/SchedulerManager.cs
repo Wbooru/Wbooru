@@ -60,8 +60,11 @@ namespace Wbooru.Kernel.ManagerImpl
                     .ToArray();
                 if (schedulers.Length == 0)
                     await Task.Delay(500, cancellationToken);
-                await Task.WhenAll(schedulers);
-                await Task.Yield();
+                else
+                {
+                    await Task.WhenAll(schedulers);
+                    await Task.Yield();
+                }
             }
         }
 
