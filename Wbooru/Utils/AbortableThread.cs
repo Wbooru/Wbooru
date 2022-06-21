@@ -53,7 +53,8 @@ namespace Wbooru.Utils
         public void Abort()
         {
             Log.Info($"Begin to abort thread {Name}.", "AbortableThread");
-            cancellationTokenSource.Cancel();
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource = null;
             thread?.Join();
             Log.Info($"Aborted thread {Name}.", "AbortableThread");
         }
