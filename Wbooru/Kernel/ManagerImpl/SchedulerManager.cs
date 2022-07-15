@@ -11,7 +11,7 @@ using Wbooru.Utils;
 
 namespace Wbooru.Kernel.ManagerImpl
 {
-    [PriorityExport(typeof(ISchedulerManager),Priority = 0)]
+    [PriorityExport(typeof(ISchedulerManager), Priority = 0)]
     [PartCreationPolicy(CreationPolicy.Shared)]
     internal class SchedulerManager : ISchedulerManager
     {
@@ -46,7 +46,7 @@ namespace Wbooru.Kernel.ManagerImpl
             schedulers.Add(s);
             schedulersCallTime[s] = DateTime.MinValue;
             Log.Info("Added new scheduler: " + s.SchedulerName);
-            
+
             return Task.CompletedTask;
         }
 
@@ -54,14 +54,25 @@ namespace Wbooru.Kernel.ManagerImpl
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var schedulers = Schedulers
-                    .Where(x => DateTime.Now - schedulersCallTime[x] >= x.ScheduleCallLoopInterval)
-                    .Select(x => x.OnScheduleCall(cancellationToken).ContinueWith(_ => schedulersCallTime[x] = DateTime.Now))
-                    .ToArray();
-                if (schedulers.Length == 0)
-                    await Task.Delay(500, cancellationToken);
-                await Task.WhenAll(schedulers);
-                await Task.Yield();
+                try
+                {
+                    var schedulers = Schedulers
+                        .Where(x => DateTime.Now - schedulersCallTime[x] >= x.ScheduleCallLoopInterval)
+                        .Select(x => x.OnScheduleCall(cancellationToken).ContinueWith(_ => schedulersCallTime[x] = DateTime.Now))
+                        .ToArray();
+                    if (schedulers.Length == 0)
+                        await Task.Delay(500, cancellationToken);
+                    await Task.WhenAll(schedulers);
+                    await Task.Yield();
+                }
+                catch (TaskCanceledException)
+                {
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
 

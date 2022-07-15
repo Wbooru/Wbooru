@@ -21,7 +21,7 @@ namespace Wbooru.Settings
 
         [Group("Tag Filter Options")]
         [List(typeof(TagFilterTarget), true)]
-        [EnableBy(nameof(EnableTagFilter),true)]
+        [EnableBy(nameof(EnableTagFilter), true)]
         [NameAlias("需要标签过滤的目标")]
         public TagFilterTarget FilterTarget { get; set; } = TagFilterTarget.MainWindow | TagFilterTarget.SearchResultWindow;
 
@@ -45,7 +45,7 @@ namespace Wbooru.Settings
 
         [Group("Tags Options")]
         [Description("搜索图片标签时，标签建议最大数量,0代表不限制")]
-        [Range(0,1000)]
+        [Range(0, 1000)]
         [NameAlias("标签搜索候选列表最大呈现数量")]
         public int MaxSearchSuggestsCount { get; set; } = 100;
 
@@ -54,7 +54,7 @@ namespace Wbooru.Settings
         #region Download Options
 
         [Group("Download Options")]
-        [Path(false,false)]
+        [Path(false, false)]
         [NameAlias("图片下载保存路径")]
         public string DownloadPath { get; set; } = "./Downloads";
 
@@ -74,13 +74,13 @@ namespace Wbooru.Settings
         public bool EnableNSFWFileterMode { get; set; } = false;
 
         [Group("View Options")]
-        [Range(1,5)]
+        [Range(1, 10)]
         [NameAlias("图片加载线程数")]
         public int LoadingImageThread { get; set; } = 2;
 
         [Group("View Options")]
         [Description("每次加载更多图片时所需要图片最低数量(多了的话可能会被ban?)")]
-        [Range(1,100)]
+        [Range(1, 100)]
         [NameAlias("每批图片加载数量")]
         public int GetPictureCountPerLoad { get; set; } = 20;
 
@@ -216,7 +216,7 @@ namespace Wbooru.Settings
 
         [NameAlias("Socks5代理地址")]
         [Group("Network Option")]
-        [EnableBy(nameof(EnableSocks5Proxy),true)]
+        [EnableBy(nameof(EnableSocks5Proxy), true)]
         public string Socks5ProxyAddress { get; set; } = "localhost";
 
         [NameAlias("Socks5代理地址的端口号")]
