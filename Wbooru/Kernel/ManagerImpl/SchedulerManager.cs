@@ -21,7 +21,7 @@ namespace Wbooru.Kernel.ManagerImpl
 
         private Dictionary<ISchedulable, DateTime> schedulersCallTime { get; } = new();
 
-        public IEnumerable<ISchedulable> Schedulers => schedulers;
+        public IEnumerable<ISchedulable> CurrentRunningSchedulers => schedulers;
 
         public Task OnInit()
         {
@@ -54,24 +54,16 @@ namespace Wbooru.Kernel.ManagerImpl
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                try
+                var schedulers = CurrentRunningSchedulers
+                    .Where(x => DateTime.Now - schedulersCallTime[x] >= x.ScheduleCallLoopInterval)
+                    .Select(x => x.OnScheduleCall(cancellationToken).ContinueWith(_ => schedulersCallTime[x] = DateTime.Now))
+                    .ToArray();
+                if (schedulers.Length == 0)
+                    await Task.Delay(500, cancellationToken).ContinueWith(tsk => tsk.Exception == default);
+                else
                 {
-                    var schedulers = Schedulers
-                        .Where(x => DateTime.Now - schedulersCallTime[x] >= x.ScheduleCallLoopInterval)
-                        .Select(x => x.OnScheduleCall(cancellationToken).ContinueWith(_ => schedulersCallTime[x] = DateTime.Now))
-                        .ToArray();
-                    if (schedulers.Length == 0)
-                        await Task.Delay(500, cancellationToken);
                     await Task.WhenAll(schedulers);
                     await Task.Yield();
-                }
-                catch (TaskCanceledException)
-                {
-
-                }
-                catch (Exception)
-                {
-                    throw;
                 }
             }
         }
@@ -84,7 +76,7 @@ namespace Wbooru.Kernel.ManagerImpl
             }
             catch { }
 
-            foreach (var scheduler in Schedulers)
+            foreach (var scheduler in CurrentRunningSchedulers)
             {
                 Log.Info("Call OnSchedulerTerm() :" + scheduler.SchedulerName);
                 scheduler.OnSchedulerTerm();

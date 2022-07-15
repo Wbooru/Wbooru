@@ -64,4 +64,7 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)&quot; &quot;$(ProjectDir)bin\$(ConfigurationName)\net5.0-windows&quot; /e /s /y" />
+  </Target>
 </Project>
